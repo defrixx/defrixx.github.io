@@ -55,27 +55,27 @@
 | Internet-facing, high-value, partner-facing или production platform component | Целевой уровень Build L3 | Требуются protected source refs, review build definitions, trusted builder identity и pre-deploy policy enforcement |
 | Широко используемый package/image, shared base image, signing tooling, deploy tooling или regulated critical artifact | Build L3 плюс усиленные Source-track controls | Добавьте более строгий source governance, release authorization, key custody, reproducible или independent rebuild where practical и ускоренную incident revocation |
 
-Нижний tier используйте только если владелец сервиса фиксирует blast-radius assumptions, expiry исключения и compensating controls. Если реальный риск в слабом source governance, фиксируйте его как Source-track или SDLC finding даже при успешной Build provenance проверке.
+Нижний tier используйте только если владелец сервиса фиксирует blast-radius assumptions, expiry исключения и компенсирующие меры. Если реальный риск в слабом source governance, фиксируйте его как Source-track или SDLC-замечание даже при успешной Build provenance проверке.
 
 ## 3. Требования к pipeline (producer + build platform)
 
-### 3.1 Контроли source и invocation
+### 3.1 Меры контроля source и invocation
 
-Эти контроли являются Build-track expectations о том, что builder имеет право потреблять. Они не заменяют Source-track governance.
+Эти меры контроля являются Build-track expectations о том, что builder имеет право потреблять. Они не заменяют Source-track governance.
 
 - только canonical repo/revision для релизных веток
 - явная политика допустимых типов запуска (tag, protected branch)
 - запрет неутвержденных runtime-параметров сборки
 - проверка, что source fields в provenance соответствуют ожидаемому repository, immutable revision, branch/tag policy и build trigger
 
-### 3.2 Контроли build environment
+### 3.2 Меры контроля build environment
 
 - hosted runner для релизных сборок
 - one-build-one-ephemeral-environment
 - запрет shared mutable state между concurrent builds
 - cache рассматривается как недоверенный ввод; для release-пайплайна обязательны cache-safe controls (scoped cache keys, provenance-consistent inputs), а для high-risk релизов опционально выполняется rebuild без cache
 
-### 3.3 Контроли артефактов
+### 3.3 Меры контроля артефактов
 
 - публикация и policy decisions только по digest (`sha256:...`), не по mutable tag
 - multi-arch: отдельная проверка каждого manifest digest

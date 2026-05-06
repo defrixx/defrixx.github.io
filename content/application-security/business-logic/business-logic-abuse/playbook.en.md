@@ -1,0 +1,131 @@
+# Business Logic Abuse Playbook
+
+## 1. Scope and Objective
+
+This playbook covers abuse of valid product functionality: account takeover pressure, signup/trial/promo abuse, inventory and booking manipulation, tenant isolation abuse, workflow/state-machine bypass, and automation against sensitive business flows.
+
+Use this document for:
+- product features where the attacker does not need a classic injection bug;
+- API and web flows that can be automated, replayed, chained, or economically abused;
+- pre-release review of signup, login, reset, checkout, referral, credits, admin/support, export, booking, and tenant-management flows.
+
+Out of scope:
+- low-level API authentication and authorization mechanics: use the [API security playbook](../../api/api-security-patterns/playbook.en.md);
+- OAuth/OIDC session and token controls: use the [OIDC + OAuth 2.0 security guide](../../identity/oidc-oauth/playbook.en.md);
+- browser-only controls: use the [browser and frontend security playbook](../../web/browser-security/playbook.en.md).
+
+Objective:
+- identify sensitive business flows before launch;
+- set explicit abuse limits, state-machine guards, ownership checks, and detection signals;
+- make abuse resistance testable by product, engineering, AppSec, fraud, and operations teams.
+
+---
+
+## 2. Threat Model
+
+Assets:
+- account access, user identity, tenant isolation, balances/credits, inventory, coupons, referral rewards, payments, booking slots, exports, admin/support actions, and audit integrity.
+
+Attackers and entry points:
+- external users automating public flows;
+- fraud actors using bots, proxies, disposable email, stolen credentials, or payment instruments;
+- authenticated users abusing object IDs, tenant IDs, role transitions, or workflow order;
+- partner or B2B clients exceeding intended machine-to-machine usage;
+- insiders or support users misusing privileged product operations.
+
+High-impact scenarios:
+- Credential stuffing validates breached credentials and leads to account takeover.
+- Trial/signup automation creates many accounts to harvest credits, abuse free usage, bypass quotas, or spam other users.
+- Promo/referral abuse loops rewards through fake accounts or self-referrals.
+- Inventory/booking abuse reserves scarce goods or slots without intent to purchase or attend.
+- Tenant isolation abuse changes `tenant_id`, organization membership, invite state, or support context to access another tenant.
+- Workflow abuse calls later state transitions directly: refund without capture, approve without review, export without ownership, downgrade after consuming credits.
+
+---
+
+## 3. Sensitive Flow Inventory
+
+Every sensitive business flow must have an owner, abuse objective, limits, and verification method.
+
+| Flow class | Typical abuse | Required controls |
+|---|---|---|
+| Login and reset | credential stuffing, account enumeration, reset flooding | adaptive rate limits, breached credential detection where available, MFA/step-up, enumeration-resistant responses, alerting |
+| Signup and trial | fake accounts, quota farming, spam, disposable identity abuse | velocity limits, email/phone/domain policy, device/IP reputation where lawful, delayed trust, abuse review queue |
+| Promo/referral/credits | self-referral, reward loops, coupon stacking | one-time redemption, graph checks, reward delay, refund/reversal coupling, ledger audit |
+| Checkout/payment | scalping, card testing, duplicate capture, refund abuse | idempotency, state machine, payment risk controls, per-account/device/payment limits |
+| Booking/inventory | denial of inventory, reservation hoarding | hold TTL, payment commitment, release jobs, per-actor quotas, anomaly detection |
+| Tenant/admin/support | cross-tenant access, privileged action misuse | object/tenant authorization, JIT/JEA admin access, immutable audit, approval for destructive actions |
+| Export/reporting | bulk data theft, scraping through valid UI/API | row/object authorization, export quotas, async approval for high-volume exports, watermarking/logging |
+
+Production recommendation:
+- Classify new or changed flows as `normal`, `sensitive`, or `critical`.
+- `Sensitive` flows require explicit abuse cases and monitoring before release.
+- `Critical` flows require negative tests, runbook coverage, and an owner-approved release decision.
+
+---
+
+## 4. Production Baseline
+
+### 4.1 Account Takeover and Credential Abuse
+
+Production defaults:
+- Rate-limit by account, source network, device/session signal, and client/application where available. A single IP-only limit is not enough.
+- Do not reveal whether username, email, phone, or reset token exists.
+- Use MFA or step-up for risky login, password reset completion, new device, payment change, admin action, and bulk export.
+- Notify users of password change, MFA change, new recovery method, and suspicious successful login.
+- Log failed and successful authentication events with correlation IDs and risk context.
+
+Verification:
+- Credential stuffing simulation with known invalid and reused pairs does not create lockout DoS or account enumeration.
+- Reset flow cannot be used to flood a victim or infer account existence.
+- Successful takeover-like sequence produces alertable events.
+
+### 4.2 Signup, Trial, Promo, and Referral Abuse
+
+Production defaults:
+- Free-value flows have explicit budgets per account, tenant, payment instrument, device/browser signal, source network, and time window.
+- Promo and referral rewards are delayed until the referred account reaches a real qualifying event.
+- Reward ledgers are append-only or auditable; reversal is possible when abuse is confirmed.
+- Disposable email, suspicious domain, proxy/Tor, and high-velocity patterns route to friction or review, not necessarily hard block.
+- Abuse controls are evaluated for privacy and regional legal requirements before device fingerprinting or biometric/human-detection signals are used.
+
+Verification:
+- Automated creation of accounts cannot multiply credits, coupons, or trial capacity beyond the configured budget.
+- Self-referral and circular referral graphs are detected or blocked.
+- Coupon stacking and refund-after-reward scenarios fail safely.
+
+### 4.3 Tenant Isolation and Object/Workflow Authorization
+
+Production defaults:
+- Authorization is enforced on every object and state transition in the service/domain layer.
+- Tenant context is derived from authenticated membership and policy, not from user-controlled request fields alone.
+- Cross-tenant admin/support actions require explicit support context, reason, ticket, JIT/JEA access where applicable, and immutable audit.
+- Bulk operations and exports re-check authorization per object or use a verified tenant-scoped query path.
+
+Verification:
+- User from tenant A cannot read, update, export, invite into, approve, or infer objects from tenant B.
+- Support/admin impersonation cannot silently bypass tenant audit.
+- Batch, GraphQL, async job, and export paths enforce the same policy as single-object APIs.
+
+### 4.4 State Machines, Idempotency, and Replay
+
+Production defaults:
+- Critical workflows use explicit state machines with allowed transitions.
+- State-changing requests use idempotency keys where retries or duplicate events are expected.
+- Webhook, payment, refund, booking, and fulfillment flows reject stale, duplicate, out-of-order, and already-consumed events.
+- Business state changes and external side effects are transactionally coupled or compensated through a tested recovery process.
+
+Verification:
+- Direct calls to later workflow states are denied.
+- Duplicate payment/webhook/booking messages do not duplicate external effects.
+- Replay after the configured time window fails and creates an investigation signal.
+
+### 4.5 Abuse Monitoring and Response
+
+Production defaults:
+- Sensitive flows emit structured events with actor, tenant, object, action, result, reason, correlation ID, and relevant risk signals.
+- Dashboards track flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters, and export volume.
+- Abuse response has playbooks for throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation, and customer support communication.
+
+Verification:
+- A tabletop or simulation proves that the team can identify affected accounts/tenants, stop the flow, reverse unsafe credits where possible, and preserve evidence.

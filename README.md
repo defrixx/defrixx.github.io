@@ -29,38 +29,36 @@ PRs are welcome if you want to improve existing materials or add new ones.
 
 ---
 
-## Contents (Current Structure)
+## Contents
 
 - [`templates/playbook.md`](templates/playbook.md) - reusable template for new security playbook documents
 
-### Reference Information
-- [`info/infrastructure-technologies.en.md`](info/infrastructure-technologies.en.md) / [`info/infrastructure-technologies.ru.md`](info/infrastructure-technologies.ru.md) - overview of infrastructure technologies and their production operating models
+### Review and Governance
+- [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist
+- [`content/review/threat-modeling/`](content/review/threat-modeling/) - threat modeling methodology review and practical playbook
+- [`content/review/release-governance/`](content/review/release-governance/) - release governance and security quality gates for protected environments, deployment approvals, release evidence, exceptions, and escalation
 
-### Architecture
-- [`content/architecture/security-review/`](content/architecture/security-review/) - security architecture review checklist
-- [`content/architecture/threat-modeling/`](content/architecture/threat-modeling/) - threat modeling methodology review and practical playbook
-- [`content/architecture/case-studies-security/`](content/architecture/case-studies-security/) - security lens for 16 architecture case studies (ByteByteGo)
-- [`content/architecture/api-security-patterns/`](content/architecture/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
+### Application Security
+- [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - practical defense playbook for OWASP Top 10 (2025)
+- [`content/application-security/web/browser-security/`](content/application-security/web/browser-security/) - browser and frontend controls for CSP, CORS, cookies, third-party scripts, embedded content, and frontend supply chain
+- [`content/application-security/api/api-security-patterns/`](content/application-security/api/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
+- [`content/application-security/business-logic/business-logic-abuse/`](content/application-security/business-logic/business-logic-abuse/) - business logic abuse playbook for ATO, signup/trial/promo abuse, tenant isolation, workflow abuse, and sensitive business flows
+- [`content/application-security/identity/oidc-oauth/`](content/application-security/identity/oidc-oauth/) - OIDC + OAuth 2.0 security playbook
 
-### Web Application
-- [`content/web/owasp-top-10/`](content/web/owasp-top-10/) - practical defense playbook for OWASP Top 10 (2025)
-
-### AI
-- [`content/ai/owasp-llm-top-10/`](content/ai/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2025)
-- [`content/ai/securing-ai/`](content/ai/securing-ai/) - Securing AI overview
-
-### Kubernetes
-- [`content/kubernetes/cluster-security-review/`](content/kubernetes/cluster-security-review/) - Kubernetes cluster security review playbook
-- [`content/kubernetes/adversarial-validation/`](content/kubernetes/adversarial-validation/) - Kubernetes adversarial validation and attack-path review playbook
-- [`content/kubernetes/pod-security/`](content/kubernetes/pod-security/) - Kubernetes pod security hardening playbook
-- [`content/kubernetes/seccomp/`](content/kubernetes/seccomp/) - Kubernetes seccomp review checklist
-- [`content/kubernetes/container-escape-capability-abuse/`](content/kubernetes/container-escape-capability-abuse/) - attack vectors overview
-
-### Identity
-- [`content/identity/oidc-oauth/`](content/identity/oidc-oauth/) - OIDC + OAuth 2.0 security playbook
-
-### Secrets
-- [`content/secrets/vault/`](content/secrets/vault/) - Vault security playbook
+### Platform Security
+- [`content/platform-security/kubernetes/cluster-security-review/`](content/platform-security/kubernetes/cluster-security-review/) - Kubernetes cluster security review playbook
+- [`content/platform-security/kubernetes/adversarial-validation/`](content/platform-security/kubernetes/adversarial-validation/) - Kubernetes adversarial validation and attack-path review playbook
+- [`content/platform-security/kubernetes/pod-security/`](content/platform-security/kubernetes/pod-security/) - Kubernetes pod security hardening playbook
+- [`content/platform-security/kubernetes/seccomp/`](content/platform-security/kubernetes/seccomp/) - Kubernetes seccomp review checklist
+- [`content/platform-security/kubernetes/container-escape-capability-abuse/`](content/platform-security/kubernetes/container-escape-capability-abuse/) - container escape and Linux capability abuse overview
+- [`content/platform-security/secrets/vault/`](content/platform-security/secrets/vault/) - Vault security playbook
 
 ### Supply Chain
 - [`content/supply-chain/slsa-provenance/`](content/supply-chain/slsa-provenance/) - SLSA v1.2 provenance overview for container image CI/CD pipelines
+
+### AI Security
+- [`content/ai-security/securing-ai/`](content/ai-security/securing-ai/) - Securing AI overview
+- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2025)
+
+### Reference
+- [`reference/infrastructure-technologies/`](reference/infrastructure-technologies/) - overview of infrastructure technologies and their production operating models
