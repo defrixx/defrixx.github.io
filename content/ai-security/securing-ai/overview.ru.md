@@ -57,9 +57,9 @@
 **Практические меры контроля:**
 - `Baseline`: workload identity вместо статических ключей
 - `Baseline`: принцип минимально необходимых привилегий для каждого инструмента и API
-- `Baseline`: tenant-aware authorization на каждом последующем шаге
+- `Baseline`: авторизация с учетом tenant на каждом последующем шаге
 - `High-impact/regulated`: короткоживущие токены, ротация, привязка audience
-- `Recommended maturity`: SoD для high-impact операций
+- `Recommended maturity`: SoD для операций с высоким воздействием
 
 **Сигналы проверки:**
 - доля сервисов без долгоживущих учетных данных
@@ -116,7 +116,7 @@
 **Риски:**
 - prompt injection (direct/indirect)
 - poisoned knowledge base
-- retrieval без ACL и cross-tenant leakage
+- retrieval без ACL и межтенантные утечки
 
 **Покрытие OWASP LLM Top 10:**
 - `LLM01: Prompt Injection`
@@ -150,7 +150,7 @@
 - `Baseline`: вывод всегда считать недоверенным вводом
 - `Baseline`: валидация схемы + allowlist команд/операций
 - `Baseline`: two-step execution для state-changing действий (`preview -> explicit confirm -> execute`)
-- `High-impact/regulated`: human-in-the-loop + four-eyes approval для high-impact/необратимых операций
+- `High-impact/regulated`: human-in-the-loop + four-eyes approval для операций с высоким воздействием и необратимых операций
 - `High-impact/regulated`: sandbox для code/command execution
 - `High-impact/regulated`: лимиты частоты запросов, loop guards, kill switch со стартовыми guardrails (`max tool-chain depth=3`, `max autonomous steps=5`, `request budget=60 req/min per user`, `token budget=20k tokens/request`)
 - `Recommended maturity`: transaction risk scoring перед выполнением
@@ -159,12 +159,12 @@
 
 | Класс AI workflow | Стартовый default | Hard cap | Правило исключения | Сигнал проверки |
 |---|---|---|---|---|
-| Public assistant без state-changing tools | `60 req/min per user`, `20k tokens/request`, автономные tool chains по умолчанию отключены | Tenant/IP cost quota, max context и streaming duration по product tier | Более высокие лимиты требуют abuse/cost model, tenant quota и alert owner | 429 rate, spend per tenant, обнаружение prompt-flood, тесты отклонения context-window overflow |
+| Public assistant без state-changing tools | `60 req/min per user`, `20k tokens/request`, автономные tool chains по умолчанию отключены | Tenant/IP cost quota, максимальный размер контекста и streaming duration по product tier | Более высокие лимиты требуют abuse/cost model, tenant quota и alert owner | 429 rate, spend per tenant, обнаружение prompt-flood, тесты отклонения переполнения контекстного окна |
 | Internal copilot с read-only tools | `max tool-chain depth=3`, `max autonomous steps=5`, `20k tokens/request` | Tool calls только в утвержденные read-only systems; без cross-tenant или production-write actions | Более широкий retrieval/tool access требует approval от data owner и audit sampling | Policy-denied tool calls, доля успешных retrieval ACL tests, sampled audit events |
-| Autonomous state-changing agent | `preview -> explicit confirm -> execute`; autonomous execution по умолчанию отключен для high-impact actions | `max autonomous steps=3` до re-authorization; kill switch SLO `<=60s`; irreversible action только с human approval | Любое no-confirm действие требует owner, expiry, rollback plan и abuse-case tests | Negative tests на unauthorized actions, approval coverage, mean time to kill runaway actions |
+| Autonomous state-changing agent | `preview -> explicit confirm -> execute`; autonomous execution по умолчанию отключен для действий с высоким воздействием | `max autonomous steps=3` до re-authorization; irreversible action только с human approval | Любое no-confirm действие требует owner, expiry, rollback plan и abuse-case tests | Negative tests на unauthorized actions, approval coverage, mean time to kill runaway actions |
 | Batch/RAG ingestion или offline processing | Budget по job, tenant, corpus и source; per-chat request budget не применяется напрямую | Max documents, max tokens per document, max runtime, max outbound fetches и quarantine threshold | Больший batch требует staging run, cost estimate, malware/content scan и source trust decision | Poisoned-document test results, ingestion reject rate, job cost variance, quarantine metrics |
 
-Эти числа являются локальной стартовой базой. Уточняйте их по model context window, streaming mode, batch size, tenant tier, cost profile, tool risk и downstream blast radius; фиксируйте выбранные значения в release gate.
+Эти числа являются локальной стартовой базой. Уточняйте их по контекстному окну модели, streaming mode, batch size, tenant tier, cost profile, tool risk и downstream blast radius; фиксируйте выбранные значения в release gate.
 
 **Сигналы проверки:**
 - число заблокированных попыток рискованных действий
@@ -176,7 +176,7 @@
 **Риски:**
 - недоверенные MCP/tool servers попадают в agent runtime
 - отравление tool manifest или незаметное расширение tool scopes
-- shadow tools, context over-sharing и утечка токенов в protocol logs
+- shadow tools, избыточная передача контекста и утечка токенов в protocol logs
 
 **Покрытие OWASP LLM Top 10:**
 - `LLM06: Excessive Agency`
@@ -189,7 +189,7 @@
 - `High-impact/regulated`: signed или version-pinned tool manifests с ревью изменений descriptions, input schemas, scopes и outbound destinations
 - `Baseline`: явная user/workload authorization для каждого tool call, а не только при создании начальной agent session
 - `Baseline`: per-tool scopes и short-lived credentials; не переиспользуйте broad user или platform tokens между unrelated tools
-- `Baseline`: не хранить secrets в prompts, tool descriptions, context payloads, MCP traffic logs или protocol traces
+- `Baseline`: не хранить secrets в промптах, tool descriptions, payloads контекста, MCP traffic logs или protocol traces
 - `High-impact/regulated`: обнаружение unknown MCP servers, новых tool manifests, abnormal tool-chain depth и необычного cross-tool data movement
 
 Предположение:
@@ -235,9 +235,9 @@
 - `LLM01: Prompt Injection` (в LLM-mediated flows)
 
 **Практические меры контроля:**
-- `Baseline`: secure coding baseline для web/API code плюс AI-specific checks
-- `Baseline`: parameterized queries + output encoding by context
-- `Baseline`: CSP/HTML sanitization для LLM content
+- `Baseline`: базовый профиль безопасной разработки для web/API code плюс AI-специфичные проверки
+- `Baseline`: параметризованные запросы + output encoding с учетом контекста
+- `Baseline`: CSP/санитизация HTML для LLM content
 - `High-impact/regulated`: SAST/DAST/IAST профили для AI endpoints
 - `Recommended maturity`: security contract tests между AI gateway и downstream APIs
 
@@ -248,16 +248,16 @@
 ### 3.9 Мониторинг, обнаружение и реагирование на инциденты
 
 **Риски:**
-- позднее обнаружение abuse/prompt attacks/data leakage
+- позднее обнаружение злоупотреблений, атак на промпты и утечек данных
 - отсутствие плейбуков для AI-специфичных инцидентов
 
 **Покрытие OWASP LLM Top 10:**
 - кросс-функциональное покрытие `LLM01`–`LLM10` через обнаружение и response
 
 **Практические меры контроля:**
-- `Baseline`: аудит-трейл для prompts, retrieval, tool calls, решений политики с data minimization на уровне полей
+- `Baseline`: аудит-трейл для промптов, retrieval, tool calls, решений политики с минимизацией данных на уровне полей
 - `Baseline`: маскирование/редакция секретов и ПДн в логах до записи
-- `Baseline`: журналирование raw prompt/context/tool payload должно быть отключено по умолчанию; для штатной эксплуатации используйте redacted/minimized logs
+- `Baseline`: журналирование raw payloads промптов, контекста и tools должно быть отключено по умолчанию; для штатной эксплуатации используйте логи с маскированием чувствительных данных и минимальным набором полей
 - `Baseline`: ограничивайте raw payload capture только scoped forensic mode с approval, break-glass доступом, case ID, шифрованием, retention `<=30 days`, подтверждением удаления и DLP/redaction там, где это возможно
 - `Baseline`: правила обнаружения для инъекций, privilege misuse, data exfil
 - `High-impact/regulated`: AI incident runbooks (containment, rollback, customer comms)
@@ -265,7 +265,7 @@
 - `Recommended maturity`: continuous purple teaming
 
 **Сигналы проверки:**
-- MTTD/MTTR для AI security events
+- MTTD/MTTR для AI-событий безопасности
 - процент инцидентов с корректно отработанным runbook
 - доля raw payload логов, удаленных в срок по retention policy
 
@@ -286,7 +286,7 @@
 - `Recommended maturity`: quarterly control effectiveness review
 
 **Сигналы проверки:**
-- доля релизов, прошедших AI risk gate без exception
+- доля релизов, прошедших AI risk gate без исключения
 - количество просроченных задач на устранение
 
 ### 3.11 Safety и устойчивость к злоупотреблениям
@@ -340,19 +340,19 @@
 
 **Augment, fine-tune, data:**
 - `Baseline`: проверять источники training/fine-tuning/RAG данных на право использования, актуальность, malware/content risk и tenant boundary
-- `Baseline`: защищать data pipeline и vector database как production data store: authz на документном уровне, audit trail, encryption, backup/restore и процесс удаления
+- `Baseline`: защищать data pipeline и векторную БД как production data store: authz на документном уровне, audit trail, encryption, backup/restore и процесс удаления
 - `High-impact/regulated`: вести версионирование datasets, embeddings, prompt templates и retrieval policies, чтобы incident response мог откатить не только код, но и контекст
 
 **Develop & experiment:**
-- `Baseline`: применять secure coding baseline к AI gateway, tool adapters, prompt orchestration и downstream integrations, а не только к web/API оболочке
+- `Baseline`: применять базовый профиль безопасной разработки к AI gateway, tool adapters, prompt orchestration и downstream integrations, а не только к web/API оболочке
 - `Baseline`: регистрировать MCP/tool servers до использования; unregistered local, shadow или developer-only tools не должны быть доступны из production agents
 - `High-impact/regulated`: вести tracking экспериментов с моделью, параметрами, версией prompt, snapshot датасета, версией evaluator и security-замечаниями
 - `High-impact/regulated`: ограничивать developer sandbox от production data и production tools; любые исключения оформлять как временный break-glass доступ
 
 **Test & evaluate:**
 - `Baseline`: включить adversarial testing, prompt-injection tests, authorization tests для tools/RAG и output-handling tests в релизные подтверждения
-- `High-impact/regulated`: проводить incident simulation и response testing для сценариев data leakage, runaway agent, compromised model artifact и poisoned RAG source
-- `Recommended maturity`: вести benchmark не только по quality/latency/cost, но и по refusal behavior, jailbreak resistance, data leakage rate и policy false positives
+- `High-impact/regulated`: проводить incident simulation и response testing для сценариев утечки данных, runaway agent, compromised model artifact и poisoned RAG source
+- `Recommended maturity`: вести benchmark не только по quality/latency/cost, но и по refusal behavior, jailbreak resistance, частоте утечек данных и policy false positives
 
 **Release:**
 - `High-impact/regulated`: выпускать AI-BOM/SBOM для model artifacts, datasets там, где это применимо, prompt/runtime components, dependencies и external services
@@ -363,20 +363,20 @@
 - `Baseline`: валидировать runtime configuration, secrets, network egress, API exposure, tenant isolation и user/machine access перед включением production-трафика
 - `Baseline`: проверять signatures/provenance артефактов моделей и датасетов во время развертывания, а не только в CI
 - `Baseline`: проверять identity, version, transport, scopes и outbound destinations MCP/tool manifest до включения agent access
-- `High-impact/regulated`: включать fallback, rollback и kill switch до запуска autonomous или high-impact tool flows
+- `High-impact/regulated`: включать fallback, rollback и kill switch до запуска autonomous или tool flows с высоким воздействием
 
 **Operate:**
 - `Baseline`: держать runtime guardrails, rate limits, budget limits, output validation и принудительное применение политик для tools включенными постоянно, включая degraded mode
-- `High-impact/regulated`: использовать alerts по patch/update для model providers, AI frameworks, vector databases, model serving и orchestration components
+- `High-impact/regulated`: использовать alerts по patch/update для model providers, AI frameworks, векторных БД, model serving и orchestration components
 - `High-impact/regulated`: регулярно пересматривать risk scoring для действий агента на основании реальных denied events и выводов из инцидентов
 
 **Monitor:**
-- `Baseline`: собирать security metrics по adversarial input, tool denial, попыткам обхода политик, data leakage signals, аномалиям в agent chains и model behavior drift
+- `Baseline`: собирать security metrics по adversarial input, tool denial, попыткам обхода политик, сигналам утечки данных, аномалиям в agent chains и model behavior drift
 - `Baseline`: alerting на unknown MCP servers, tool manifest drift, abnormal tool chains и token/secret patterns в protocol logs
 - `High-impact/regulated`: иметь alert routing в Security/SRE/Product с severity, owner и runbook; AI alerts без owner быстро превращаются в noise
 - `Recommended maturity`: отслеживать ethical/compliance signals там, где они являются production risk: bias, unfair denial, regulated advice, unsafe recommendations
 
 **Govern:**
 - `Baseline`: проводить user/machine access audits для AI tools, model registries, prompt repositories, vector stores и provider consoles
-- `Baseline`: хранить audit evidence по model decisions, dataset versions, prompt/system changes, exceptions и incident governance
+- `Baseline`: хранить audit evidence по model decisions, dataset versions, prompt/system changes, исключениям и incident governance
 - `High-impact/regulated`: пересматривать AI risk register минимум ежеквартально и при major model/provider change

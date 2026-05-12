@@ -51,7 +51,7 @@
 
 | Класс релиза | Минимально допустимая цель | Дополнительное требование |
 |---|---|---|
-| Внутренний low-risk service с ограниченным blast radius | Build L2 может быть допустим при документированном exception и deploy-time verification | Source-track/SDLC controls должны быть явными; не заявляйте, что L2/L3 доказывает безопасность source |
+| Внутренний low-risk service с ограниченным blast radius | Build L2 может быть допустим при документированном исключении и deploy-time verification | Source-track/SDLC controls должны быть явными; не заявляйте, что L2/L3 доказывает безопасность source |
 | Internet-facing, high-value, partner-facing или production platform component | Целевой уровень Build L3 | Требуются protected source refs, review build definitions, trusted builder identity и pre-deploy policy enforcement |
 | Широко используемый package/image, shared base image, signing tooling, deploy tooling или regulated critical artifact | Build L3 плюс усиленные Source-track controls | Добавьте более строгий source governance, release authorization, key custody, reproducible или independent rebuild where practical и ускоренную incident revocation |
 
@@ -95,7 +95,7 @@ Build provenance может доказать, где и как был собра
 - branch/tag protection и review policy;
 - change history для workflow/build/signing configuration;
 - provenance samples, показывающие source repository, revision, trigger, `buildType` и `externalParameters`;
-- exception log для source-control или review bypasses.
+- журнал исключений для source-control или review bypasses.
 
 ---
 
@@ -267,7 +267,7 @@ SLSA conformance и локальная deployment policy — разные про
 
 Локальные проверки deployment policy:
 
-1. Если `predicate.runDetails.metadata.startedOn` и `finishedOn` присутствуют, проверяйте `startedOn <= finishedOn`; если они отсутствуют, требуйте builder-specific evidence или документированное policy exception, а не считайте отсутствие SLSA failure
+1. Если `predicate.runDetails.metadata.startedOn` и `finishedOn` присутствуют, проверяйте `startedOn <= finishedOn`; если они отсутствуют, требуйте builder-specific evidence или документированное policy-исключение, а не считайте отсутствие SLSA failure
 2. Проверяйте freshness provenance через локальный `max_provenance_age` per environment (например, prod `24h`, staging `7d`), кроме утвержденных delayed deploy/promote сценариев
 3. Для delayed deploy/promote повторный deploy ранее одобренного digest допускается при неизменности digest артефакта, неизменности provenance/attestation digest и наличии валидного предыдущего gate-pass в audit trail
 
@@ -275,7 +275,7 @@ SLSA conformance и локальная deployment policy — разные про
 
 - default: `deny`
 - deploy разрешается только при полном прохождении обязательных проверок
-- break-glass допустим только по оформленному exception с TTL и последующим RCA
+- break-glass допустим только по оформленному исключению с TTL и последующим RCA
 
 Ограничение для production:
 - `break-glass` для prod не дольше `24h`, с обязательным post-incident review

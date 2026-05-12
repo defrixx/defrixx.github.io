@@ -185,11 +185,11 @@
 - `Approved`
 
 Обязательные правила:
-- `Rejected`, если есть хотя бы один `Critical` без подтвержденной mitigation или формально утвержденного release-governance exception;
+- `Rejected`, если есть хотя бы один `Critical` без подтвержденной mitigation или формально утвержденного release-governance-исключения;
 - `Approved with risks`, если есть принятые `High` при наличии владельца + срока + компенсирующих мер;
 - `Approved`, если открытые риски не выше согласованного порога (обычно не выше `Medium`) и для них есть план закрытия.
 
 Дополнительно:
-- `Critical` по умолчанию отклоняется; exception допустим только через release governance process с approval security leadership и business owner, TTL, компенсирующими мерами и post-release review;
+- `Critical` по умолчанию отклоняется; исключение допустимо только через release governance process с approval security leadership и business owner, TTL, компенсирующими мерами и post-release review;
 - обязательные исправления до релиза фиксируются отдельным списком;
 - остаточные риски должны быть явно приняты уполномоченным владельцем.

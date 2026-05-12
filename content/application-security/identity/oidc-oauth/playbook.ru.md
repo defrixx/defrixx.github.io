@@ -27,7 +27,7 @@ sequenceDiagram
     U->>I: Authorization request
     I->>U: Login + consent
     I->>B: Redirect callback with code + state
-    B->>B: Validate state + nonce context
+    B->>B: Validate state + nonce binding
     B->>I: POST /token (code + code_verifier)
     I-->>B: id_token + access_token + refresh_token
     B->>B: Validate id_token (iss, aud, exp, nonce, sig)
@@ -213,7 +213,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - Cookie `HttpOnly`: запрещает JS-доступ и снижает риск кражи cookie при XSS
 - Cookie `Secure`: отправка только по HTTPS, снижает риск перехвата в канале
 - Cookie `SameSite=Lax` (или `None; Secure` для cross-site SSO): снижает CSRF/login CSRF риск
-- Узкие `Domain`/`Path`: уменьшают cross-app leakage и риск cookie tossing/захвата поддомена
+- Узкие `Domain`/`Path`: уменьшают межприложенческие утечки и риск cookie tossing/захвата поддомена
 - CSRF-защита обязательна для state-changing BFF endpoints (`POST/PUT/PATCH/DELETE`): используйте synchronizer token или signed double-submit cookie, привязанный к authenticated session через HMAC и server-side secret; naive double-submit cookies недопустимы
 - Валидируйте `Origin` (основной) и `Referer` (запасной) для браузерных state-changing запросов
 - Используйте same-origin policy для session-bound endpoints и проверки `Sec-Fetch-Site`
@@ -230,7 +230,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - При глобальном инциденте используйте `Sign out all active sessions` + realm/client `Not Before`
 - Учитывайте, что sign-out сам по себе не отменяет мгновенно уже выданные access token до `exp` (см. раздел 5)
 - Для чувствительных API introspection обязательна в окне `<=15m` после logout/revocation/обновления `Not Before`
-- Отклоняйте токены, которые неактивны, выданы до `Not Before`, или нарушают binding context
+- Отклоняйте токены, которые неактивны, выданы до `Not Before`, или нарушают контекст привязки (`binding context`)
 
 Усиления для профиля Maximum:
 - Расширяйте область обязательной introspection для дополнительных endpoint классов

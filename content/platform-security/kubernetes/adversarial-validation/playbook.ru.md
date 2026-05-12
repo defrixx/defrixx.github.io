@@ -190,7 +190,7 @@ kubectl get rolebindings,clusterrolebindings -A
 - alerting покрывает CPU/memory spikes, OOMKilled, throttling и restart loops.
 
 **Рекомендация для production:**
-- используйте Pod Security playbook как canonical source для resource-constraint policy и exceptions;
+- используйте Pod Security playbook как canonical source для resource-constraint policy и исключений;
 - запретить BestEffort pods в production namespaces;
 - задавать namespace-level quotas для shared clusters;
 - DoS-проверки выполнять только в isolated load/staging среде.
@@ -294,7 +294,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 
 **Что проверять:**
 - Docker/container runtime, kubelet, API server, RBAC, audit и усиление защиты node проверяются benchmark tooling, а не только ручным чтением YAML;
-- kube-bench/CIS profile выбран под фактическую Kubernetes version и provider flavor; managed-service ограничения отмечены как exception или not applicable;
+- kube-bench/CIS profile выбран под фактическую Kubernetes version и provider flavor; managed-service ограничения отмечены как исключение или not applicable;
 - kubeaudit/Popeye или эквивалентные scanners находят privileged pods, missing limits, weak security context, stale references и hygiene debt;
 - benchmark-замечания переводятся в backlog устранения с владельцем, severity и re-test подтверждением.
 
@@ -320,7 +320,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 
 **Рекомендация для production:**
 - Helm v2/Tiller должен быть выведен из эксплуатации; для Helm v3 храните release state и deploy credentials с минимально необходимыми правами;
-- любые in-cluster admin services требуют explicit owner, network isolation, authentication, audit logging и expiry для exception;
+- любые in-cluster admin services требуют explicit owner, network isolation, authentication, audit logging и expiry для исключения;
 - проверяйте legacy components после migration, incident cleanup и cluster upgrades.
 
 **Подтверждение:**

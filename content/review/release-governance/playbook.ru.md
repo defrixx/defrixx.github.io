@@ -99,7 +99,7 @@ Production-настройки:
 
 Production-настройки:
 - Gates применяются к изменениям, а не только ко всему repository. Не блокируйте релиз только из-за unrelated legacy debt, если политика не говорит, что legacy debt превысил порог релиза.
-- Новые Critical-замечания блокируют релиз, если нет valid Critical exception.
+- Новые Critical-замечания блокируют релиз, если нет действительного Critical-исключения.
 - Новые High-замечания по умолчанию блокируют high-risk production-релизы; standard production может идти дальше только с owner, due date, компенсирующими мерами и explicit acceptance.
 - Замечания по live secret блокируют релиз до revoke/rotation секрета и оценки exposure.
 - Scanner output должен быть разобран как confirmed issue, false positive, accepted risk или backlog debt. Raw unreviewed reports сами по себе не считаются релизным подтверждением.
@@ -108,8 +108,8 @@ Production-настройки:
 
 Production-настройки:
 - Решение по релизу использует один aggregated status, а не набор разрозненных scanner dashboards.
-- Aggregated status фиксирует: gate name, tool/source, commit/artifact digest, result, ID замечаний, exception IDs, approver, timestamp и ссылку на подтверждения.
-- Failed non-security quality gate может блокировать deployment, но security exceptions должны оставаться видимыми и отдельно утвержденными.
+- Aggregated status фиксирует: gate name, tool/source, commit/artifact digest, result, ID замечаний, ID исключений, approver, timestamp и ссылку на подтверждения.
+- Failed non-security quality gate может блокировать deployment, но security-исключения должны оставаться видимыми и отдельно утвержденными.
 
 Верификация:
 - Восстановите решение по релизу из logs и артефактов после deployment.
@@ -182,15 +182,15 @@ Exception record должен включать:
 - условие проверки для закрытия.
 
 Production-настройки:
-- Critical-замечания по умолчанию отклоняются. Critical exception действителен только при approval security leadership и business/product owner, явном TTL, компенсирующих мерах и обязательном post-release review.
-- High exceptions требуют approval service owner и security owner.
+- Critical-замечания по умолчанию отклоняются. Critical-исключение действительно только при approval security leadership и business/product owner, явном TTL, компенсирующих мерах и обязательном post-release review.
+- High-исключения требуют approval service owner и security owner.
 - Exceptions без expiry недействительны.
-- Expired exceptions автоматически проваливают следующий release gate, если не продлены через ревью.
+- Истекшие исключения автоматически проваливают следующий release gate, если не продлены через ревью.
 - Emergency bypass требует post-release review within `2 business days`: что было обойдено, причина, impact и план устранения.
 
 Escalation triggers:
 - релиз заблокирован из-за Critical without accepted risk;
 - disputed severity или business impact;
-- repeated exception renewal;
+- повторное продление исключения;
 - отсутствует owner для production-замечания;
 - подтверждения не доказывают, какой артефакт был развернут.

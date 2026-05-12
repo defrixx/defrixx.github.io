@@ -585,7 +585,7 @@ Policy engines используются для автоматической пр
 #### Модель работы
 OPA является general-purpose policy engine: приложение или tool передает structured input, policy code принимает решение, а enforcement point применяет результат. Conftest использует OPA/Rego для проверки structured files в CI или локально: Kubernetes manifests, Terraform plans, Helm outputs, YAML/JSON configs.
 
-В Kubernetes policy engine обычно работает как dynamic admission controller. API Server после authentication и authorization отправляет AdmissionReview в validating или mutating webhook. Policy engine проверяет object, userInfo, namespace, labels, image references и external context where supported, затем разрешает, отклоняет или изменяет request до сохранения в etcd.
+В Kubernetes policy engine обычно работает как dynamic admission controller. API Server после authentication и authorization отправляет AdmissionReview в validating или mutating webhook. Policy engine проверяет object, userInfo, namespace, labels, image references и внешний контекст там, где он поддерживается, затем разрешает, отклоняет или изменяет request до сохранения в etcd.
 
 Gatekeeper строится вокруг constraint templates и constraints, поддерживает admission validation и audit существующих resources. Kyverno использует Kubernetes-native policy resources и поддерживает validate, mutate, generate, cleanup/delete и image verification patterns. Для rollout policies обычно используют режимы audit/dry-run/warn перед enforce, иначе можно заблокировать deploy критичных workloads из-за непроверенного правила.
 
@@ -607,13 +607,13 @@ flowchart LR
 ```
 
 #### Границы ответственности
-Policy engine принимает решения по заданным правилам, но не определяет правильную security policy сам. Команда отвечает за ownership правил, tests, rollout mode, exceptions, failure behavior, versioning, observability, performance impact и соответствие правил реальным risk scenarios.
+Policy engine принимает решения по заданным правилам, но не определяет правильную security policy сам. Команда отвечает за ownership правил, tests, rollout mode, исключения, failure behavior, versioning, observability, performance impact и соответствие правил реальным risk scenarios.
 
 #### Типовые production-паттерны
 - CI checks для pull requests и Terraform/Kubernetes changes.
 - Admission enforcement для критичных Kubernetes controls.
 - Audit mode перед enforce для новых или рискованных policies.
-- Явная exception-модель с owner, reason, expiry и review.
+- Явная модель исключений с owner, reason, expiry и review.
 - Policy unit tests и fixtures для known-good/known-bad manifests.
 - Separate policy bundles по environment или risk tier.
 - Monitoring webhook latency, denial rates, audit violations и policy engine availability.
@@ -830,7 +830,7 @@ flowchart LR
 Object storage надежно хранит objects и применяет access policy, но не понимает бизнес-семантику данных. Команда отвечает за bucket ownership, public exposure, object naming, signed URL scope/lifetime, malware scanning для uploads, encryption/KMS policy, lifecycle, retention, backup restore tests и защиту sensitive data в logs/artifacts.
 
 #### Типовые production-паттерны
-- Private buckets/containers по умолчанию и явная public access exception process.
+- Private buckets/containers по умолчанию и явный процесс исключений для public access.
 - Separate buckets по environment, data sensitivity или ownership domain.
 - Presigned upload/download с коротким TTL и ограниченным method/object key.
 - Server-side encryption с KMS для sensitive данных.
@@ -904,6 +904,36 @@ Redis дает быстрый in-memory data store и primitives для persiste
 - `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md` — rate limits, sessions и abuse controls.
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — state management и data flow review.
 - Прямого отдельного playbook по Redis пока нет.
+
+### Векторная БД / Vector DB
+
+#### Для чего используется
+Векторная БД хранит embeddings и выполняет similarity search по векторам. В production она чаще всего используется для RAG, semantic search, рекомендаций, deduplication, anomaly detection и других сценариев, где нужно искать не точное совпадение, а близость по смыслу или признакам.
+
+#### Модель работы
+Embedding model преобразует текст, изображение, событие или другой объект в vector embedding — числовое представление фиксированной размерности. Векторная БД хранит embedding, object ID, metadata и, в некоторых архитектурах, ссылку на исходный документ или chunk. При запросе приложение строит embedding для query и ищет nearest neighbors по similarity metric, например cosine similarity, dot product или Euclidean distance.
+
+Index ускоряет поиск, часто с approximate nearest neighbor algorithms. Это создает важный tradeoff: latency и cost улучшаются за счет допустимой approximation, поэтому качество retrieval нужно измерять отдельно, а не считать свойством БД по умолчанию. Metadata filters ограничивают выдачу по tenant, document class, source, ACL или другим атрибутам; в RAG они должны быть частью authorization model, а не только удобным search-фильтром.
+
+Векторная БД обычно не заменяет source-of-truth storage. Исходные документы, permissions, lifecycle и deletion workflow часто живут в object storage, database или document store, а vector index является производным представлением. При обновлении или удалении исходного документа нужно обновить embeddings, metadata и search index; иначе stale retrieval может вернуть данные, которые уже недоступны или удалены по policy.
+
+#### Границы ответственности
+Векторная БД обеспечивает хранение embeddings и retrieval по similarity, но не гарантирует корректную authorization semantics, качество источников данных или безопасность извлеченного контекста. Команда отвечает за tenant isolation, document-level authorization, metadata integrity, ingestion validation, deletion propagation, encryption, backups, audit logs, monitoring и защиту от poisoned corpus, утечек через embeddings и unbounded retrieval.
+
+#### Типовые production-паттерны
+- Separate indexes или namespaces по tenant, environment и sensitivity там, где shared index усложняет isolation.
+- Permission-aware retrieval: фильтры доступа применяются до выдачи контекста модели.
+- Metadata schema с owner, source, classification, tenant, document version и deletion state.
+- Ingestion pipeline с validation, malware/content checks, provenance и deduplication.
+- Retrieval limits: `top_k`, score threshold, payload size limit и rate limits.
+- Набор evaluation-тестов для retrieval quality и утечек перед production changes.
+- Audit logging для queries, retrieved document IDs, metadata filters и administrative changes.
+- Регулярная пересборка/очистка index после document deletion, permission changes и embedding model upgrades.
+
+#### Связанные файлы из проекта
+- `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md` — LLMSecOps lifecycle, RAG data pipeline и controls для векторной БД.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM08 Vector and Embedding Weaknesses.
+- Прямого отдельного playbook по безопасности векторных БД пока нет.
 
 ### Elasticsearch / OpenSearch
 

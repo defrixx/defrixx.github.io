@@ -7,7 +7,7 @@
 Используйте документ для:
 - SPA, server-rendered web applications, BFF-backed browser flows, административных панелей и встраиваемых виджетов;
 - релизного ревью security headers, browser session handling и third-party frontend dependencies;
-- abuse-case testing для сценариев, где XSS, cross-origin exposure, session leakage или компрометация third-party script могут затронуть пользователей.
+- abuse-case testing для сценариев, где XSS, cross-origin exposure, утечка сессии или компрометация third-party script могут затронуть пользователей.
 
 Вне области:
 - дизайн OAuth/OIDC flows: используйте [плейбук OIDC + OAuth 2.0](../../identity/oidc-oauth/playbook.ru.md);
@@ -15,7 +15,7 @@
 - общее покрытие OWASP Top 10: используйте [плейбук защиты web application](../owasp-top-10/playbook.ru.md).
 
 Цель:
-- снизить риск кражи учетных записей и сессий, browser-side data exposure, cross-origin data leakage, clickjacking и компрометации third-party scripts;
+- снизить риск кражи учетных записей и сессий, browser-side data exposure, межсайтовых утечек данных, clickjacking и компрометации third-party scripts;
 - сделать browser controls проверяемыми перед релизом, а не воспринимать headers как формальное усиление только для сканеров.
 
 ---
@@ -95,7 +95,7 @@ Production-настройки:
 
 Production-настройки:
 - Ведите inventory third-party scripts: owner, purpose, touched data и approval date.
-- Не загружайте tag-manager или analytics scripts на admin, checkout, identity или sensitive data-entry pages без явного business approval и data minimization.
+- Не загружайте tag-manager или analytics scripts на admin, checkout, identity или sensitive data-entry pages без явного business approval и минимизации данных.
 - Для critical frontend dependencies предпочитайте self-hosting или pinned versions.
 - Используйте SRI для static third-party scripts/styles, если provider и update model это позволяют.
 - Указывайте `crossorigin="anonymous"` для cross-origin SRI resources, когда это требуется browser behavior.
@@ -121,7 +121,7 @@ Production-настройки:
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), clipboard-read=(), display-capture=(), fullscreen=(self)
 ```
 
-- Feature exceptions должны иметь owner, affected routes, allowed origins, business purpose, expiry или review date, а также negative test, который показывает, что unauthorized origins не могут использовать feature. Например, checkout может разрешать `payment=(self)` только на payment routes; video-verification flow может разрешать `camera=(self)` только для verification origin и только пока эта feature существует.
+- Feature-исключения должны иметь owner, affected routes, allowed origins, business purpose, expiry или review date, а также negative test, который показывает, что unauthorized origins не могут использовать feature. Например, checkout может разрешать `payment=(self)` только на payment routes; video-verification flow может разрешать `camera=(self)` только для verification origin и только пока эта feature существует.
 - Не выдавайте browser capabilities через iframe `allow` attributes, если parent page `Permissions-Policy` также не разрешает эту feature для embedded origin.
 
 Верификация:

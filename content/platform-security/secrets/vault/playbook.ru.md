@@ -35,7 +35,7 @@
 Обязательные подтверждения:
 - deployed StatefulSet/Pod security context и результат admission policy;
 - node pool или scheduling policy, показывающие assumptions по изоляции Vault;
-- подтверждение, что swap и core dumps отключены, или явное exception с компенсирующими мерами;
+- подтверждение, что swap и core dumps отключены, или явное исключение с компенсирующими мерами;
 - proof, что normal operator roles не могут менять Vault pods через `exec`/ephemeral debug.
 
 ### 2.2 Seal/unseal и хранение ключей

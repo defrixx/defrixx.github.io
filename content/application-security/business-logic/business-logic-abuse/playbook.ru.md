@@ -38,7 +38,7 @@ High-impact сценарии:
 - Trial/signup automation создает множество accounts для credits, free usage abuse, quota bypass или spam.
 - Promo/referral abuse закольцовывает rewards через fake accounts или self-referrals.
 - Inventory/booking abuse резервирует scarce goods или slots без намерения купить или прийти.
-- Tenant isolation abuse меняет `tenant_id`, organization membership, invite state или support context для доступа к другому tenant.
+- Tenant isolation abuse меняет `tenant_id`, organization membership, invite state или support-контекст для доступа к другому tenant.
 - Workflow abuse вызывает поздние state transitions напрямую: refund without capture, approve without review, export without ownership, downgrade after consuming credits.
 
 ---
@@ -73,7 +73,7 @@ Production-настройки:
 - Не раскрывайте, существует ли username, email, phone или reset token.
 - Используйте MFA или step-up для рискованных login, password reset completion, new device, payment change, admin action и bulk export.
 - Уведомляйте пользователей о password change, MFA change, new recovery method и suspicious successful login.
-- Журналируйте успешные и неуспешные события аутентификации с correlation IDs и risk context.
+- Журналируйте успешные и неуспешные события аутентификации с correlation IDs и risk-контекстом.
 
 Верификация:
 - Credential stuffing simulation с known invalid и reused pairs не создает lockout DoS или account enumeration.
@@ -98,8 +98,8 @@ Production-настройки:
 
 Production-настройки:
 - Authorization enforced для каждого object и state transition в service/domain layer.
-- Tenant context выводится из authenticated membership и политики, а не только из user-controlled request fields.
-- Cross-tenant admin/support actions требуют explicit support context, reason, ticket, JIT/JEA access там, где он применим, и immutable audit.
+- Tenant-контекст выводится из authenticated membership и политики, а не только из user-controlled request fields.
+- Cross-tenant admin/support actions требуют явный support-контекст, reason, ticket, JIT/JEA access там, где он применим, и immutable audit.
 - Bulk operations и exports перепроверяют authorization per object или используют проверенный tenant-scoped query path.
 
 Верификация:

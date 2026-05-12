@@ -97,7 +97,7 @@
 - новых внешних интеграций и inbound webhooks;
 - обработки `Confidential`, `Secret`, PII, платежных, медицинских или regulated данных;
 - изменений CI/CD, artifact provenance, развертывания, платформы и Kubernetes control plane;
-- AI/agentic workflows, где важны data leakage, prompt injection, tool abuse и autonomous actions.
+- AI/agentic workflows, где важны утечки данных, prompt injection, tool abuse и autonomous actions.
 
 Шаги рекомендуемого пути:
 
@@ -255,7 +255,7 @@ OWASP TMP предлагает структурированный application th
 - DREAD, который часто упоминается рядом с OWASP TMP, устарел и субъективен.
 
 Пример использования:
-- Для GraphQL API команда фиксирует entry points (`/graphql`, admin console), assets (PII, billing data), trust levels (anonymous, user, admin), генерирует threats: introspection leakage, batching DoS, IDOR, overbroad resolver authorization, затем мапит API controls и tests.
+- Для GraphQL API команда фиксирует entry points (`/graphql`, admin console), assets (PII, billing data), trust levels (anonymous, user, admin), генерирует threats: утечки через introspection, batching DoS, IDOR, overbroad resolver authorization, затем мапит API controls и tests.
 
 ### 4.4 Overlays для специальных контекстов
 

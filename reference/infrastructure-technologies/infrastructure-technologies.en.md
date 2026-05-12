@@ -905,6 +905,36 @@ Redis provides a fast in-memory data store and primitives for persistence/replic
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — state management and data flow review.
 - There is no dedicated Redis playbook yet.
 
+### Vector Database / Vector DB
+
+#### What It Is Used For
+A vector database stores embeddings and performs similarity search over vectors. In production it is most often used for RAG, semantic search, recommendations, deduplication, anomaly detection, and other scenarios where the system needs to search by semantic or feature proximity rather than exact match.
+
+#### Operating Model
+An embedding model converts text, an image, an event, or another object into a vector embedding: a fixed-dimensional numeric representation. The vector database stores the embedding, object ID, metadata, and, in some architectures, a reference to the source document or chunk. At query time, the application builds an embedding for the query and searches for nearest neighbors using a similarity metric such as cosine similarity, dot product, or Euclidean distance.
+
+An index speeds up search, often with approximate nearest neighbor algorithms. This creates an important tradeoff: latency and cost improve by accepting approximation, so retrieval quality must be measured separately instead of treated as a default database property. Metadata filters limit results by tenant, document class, source, ACL, or other attributes; in RAG they must be part of the authorization model, not just a convenient search filter.
+
+A vector database usually does not replace source-of-truth storage. Source documents, permissions, lifecycle, and deletion workflow often live in object storage, a database, or a document store, while the vector index is a derived representation. When a source document is updated or deleted, embeddings, metadata, and the search index must be updated as well; otherwise stale retrieval can return data that is no longer accessible or has been deleted by policy.
+
+#### Responsibility Boundaries
+A vector database provides embedding storage and similarity-based retrieval, but it does not guarantee correct authorization semantics, source data quality, or safe retrieved context. The team owns tenant isolation, document-level authorization, metadata integrity, ingestion validation, deletion propagation, encryption, backups, audit logs, monitoring, and protection against poisoned corpora, embedding leakage, and unbounded retrieval.
+
+#### Common Production Patterns
+- Separate indexes or namespaces by tenant, environment, and sensitivity where a shared index complicates isolation.
+- Permission-aware retrieval: access filters are applied before context is returned to the model.
+- Metadata schema with owner, source, classification, tenant, document version, and deletion state.
+- Ingestion pipeline with validation, malware/content checks, provenance, and deduplication.
+- Retrieval limits: `top_k`, score threshold, payload size limit, and rate limits.
+- Evaluation set for retrieval quality and leakage tests before production changes.
+- Audit logging for queries, retrieved document IDs, metadata filters, and administrative changes.
+- Regular index rebuild/cleanup after document deletion, permission changes, and embedding model upgrades.
+
+#### Related Project Files
+- `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md` — LLMSecOps lifecycle, RAG data pipeline, and vector database controls.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM08 Vector and Embedding Weaknesses.
+- There is no dedicated vector database security playbook yet.
+
 ### Elasticsearch / OpenSearch
 
 #### What It Is Used For

@@ -21,7 +21,9 @@ This document does not replace specialized materials:
 
 ### 2.1 REST API
 
-REST APIs typically use HTTP methods, URI resources and JSON representations. They are the default choice for public APIs, frontend-backend communication, partner APIs and most CRUD/business-flow scenarios.
+REST APIs typically use HTTP methods, URI resources and JSON representations. The client calls a specific resource or collection of resources, while the operation is expressed through a method such as `GET`, `POST`, `PUT`, `PATCH` or `DELETE`.
+
+They are the default choice for public APIs, frontend-backend communication, partner APIs and most CRUD/business-flow scenarios. In production, REST APIs often sit behind an API gateway or BFF, but the security boundary must not stop at the route: domain logic still needs to check authorization for the object, tenant, action and fields.
 
 Strengths:
 - broad support across API gateways, OpenAPI, SDK generation, DAST and contract testing;
@@ -29,15 +31,17 @@ Strengths:
 - straightforward integration with OAuth 2.0, API keys, mTLS and rate limiting.
 
 Typical risks:
-- Broken Object Level Authorization (BOLA);
-- Broken Function Level Authorization (BFLA);
-- mass assignment and excessive field exposure;
-- uncontrolled pagination/filter/sort parameters;
-- weak inventory of older API versions.
+- Broken Object Level Authorization (BOLA): the user can access an object by changing an ID because the API checks authentication but not authorization for that specific resource. Common signals include changing `user_id`, `tenant_id`, `order_id` or another object ID and receiving or modifying someone else's data.
+- Broken Function Level Authorization (BFLA): the user can call a function, method or route that should not be available to their role. This often appears as a regular user reaching admin/support/export endpoints through a direct HTTP request even though the UI does not expose that action.
+- Mass assignment and excessive field exposure: the API accepts or returns more fields than the operation needs. With mass assignment, the client can submit `role`, `isAdmin`, `tenantId` or internal flags in a write model; with excessive exposure, responses reveal internal or sensitive fields.
+- Uncontrolled pagination/filter/sort parameters: the client controls expensive query behavior without limits and allowlists. This can cause resource exhaustion, bypass business constraints, create timing leakage or retrieve data outside the expected scope.
+- Weak inventory of older API versions: the team does not know which versions, routes and deprecated endpoints are reachable at runtime. Older versions often bypass newer authz, validation and logging controls because they no longer pass through the same release gate.
 
 ### 2.2 SOAP/XML API
 
-SOAP is common in legacy, enterprise, banking, government and B2B integrations where formal contracts, XML Schema, WS-* extensions and compatibility with existing platforms matter.
+SOAP APIs use XML messages with a formal envelope, WSDL contracts and often additional WS-* mechanisms for signing, encryption, routing and reliability. Unlike typical REST-over-HTTP, the operation is usually defined by the SOAP action, XML body structure and service contract.
+
+SOAP is common in legacy, enterprise, banking, government and B2B integrations where formal contracts, XML Schema, WS-* extensions and compatibility with existing platforms matter. In production, these APIs often sit in front of critical backend systems, so parser hardening, signatures, fault redaction and segmentation matter as much as partner authentication.
 
 Strengths:
 - strict WSDL/XSD contracts;
@@ -45,14 +49,16 @@ Strengths:
 - message-level security support in WS-Security scenarios.
 
 Typical risks:
-- XXE, XML entity expansion and XML bombs;
-- unsafe XML canonicalization/signature validation;
-- over-trusted integration paths into backend systems;
-- verbose fault handling and internal detail exposure.
+- XXE, XML entity expansion and XML bombs: the XML parser processes external entities, DTDs or excessive entity expansion. This can lead to local file reads, SSRF, network metadata leakage or denial of service through memory/CPU growth.
+- Unsafe XML canonicalization/signature validation: the signature is verified over the wrong XML representation or the wrong document element. An attacker can use signature wrapping to keep a valid signature on a safe part of the message while placing malicious payload in the executed part.
+- Over-trusted integration paths into backend systems: the SOAP gateway forwards valid XML as a trusted business command without rechecking context. In legacy integrations this often creates a direct path into core banking, ERP, billing or other high-impact systems.
+- Verbose fault handling and internal detail exposure: SOAP faults and middleware errors can reveal stack traces, backend system names, SQL/XML fragments and routing details. That information helps the attacker choose the next step and simplifies exploitation of parser or backend bugs.
 
 ### 2.3 GraphQL API
 
-GraphQL is useful for client applications that need flexible field selection and aggregation across multiple backend sources. It should not be treated as "REST without endpoint explosion": the security model moves into resolvers, schema governance and query cost controls.
+GraphQL APIs usually expose one endpoint where the client sends a query or mutation and selects the required fields, nested relationships and response shape. The schema describes available types, fields and operations, while resolvers fetch data from backend services, databases or other APIs.
+
+GraphQL is useful for client applications that need flexible field selection and aggregation across multiple backend sources. It should not be treated as "REST, only without a large number of endpoints": the security model moves into resolvers, schema governance and query cost controls.
 
 Strengths:
 - precise client-selected fields;
@@ -60,14 +66,16 @@ Strengths:
 - convenient data aggregation for frontend and mobile clients.
 
 Typical risks:
-- authorization bypass at field/node/edge level;
-- query depth/complexity DoS;
-- batching attacks and brute force inside one HTTP request;
-- leakage through introspection, GraphiQL and verbose errors.
+- Authorization bypass at field/node/edge level: a GraphQL resolver returns a field, node or relationship without checking access to the specific object and tenant. Even when the top-level query is protected, a nested resolver can expose email, billing data, membership or admin-only attributes.
+- Query depth/complexity DoS: the client builds a deeply nested or expensive query that forces the backend to run many resolver calls and downstream requests. Without depth, complexity, timeout and cancellation limits, one request can create the load of many REST calls.
+- Batching attacks and brute force inside one HTTP request: the client sends many operations or aliases in one request and bypasses per-request rate limits. This is useful for brute forcing credentials, OTPs, object IDs or existence checks with fewer visible HTTP events.
+- Leakage through introspection, GraphiQL and verbose errors: schema discovery and development tooling reveal types, fields, mutations, deprecated surfaces and internal naming conventions. Verbose errors can also disclose resolver paths, backend messages and data useful for attack planning.
 
 ### 2.4 Webhook API
 
-A webhook is an inbound call from an external provider or another system when an event occurs. For the receiver, it is an internet-facing endpoint even when it does not look like a user API.
+A webhook is an inbound call from an external provider or another system when an event occurs: a payment succeeded, an order changed, a user was created or an alert fired. Unlike a normal API call, the receiver usually does not initiate the request and must handle events asynchronously, including retries, out-of-order delivery and duplicate delivery.
+
+For the receiver, a webhook is an internet-facing endpoint even when it does not look like a user API. Its security is built around signature verification over the raw body, timestamp/replay controls, idempotency, queue-based processing isolation and strict payload validation before any business action.
 
 Strengths:
 - asynchronous event delivery;
@@ -75,15 +83,17 @@ Strengths:
 - simple SaaS and partner system integration.
 
 Typical risks:
-- provider spoofing;
-- replay of old events;
-- duplicate processing and broken idempotency;
-- SSRF-like chains when payloads trigger outbound requests;
-- queue flooding and poison messages.
+- Provider spoofing: an attacker sends a request that looks like a webhook from a legitimate service. If signature, timestamp, key ID and source are not verified before business processing, the system may accept a fake event as a real payment, refund, signup or alert.
+- Replay of old events: a previously valid webhook is sent again after state has already changed. Without a freshness window and replay cache, an old event can execute an operation again or revert state to an unwanted result.
+- Duplicate processing and broken idempotency: the same event is processed multiple times because of provider retries, network failures or race conditions. If the handler is not bound to an event ID or idempotency key, duplicate charges, repeated notifications, duplicate orders and inconsistent state become possible.
+- SSRF-like chains when payloads trigger outbound requests: the webhook payload contains a URL, domain, object reference or integration target that the receiver later uses for an outbound call. Without allowlists and egress controls, this turns the webhook into an indirect SSRF or data exfiltration path.
+- Queue flooding and poison messages: an attacker or faulty provider sends many events or a payload that repeatedly breaks the worker. This fills the queue, delays legitimate events and can trigger infinite retry loops without DLQ and limits.
 
 ### 2.5 gRPC API
 
-gRPC uses HTTP/2 and Protocol Buffers and is common for internal service-to-service communication, low-latency backend calls and streaming.
+gRPC APIs describe services and methods in a `.proto` contract, use Protocol Buffers for message serialization and usually run over HTTP/2. A call looks like an RPC method call rather than a URI resource request; the API can be unary, server/client streaming or bidirectional streaming.
+
+gRPC is common for internal service-to-service communication, low-latency backend calls and streaming. In production, it must not be treated as safe only because it is "internal": TLS/mTLS, workload identity, method-level authorization, deadlines, message limits and server reflection control are still required.
 
 Strengths:
 - strict protobuf contract;
@@ -92,11 +102,11 @@ Strengths:
 - interceptors for authn/authz/logging.
 
 Typical risks:
-- missing method-level authorization;
-- plaintext gRPC inside internal networks;
-- overexposed server reflection;
-- message size/streaming DoS;
-- weak protobuf schema backward-compatibility governance.
+- Missing method-level authorization: the service checks only mTLS/service identity, not whether the calling workload may invoke a specific RPC method and resource. After one service is compromised, this makes lateral movement and privileged method calls easier.
+- Plaintext gRPC inside internal networks: traffic is sent without TLS/mTLS because the network is treated as trusted. This increases interception, tampering and credential/session leakage risk when segmentation fails, sidecars are bypassed or a node is compromised.
+- Overexposed server reflection: reflection reveals services, methods and message types to clients that do not need it in production. For an attacker, this accelerates reconnaissance and helps build valid payloads without proto files.
+- Message size/streaming DoS: large messages, long streams or missing deadlines hold memory, connections and worker threads. Without limits on message size, stream duration and concurrency, one client can degrade the whole backend pool.
+- Weak protobuf schema backward-compatibility governance: proto changes break older clients or change the meaning of default/unknown fields. Schema evolution mistakes can cause authorization bypass, incorrect interpretation of business flags or silent data loss.
 
 ---
 
