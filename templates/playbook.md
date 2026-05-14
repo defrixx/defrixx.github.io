@@ -19,23 +19,7 @@ Define what this playbook covers, who should use it, and which production decisi
 
 ---
 
-## 2. Version Assumptions and Sources
-
-Security-sensitive guidance must state the authoritative sources and version assumptions used to write the document.
-
-| Area | Assumption | Source | Last verified |
-|---|---|---|---|
-| Standard/framework | Version or publication status | Official URL | YYYY-MM-DD |
-| Product/runtime | Supported versions or feature gates | Vendor docs | YYYY-MM-DD |
-
-Rules:
-- Prefer primary sources: RFCs, vendor docs, OWASP, NIST, CNCF/Kubernetes, CIS, cloud provider docs.
-- If guidance depends on a version or feature gate, state the minimum version and fallback behavior.
-- Do not write "recommended" for a security control unless the source and operational rationale are current.
-
----
-
-## 3. Threat Model
+## 2. Threat Model
 
 Describe realistic production attack paths, not generic theory.
 
@@ -52,7 +36,7 @@ Describe realistic production attack paths, not generic theory.
 
 ---
 
-## 4. Production Baseline
+## 3. Production Baseline
 
 State concrete defaults. Include numbers where they are operationally meaningful.
 
@@ -70,7 +54,7 @@ State concrete defaults. Include numbers where they are operationally meaningful
 
 ---
 
-## 5. Verification
+## 4. Verification
 
 A recommendation is incomplete unless it can be verified.
 
@@ -89,7 +73,7 @@ A recommendation is incomplete unless it can be verified.
 
 ---
 
-## 6. Review Decision
+## 5. Review Decision
 
 Use the repository severity model consistently.
 
@@ -109,14 +93,14 @@ Required output:
 
 ---
 
-## 7. Related Materials
+## 6. Related Materials
 
 - Link to related RU/EN playbooks.
 - Link to standards, vendor docs, and internal policies.
 
 ---
 
-## 8. RU/EN Synchronization Checklist
+## 7. RU/EN Synchronization Checklist
 
 Before finalizing:
 - Any material change in `*.ru.md` is mirrored in `*.en.md`, and the reverse.

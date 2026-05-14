@@ -21,7 +21,7 @@
 Базовый уровень pod и процесса:
 - запускайте Vault от выделенного непривилегированного пользователя (`runAsNonRoot: true`, фиксированные non-zero `runAsUser`/`runAsGroup`);
 - задавайте `allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`, `seccompProfile.type: RuntimeDefault` и удаляйте ненужные Linux capabilities;
-- не запускайте Vault с shell/debug sidecar, package manager или general-purpose troubleshooting container в production;
+- не запускайте Vault с shell/debug sidecar, package manager или general-purpose troubleshooting container в рабочей среде;
 - ограничивайте writable paths минимально необходимыми runtime, data и audit-log locations; service account Vault не должен иметь возможность перезаписывать binary или configuration Vault;
 - запрещайте `exec` и ephemeral containers для Vault pods, кроме утвержденных break-glass roles с audit logging и коротким expiry;
 - по возможности держите Vault pods на dedicated или строго изолированных nodes; если full single tenancy невозможна, документируйте co-tenancy risk и изолируйте через node pools, taints/tolerations, runtime policy, NetworkPolicy и restricted admin access.
@@ -85,7 +85,7 @@ vault write auth/kubernetes/role/payments-api-prod \
 
 ### 2.5 Аудит и обнаружение
 
-- Включайте Vault audit devices до onboarding production workload'ов.
+- Включайте Vault audit devices до onboarding рабочий workload'ов.
 - Пишите audit logs в долговечные и управляемые по доступу sinks.
 - Где операционно возможно, включайте минимум два audit devices. Если используется только один audit sink, явно фиксируйте availability risk: Vault может отказывать в обслуживании requests, когда все включенные audit devices не могут записывать события.
 - Мониторьте audit device health, write failures, disk/backpressure signals и sink reachability.
@@ -109,12 +109,12 @@ vault write auth/kubernetes/role/payments-api-prod \
 - Привяжите каждый класс к требованиям TTL и rotation.
 
 Базовые классы секретов (минимум):
-- Critical (payments, production DB admin, signing material):
+- Critical (payments, admin-доступ к рабочей DB, signing material):
   - Dynamic lease TTL: `5-15m`
   - Max TTL: `<=1h`
   - Rotation статических секретов: каждые `30d`
   - Revoke SLA во время инцидента: `<=15m`
-- High (service-to-service production credentials):
+- High (service-to-service credentials рабочей среды):
   - Dynamic lease TTL: `15-30m`
   - Max TTL: `<=4h`
   - Rotation статических секретов: каждые `60d`
@@ -276,7 +276,7 @@ spec:
             allowPrivilegeEscalation: false
 ```
 
-Tag в формате `tag@sha256` оставлен только для читаемости. Production admission/deploy policy должна enforce digest как immutable artifact identity.
+Tag в формате `tag@sha256` оставлен только для читаемости. Admission/deploy policy для рабочей среды должна требовать digest как immutable identity артефакта.
 
 Проверка:
 - `kubectl exec deploy/payments-api -n prod-payments -c app -- ls /var/run/secrets/vaultprojected` должен завершаться ошибкой или возвращать `not found`.
@@ -344,7 +344,7 @@ Tag в формате `tag@sha256` оставлен только для чита
 3. Ротируйте все секреты, доступные в этой области CI.
 4. Включите обратно с суженной policy и более сильными ограничениями identity.
 
-## 6. Чеклист production sign-off
+## 6. Чеклист релизного sign-off
 
 - Модель администрирования Vault исключает root token из рутинной работы.
 - Роли жестко привязаны к workload identity (`serviceAccount`, namespace, audience).
@@ -354,3 +354,11 @@ Tag в формате `tag@sha256` оставлен только для чита
 - Поведение reload секретов в приложениях протестировано в staging.
 - Audit logging и alerting активны и регулярно проверяются.
 - Backup restore и DR актуальны.
+---
+
+## 8. Связанные материалы
+
+- [Плейбук OIDC + OAuth 2.0](../../../application-security/identity/oidc-oauth/playbook.ru.md)
+- [Плейбук ревью безопасности Kubernetes-кластера](../../kubernetes/cluster-security-review/playbook.ru.md)
+- [Обзор SLSA provenance](../../../supply-chain/slsa-provenance/overview.ru.md)
+- [Справочник infrastructure technologies](../../../../reference/infrastructure-technologies/infrastructure-technologies.ru.md)

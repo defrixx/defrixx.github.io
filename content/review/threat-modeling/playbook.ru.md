@@ -32,7 +32,7 @@
 - список точек входа и привилегированных операций;
 - authentication/authorization/session model;
 - актуальные меры безопасности: WAF/API gateway, mTLS, OAuth/OIDC, rate limiting, secrets management, audit logging, обнаружение, runtime policy;
-- результаты SAST/DAST/SCA/IaC/container scans, pentest, incident history и управления уязвимостями;
+- результаты SAST/DAST/SCA/IaC/container scans, pentest, incident history и данные из [плейбука управления уязвимостями](../vulnerability-management/playbook.ru.md);
 - regulatory/compliance constraints, если они влияют на требования;
 - владельцы компонентов и допустимый risk appetite.
 
@@ -460,3 +460,11 @@ Threat intelligence повышает реалистичность сценари
 | PASTA | системы высокого риска, где решения опираются на подтверждения | легкий checklist | banking/payment flow |
 | LINDDUN | privacy/data processing | замену security threat modeling | analytics SDK |
 | NIST 800-154 | data-centric systems | full system TM | secrets/PII data lifecycle |
+---
+
+## 7. Связанные материалы
+
+- [Чеклист ревью архитектуры безопасности](../architecture/checklist.ru.md)
+- [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)
+- [Обзор OWASP LLM Top 10](../../ai-security/owasp-llm-top-10/overview.ru.md)
+- [Обзор безопасности AI](../../ai-security/securing-ai/overview.ru.md)

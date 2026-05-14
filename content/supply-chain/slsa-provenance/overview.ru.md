@@ -34,7 +34,7 @@
 
 - provenance генерирует/подписывает hosted build platform
 - верификатор проверяет подпись и identity builder
-- базовый уровень для production-цепочки поставки
+- базовый уровень для рабочей цепочки поставки
 
 ### 2.3 Build L3
 
@@ -52,7 +52,7 @@
 | Класс релиза | Минимально допустимая цель | Дополнительное требование |
 |---|---|---|
 | Внутренний low-risk service с ограниченным blast radius | Build L2 может быть допустим при документированном исключении и deploy-time verification | Source-track/SDLC controls должны быть явными; не заявляйте, что L2/L3 доказывает безопасность source |
-| Internet-facing, high-value, partner-facing или production platform component | Целевой уровень Build L3 | Требуются protected source refs, review build definitions, trusted builder identity и pre-deploy policy enforcement |
+| Internet-facing, high-value, partner-facing или компонент рабочей платформы | Целевой уровень Build L3 | Требуются protected source refs, review build definitions, trusted builder identity и pre-deploy policy enforcement |
 | Широко используемый package/image, shared base image, signing tooling, deploy tooling или regulated critical artifact | Build L3 плюс усиленные Source-track controls | Добавьте более строгий source governance, release authorization, key custody, reproducible или independent rebuild where practical и ускоренную incident revocation |
 
 Нижний tier используйте только если владелец сервиса фиксирует blast-radius assumptions, expiry исключения и компенсирующие меры. Если реальный риск в слабом source governance, фиксируйте его как Source-track или SDLC-замечание даже при успешной Build provenance проверке.
@@ -77,15 +77,18 @@
 
 ### 3.3 Меры контроля артефактов
 
-- публикация и policy decisions только по digest (`sha256:...`), не по mutable tag
-- multi-arch: отдельная проверка каждого manifest digest
+- публикация и policy decisions только по digest (`sha256:...`), не по mutable tag; релизные manifests, Helm values, Kustomize overlays, GitOps state и release evidence должны сохранять точный digest, который планируется к deploy
+- различайте digest OCI image index и digest platform-specific manifest. У multi-arch image может быть один index digest, который указывает на разные manifests для `linux/amd64`, `linux/arm64` или других платформ
+- проверяйте фактический digest, который будет потреблять runtime. Если deployment ссылается на index, gate должен либо проверить index и все разрешенные platform manifests, либо resolve и проверить platform-specific manifest, выбранный для целевого cluster
+- registry copy или promotion не должны незаметно менять reviewed artifact reference. Если index или manifest копируется между registries, фиксируйте source digest, destination digest, media type, platform set и subject подписи/provenance, который проверяет policy
+- tag mutation никогда не должен обходить release approval. Tags могут помогать людям находить artifact, но approval, provenance, vulnerability decisions и deploy admission должны привязываться к immutable digests
 
 ### 3.4 Source track и предположения source-governance
 
 Build provenance может доказать, где и как был собран артефакт; она не доказывает, что source change был авторизован, отревьюен и безопасен.
 
-Минимальные source-governance assumptions перед тем, как считать Build L2/L3 production-ready:
-- protected branches и release tags enforced для production sources;
+Минимальные source-governance assumptions перед тем, как считать Build L2/L3 готовым к рабочей эксплуатации:
+- protected branches и release tags enforced для релизных source refs;
 - code owners или эквивалентные review rules покрывают application code, build definitions, deployment manifests и signing/provenance configuration;
 - изменения CI workflow files, build scripts, dependency manifests и release configuration требуют security-relevant review;
 - repository, owner, branch/tag и commit identity проверяются по immutable или строго ограниченным identifiers там, где platform это поддерживает;
@@ -190,8 +193,9 @@ sequenceDiagram
 - после deploy: фиксация gate-pass/fail в audit trail
 
 Итоговый набор релизных артефактов:
-- OCI image index digest (immutable reference)
-- platform-specific image manifests/layers
+- OCI image index digest, если release является multi-platform
+- platform-specific image manifest digest для каждой разрешенной целевой платформы
+- image config и filesystem layer descriptors, достижимые из approved manifest
 - SLSA provenance attestation, связанная с digest артефакта
 - результат verification gate (pass/fail) в audit trail
 
@@ -210,6 +214,8 @@ sequenceDiagram
 - поддерживать one-to-many (несколько attestations на артефакт)
 - принимать attestations только если одновременно выполняются два условия: `builder.id` в allowlist и issuer/identity подписи в allowlist
 - attestations должны быть immutable: не перезаписывать attestation для того же digest
+- для multi-arch images явно определяйте, что является subject: image index digest, каждый platform-specific manifest digest или оба уровня. Политика для рабочих сред должна быть явной, иначе verified index может скрыть unverified platform manifest, а verified platform manifest может быть развернут через unapproved index
+- при promotion между registries проверяйте attestation subject относительно digest, используемого в destination deployment, а не только относительно source-registry reference, который CI видел раньше
 
 ---
 
@@ -277,7 +283,7 @@ SLSA conformance и локальная deployment policy — разные про
 - deploy разрешается только при полном прохождении обязательных проверок
 - break-glass допустим только по оформленному исключению с TTL и последующим RCA
 
-Ограничение для production:
+Ограничение для рабочих сред:
 - `break-glass` для prod не дольше `24h`, с обязательным post-incident review
 
 ### 8.3 Минимальный рецепт внедрения (поэтапно)
@@ -298,3 +304,11 @@ SLSA conformance и локальная deployment policy — разные про
 - обеспечить one-build-one-ephemeral-environment
 - закрыть прямой доступ tenant steps к signer/secrets
 - зафиксировать schema-versioned policy для `externalParameters` и правила anti-replay per environment
+---
+
+## 9. Связанные материалы
+
+- [Плейбук безопасности container images](../container-image-security/playbook.ru.md)
+- [Плейбук release governance](../../review/release-governance/playbook.ru.md)
+- [Плейбук управления уязвимостями](../../review/vulnerability-management/playbook.ru.md)
+- [Плейбук ревью безопасности Kubernetes-кластера](../../platform-security/kubernetes/cluster-security-review/playbook.ru.md)

@@ -23,7 +23,7 @@ This document does not replace specialized materials:
 
 REST APIs typically use HTTP methods, URI resources and JSON representations. The client calls a specific resource or collection of resources, while the operation is expressed through a method such as `GET`, `POST`, `PUT`, `PATCH` or `DELETE`.
 
-They are the default choice for public APIs, frontend-backend communication, partner APIs and most CRUD/business-flow scenarios. In production, REST APIs often sit behind an API gateway or BFF, but the security boundary must not stop at the route: domain logic still needs to check authorization for the object, tenant, action and fields.
+They are the default choice for public APIs, frontend-backend communication, partner APIs and most CRUD/business-flow scenarios. In live environments, REST APIs often sit behind an API gateway or BFF, but the security boundary must not stop at the route: domain logic still needs to check authorization for the object, tenant, action and fields.
 
 Strengths:
 - broad support across API gateways, OpenAPI, SDK generation, DAST and contract testing;
@@ -41,7 +41,7 @@ Typical risks:
 
 SOAP APIs use XML messages with a formal envelope, WSDL contracts and often additional WS-* mechanisms for signing, encryption, routing and reliability. Unlike typical REST-over-HTTP, the operation is usually defined by the SOAP action, XML body structure and service contract.
 
-SOAP is common in legacy, enterprise, banking, government and B2B integrations where formal contracts, XML Schema, WS-* extensions and compatibility with existing platforms matter. In production, these APIs often sit in front of critical backend systems, so parser hardening, signatures, fault redaction and segmentation matter as much as partner authentication.
+SOAP is common in legacy, enterprise, banking, government and B2B integrations where formal contracts, XML Schema, WS-* extensions and compatibility with existing platforms matter. In live environments, these APIs often sit in front of critical backend systems, so parser hardening, signatures, fault redaction and segmentation matter as much as partner authentication.
 
 Strengths:
 - strict WSDL/XSD contracts;
@@ -93,7 +93,7 @@ Typical risks:
 
 gRPC APIs describe services and methods in a `.proto` contract, use Protocol Buffers for message serialization and usually run over HTTP/2. A call looks like an RPC method call rather than a URI resource request; the API can be unary, server/client streaming or bidirectional streaming.
 
-gRPC is common for internal service-to-service communication, low-latency backend calls and streaming. In production, it must not be treated as safe only because it is "internal": TLS/mTLS, workload identity, method-level authorization, deadlines, message limits and server reflection control are still required.
+gRPC is common for internal service-to-service communication, low-latency backend calls and streaming. In live environments, it must not be treated as safe only because it is "internal": TLS/mTLS, workload identity, method-level authorization, deadlines, message limits and server reflection control are still required.
 
 Strengths:
 - strict protobuf contract;
@@ -104,7 +104,7 @@ Strengths:
 Typical risks:
 - Missing method-level authorization: the service checks only mTLS/service identity, not whether the calling workload may invoke a specific RPC method and resource. After one service is compromised, this makes lateral movement and privileged method calls easier.
 - Plaintext gRPC inside internal networks: traffic is sent without TLS/mTLS because the network is treated as trusted. This increases interception, tampering and credential/session leakage risk when segmentation fails, sidecars are bypassed or a node is compromised.
-- Overexposed server reflection: reflection reveals services, methods and message types to clients that do not need it in production. For an attacker, this accelerates reconnaissance and helps build valid payloads without proto files.
+- Overexposed server reflection: reflection reveals services, methods and message types to clients that do not need it in live environments. For an attacker, this accelerates reconnaissance and helps build valid payloads without proto files.
 - Message size/streaming DoS: large messages, long streams or missing deadlines hold memory, connections and worker threads. Without limits on message size, stream duration and concurrency, one client can degrade the whole backend pool.
 - Weak protobuf schema backward-compatibility governance: proto changes break older clients or change the meaning of default/unknown fields. Schema evolution mistakes can cause authorization bypass, incorrect interpretation of business flags or silent data loss.
 
@@ -171,7 +171,7 @@ The minimum threat model for any API must cover:
 ### 6.1 REST
 
 Mandatory measures:
-- OpenAPI 3.1 contract as the minimum for all production endpoints; OpenAPI 3.2 is acceptable where gateway validation, code generation, linting, scanners, and contract-test tooling support it;
+- OpenAPI 3.1 contract as the minimum for all live endpoints; OpenAPI 3.2 is acceptable where gateway validation, code generation, linting, scanners, and contract-test tooling support it;
 - authentication at the gateway or service edge, with authorization inside domain logic;
 - object-level authorization for every endpoint with an object ID;
 - separate DTO/schema for create/update/read to prevent mass assignment;
@@ -180,7 +180,7 @@ Mandatory measures:
 - consistent 401/403/404 strategy without leaking the existence of other users' objects;
 - rate limits by client, user, tenant, IP and sensitive business flow.
 
-Production defaults:
+Release-ready defaults:
 - request body max size: `1-10 MB` for normal JSON endpoints; larger values require separate design review;
 - default page size: `50-100`, hard max: `500-1000`;
 - gateway timeout: `<=30s`, internal service timeout usually `<=3-5s`;
@@ -203,7 +203,7 @@ Mandatory measures:
 - SOAP fault redaction and correlation ID instead of stack traces;
 - a separate network segment or gateway for legacy SOAP backends.
 
-Production defaults:
+Release-ready defaults:
 - XML document size hard limit is explicitly defined for each operation class;
 - SOAP endpoint must not have direct access to internal metadata services, admin panels or cloud control planes;
 - parser configuration must be verified by unit/integration tests with XXE and XML bomb payloads.
@@ -214,13 +214,13 @@ Mandatory measures:
 - authentication before query execution;
 - authorization in resolvers at object, field and mutation level;
 - query depth, query complexity and operation count limits;
-- disabled or strictly authorized introspection and GraphiQL in production;
+- disabled or strictly authorized introspection and GraphiQL in live environments;
 - persisted queries for public/high-risk GraphQL APIs when compatible with the product;
 - batching limits and separate protection against brute force inside one request;
 - timeout and cancellation propagation into downstream calls;
 - schema review for sensitive fields and deprecated fields.
 
-Production defaults:
+Release-ready defaults:
 - max query depth: `5-10` for public APIs, higher only with justification;
 - max operations per request: `1` by default for public APIs; batching only with an explicit limit;
 - resolver timeout: `<=2-5s`, total request timeout: `<=10-15s`;
@@ -241,7 +241,7 @@ Mandatory measures:
 - webhook secrets are rotated and stored in a secrets manager;
 - outbound calls triggered by webhook payloads pass SSRF controls.
 
-Production defaults:
+Release-ready defaults:
 - timestamp freshness window: `<=5m` if the provider supports timestamps;
 - clock skew tolerance: `<=60s` unless the provider requires a narrower value;
 - replay cache retention: at least `24h` or longer than the provider's maximum retry window;
@@ -255,7 +255,7 @@ Verification:
 ### 6.5 gRPC
 
 Mandatory measures:
-- TLS for all production channels; mTLS for service-to-service;
+- TLS for all release channels; mTLS for service-to-service;
 - workload identity or OAuth token in metadata, not credentials inside message body;
 - method-level authorization through interceptor/policy layer;
 - max receive/send message size;
@@ -264,7 +264,7 @@ Mandatory measures:
 - protobuf schema compatibility checks in CI;
 - structured audit events for privileged methods.
 
-Production defaults:
+Release-ready defaults:
 - plaintext gRPC is acceptable only in local development or isolated test environments;
 - max receive message size: `4-16 MB` by default, higher only for documented streaming/file scenarios;
 - server deadline for unary methods: `<=5s` for normal operations, separate budget for long-running jobs;
@@ -478,7 +478,7 @@ Required controls:
 - resolver-level authorization;
 - depth/complexity/cost limits;
 - persisted queries for high-risk public API;
-- controlled introspection and disabled GraphiQL for public production;
+- controlled introspection and disabled GraphiQL for public live APIs;
 - downstream timeouts and cancellation.
 
 Verification:
@@ -554,7 +554,7 @@ Verification:
 
 ---
 
-## 9. Production Review Checklist
+## 9. Release Review Checklist
 
 | Check | Evidence |
 |---|---|
@@ -571,3 +571,31 @@ Verification:
 | gRPC uses TLS/mTLS and method authz | mTLS config, interceptor tests |
 | Logs support investigation without leaking secrets | Sample logs, redaction tests |
 | Deprecated versions are blocked or tracked | Deprecation policy, traffic report |
+
+---
+
+## 10. Review Decision Matrix
+
+Use this matrix for API findings before release. It complements release governance: if a finding blocks release here, the exception must be handled through the release-governance process with owner, expiry, compensating controls, and verification evidence. For general SLA, exception lifecycle, and closure evidence across scanner findings, use the [vulnerability management playbook](../../../review/vulnerability-management/playbook.en.md).
+
+| Severity | Use when | Required action |
+|---|---|---|
+| Critical | BOLA/BFLA or property-level authorization bypass exposes cross-tenant data, admin actions, payment/ledger state, secrets, or bulk export; webhook spoofing/replay can trigger financial, account, or privileged state changes; XML parser issue enables file read, SSRF to metadata/control plane, or RCE; GraphQL resolver bypass exposes tenant/admin-sensitive fields; plaintext or unauthenticated gRPC exposes high-value service-to-service operations | Block release until fixed; exception requires security leadership and business owner approval |
+| High | Public or partner API has reachable object/function authorization gap; webhook signature, timestamp, replay, or idempotency controls are incomplete for sensitive events; GraphQL lacks resolver-level authorization or cost limits on a public/high-risk API; SOAP/XML parser hardening is missing but impact is bounded; gRPC lacks mTLS or method authorization for sensitive internal methods | Owner, due date, remediation or accepted risk, and negative-test evidence |
+| Medium | API inventory, schema validation, rate limits, introspection/reflection controls, logging, or deprecated-version lifecycle is incomplete with bounded exposure and compensating controls | Track remediation and verify closure |
+| Low | Documentation, contract hygiene, non-sensitive logging improvement, or hardening issue with limited direct impact | Fix opportunistically |
+
+Required review output:
+- affected API style, route/method/event/RPC, exposure model, and data class;
+- attacker preconditions and impact;
+- required fix or compensating control;
+- negative test or runtime evidence that proves closure;
+- owner, due date, and residual risk decision.
+---
+
+## 11. Related Materials
+
+- [OIDC + OAuth 2.0 playbook](../../identity/oidc-oauth/playbook.en.md)
+- [Browser and frontend security playbook](../../web/browser-security/playbook.en.md)
+- [Business logic abuse playbook](../../business-logic/business-logic-abuse/playbook.en.md)
+- [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)

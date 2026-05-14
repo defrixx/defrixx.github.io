@@ -2,7 +2,7 @@
 
 ## 1. Scope and Objective
 
-This playbook describes how to translate Kubernetes attack paths into safe production validation. The focus is a verifiable cycle:
+This playbook describes how to translate Kubernetes attack paths into safe live-environment validation. The focus is a verifiable cycle:
 - confirm the access path and trust boundary;
 - enumerate reachable surface;
 - prove one controlled abuse path;
@@ -12,7 +12,7 @@ This playbook describes how to translate Kubernetes attack paths into safe produ
 **Objective:**
 - verify that Kubernetes controls close real attack paths, not only look correct in YAML;
 - produce evidence for security review, remediation, and re-test;
-- connect offensive lab scenarios to production guardrails: RBAC, admission, NetworkPolicy, runtime hardening, supply chain, and observability.
+- connect offensive lab scenarios to live-environment guardrails: RBAC, admission, NetworkPolicy, runtime hardening, supply chain, and observability.
 
 ---
 
@@ -31,7 +31,7 @@ A successful validation outcome is not "something looks suspicious", but a concr
 
 ### 2.2 Safety constraints
 
-For production and shared staging:
+For live environments and shared staging:
 - run destructive, DoS, or runtime escape checks only in an isolated namespace or clone environment;
 - define scope in advance: namespaces, workloads, identities, IP ranges, time window;
 - do not read real secret values without separate approval; proving `get/list/watch` or token exposure is usually enough;
@@ -39,7 +39,7 @@ For production and shared staging:
 - prove remediation with the same minimal test case, not a stronger technique.
 
 Evidence commands are classified as:
-- `safe in prod`: read-only metadata or policy checks that do not reveal secret values;
+- `safe in live`: read-only metadata or policy checks that do not reveal secret values;
 - `staging only`: commands that inspect artifacts or run active probes and should use a clone, canary, or isolated namespace;
 - `requires approval`: commands that may expose sensitive data, scan infrastructure, or touch real workloads.
 
@@ -55,14 +55,14 @@ Evidence commands are classified as:
 - Git and registry scanning run before merge/release;
 - previously exposed secrets are rotated, not only removed from the current branch.
 
-**Production recommendation:**
+**Recommended control:**
 - block VCS/build service paths at the web tier and in artifact packaging;
 - forbid plaintext/base64 secrets in Git and image layers;
 - enable pre-merge and pre-release secret scanning;
 - any secret that reached Git or an image layer is treated as compromised and rotated.
 
 **Evidence:**
-Classification: `safe in prod` for header checks and scan status review; `staging only` for image export or layer inspection; `requires approval` before exporting production images.
+Classification: `safe in live` for header checks and scan status review; `staging only` for image export or layer inspection; `requires approval` before exporting release images.
 
 ```bash
 curl -I https://<app>/.git/config
@@ -79,7 +79,7 @@ trufflehog git file://<repo>
 - build/CI workloads are not given the host runtime control plane for convenience;
 - `privileged: true`, `hostPID`, `hostNetwork`, `hostIPC`, and dangerous capabilities have owner, justification, and expiry.
 
-**Production recommendation:**
+**Recommended control:**
 - deny runtime socket mounts through admission policy;
 - use rootless/isolated builders or dedicated build nodes instead of host socket sharing;
 - for exceptions, require a separate namespace, tight RBAC, NetworkPolicy, runtime detection, and review period no longer than `30d`.
@@ -98,14 +98,14 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - cloud metadata endpoints are protected with provider-specific controls;
 - egress from frontend/workload namespaces is restricted to an explicit allowlist.
 
-**Production recommendation:**
+**Recommended control:**
 - URL fetchers use allowlists for schemes, domains, and ports;
 - deny access to metadata IP ranges and cluster-internal sensitive services for workloads that do not need it;
 - never request cloud metadata credential paths during validation; prove protection through deny evidence, non-sensitive canaries, or provider-specific metadata controls;
 - monitor unexpected HTTP requests from frontend pods to internal service DNS and metadata endpoints.
 
 **Evidence:**
-Classification: `safe in prod` for policy deny logs and non-sensitive canaries; `staging only` for active service reachability probes; `requires approval` before probing production metadata endpoints.
+Classification: `safe in live` for policy deny logs and non-sensitive canaries; `staging only` for active service reachability probes; `requires approval` before probing live metadata endpoints.
 
 ```bash
 kubectl run -n <ns> --rm -it netcheck --image=curlimages/curl -- sh
@@ -125,13 +125,13 @@ kubectl logs -n <network-policy-or-runtime-security-ns> <policy-or-sensor-pod>
 - node security groups/firewalls do not expose the NodePort range externally without need;
 - internet exposure is verified with actual connectivity, not only Service YAML review.
 
-**Production recommendation:**
+**Recommended control:**
 - use `ClusterIP` or internal load balancers for internal services;
-- alert on new `NodePort` services in production namespaces;
+- alert on new `NodePort` services in protected namespaces;
 - public entry point inventory is updated at least every `30d`.
 
 **Evidence:**
-Classification: `safe in prod` for service inventory; `requires approval` for external connectivity scans against node IPs.
+Classification: `safe in live` for service inventory; `requires approval` for external connectivity scans against node IPs.
 
 ```bash
 kubectl get svc -A -o wide
@@ -147,8 +147,8 @@ nmap -Pn -p 30000-32767 <node-external-ip>
 - sensitive namespaces have default-deny ingress and egress;
 - allowed east-west flows are documented and tested from a low-trust pod.
 
-**Production recommendation:**
-- enable default deny for production and high-value namespaces;
+**Recommended control:**
+- enable default deny for live environments and high-value namespaces;
 - explicitly allow only required service-to-service paths;
 - re-test NetworkPolicy after CNI changes, namespace label changes, and service selector changes.
 
@@ -166,10 +166,10 @@ curl -m 2 http://<target-service>.<target-ns>.svc.cluster.local
 - `automountServiceAccountToken` is disabled for workloads that do not require Kubernetes API access;
 - the default ServiceAccount is not used by application workloads.
 
-**Production recommendation:**
+**Recommended control:**
 - one ServiceAccount per workload, with permissions granted by function rather than namespace convenience;
 - `get/list/watch secrets`, `pods/exec`, `pods/ephemeralcontainers`, `escalate`, `bind`, `impersonate`, and `serviceaccounts/token` require separate approval;
-- quarterly recertification for production ServiceAccount permissions.
+- quarterly recertification for live-environment ServiceAccount permissions.
 
 **Evidence:**
 ```bash
@@ -182,16 +182,16 @@ kubectl get rolebindings,clusterrolebindings -A
 ### 3.7 Resource exhaustion
 
 **What to verify:**
-- every production container has CPU and memory `resources.requests` so scheduling reflects real workload demand;
-- every production container has a memory limit to bound node-level DoS and noisy-neighbor impact;
+- every live container has CPU and memory `resources.requests` so scheduling reflects real workload demand;
+- every live container has a memory limit to bound node-level DoS and noisy-neighbor impact;
 - CPU limits are risk-based, not a blanket requirement; require them when the DoS/noisy-neighbor risk is higher than throttling/latency risk or when platform policy requires them;
 - workloads that write temporary files, caches, logs, uploads, generated artifacts, or batch output have `ephemeral-storage` requests and limits;
 - namespaces have `ResourceQuota` and, where needed, `LimitRange`;
 - alerting covers CPU/memory spikes, OOMKilled, throttling, and restart loops.
 
-**Production recommendation:**
+**Recommended control:**
 - use the Pod Security playbook as the canonical source for resource-constraint policy and exceptions;
-- deny BestEffort pods in production namespaces;
+- deny BestEffort pods in protected namespaces;
 - define namespace-level quotas for shared clusters;
 - run DoS checks only in isolated load/staging environments.
 
@@ -207,13 +207,13 @@ kubectl top pods -A
 **What to verify:**
 - the private registry requires authentication, authorization, and network restriction;
 - the registry API does not expose catalog/manifests broadly;
-- production deploy uses image digest and passes provenance/signature policy;
+- live deployment uses image digest and passes provenance/signature policy;
 - image history does not contain suspicious fetch-and-execute patterns;
 - batch/utility jobs do not run images from unapproved registries without an owner and provenance.
 
-**Production recommendation:**
+**Recommended control:**
 - registry endpoints must not be reachable from general-purpose networks;
-- registry audit logging is mandatory for production artifacts;
+- registry audit logging is mandatory for release artifacts;
 - the deploy gate verifies digest, trusted builder identity, provenance/signature, and policy outcome;
 - block images that download and execute remote content during build/startup without separate review.
 
@@ -233,7 +233,7 @@ kubectl get jobs -A -o wide
 - debug containers do not bypass Pod Security/RBAC expectations;
 - node-level `kubectl debug node/...` is allowed only for break-glass roles.
 
-**Production recommendation:**
+**Recommended control:**
 - `exec` in sensitive namespaces should be restricted and audit-able;
 - allow ephemeral containers only to support/SRE roles with short duration and separate logging;
 - use admission policy to deny debug surfaces in high-value namespaces where operationally acceptable.
@@ -252,7 +252,7 @@ kubectl get events -A --field-selector reason=Started
 - runtime telemetry sees sensitive path reads, shell spawns, suspicious network tooling, `nsenter`, and host path access;
 - admission policy blocks known unsafe patterns before deploy.
 
-**Production recommendation:**
+**Recommended control:**
 - use offensive lab behaviors as detection test cases, but adapt them to a safe staging environment;
 - Falco/Tetragon or equivalent runtime sensors should have a tuned signal-to-noise baseline;
 - Kyverno/Gatekeeper/ValidatingAdmissionPolicy policies should have owners, test cases, and exception lifecycle.
@@ -271,15 +271,15 @@ kubectl --namespace <sensitive-ns> exec -it <pod> -- sh
 **What to verify:**
 - the workload does not expose high-value secrets through environment variables, debug endpoints, shell access, or verbose error output;
 - the container does not have unexpected mounts, writable sensitive paths, broad `/proc` visibility, or a service account token where Kubernetes API access is not needed;
-- general-purpose helper images and security toolboxes do not appear in production namespaces without a change record and owner.
+- general-purpose helper images and security toolboxes do not appear in protected namespaces without a change record and owner.
 
-**Production recommendation:**
+**Recommended control:**
 - do not put long-lived secrets in env vars for application workloads; use a secret manager, workload identity, or short-lived mounted credentials;
 - disable `automountServiceAccountToken` and debug shells where they are not required by the runtime function;
-- alert on multi-tool images, unexpected shells, package managers, and network scanners in production namespaces.
+- alert on multi-tool images, unexpected shells, package managers, and network scanners in protected namespaces.
 
 **Evidence:**
-Classification: `safe in prod` for Kubernetes API metadata inventory; `staging only` for shell-based inspection; `requires approval` before executing commands in production pods.
+Classification: `safe in live` for Kubernetes API metadata inventory; `staging only` for shell-based inspection; `requires approval` before executing commands in live-environment pods.
 
 ```bash
 # Do not print environment variable values. Check only names/classes through an approved debug path.
@@ -298,7 +298,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - kubeaudit/Popeye or equivalent scanners find privileged pods, missing limits, weak security context, stale references, and hygiene debt;
 - benchmark findings are translated into a remediation backlog with owner, severity, and re-test evidence.
 
-**Production recommendation:**
+**Recommended control:**
 - run posture scans regularly and after platform upgrades;
 - separate exploitable misconfigurations from hygiene findings so remediation does not turn into noise;
 - do not treat clean scanner output as sufficient security assurance: confirm critical controls with targeted validation tests from this playbook.
@@ -318,7 +318,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - management-plane services are not reachable from application namespaces and low-trust pods;
 - service accounts for deployment tooling do not have cluster-admin by default and cannot read Secrets without need.
 
-**Production recommendation:**
+**Recommended control:**
 - Helm v2/Tiller should be retired; for Helm v3, store release state and deploy credentials with least privilege;
 - any in-cluster admin service requires an explicit owner, network isolation, authentication, audit logging, and expiry for the exception;
 - check for legacy components after migrations, incident cleanup, and cluster upgrades.
@@ -351,3 +351,11 @@ Adversarial validation is complete only when it provides:
 - Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](../seccomp/checklist.en.md)
 - SLSA provenance for container images: [supply-chain/slsa-provenance/overview.en.md](../../../supply-chain/slsa-provenance/overview.en.md)
 - Vault and secrets: [secrets/vault/playbook.en.md](../../secrets/vault/playbook.en.md)
+---
+
+## 12. Related Materials
+
+- [Kubernetes cluster security review playbook](../cluster-security-review/playbook.en.md)
+- [Pod Security playbook](../pod-security/playbook.en.md)
+- [Container image security playbook](../../../supply-chain/container-image-security/playbook.en.md)
+- [Container escape and capability abuse overview](../container-escape-capability-abuse/overview.en.md)

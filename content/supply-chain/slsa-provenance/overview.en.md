@@ -34,7 +34,7 @@ SLSA adoption trace in this document:
 
 - provenance is generated/signed by a hosted build platform
 - verifier checks signature and builder identity
-- baseline for production supply chains
+- baseline for live supply chains
 
 ### 2.3 Build L3
 
@@ -52,7 +52,7 @@ SLSA Build level selection is a risk decision, not a universal one-size-fits-all
 | Release class | Minimum acceptable target | Additional requirement |
 |---|---|---|
 | Internal low-risk service with bounded blast radius | Build L2 may be acceptable with documented exception and deploy-time verification | Keep Source-track/SDLC controls explicit; do not claim L2/L3 proves source safety |
-| Internet-facing, high-value, partner-facing, or production platform component | Build L3 target | Require protected source refs, reviewed build definitions, trusted builder identity, and pre-deploy policy enforcement |
+| Internet-facing, high-value, partner-facing, or live platform component | Build L3 target | Require protected source refs, reviewed build definitions, trusted builder identity, and pre-deploy policy enforcement |
 | Widely consumed package/image, shared base image, signing tooling, deploy tooling, or regulated critical artifact | Build L3 plus stronger Source-track controls | Add stricter source governance, release authorization, key custody, reproducible or independent rebuild where practical, and faster incident revocation |
 
 Use the lower tier only when the service owner records blast-radius assumptions, exception expiry, and compensating controls. If weak source governance is the real risk, record it as a Source-track or SDLC finding even when Build provenance passes.
@@ -77,15 +77,18 @@ These controls are Build-track expectations about what the builder is allowed to
 
 ### 3.3 Artifact controls
 
-- publish and enforce policy only by digest (`sha256:...`), not mutable tag
-- multi-arch: validate each manifest digest independently
+- publish and enforce policy only by digest (`sha256:...`), not by mutable tag; release manifests, Helm values, Kustomize overlays, GitOps state, and release evidence must preserve the exact digest intended for deployment
+- distinguish the OCI image index digest from platform-specific manifest digests. For multi-arch images, the release may have one index digest that points to different `linux/amd64`, `linux/arm64`, or other platform manifests
+- validate the actual digest that the runtime will consume. If the deployment references an index, the gate must either verify the index and every allowed platform manifest, or resolve and verify the platform-specific manifest selected for the target cluster
+- registry copy or promotion must not silently change the reviewed artifact reference. If an index or manifest is copied between registries, record the source digest, destination digest, media type, platform set, and the signature/provenance subject that policy verifies
+- tag mutation must never bypass release approval. Tags may help humans find an artifact, but approval, provenance, vulnerability decisions, and deploy admission must bind to immutable digests
 
 ### 3.4 Source track and source-governance assumptions
 
 Build provenance can prove where and how an artifact was built; it does not prove that the source change itself was authorized, reviewed, or safe.
 
-Minimum source-governance assumptions before treating Build L2/L3 as production-ready:
-- protected branches and release tags are enforced for production sources;
+Minimum source-governance assumptions before treating Build L2/L3 as ready for live use:
+- protected branches and release tags are enforced for release sources;
 - code owners or equivalent review rules cover application code, build definitions, deployment manifests, and signing/provenance configuration;
 - changes to CI workflow files, build scripts, dependency manifests, and release configuration require security-relevant review;
 - repository, owner, branch/tag, and commit identity are verified against immutable or tightly scoped identifiers where the platform supports them;
@@ -190,8 +193,9 @@ Operational rule:
 - post-deploy: persist gate pass/fail in audit trail
 
 Final release artifact set:
-- OCI image index digest (immutable reference)
-- platform-specific image manifests/layers
+- OCI image index digest when the release is multi-platform
+- platform-specific image manifest digest for every allowed target platform
+- image config and filesystem layer descriptors reachable from the approved manifest
 - SLSA provenance attestation linked to artifact digest
 - verification gate result (pass/fail) in audit trail
 
@@ -210,6 +214,8 @@ Recommended minimum:
 - support one-to-many (multiple attestations per artifact)
 - accept attestations only when both checks pass: `builder.id` in allowlist and signature issuer/identity in allowlist
 - attestations must be immutable: do not overwrite attestation for the same digest
+- for multi-arch images, define whether the subject is the image index digest, each platform-specific manifest digest, or both. Live-environment policy must be explicit, otherwise a verified index can hide an unverified platform manifest, or a verified platform manifest can be deployed through an unapproved index
+- when images are promoted across registries, verify the attestation subject against the digest used in the destination deployment, not only against a source-registry reference observed earlier in CI
 
 ---
 
@@ -277,8 +283,8 @@ Organization deployment policy checks:
 - deployment is allowed only after full pass of mandatory checks
 - break-glass is allowed only via formal exception with TTL and post-incident RCA
 
-Production guardrail:
-- production `break-glass` must not exceed `24h`, with mandatory post-incident review
+Guardrail for live environments:
+- live-environment `break-glass` must not exceed `24h`, with mandatory post-incident review
 
 ### 8.3 Minimal implementation recipe (phased)
 
@@ -298,3 +304,11 @@ If the reference model cannot be reached in one step, adopt in phases:
 - enforce one-build-one-ephemeral-environment
 - remove tenant-step direct access to signer/secrets
 - enforce schema-versioned `externalParameters` policy and anti-replay rules per environment
+---
+
+## 9. Related Materials
+
+- [Container image security playbook](../container-image-security/playbook.en.md)
+- [Release governance playbook](../../review/release-governance/playbook.en.md)
+- [Vulnerability management playbook](../../review/vulnerability-management/playbook.en.md)
+- [Kubernetes cluster security review playbook](../../platform-security/kubernetes/cluster-security-review/playbook.en.md)

@@ -21,7 +21,7 @@ Treat Vault as a tier-0 service. Kubernetes makes operation easier, but it does 
 Pod and process baseline:
 - run Vault as a dedicated unprivileged user (`runAsNonRoot: true`, fixed non-zero `runAsUser`/`runAsGroup`);
 - set `allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`, `seccompProfile.type: RuntimeDefault`, and drop unnecessary Linux capabilities;
-- do not run Vault with a shell/debug sidecar, package manager, or general-purpose troubleshooting container in production;
+- do not run Vault with a shell/debug sidecar, package manager, or general-purpose troubleshooting container in live environments;
 - restrict writable paths to the minimum required runtime, data, and audit-log locations; Vault's service account must not be able to overwrite the Vault binary or configuration;
 - deny `exec` and ephemeral containers for Vault pods except approved break-glass roles with audit logging and short expiry;
 - keep Vault pods on dedicated or tightly isolated nodes where feasible; if full single tenancy is not possible, document the co-tenancy risk and isolate with node pools, taints/tolerations, runtime policy, NetworkPolicy, and restricted admin access.
@@ -85,7 +85,7 @@ vault write auth/kubernetes/role/payments-api-prod \
 
 ### 2.5 Audit and detection
 
-- Enable Vault audit devices before onboarding production workloads.
+- Enable Vault audit devices before onboarding live workloads.
 - Write audit logs to durable and access-controlled sinks.
 - Enable at least two audit devices where operationally feasible. If only one audit sink is used, record the availability risk explicitly: Vault can refuse requests when all enabled audit devices are unable to write.
 - Monitor audit device health, write failures, disk/backpressure signals, and sink reachability.
@@ -109,12 +109,12 @@ vault write auth/kubernetes/role/payments-api-prod \
 - Tie each class to TTL and rotation requirements.
 
 Baseline secret classes (minimum):
-- Critical (payments, production DB admin, signing material):
+- Critical (payments, live DB admin, signing material):
   - Dynamic lease TTL: `5-15m`
   - Max TTL: `<=1h`
   - Static secret rotation: every `30d`
   - Revoke SLA during incident: `<=15m`
-- High (service-to-service production credentials):
+- High (service-to-service live-environment credentials):
   - Dynamic lease TTL: `15-30m`
   - Max TTL: `<=4h`
   - Static secret rotation: every `60d`
@@ -276,7 +276,7 @@ spec:
             allowPrivilegeEscalation: false
 ```
 
-The tag in `tag@sha256` is for readability. Production admission/deploy policy must enforce the digest as the immutable artifact identity.
+The tag in `tag@sha256` is for readability. Live admission/deploy policy must enforce the digest as the immutable artifact identity.
 
 Verification:
 - `kubectl exec deploy/payments-api -n prod-payments -c app -- ls /var/run/secrets/vaultprojected` must fail or return `not found`.
@@ -344,7 +344,7 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 3. Rotate all secrets accessed by that CI scope.
 4. Re-enable with narrowed policy and stronger identity constraints.
 
-## 6. Production Sign-off Checklist
+## 6. Release Sign-off Checklist
 
 - Vault admin model excludes root token from routine work.
 - Roles are tightly bound to workload identity (`serviceAccount`, namespace, audience).
@@ -354,3 +354,11 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 - Application secret reload behavior is tested in staging.
 - Audit logging and alerting are active and reviewed.
 - Backup restore and DR exercises are current.
+---
+
+## 8. Related Materials
+
+- [OIDC + OAuth 2.0 playbook](../../../application-security/identity/oidc-oauth/playbook.en.md)
+- [Kubernetes cluster security review playbook](../../kubernetes/cluster-security-review/playbook.en.md)
+- [SLSA provenance overview](../../../supply-chain/slsa-provenance/overview.en.md)
+- [Infrastructure technologies reference](../../../../reference/infrastructure-technologies/infrastructure-technologies.en.md)

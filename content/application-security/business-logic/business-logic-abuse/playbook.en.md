@@ -12,7 +12,8 @@ Use this document for:
 Out of scope:
 - low-level API authentication and authorization mechanics: use the [API security playbook](../../api/api-security-patterns/playbook.en.md);
 - OAuth/OIDC session and token controls: use the [OIDC + OAuth 2.0 security guide](../../identity/oidc-oauth/playbook.en.md);
-- browser-only controls: use the [browser and frontend security playbook](../../web/browser-security/playbook.en.md).
+- browser-only controls: use the [browser and frontend security playbook](../../web/browser-security/playbook.en.md);
+- code-level review of validation, encoding, auth/session implementation, injection, file handling, logging, and crypto misuse: use the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md).
 
 Objective:
 - identify sensitive business flows before launch;
@@ -57,18 +58,18 @@ Every sensitive business flow must have an owner, abuse objective, limits, and v
 | Tenant/admin/support | cross-tenant access, privileged action misuse | object/tenant authorization, JIT/JEA admin access, immutable audit, approval for destructive actions |
 | Export/reporting | bulk data theft, scraping through valid UI/API | row/object authorization, export quotas, async approval for high-volume exports, watermarking/logging |
 
-Production recommendation:
+Recommended control:
 - Classify new or changed flows as `normal`, `sensitive`, or `critical`.
 - `Sensitive` flows require explicit abuse cases and monitoring before release.
 - `Critical` flows require negative tests, runbook coverage, and an owner-approved release decision.
 
 ---
 
-## 4. Production Baseline
+## 4. Release-Ready Baseline
 
 ### 4.1 Account Takeover and Credential Abuse
 
-Production defaults:
+Release-ready defaults:
 - Rate-limit by account, source network, device/session signal, and client/application where available. A single IP-only limit is not enough.
 - Do not reveal whether username, email, phone, or reset token exists.
 - Use MFA or step-up for risky login, password reset completion, new device, payment change, admin action, and bulk export.
@@ -82,7 +83,7 @@ Verification:
 
 ### 4.2 Signup, Trial, Promo, and Referral Abuse
 
-Production defaults:
+Release-ready defaults:
 - Free-value flows have explicit budgets per account, tenant, payment instrument, device/browser signal, source network, and time window.
 - Promo and referral rewards are delayed until the referred account reaches a real qualifying event.
 - Reward ledgers are append-only or auditable; reversal is possible when abuse is confirmed.
@@ -96,7 +97,7 @@ Verification:
 
 ### 4.3 Tenant Isolation and Object/Workflow Authorization
 
-Production defaults:
+Release-ready defaults:
 - Authorization is enforced on every object and state transition in the service/domain layer.
 - Tenant context is derived from authenticated membership and policy, not from user-controlled request fields alone.
 - Cross-tenant admin/support actions require explicit support context, reason, ticket, JIT/JEA access where applicable, and immutable audit.
@@ -109,7 +110,7 @@ Verification:
 
 ### 4.4 State Machines, Idempotency, and Replay
 
-Production defaults:
+Release-ready defaults:
 - Critical workflows use explicit state machines with allowed transitions.
 - State-changing requests use idempotency keys where retries or duplicate events are expected.
 - Webhook, payment, refund, booking, and fulfillment flows reject stale, duplicate, out-of-order, and already-consumed events.
@@ -122,10 +123,24 @@ Verification:
 
 ### 4.5 Abuse Monitoring and Response
 
-Production defaults:
+Release-ready defaults:
 - Sensitive flows emit structured events with actor, tenant, object, action, result, reason, correlation ID, and relevant risk signals.
 - Dashboards track flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters, and export volume.
 - Abuse response has playbooks for throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation, and customer support communication.
 
 Verification:
 - A tabletop or simulation proves that the team can identify affected accounts/tenants, stop the flow, reverse unsafe credits where possible, and preserve evidence.
+
+---
+
+## 5. Related Review Overlay
+
+Use this playbook together with the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md). Secure coding review checks whether security primitives are implemented correctly; business-logic abuse review checks whether valid actions can still break product invariants. For high-risk product flows, both reviews are required before release.
+---
+
+## 10. Related Materials
+
+- [API security playbook](../../api/api-security-patterns/playbook.en.md)
+- [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)
+- [Secure coding and code review playbook](../../secure-coding/code-review/playbook.en.md)
+- [Vulnerability management playbook](../../../review/vulnerability-management/playbook.en.md)

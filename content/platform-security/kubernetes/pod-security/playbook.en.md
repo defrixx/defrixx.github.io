@@ -74,13 +74,13 @@ Where relevant, distinguish between:
 
 **User namespaces in Kubernetes `v1.36+`:**
 - User Namespaces are GA for Linux workloads; Pod-level enablement is done with `hostUsers: false`.
-- In production, use `hostUsers: false` as the default workload-isolation recommendation where it is compatible with the container runtime, kernel, and storage stack.
+- In live environments, use `hostUsers: false` as the default workload-isolation recommendation where it is compatible with the container runtime, kernel, and storage stack.
 - With a user namespace enabled, UID `0` inside the container is not UID `0` on the host: container root and container UID/GID values are mapped to an unprivileged range on the node.
 - This reduces blast radius for container escapes, misconfigured mounts, and vulnerabilities that depend on host UID/GID identity, but it does not replace `runAsNonRoot`, `seccompProfile.type: RuntimeDefault`, `capabilities.drop: ["ALL"]`, or denying `privileged: true`.
 - Capabilities become namespaced when `hostUsers: false` is set: for example, `CAP_NET_ADMIN` may grant administrative actions over container-local resources without granting host-level administrative power. Even then, grant capabilities only with explicit justification, owner, and expiry.
 
 **Compatibility and failure modes for `hostUsers: false`:**
-- Do not treat `hostUsers: false` as a drop-in YAML flag. Verify it on the same Kubernetes minor version, kernel, runtime, CSI/storage stack, and admission policy used in production.
+- Do not treat `hostUsers: false` as a drop-in YAML flag. Verify it on the same Kubernetes minor version, kernel, runtime, CSI/storage stack, and admission policy used in live environments.
 - Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and should fail admission or deployment validation.
 - Raw block `volumeDevices` are not compatible with Pods using user namespaces. Stateful or storage-heavy workloads need an explicit storage compatibility test before adopting this control.
 - Pod Security Standards relax `runAsNonRoot` and `runAsUser` checks for Pods with user namespaces because container UID `0` is mapped to an unprivileged host UID. This does not mean "root is safe by default"; keep `runAsNonRoot: true` for normal app workloads unless the workload has a documented reason to run as root inside the user namespace.
@@ -169,7 +169,7 @@ Where relevant, distinguish between:
 **Important PSS limitation:**
 - Pod Security Standards `restricted` is not enough evidence that seccomp is effectively enabled. Upstream PSS blocks explicit `Unconfined`, but it can allow an unspecified seccomp profile.
 - If kubelet `--seccomp-default` / `seccompDefault` is not enabled on the node, an unspecified seccomp profile can run as `Unconfined`.
-- Production evidence must show either explicit `seccompProfile.type: RuntimeDefault` in the Pod/container spec or node-level seccomp defaulting to `RuntimeDefault`, plus effective runtime verification where possible.
+- Live-environment evidence must show either explicit `seccompProfile.type: RuntimeDefault` in the Pod/container spec or node-level seccomp defaulting to `RuntimeDefault`, plus effective runtime verification where possible.
 
 Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI governance): [kubernetes/seccomp/checklist.en.md](../seccomp/checklist.en.md)
 
@@ -209,7 +209,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 - If `shareProcessNamespace: true`, processes become visible across containers in the Pod, including data exposed via `/proc`.
 - Containers can send signals to processes in sibling containers.
 - `/proc/<pid>/root` can expose another container's filesystem.
-- For production workloads, deny `shareProcessNamespace: true` by default; allow only explicit break-glass exceptions with owner and expiry.
+- For live workloads, deny `shareProcessNamespace: true` by default; allow only explicit break-glass exceptions with owner and expiry.
 
 **Mandatory admission/policy gate:**
 - Reject Pods with `shareProcessNamespace: true` via admission policy (Kyverno/Gatekeeper/ValidatingAdmissionPolicy), except explicitly registered exceptions.
@@ -225,17 +225,17 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 
 **Pod / container runtime controls:**
 - Define `resources.requests` for CPU and memory so scheduling decisions reflect real workload needs.
-- Define memory limits for production workloads to bound node-level DoS and noisy-neighbor impact.
+- Define memory limits for live workloads to bound node-level DoS and noisy-neighbor impact.
 - Define `ephemeral-storage` requests and limits for workloads that write temporary files, caches, logs, uploads, or generated artifacts.
 - Treat CPU limits as workload-specific, not a blanket security default. CPU limits can introduce throttling and latency regressions for services with bursty or latency-sensitive behavior; use them when the DoS/noisy-neighbor risk is higher than the throttling risk, or when required by platform policy.
 - For internet-facing, multi-tenant, batch, build, AI/inference, and untrusted-code workloads, document the resource abuse model and choose CPU, memory, and ephemeral-storage guardrails explicitly.
 - For critical services, validate limits through load testing rather than copying generic values.
 
 **Namespace-level controls:**
-- apply `ResourceQuota` and, where needed, `LimitRange` for shared production namespaces;
-- deny BestEffort pods in production namespaces unless an exception is explicitly accepted;
+- apply `ResourceQuota` and, where needed, `LimitRange` for shared protected namespaces;
+- deny BestEffort pods in protected namespaces unless an exception is explicitly accepted;
 - require namespace quotas to cover CPU, memory, pods, and ephemeral storage where supported by the platform;
-- run DoS/`stress-ng` checks only in isolated load/staging environments, not live production namespaces.
+- run DoS/`stress-ng` checks only in isolated load/staging environments, not live protected namespaces.
 
 ---
 
@@ -248,7 +248,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 - `pods/ephemeralcontainers`
 - node-level debug flows
 
-**Production recommendation:**
+**Recommended control:**
 - restrict `exec` and ephemeral containers in sensitive namespaces to dedicated support/SRE roles;
 - log and alert on `exec`, attach/port-forward, and ephemeral-container additions;
 - use admission policy to deny debug surfaces in high-value namespaces where operationally acceptable.
@@ -277,18 +277,18 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
 
 ### 5.1 Enforcement baseline
 
-- `pod-security.kubernetes.io/enforce: restricted` on all production namespaces.
+- `pod-security.kubernetes.io/enforce: restricted` on all protected namespaces.
 - Pin the policy version for all modes to the approved Kubernetes minor version:
   - `pod-security.kubernetes.io/enforce-version: v<minor>`
   - `pod-security.kubernetes.io/audit-version: v<minor>`
   - `pod-security.kubernetes.io/warn-version: v<minor>`
-- Use `latest` only in explicitly owned canary or non-production namespaces where policy drift is intentionally tested before cluster-wide adoption.
-- Separate `warn`/`audit` from `enforce`; production must not rely on warn-only mode.
+- Use `latest` only in explicitly owned canary or non-protected namespaces where policy drift is intentionally tested before cluster-wide adoption.
+- Separate `warn`/`audit` from `enforce`; live environments must not rely on warn-only mode.
 - Treat seccomp as a separate runtime evidence requirement: either workloads explicitly set `seccompProfile.type: RuntimeDefault`, or node configuration proves kubelet `--seccomp-default` / `seccompDefault` is enabled.
 - Namespace policy drift check every `24h`.
 - Block deployment if namespace labels regress or are removed.
 - During Kubernetes upgrades, run a dry-run evaluation of the next PSS version before changing namespace labels, record violations by workload owner, remediate or approve time-boxed exceptions, then update `enforce-version`, `audit-version`, and `warn-version` together.
-- Treat a PSS version change as a policy change: it needs owner approval, rollout window, rollback plan, and post-change evidence that production namespaces still enforce `restricted`.
+- Treat a PSS version change as a policy change: it needs owner approval, rollout window, rollback plan, and post-change evidence that protected namespaces still enforce `restricted`.
 
 ---
 

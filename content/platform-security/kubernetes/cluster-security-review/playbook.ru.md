@@ -44,17 +44,17 @@
 - кто может менять `roles`, `clusterroles`, `rolebindings`, `clusterrolebindings`;
 - кто имеет доступ к `nodes/proxy` (широкий node-level доступ к Kubelet API);
 - кто имеет доступ к fine-grained Kubelet API subresources: `nodes/metrics`, `nodes/stats`, `nodes/log`, `nodes/spec`, `nodes/checkpoint`, `nodes/configz`, `nodes/healthz`, `nodes/pods`;
-- какие machine identities реально деплоят в production (CD controllers, CI bots).
+- какие machine identities реально деплоят в рабочую среду (CD controllers, CI bots).
 
 **Сигналы риска:**
 - пользователи или группы с `cluster-admin` без break-glass назначения;
-- wildcard-права (`resources: ["*"]`, `verbs: ["*"]`) в production namespaces;
-- возможность деплоя в production напрямую из human identity, минуя CD-процесс;
+- wildcard-права (`resources: ["*"]`, `verbs: ["*"]`) в защищенных namespace;
+- возможность деплоя в рабочую среду напрямую из human identity, минуя CD-процесс;
 - доступ к `nodes/proxy`, `escalate`, `bind`, `impersonate` без отдельного security approval;
 - monitoring/logging agents, которым выдан `nodes/proxy`, хотя для их функции достаточно fine-grained Kubelet API subresources.
 
-**Рекомендация для production:**
-- развертывание в production только через выделенные CI/CD ServiceAccounts;
+**Рекомендация для рабочих сред:**
+- развертывание в рабочую среду только через выделенные CI/CD ServiceAccounts;
 - human users не деплоят напрямую, кроме break-glass ролей с владельцем + expiry;
 - ревью всех ClusterRole/ClusterRoleBinding каждые `30d`;
 - автоматический fail policy для опасных RBAC-verb'ов вне allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
@@ -85,14 +85,14 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - есть ли разделение обязанностей между автором кода и субъектом approve/release.
 
 **Сигналы риска:**
-- развертывание из локального `kubectl apply` в production;
-- использование tag-only ссылок на image в production, включая version-like tags вроде `:v1.2.3`;
+- развертывание из локального `kubectl apply` в рабочей среде;
+- использование tag-only ссылок на image в рабочей среде, включая version-like tags вроде `:v1.2.3`;
 - один и тот же субъект одновременно пишет код, меняет pipeline и проводит релиз;
 - отсутствие артефактного provenance и верификации перед развертыванием.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - развертывание только из CI/CD, изменение кластера из pipeline audit-able и replay-able;
-- образы в production только по `@sha256` digest;
+- образы для рабочей среды только по `@sha256` digest;
 - branch protection + mandatory review для IaC/manifests и pipeline конфигураций;
 - отдельные роли для `author`, `approver`, `releaser`.
 
@@ -104,7 +104,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - все entry points в кластер: `Ingress`, `Gateway`, `LoadBalancer`, `NodePort`;
 - список egress-зависимостей workload'ов (SaaS, cloud APIs, internal services);
 - какие namespace/service могут общаться между собой по сети;
-- есть ли фактический inventory сервисов и data-flows для production.
+- есть ли фактический inventory сервисов и data-flows для рабочих сред.
 
 **Сигналы риска:**
 - неизвестные публичные endpoints;
@@ -112,9 +112,9 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - критичные workloads с unrestricted egress;
 - отсутствие владельца у внешних интеграций.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - инвентарь north-south и east-west потоков обновляется не реже `30d`;
-- для production namespaces: default deny + explicit allow rules;
+- для защищенных namespace: default deny + explicit allow rules;
 - каждый публичный endpoint имеет владельца, data-classification и SLA по уязвимостям.
 
 ---
@@ -132,7 +132,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - нет событий для критичных операций (`rolebindings`, `clusterrolebindings`, `validatingwebhookconfigurations`, `mutatingwebhookconfigurations`, `namespaces`);
 - retention меньше длительности вашего typical incident lifecycle.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - централизованный immutable аудит с retention минимум `90d` (или выше по требованиям регулятора);
 - для высокорисковых API-операций логируйте не ниже `Request`/`RequestResponse` уровня с учетом утечки чувствительных данных;
 - детекция на события: изменение RBAC, webhook-конфигов, namespace security labels, массовое чтение Secret-объектов;
@@ -148,7 +148,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - что RBAC покрывает read-операции на чувствительные ресурсы (admission не блокирует `get/list/watch`);
 - что namespace label mutation ограничен (чтобы не ослабить PSA/NetworkPolicy boundaries);
 - что `automountServiceAccountToken` отключен по умолчанию для workload'ов без доступа к API;
-- что в production не используется namespace `default` ServiceAccount.
+- что в рабочей среде не используется namespace `default` ServiceAccount.
 
 **Сигналы риска:**
 - reliance только на mutating webhook без validating policy;
@@ -156,7 +156,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - приложение может менять namespace labels и ослаблять enforce policy;
 - ServiceAccount переиспользуется между несвязанными workload'ами.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - разделяйте ответственность: RBAC отвечает за "кто может", admission отвечает за "с какими параметрами";
 - для policy enforcement используйте `ValidatingAdmissionPolicy` (Kubernetes `v1.30+`) или webhook-based equivalent;
 - запретите доступ к `escalate` / `bind` / `impersonate` / `serviceaccounts/token` по умолчанию;
@@ -172,7 +172,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - где рождается секрет (source of truth), как он попадает в runtime, где выполняется его ротация;
 - есть ли в Git plaintext/base64 секреты в манифестах;
 - включено ли encryption at rest для Secret-данных в etcd;
-- кто имеет `get/list/watch` к Secret в production;
+- кто имеет `get/list/watch` к Secret в рабочей среде;
 - какой TTL у токенов/секретов и как проходит их отзыв (revocation).
 
 **Сигналы риска:**
@@ -181,7 +181,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - широкое `list/watch` на Secret для человеческих или CI identity;
 - нет подтверждаемого процесса ротации и аварийного отзыва.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - используйте pull-модель из внешнего secret store (например, Vault) вместо хранения значений в манифестах;
 - включите etcd encryption at rest и проверяйте статус после изменений control plane;
 - ограничьте Secret ACL до минимально нужного набора workload identities;
@@ -198,35 +198,35 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - есть ли подтверждения до и после устранения, а не только список YAML-настроек;
 - используются ли detection/policy test cases для проверки audit, runtime telemetry и admission controls.
 
-**Рекомендация для production:**
-- проводите adversarial validation для production-like окружений после крупных изменений RBAC, CNI, admission policy, runtime security tooling и deployment chain;
+**Рекомендация для рабочих сред:**
+- проводите adversarial validation для похожих на рабочие окружений после крупных изменений RBAC, CNI, admission policy, runtime security tooling и deployment chain;
 - destructive, DoS и escape-проверки выполняйте только в изолированной среде или namespace с заранее утвержденной областью;
 - используйте отдельный playbook для scenario-to-control mapping: [kubernetes/adversarial-validation/playbook.ru.md](../adversarial-validation/playbook.ru.md).
 
 ---
 
-## 4. Минимальные policy gates для production
+## 4. Минимальные policy gates для рабочих сред
 
 Минимальный набор, который должен быть включен в gatekeeping:
-- запрет direct human deploy в production namespaces;
-- запрет tag-only images в production и требование immutable digest reference (`@sha256:...`); формат `tag@sha256` допустим для читаемости, но deployment должен использовать именно digest;
+- запрет direct human deploy в защищенных namespace;
+- запрет tag-only images в рабочей среде и требование immutable digest reference (`@sha256:...`); формат `tag@sha256` допустим для читаемости, но deployment должен использовать именно digest;
 - блокировка опасных RBAC-verb'ов вне явного allowlist;
-- обязательный ingress и egress default-deny NetworkPolicy для production namespaces либо документированная CNI-equivalent policy с проверенным enforcement;
+- обязательный ingress и egress default-deny NetworkPolicy для защищенных namespace либо документированная CNI-equivalent policy с проверенным enforcement;
 - обязательный Kubernetes audit logging с покрытием RBAC changes, admission/webhook changes, изменений namespace security labels, Secret reads, `exec`, attach/port-forward и обновлений ephemeral containers;
-- ограничение и периодическая recertification доступа `get/list/watch` к Secrets в production;
+- ограничение и периодическая recertification доступа `get/list/watch` к Secrets в рабочей среде;
 - `automountServiceAccountToken: false` по умолчанию, если у workload нет документированной необходимости обращаться к Kubernetes API;
 - блокировка использования namespace `default` ServiceAccount для application workload'ов;
-- для production namespaces по умолчанию enforce Pod Security Standards `restricted`:
+- для защищенных namespace по умолчанию enforce Pod Security Standards `restricted`:
   - `pod-security.kubernetes.io/enforce: restricted`
   - `pod-security.kubernetes.io/enforce-version: <pinned Kubernetes minor version>`
   - `pod-security.kubernetes.io/audit: restricted`
   - `pod-security.kubernetes.io/audit-version: <same pinned version>`
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
-- требуйте подтверждение effective seccomp-профиля отдельно от PSS label: production workload'ы должны явно задавать `seccompProfile.type: RuntimeDefault` на уровне Pod или container либо nodes должны enforce kubelet `--seccomp-default` / `seccompDefault`, чтобы unspecified profiles становились `RuntimeDefault`; подтверждение должно показывать effective runtime profile, а не только namespace labels;
+- требуйте подтверждение effective seccomp-профиля отдельно от PSS label: рабочие workload'ы должны явно задавать `seccompProfile.type: RuntimeDefault` на уровне Pod или container либо nodes должны enforce kubelet `--seccomp-default` / `seccompDefault`, чтобы unspecified profiles становились `RuntimeDefault`; подтверждение должно показывать effective runtime profile, а не только namespace labels;
 - используйте `warn`/`audit=restricted` без `enforce=restricted` только во время документированного rollout или migration window с owner, expiry и blocking date для включения enforcement;
-- мониторьте drift Pod Security labels и блокируйте развертывание, если production labels ослаблены, удалены или указывают на неутвержденную версию;
-- проверяйте admission policy тестами, что production workload'ы без image digest отклоняются, включая `:latest`, version-like tags и image names без явного tag;
+- мониторьте drift Pod Security labels и блокируйте развертывание, если labels рабочей среды ослаблены, удалены или указывают на неутвержденную версию;
+- проверяйте admission policy тестами, что рабочие workload'ы без image digest отклоняются, включая `:latest`, version-like tags и image names без явного tag;
 - проверка etcd Secret encryption at rest там, где команда владеет control plane или может его конфигурировать;
 - исключения только через оформленный объект с `owner`, `justification`, `expiry`.
 
@@ -247,7 +247,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 ## 6. Антипаттерны
 
 - Один shared `cluster-admin` аккаунт для команды.
-- Production-развертывание через локальный kubeconfig разработчика.
+- Релизное развертывание через локальный kubeconfig разработчика.
 - Admission rules без контроля RBAC read-доступа к чувствительным ресурсам.
 - RBAC least privilege без защиты admission/webhook конфигов.
 - Общий ServiceAccount на все приложения namespace.

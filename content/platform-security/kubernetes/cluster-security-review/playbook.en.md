@@ -44,17 +44,17 @@ This playbook defines a **practical Kubernetes cluster security review** across:
 - subjects who can change `roles`, `clusterroles`, `rolebindings`, `clusterrolebindings`;
 - subjects with `nodes/proxy` access (broad node-level Kubelet API access);
 - subjects with access to fine-grained Kubelet API subresources: `nodes/metrics`, `nodes/stats`, `nodes/log`, `nodes/spec`, `nodes/checkpoint`, `nodes/configz`, `nodes/healthz`, `nodes/pods`;
-- machine identities that actually deploy to production (CD controllers, CI bots).
+- machine identities that actually deploy to live environments (CD controllers, CI bots).
 
 **Risk signals:**
 - users or groups holding `cluster-admin` without break-glass ownership;
-- wildcard privileges (`resources: ["*"]`, `verbs: ["*"]`) in production namespaces;
-- direct production deploy from human identities, bypassing CD;
+- wildcard privileges (`resources: ["*"]`, `verbs: ["*"]`) in protected namespaces;
+- direct live deployment from human identities, bypassing CD;
 - `nodes/proxy`, `escalate`, `bind`, or `impersonate` granted without explicit security approval;
 - monitoring/logging agents granted `nodes/proxy` even though fine-grained Kubelet API subresources are sufficient for their function.
 
-**Production recommendation:**
-- production deploys are performed only by dedicated CI/CD ServiceAccounts;
+**Recommended control:**
+- live deployments are performed only by dedicated CI/CD ServiceAccounts;
 - human users do not deploy directly except break-glass roles with owner + expiry;
 - review all ClusterRole/ClusterRoleBinding objects every `30d`;
 - enforce automatic policy fail for high-risk RBAC verbs outside an approved allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
@@ -85,14 +85,14 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - separation of duties between code authors and release approvers/executors.
 
 **Risk signals:**
-- production deploy from local `kubectl apply`;
-- tag-only image references used in production, including version-like tags such as `:v1.2.3`;
+- live deployment from local `kubectl apply`;
+- tag-only image references used in live environments, including version-like tags such as `:v1.2.3`;
 - one subject can write code, edit pipeline, and release alone;
 - no artifact provenance or pre-deploy verification.
 
-**Production recommendation:**
+**Recommended control:**
 - deploy only via CI/CD, with cluster changes audit-able and replay-able;
-- production images pinned by `@sha256` digest only;
+- release images pinned by `@sha256` digest only;
 - branch protection + mandatory review for IaC/manifests and pipeline configuration;
 - separate `author`, `approver`, and `releaser` roles.
 
@@ -104,7 +104,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - all cluster entry points: `Ingress`, `Gateway`, `LoadBalancer`, `NodePort`;
 - workload egress dependencies (SaaS, cloud APIs, internal services);
 - allowed namespace/service-to-service communication paths;
-- existence of an actual production service/data-flow inventory.
+- existence of an actual live service/data-flow inventory.
 
 **Risk signals:**
 - unknown public endpoints;
@@ -112,9 +112,9 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - unrestricted egress for critical workloads;
 - no ownership for external integrations.
 
-**Production recommendation:**
+**Recommended control:**
 - north-south and east-west flow inventory updated at least every `30d`;
-- production namespaces use default deny + explicit allow rules;
+- protected namespaces use default deny + explicit allow rules;
 - every public endpoint has owner, data classification, and vulnerability SLA.
 
 ---
@@ -132,7 +132,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - no critical operation events (`rolebindings`, `clusterrolebindings`, `validatingwebhookconfigurations`, `mutatingwebhookconfigurations`, `namespaces`);
 - retention shorter than typical incident lifecycle.
 
-**Production recommendation:**
+**Recommended control:**
 - centralized immutable audit storage with at least `90d` retention (or stricter regulatory requirement);
 - for high-risk API operations, log at `Request`/`RequestResponse` where appropriate while preventing sensitive-data leakage;
 - alerting on RBAC changes, webhook config changes, namespace security label changes, and mass Secret reads;
@@ -148,7 +148,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - RBAC controls sensitive read operations (admission does not block `get/list/watch`);
 - namespace label mutation is restricted (to protect PSA/NetworkPolicy boundaries);
 - `automountServiceAccountToken` is disabled by default for workloads without API needs;
-- production workloads do not use the namespace `default` ServiceAccount.
+- live workloads do not use the namespace `default` ServiceAccount.
 
 **Risk signals:**
 - reliance only on mutating webhook without validating policy;
@@ -156,7 +156,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - application identities can mutate namespace labels and weaken enforcement;
 - one ServiceAccount is reused across unrelated workloads.
 
-**Production recommendation:**
+**Recommended control:**
 - separate responsibilities: RBAC controls "who can", admission controls "with which parameters";
 - use `ValidatingAdmissionPolicy` (Kubernetes `v1.30+`) or webhook-based equivalent for policy enforcement;
 - deny `escalate` / `bind` / `impersonate` / `serviceaccounts/token` by default;
@@ -172,7 +172,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - where each secret originates, how it reaches runtime, and how it rotates;
 - whether plaintext/base64 secrets appear in Git manifests;
 - etcd encryption at rest status for Secret data;
-- who has `get/list/watch` on Secrets in production;
+- who has `get/list/watch` on Secrets in live environments;
 - token/secret TTL and revocation process quality.
 
 **Risk signals:**
@@ -181,7 +181,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - broad `list/watch` on Secrets for human or CI identities;
 - no provable rotation and emergency revocation process.
 
-**Production recommendation:**
+**Recommended control:**
 - use pull model from external secret store (for example Vault) instead of storing values in manifests;
 - enable etcd encryption at rest and verify status after control-plane changes;
 - limit Secret ACL to minimum required workload identities;
@@ -198,35 +198,35 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - evidence exists before and after remediation, not only a list of YAML settings;
 - detection/policy test cases are used to verify audit, runtime telemetry, and admission controls.
 
-**Production recommendation:**
-- run adversarial validation for production-like environments after major RBAC, CNI, admission policy, runtime security tooling, and deployment-chain changes;
+**Recommended control:**
+- run adversarial validation for live-like environments after major RBAC, CNI, admission policy, runtime security tooling, and deployment-chain changes;
 - destructive, DoS, and escape checks run only in an isolated environment or namespace with pre-approved scope;
 - use the dedicated playbook for scenario-to-control mapping: [kubernetes/adversarial-validation/playbook.en.md](../adversarial-validation/playbook.en.md).
 
 ---
 
-## 4. Minimum Production Policy Gates
+## 4. Minimum Policy Gates for Live Environments
 
 The minimum gatekeeping baseline should include:
-- deny direct human deploy into production namespaces;
-- deny tag-only images in production and require an immutable digest reference (`@sha256:...`); `tag@sha256` may be allowed for readability, but the digest must be the value used for deployment;
+- deny direct human deploy into protected namespaces;
+- deny tag-only images in live environments and require an immutable digest reference (`@sha256:...`); `tag@sha256` may be allowed for readability, but the digest must be the value used for deployment;
 - block high-risk RBAC verbs outside explicit allowlist;
-- require production namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
+- require protected namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
 - require Kubernetes audit logging with policy coverage for RBAC changes, admission/webhook changes, namespace security label changes, Secret reads, `exec`, attach/port-forward, and ephemeral-container updates;
-- restrict and periodically recertify `get/list/watch` access to Secrets in production;
+- restrict and periodically recertify `get/list/watch` access to Secrets in live environments;
 - require `automountServiceAccountToken: false` by default unless the workload has a documented Kubernetes API access need;
 - block namespace `default` ServiceAccount usage for application workloads;
-- require production namespaces to enforce Pod Security Standards `restricted` by default:
+- require protected namespaces to enforce Pod Security Standards `restricted` by default:
   - `pod-security.kubernetes.io/enforce: restricted`
   - `pod-security.kubernetes.io/enforce-version: <pinned Kubernetes minor version>`
   - `pod-security.kubernetes.io/audit: restricted`
   - `pod-security.kubernetes.io/audit-version: <same pinned version>`
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
-- require effective seccomp hardening separately from the PSS label: production workloads must explicitly set `seccompProfile.type: RuntimeDefault` at Pod or container level, or nodes must enforce kubelet `--seccomp-default` / `seccompDefault` so unspecified profiles become `RuntimeDefault`; evidence must show the effective runtime profile, not only namespace labels;
+- require effective seccomp hardening separately from the PSS label: live workloads must explicitly set `seccompProfile.type: RuntimeDefault` at Pod or container level, or nodes must enforce kubelet `--seccomp-default` / `seccompDefault` so unspecified profiles become `RuntimeDefault`; evidence must show the effective runtime profile, not only namespace labels;
 - use `warn`/`audit=restricted` without `enforce=restricted` only during a documented rollout or migration window with owner, expiry, and a blocking date for enforcement;
-- monitor Pod Security label drift and block deployment if production labels regress, are removed, or point to an unapproved version;
-- verify through admission policy tests that production workloads without an image digest are rejected, including `:latest`, version-like tags, and image names with no explicit tag;
+- monitor Pod Security label drift and block deployment if live-environment labels regress, are removed, or point to an unapproved version;
+- verify through admission policy tests that live workloads without an image digest are rejected, including `:latest`, version-like tags, and image names with no explicit tag;
 - verify etcd Secret encryption at rest where the team owns or can configure the control plane;
 - allow exceptions only via explicit object containing `owner`, `justification`, and `expiry`.
 
@@ -247,7 +247,7 @@ A review is complete only when it provides:
 ## 6. Anti-patterns
 
 - One shared `cluster-admin` account for the whole team.
-- Production deploy via developer local kubeconfig.
+- Live deployment via developer local kubeconfig.
 - Admission controls without RBAC protection for sensitive reads.
 - RBAC least privilege without protection of admission/webhook configs.
 - One shared ServiceAccount for all namespace applications.
@@ -264,3 +264,11 @@ A review is complete only when it provides:
 - Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](../container-escape-capability-abuse/overview.en.md)
 - Vault and secrets: [secrets/vault/playbook.en.md](../../secrets/vault/playbook.en.md)
 - OIDC/OAuth for machine/human access patterns: [identity/oidc-oauth/playbook.en.md](../../../application-security/identity/oidc-oauth/playbook.en.md)
+---
+
+## 7. Related Materials
+
+- [Kubernetes adversarial validation playbook](../adversarial-validation/playbook.en.md)
+- [Pod Security playbook](../pod-security/playbook.en.md)
+- [Seccomp checklist](../seccomp/checklist.en.md)
+- [Container image security playbook](../../../supply-chain/container-image-security/playbook.en.md)

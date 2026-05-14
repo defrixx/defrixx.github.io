@@ -38,7 +38,7 @@ For practical controls, implementation priorities, and verification signals, see
 ### Summary (OWASP)
 A vulnerability where input (including hidden or external content) changes LLM behavior against expected rules and can lead to unauthorized actions.
 
-### How it appears in production
+### How it appears in live environments
 - hidden instructions in documents, web pages, emails, images
 - prompts like "ignore previous instructions"
 - obfuscation (encodings, multilingual payloads, split payload)
@@ -55,7 +55,7 @@ A vulnerability where input (including hidden or external content) changes LLM b
 ### Summary (OWASP)
 Risk of exposing sensitive information (PII, secrets, internal data, intellectual property) via LLM responses, context, training, or insecure data handling.
 
-### How it appears in production
+### How it appears in live environments
 - leakage of PII/secrets from chat history in responses
 - confidential data entering training/fine-tuning
 - disclosure of internal configs and diagnostic details
@@ -72,7 +72,7 @@ Risk of exposing sensitive information (PII, secrets, internal data, intellectua
 ### Summary (OWASP)
 LLM supply chain risks: untrusted models, adapters, data, dependencies, and infrastructure that can be tampered with, vulnerable, or legally problematic.
 
-### How it appears in production
+### How it appears in live environments
 - vulnerable dependencies in the ML/LLM pipeline
 - untrusted base model, LoRA adapter, artifact converter
 - compromised model repository accounts or fake models
@@ -89,7 +89,7 @@ LLM supply chain risks: untrusted models, adapters, data, dependencies, and infr
 ### Summary (OWASP)
 Data and model poisoning attacks where triggers and biases are introduced into training/fine-tuning/RAG, compromising model behavior integrity and safety.
 
-### How it appears in production
+### How it appears in live environments
 - poisoned training/fine-tuning datasets
 - trigger/backdoor behavior activated by specific phrases
 - malicious embeddings/documents in the RAG corpus
@@ -108,7 +108,7 @@ Insufficient validation and sanitization of LLM output before passing it to cons
 
 Here, downstream systems means any component that consumes LLM output and performs an action: databases, APIs, shell runners, template engines, browser renderers, workers, and automation pipelines.
 
-### How it appears in production
+### How it appears in live environments
 - model output sent directly to shell/API/SQL/template renderer
 - LLM-generated JS/Markdown rendered without sanitization
 - generated code/packages used without verification
@@ -125,7 +125,7 @@ Here, downstream systems means any component that consumes LLM output and perfor
 ### Summary (OWASP)
 Excessive autonomy of an LLM agent (tools/plugins/functions and permissions), allowing dangerous actions from ambiguous, incorrect, or manipulated instructions.
 
-### How it appears in production
+### How it appears in live environments
 - the agent has extra tools not needed for the task
 - plugins operate with permissions broader than the user scope
 - destructive actions execute autonomously and without confirmation
@@ -142,7 +142,7 @@ Excessive autonomy of an LLM agent (tools/plugins/functions and permissions), al
 ### Summary (OWASP)
 Leakage of system prompts and hidden instructions, which should not be treated as secrets but, if disclosed, make it easier to bypass defenses and develop chained attacks.
 
-### How it appears in production
+### How it appears in live environments
 - system prompt extraction via probing
 - disclosure of internal logic, roles, constraints
 - incorrect storage of secrets in prompt/config text
@@ -159,7 +159,7 @@ Leakage of system prompts and hidden instructions, which should not be treated a
 ### Summary (OWASP)
 Weaknesses in generating, storing, and retrieving embeddings/vectors (especially in RAG), leading to cross-tenant leakage, poisoned context, and unauthorized access.
 
-### How it appears in production
+### How it appears in live environments
 - cross-tenant leakage in a shared vector DB
 - poisoned documents in the retrieval corpus
 - embedding inversion and data reconstruction risks
@@ -176,7 +176,7 @@ Weaknesses in generating, storing, and retrieving embeddings/vectors (especially
 ### Summary (OWASP)
 Generation of plausible but false or misleading information (due to hallucination, bias, or incomplete context), creating operational and legal risks.
 
-### How it appears in production
+### How it appears in live environments
 - confident but false answers in legal/medical/finance domains
 - fabricated references, invalid claims, non-existent packages
 - excessive user trust in model output
@@ -193,7 +193,7 @@ Generation of plausible but false or misleading information (due to hallucinatio
 ### Summary (OWASP)
 Uncontrolled consumption of LLM resources (requests, tokens, inference), leading to DoS, denial-of-wallet, service degradation, and model extraction risks.
 
-### How it appears in production
+### How it appears in live environments
 - prompt flooding, abuse of large context, long sessions
 - denial-of-wallet attacks on usage-based billing
 - model extraction attempts via API probing
@@ -217,3 +217,10 @@ Uncontrolled consumption of LLM resources (requests, tokens, inference), leading
 - `LLM08 Vector and Embedding Weaknesses`: weaknesses in retrieval/embeddings/RAG storage; distinction is the context and retrieval layer.
 - `LLM09 Misinformation`: produces plausible but false content; distinction is decision-quality and trust risk rather than direct exploitation.
 - `LLM10 Unbounded Consumption`: allows uncontrolled token/resource usage; distinction is availability and cost impact (DoS/denial-of-wallet).
+---
+
+## 5. Related Materials
+
+- [Securing AI overview](../securing-ai/overview.en.md)
+- [Threat modeling playbook](../../review/threat-modeling/playbook.en.md)
+- [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)

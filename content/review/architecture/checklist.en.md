@@ -31,6 +31,8 @@ Traceability is mandatory: each significant conclusion must reference a concrete
 
 For the full process, use the [Threat Modeling Playbook](../threat-modeling/playbook.en.md). It covers methodology selection, input and output artifacts, the recommended path, attack scenarios, risk analysis, control mapping, and the lite path.
 
+If the architecture change touches code-level security primitives, also consider the [Secure Coding and Code Review playbook](../../application-security/secure-coding/code-review/playbook.en.md): input validation, output encoding, authentication, authorization, injection risks, file handling, logging, cryptography, and review evidence. If the change affects sensitive product flows or business invariants, use the [Business Logic Abuse playbook](../../application-security/business-logic/business-logic-abuse/playbook.en.md) for abuse scenarios involving legitimate product behavior. If the decision depends on scanner findings, CVEs, SLAs, or exceptions, use the [Vulnerability Management playbook](../vulnerability-management/playbook.en.md).
+
 For architecture review, the minimum requirement is to:
 - update the DFD/C4 or textual description of data flows and trust boundaries;
 - produce threat scenarios for new/changed entry points, data flows, and privileged operations;
@@ -193,3 +195,11 @@ Additionally:
 - `Critical` is rejected by default; an exception is allowed only through the release governance process with security leadership and business owner approval, TTL, compensating controls, and post-release review;
 - mandatory pre-release fixes must be tracked explicitly;
 - residual risks must be explicitly accepted by an authorized owner.
+---
+
+## 7. Related Materials
+
+- [Threat modeling playbook](../threat-modeling/playbook.en.md)
+- [Release governance playbook](../release-governance/playbook.en.md)
+- [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
+- [Vulnerability management playbook](../vulnerability-management/playbook.en.md)

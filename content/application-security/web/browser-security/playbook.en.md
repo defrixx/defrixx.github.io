@@ -2,7 +2,7 @@
 
 ## 1. Scope and Objective
 
-This playbook defines a production review baseline for browser-facing applications: CSP, CORS, cookies, browser storage, third-party scripts, embedded content, and frontend supply-chain controls.
+This playbook defines a release review baseline for browser-facing applications: CSP, CORS, cookies, browser storage, third-party scripts, embedded content, and frontend supply-chain controls.
 
 Use this document for:
 - SPA, server-rendered web applications, BFF-backed browser flows, admin panels, and embedded widgets;
@@ -41,11 +41,11 @@ High-impact scenarios:
 
 ---
 
-## 3. Production Baseline
+## 3. Release-Ready Baseline
 
 ### 3.1 Content Security Policy
 
-Production defaults:
+Release-ready defaults:
 - Browser-facing applications define CSP in the `Content-Security-Policy` response header, not only in a `<meta>` tag.
 - Start new applications with `default-src 'none'` and explicitly allow required classes: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, and `form-action`.
 - Use `frame-ancestors 'none'` by default for admin, account, checkout, and internal tools. Use explicit origins only when embedding is a product requirement.
@@ -62,7 +62,7 @@ Verification:
 
 ### 3.2 CORS and Cross-Origin Data Exposure
 
-Production defaults:
+Release-ready defaults:
 - Do not enable CORS globally. Configure it per route or API surface that needs browser cross-origin access.
 - Credentialed CORS must use exact origin allowlists. Do not combine reflected arbitrary `Origin` with `Access-Control-Allow-Credentials: true`.
 - Do not use `Access-Control-Allow-Origin: *` for responses containing user, tenant, internal, payment, or admin data.
@@ -77,7 +77,7 @@ Verification:
 
 ### 3.3 Cookies, Browser Storage, and Session Data
 
-Production defaults:
+Release-ready defaults:
 - Session cookies use `HttpOnly`, `Secure`, and explicit `SameSite`.
 - Use `SameSite=Lax` for normal browser sessions unless the flow requires cross-site POST/iframe behavior.
 - Use `SameSite=Strict` for high-risk admin or step-up cookies where UX allows it.
@@ -93,7 +93,7 @@ Verification:
 
 ### 3.4 Third-Party Scripts and Frontend Supply Chain
 
-Production defaults:
+Release-ready defaults:
 - Maintain an inventory of third-party scripts, owners, purpose, data touched, and approval date.
 - Do not load tag-manager or analytics scripts on admin, checkout, identity, or sensitive data-entry pages unless there is explicit business approval and data minimization.
 - Prefer self-hosting or pinned versions for critical frontend dependencies.
@@ -109,7 +109,7 @@ Verification:
 
 ### 3.5 Embedded Content and Browser APIs
 
-Production defaults:
+Release-ready defaults:
 - Use `frame-ancestors` for anti-clickjacking. Keep `X-Frame-Options` only as compatibility defense where needed.
 - Sandbox untrusted iframes and grant capabilities explicitly.
 - For `postMessage`, always set a specific target origin and verify `event.origin` exactly on receive.
@@ -130,3 +130,11 @@ Verification:
 - Review iframe `sandbox` and `allow` attributes for least privilege.
 - Inspect the effective `Permissions-Policy` response header on sensitive routes with browser DevTools or an automated header check.
 - Negative test: unapproved origins and unrelated routes cannot access camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth, or clipboard-read capabilities.
+---
+
+## 4. Related Materials
+
+- [OIDC + OAuth 2.0 playbook](../../identity/oidc-oauth/playbook.en.md)
+- [API security playbook](../../api/api-security-patterns/playbook.en.md)
+- [OWASP Top 10 web application defense playbook](../owasp-top-10/playbook.en.md)
+- [Secure coding and code review playbook](../../secure-coding/code-review/playbook.en.md)

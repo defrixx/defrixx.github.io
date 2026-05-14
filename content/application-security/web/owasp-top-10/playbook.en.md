@@ -51,12 +51,12 @@ Impact:
   - forced browsing tests
   - `401/403` anomaly and ID probing monitoring
 
-### 2.4 Production review baseline
+### 2.4 Release review baseline
 
 Priority:
 - Default severity is `High`; raise to `Critical` when access-control bypass affects admin functions, tenant isolation, payment state, bulk export, or secrets.
 
-Production defaults:
+Release-ready defaults:
 - Every user, tenant, support, admin, and service operation has an explicit policy entry: actor, action, resource, tenant, context.
 - Authorization is enforced in the service/domain layer, not only in UI, gateway, route middleware, or GraphQL schema directives.
 - New endpoints, methods, mutations, and bulk/export jobs are `deny-by-default` until a policy and negative tests exist.
@@ -90,7 +90,7 @@ Security misconfiguration happens when app, server, container, or cloud settings
 ### 3.2 Types and typical exploitation flow
 
 Types:
-- Debug mode and stack traces in production: internal paths, versions, and env details are exposed. Example: traceback reveals `DB_HOST` and SQL query fragments.
+- Debug mode and stack traces in live environments: internal paths, versions, and env details are exposed. Example: traceback reveals `DB_HOST` and SQL query fragments.
 - Default accounts/passwords: attacker logs in with factory credentials. Example: admin console accepts `admin/admin`.
 - Excessive HTTP methods and exposed admin routes: attack surface grows unnecessarily. Example: endpoint allows `PUT`/`DELETE` though it should be read-only.
 - Unsafe XML parser settings -> `XXE` (XML External Entity): parser resolves external entities. Example: payload with `<!ENTITY xxe SYSTEM "file:///etc/passwd">` returns file content.
@@ -124,13 +124,13 @@ Impact:
   - safe degradation tests
   - golden-config deviation tracking
 
-### 3.4 Production review baseline
+### 3.4 Release review baseline
 
 Priority:
 - Default severity is `Medium`; raise to `High` when the misconfiguration exposes admin surfaces, secrets, cloud metadata, debug execution, or internet-facing unsafe defaults.
 
-Production defaults:
-- Debug mode, verbose stack traces, sample apps, default credentials, public admin consoles, and directory listing are disabled in production.
+Release-ready defaults:
+- Debug mode, verbose stack traces, sample apps, default credentials, public admin consoles, and directory listing are disabled in live environments.
 - Security headers are defined per application class; browser-facing apps at minimum decide on HSTS, CSP, frame protection, content-type sniffing, referrer policy, and cookie attributes.
 - XML parsers disable DTD, external entities, unsafe resolvers, and unbounded entity expansion unless a documented legacy exception exists.
 - Configuration drift is checked at deploy time and at least every `24h` for internet-facing and high-value services.
@@ -167,7 +167,7 @@ Types:
 - Typosquatting: package name looks legitimate but is malicious. Example: `reqeusts` is installed instead of `requests` and exfiltrates tokens.
 - CI runner/plugin compromise: malicious build step executes in trusted pipeline. Example: poisoned CI plugin reads `CI_SECRET` and sends it to attacker endpoint.
 - Artifact substitution between build and deploy: modified artifact is pushed under expected tag. Example: tag `v1.4.2` is overwritten with backdoored container image.
-- Vulnerable/unmaintained dependencies with known `CVE` (Common Vulnerabilities and Exposures): known exploit path remains open in production. Example: outdated library is exploitable by public RCE PoC.
+- Vulnerable/unmaintained dependencies with known `CVE` (Common Vulnerabilities and Exposures): known exploit path remains open in live environments. Example: outdated library is exploitable by public RCE PoC.
 
 Typical flow:
 - Finding dependencies without strict source pinning
@@ -196,13 +196,13 @@ Impact:
   - anomalous publish/install monitoring
   - supply-chain tabletop exercises
 
-### 4.4 Production review baseline
+### 4.4 Release review baseline
 
 Priority:
-- Default severity is `High`; raise to `Critical` when compromise can affect signed release artifacts, CI secrets, production deploy credentials, or widely consumed packages/images.
+- Default severity is `High`; raise to `Critical` when compromise can affect signed release artifacts, CI secrets, live deployment credentials, or widely consumed packages/images.
 
-Production defaults:
-- Production deploys use immutable artifact references (`sha256` digest for images) and reject mutable tags such as `latest`.
+Release-ready defaults:
+- Live deployments use immutable artifact references (`sha256` digest for images) and reject mutable tags such as `latest`.
 - Release artifacts are signed or accompanied by verified provenance/attestation from a trusted builder.
 - CI credentials are short-lived, scoped to the pipeline, and unavailable to untrusted pull-request or fork builds.
 - Dependency sources are pinned to approved registries or mirrors; dependency confusion controls exist for private package names.
@@ -214,9 +214,9 @@ Required evidence:
 - CI/CD permissions review for runners, workflow files, release tokens, and artifact registry access.
 
 Negative tests:
-- Deploy by mutable tag is rejected in production.
+- Deploy by mutable tag is rejected in live environments.
 - Unsigned artifact, wrong builder identity, wrong repository, or wrong workflow identity fails the gate.
-- Build from fork/untrusted branch cannot access production signing or deploy credentials.
+- Build from fork/untrusted branch cannot access live-environment signing or deploy credentials.
 - Dependency from an unapproved source or private-name public package is blocked.
 
 False positives / false negatives:
@@ -268,12 +268,12 @@ Impact:
   - TLS scanning
   - secret scanning in repos/images
 
-### 5.4 Production review baseline
+### 5.4 Release review baseline
 
 Priority:
 - Default severity is `High`; raise to `Critical` for plaintext credentials, exploitable weak password storage, payment/PII exposure, signing-key compromise, or token-forgery impact.
 
-Production defaults:
+Release-ready defaults:
 - TLS 1.3 is preferred; TLS 1.2 is allowed only with modern cipher suites and no legacy protocol fallback.
 - Browser-facing HTTPS uses HSTS after rollout safety is confirmed; preload is a separate risk decision.
 - Passwords use Argon2id, scrypt, bcrypt, or PBKDF2 with parameters reviewed for current platform cost; plaintext, reversible encryption, and fast hashes are rejected.
@@ -349,12 +349,12 @@ Impact:
   - blind/time-based scenario coverage
   - security review for every new input surface
 
-### 6.4 Production review baseline
+### 6.4 Release review baseline
 
 Priority:
-- Default severity is `High`; raise to `Critical` for unauthenticated RCE, injection reaching production data stores, command execution, or cross-tenant data extraction.
+- Default severity is `High`; raise to `Critical` for unauthenticated RCE, injection reaching live data stores, command execution, or cross-tenant data extraction.
 
-Production defaults:
+Release-ready defaults:
 - SQL, NoSQL, LDAP, OS command, template, XML, URL, and browser sinks have approved safe APIs and code-review rules.
 - User-controlled input never selects executable names, template files, deserialization classes, SQL fragments, or outbound network targets without a strict allowlist.
 - CSP is used as defense-in-depth for XSS; output encoding and sanitization remain the primary browser-side controls.
@@ -422,12 +422,12 @@ Impact:
   - negative business-flow tests
   - adversarial walkthroughs
 
-### 7.4 Production review baseline
+### 7.4 Release review baseline
 
 Priority:
 - Default severity is `Medium`; raise to `High` or `Critical` when design gaps affect money movement, authorization, tenant isolation, safety, privacy, or irreversible operations.
 
-Production defaults:
+Release-ready defaults:
 - Critical flows have a documented state machine, allowed transitions, idempotency model, replay handling, and failure behavior.
 - Abuse controls exist for signup, login, checkout, transfer, refund, export, invite, support, and privilege-change flows where applicable.
 - High-impact operations require step-up, approval, rate/velocity limits, or dual control based on risk.
@@ -495,12 +495,12 @@ Impact:
   - fixation/hijacking tests
   - login/reset anomaly monitoring
 
-### 8.4 Production review baseline
+### 8.4 Release review baseline
 
 Priority:
 - Default severity is `High`; raise to `Critical` for admin account takeover, broken password reset, MFA bypass for high-impact actions, or reusable refresh/session token compromise.
 
-Production defaults:
+Release-ready defaults:
 - Browser applications use server-side sessions or BFF-style token handling; refresh tokens are not stored in browser storage.
 - Session ID rotates after login, privilege elevation, and recovery completion.
 - User sessions have idle and absolute timeouts; high-risk actions require recent authentication.
@@ -566,12 +566,12 @@ Impact:
   - startup trust-chain checks
   - signature/hash mismatch alerts
 
-### 9.4 Production review baseline
+### 9.4 Release review baseline
 
 Priority:
-- Default severity is `High`; raise to `Critical` when integrity failure enables RCE, production release compromise, payment/ledger tampering, or policy bypass.
+- Default severity is `High`; raise to `Critical` when integrity failure enables RCE, release to a live environment compromise, payment/ledger tampering, or policy bypass.
 
-Production defaults:
+Release-ready defaults:
 - Updates, plugins, models, configs, rules, and release artifacts are verified before use.
 - Deserialization of untrusted input is forbidden unless a narrow, reviewed format and allowlist exist.
 - Client-controlled state is signed/MACed or stored server-side; authorization data is not trusted from client-modifiable fields.
@@ -638,12 +638,12 @@ Impact:
   - recurring MTTD/MTTR review
   - periodic detection-quality testing
 
-### 10.4 Production review baseline
+### 10.4 Release review baseline
 
 Priority:
 - Default severity is `Medium`; raise to `High` when missing telemetry affects auth, authorization, admin actions, data export, payment/security events, or incident reconstruction.
 
-Production defaults:
+Release-ready defaults:
 - Security event catalog covers authentication, authorization decisions, admin actions, privilege changes, secret/key access, configuration changes, data export, rate limits, validation failures, and webhook/API abuse.
 - Logs use a consistent schema with timestamp, actor, tenant, client, source, action, resource, decision, reason, correlation ID, and request ID where applicable.
 - Tokens, credentials, secrets, full payment data, and sensitive payloads are redacted before storage.
@@ -709,12 +709,12 @@ Impact:
   - missing/invalid input tests
   - rollback correctness and error-path observability tests
 
-### 11.4 Production review baseline
+### 11.4 Release review baseline
 
 Priority:
 - Default severity is `Medium`; raise to `High` or `Critical` when exceptional states bypass authorization, integrity, payment, safety, or audit controls.
 
-Production defaults:
+Release-ready defaults:
 - AuthN/AuthZ, token introspection, policy, payment, and entitlement failures are fail-closed by default.
 - Error responses are stable and do not expose stack traces, SQL fragments, secrets, filesystem paths, or internal topology.
 - Timeouts, retries, circuit breakers, and fallback modes preserve security invariants.
@@ -737,3 +737,11 @@ False positives / false negatives:
 - Generic exception handlers can hide details from users but still skip audit or rollback.
 - Chaos tests must assert security outcomes, not only availability.
 - Fail-open may be acceptable for narrowly defined low-risk read paths, but only with documented exception and short degraded window.
+---
+
+## 12. Related Materials
+
+- [Browser and frontend security playbook](../browser-security/playbook.en.md)
+- [API security playbook](../../api/api-security-patterns/playbook.en.md)
+- [Secure coding and code review playbook](../../secure-coding/code-review/playbook.en.md)
+- [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)

@@ -2,7 +2,7 @@
 
 ## 1. Область и цель
 
-Этот плейбук задает production-базу для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, third-party scripts, embedded content и мер контроля frontend supply chain.
+Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, third-party scripts, embedded content и мер контроля frontend supply chain.
 
 Используйте документ для:
 - SPA, server-rendered web applications, BFF-backed browser flows, административных панелей и встраиваемых виджетов;
@@ -41,11 +41,11 @@ High-impact сценарии:
 
 ---
 
-## 3. Production-база
+## 3. Базовый профиль
 
 ### 3.1 Content Security Policy
 
-Production-настройки:
+Рабочие настройки:
 - Browser-facing applications должны задавать CSP через response header `Content-Security-Policy`, а не только через `<meta>` tag.
 - Для новых приложений начинайте с `default-src 'none'` и явно разрешайте нужные классы: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri` и `form-action`.
 - Используйте `frame-ancestors 'none'` по умолчанию для admin, account, checkout и internal tools. Явные origins допустимы только если embedding нужен по product requirement.
@@ -62,7 +62,7 @@ Production-настройки:
 
 ### 3.2 CORS и cross-origin data exposure
 
-Production-настройки:
+Рабочие настройки:
 - Не включайте CORS глобально. Настраивайте его per route или для конкретной API surface, где browser cross-origin access действительно нужен.
 - Credentialed CORS должен использовать exact origin allowlists. Нельзя совмещать reflected arbitrary `Origin` с `Access-Control-Allow-Credentials: true`.
 - Не используйте `Access-Control-Allow-Origin: *` для responses с user, tenant, internal, payment или admin data.
@@ -77,7 +77,7 @@ Production-настройки:
 
 ### 3.3 Cookies, browser storage и session data
 
-Production-настройки:
+Рабочие настройки:
 - Session cookies используют `HttpOnly`, `Secure` и явный `SameSite`.
 - Используйте `SameSite=Lax` для обычных browser sessions, если flow не требует cross-site POST/iframe behavior.
 - Используйте `SameSite=Strict` для high-risk admin или step-up cookies, если UX это допускает.
@@ -93,7 +93,7 @@ Production-настройки:
 
 ### 3.4 Third-party scripts и frontend supply chain
 
-Production-настройки:
+Рабочие настройки:
 - Ведите inventory third-party scripts: owner, purpose, touched data и approval date.
 - Не загружайте tag-manager или analytics scripts на admin, checkout, identity или sensitive data-entry pages без явного business approval и минимизации данных.
 - Для critical frontend dependencies предпочитайте self-hosting или pinned versions.
@@ -109,7 +109,7 @@ Production-настройки:
 
 ### 3.5 Embedded content и browser APIs
 
-Production-настройки:
+Рабочие настройки:
 - Используйте `frame-ancestors` для anti-clickjacking. `X-Frame-Options` оставляйте только как compatibility defense, где это нужно.
 - Для untrusted iframes используйте sandbox; capabilities выдавайте явно.
 - Для `postMessage` всегда задавайте specific target origin и точно проверяйте `event.origin` на receive.
@@ -130,3 +130,11 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 - Проверьте iframe `sandbox` и `allow` attributes на least privilege.
 - Проверьте effective `Permissions-Policy` response header на sensitive routes через browser DevTools или automated header check.
 - Negative test: unapproved origins и unrelated routes не могут получить доступ к camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth или clipboard-read capabilities.
+---
+
+## 4. Связанные материалы
+
+- [Плейбук OIDC + OAuth 2.0](../../identity/oidc-oauth/playbook.ru.md)
+- [Плейбук безопасности API](../../api/api-security-patterns/playbook.ru.md)
+- [Плейбук защиты web application по OWASP Top 10](../owasp-top-10/playbook.ru.md)
+- [Плейбук безопасной разработки и ревью кода](../../secure-coding/code-review/playbook.ru.md)

@@ -138,7 +138,7 @@ This table is the canonical policy for high-risk syscall review. The explanatory
 | Syscall / group | Default action | Exception level | Required capabilities/context to review | Evidence before approval |
 | --- | --- | --- | --- | --- |
 | `bpf` | Fail | Exceptional security sign-off | eBPF/observability/CNI component; `CAP_BPF`, `CAP_PERFMON`, or legacy `CAP_SYS_ADMIN`; kernel/runtime version | Component owner, exact program purpose, profile diff, runtime detection, expiry |
-| `ptrace` | Fail | Exceptional security sign-off | Debug/profiling scope; PID namespace boundaries; `CAP_SYS_PTRACE`; production access path | Isolated debug design, audit logging, allowed subjects, expiry |
+| `ptrace` | Fail | Exceptional security sign-off | Debug/profiling scope; PID namespace boundaries; `CAP_SYS_PTRACE`; live access path | Isolated debug design, audit logging, allowed subjects, expiry |
 | `kexec_load`, `kexec_file_load` | Fail | Exceptional security sign-off | Node-level agent only; `CAP_SYS_BOOT`; host lifecycle control | Separate privileged security model, node scope, approval, expiry |
 | `init_module`, `finit_module`, `delete_module` | Fail | Exceptional security sign-off | Node-level agent only; `CAP_SYS_MODULE`; kernel module lifecycle | Separate privileged security model, module allowlist, node scope, expiry |
 | `io_uring_setup`, `io_uring_enter`, `io_uring_register` | Manual review | Strong justification | Performance need; blocked classic file/network syscalls; kernel/runtime behavior | Fallback plan, bypass analysis, load test, accepted residual risk |
@@ -160,7 +160,7 @@ Use this table during review to distinguish real technical need from "the applic
 | Syscall / group | Common use | What it gives the process | Why restrict it or require justification |
 | --- | --- | --- | --- |
 | `bpf` | Creating and managing eBPF maps/programs, loading eBPF programs into the kernel, attaching to tracing/network/control-plane events. | Ability to run verified but still kernel-resident code and store state in kernel-managed structures. | This is direct interaction with kernel subsystems. Normal app workloads almost never need it; it often appears as observability/CNI/tracing noise. Allow only for explicitly scoped eBPF/observability components with separate security review and minimal capabilities (`CAP_BPF`, `CAP_PERFMON`, `CAP_SYS_ADMIN` in older models). |
-| `ptrace` | Debugging, tracing, inspecting, and modifying another process. | Reading/changing tracee registers and memory, intercepting syscalls and signals. | In a container, this risks secret disclosure and interference with neighboring processes in the same PID namespace; with a flawed namespace/capability model, risk can cross workload boundaries. It should normally be blocked for production app containers except tightly isolated debug/profiling cases. |
+| `ptrace` | Debugging, tracing, inspecting, and modifying another process. | Reading/changing tracee registers and memory, intercepting syscalls and signals. | In a container, this risks secret disclosure and interference with neighboring processes in the same PID namespace; with a flawed namespace/capability model, risk can cross workload boundaries. It should normally be blocked for live environments app containers except tightly isolated debug/profiling cases. |
 | `kexec_load`, `kexec_file_load` | Loading a new kernel image for later transition without a full firmware boot. | Preparing the system to reboot into another kernel. | A container workload should not have a path to control the kernel boot chain. Presence in a profile almost always indicates profiling error or excessive privileges; it is also tied to `CAP_SYS_BOOT`. |
 | `init_module`, `finit_module`, `delete_module` | Loading and removing kernel modules. | Changing code that runs in kernel space. | This is a host-level operation and incompatible with the normal container isolation model. It is acceptable only for very specialized node-level agents, in which case the design is a separate privileged security model, not a regular workload profile. |
 | `io_uring_setup`, `io_uring_enter`, `io_uring_register` | Creating rings and executing asynchronous I/O through io_uring. | A high-performance I/O interface where one syscall family can initiate different file/network-like operations. | This is a bypass risk for profiles that block "classic" file/network syscalls while leaving io_uring open. Allow only with proven performance need, documented fallback, and validation that the profile does not rely on restrictions bypassed through io_uring. |
@@ -224,7 +224,7 @@ Verify explicit coverage for target architectures. In relevant environments, che
 
 ### 8.1 Functional correctness
 
-A profile must not break production, but adding high-risk syscalls just to make startup succeed is not acceptable.
+A profile must not break live workloads, but adding high-risk syscalls just to make startup succeed is not acceptable.
 
 ### 8.2 Realistic validation
 
@@ -232,7 +232,7 @@ Profiling/validation should include:
 - real startup path;
 - real dependency initialization;
 - sidecar/init behavior when present;
-- production-like kernel/runtime;
+- live-like kernel/runtime;
 - relevant architectures and libc.
 
 ### 8.3 CI/CD policy gates
@@ -295,3 +295,10 @@ A good seccomp profile:
 - is maintained as a continuous process, not a one-time setup.
 
 A profile that is merely "strict" or present in YAML is not sufficient by itself.
+---
+
+## 6. Related Materials
+
+- [Pod Security playbook](../pod-security/playbook.en.md)
+- [Container escape and capability abuse overview](../container-escape-capability-abuse/overview.en.md)
+- [Kubernetes cluster security review playbook](../cluster-security-review/playbook.en.md)

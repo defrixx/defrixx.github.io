@@ -31,6 +31,8 @@
 
 Для полноценного процесса используйте [плейбук по моделированию угроз](../threat-modeling/playbook.ru.md). Он описывает выбор методологии, входные и выходные артефакты, рекомендуемый путь, сценарии атак, анализ риска, привязку мер контроля и упрощенный путь.
 
+Если архитектурное изменение затрагивает code-level security primitives, дополнительно учитывайте [плейбук безопасной разработки и ревью кода](../../application-security/secure-coding/code-review/playbook.ru.md): валидацию входных данных, output encoding, аутентификацию, авторизацию, injection risks, file handling, журналирование, криптографию и подтверждения ревью. Если изменение затрагивает sensitive product flows или бизнес-инварианты, используйте [плейбук abuse бизнес-логики](../../application-security/business-logic/business-logic-abuse/playbook.ru.md) для сценариев злоупотребления штатным поведением. Если решение опирается на scanner findings, CVE, SLA или исключения, используйте [плейбук управления уязвимостями](../vulnerability-management/playbook.ru.md).
+
 В рамках архитектурного ревью минимально требуется:
 - обновить DFD/C4 или текстовое описание потоков данных и границ доверия;
 - сформировать сценарии угроз для новых/измененных точек входа, потоков данных и привилегированных операций;
@@ -193,3 +195,11 @@
 - `Critical` по умолчанию отклоняется; исключение допустимо только через release governance process с approval security leadership и business owner, TTL, компенсирующими мерами и post-release review;
 - обязательные исправления до релиза фиксируются отдельным списком;
 - остаточные риски должны быть явно приняты уполномоченным владельцем.
+---
+
+## 7. Связанные материалы
+
+- [Плейбук моделирования угроз](../threat-modeling/playbook.ru.md)
+- [Плейбук release governance](../release-governance/playbook.ru.md)
+- [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)
+- [Плейбук управления уязвимостями](../vulnerability-management/playbook.ru.md)

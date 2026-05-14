@@ -37,12 +37,14 @@ PRs are welcome if you want to improve existing materials or add new ones.
 - [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist
 - [`content/review/threat-modeling/`](content/review/threat-modeling/) - threat modeling methodology review and practical playbook
 - [`content/review/release-governance/`](content/review/release-governance/) - release governance and security quality gates for protected environments, deployment approvals, release evidence, exceptions, and escalation
+- [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, exploitability, SLA, release blocking, exceptions, and closure evidence
 
 ### Application Security
 - [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - practical defense playbook for OWASP Top 10 (2025)
 - [`content/application-security/web/browser-security/`](content/application-security/web/browser-security/) - browser and frontend controls for CSP, CORS, cookies, third-party scripts, embedded content, and frontend supply chain
 - [`content/application-security/api/api-security-patterns/`](content/application-security/api/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
 - [`content/application-security/business-logic/business-logic-abuse/`](content/application-security/business-logic/business-logic-abuse/) - business logic abuse playbook for ATO, signup/trial/promo abuse, tenant isolation, workflow abuse, and sensitive business flows
+- [`content/application-security/secure-coding/code-review/`](content/application-security/secure-coding/code-review/) - secure coding and code review playbook for validation, encoding, auth/session, access control, injection, file handling, logging, crypto misuse, and review evidence
 - [`content/application-security/identity/oidc-oauth/`](content/application-security/identity/oidc-oauth/) - OIDC + OAuth 2.0 security playbook
 
 ### DevSecOps
@@ -55,6 +57,7 @@ PRs are welcome if you want to improve existing materials or add new ones.
 
 ### Supply Chain
 - [`content/supply-chain/slsa-provenance/`](content/supply-chain/slsa-provenance/) - SLSA v1.2 provenance overview for container image CI/CD pipelines
+- [`content/supply-chain/container-image-security/`](content/supply-chain/container-image-security/) - container image and OCI registry security playbook for Dockerfile baselines, digest pinning, multi-arch images, registry promotion, scanning, signing, and deploy-time verification
 
 ### AI Security
 - [`content/ai-security/securing-ai/`](content/ai-security/securing-ai/) - Securing AI overview

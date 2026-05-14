@@ -32,7 +32,7 @@ Mandatory inputs:
 - entry points and privileged operations;
 - authentication/authorization/session model;
 - current security controls: WAF/API gateway, mTLS, OAuth/OIDC, rate limiting, secrets management, audit logging, detection, runtime policy;
-- SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and vulnerability management data;
+- SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and data from the [vulnerability management playbook](../vulnerability-management/playbook.en.md);
 - regulatory/compliance constraints where they affect requirements;
 - component owners and acceptable risk appetite.
 
@@ -460,3 +460,11 @@ Example:
 | PASTA | high-risk, evidence-driven systems | lightweight checklist | banking/payment flow |
 | LINDDUN | privacy/data processing | replacement for security TM | analytics SDK |
 | NIST 800-154 | data-centric systems | full system TM | secrets/PII data lifecycle |
+---
+
+## 7. Related Materials
+
+- [Security architecture review checklist](../architecture/checklist.en.md)
+- [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
+- [OWASP LLM Top 10 overview](../../ai-security/owasp-llm-top-10/overview.en.md)
+- [Securing AI overview](../../ai-security/securing-ai/overview.en.md)

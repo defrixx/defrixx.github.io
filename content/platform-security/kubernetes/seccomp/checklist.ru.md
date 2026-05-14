@@ -138,7 +138,7 @@ Pod-wide profile часто расширяет разрешения, если в
 | Syscall / группа | Default action | Уровень исключения | Capabilities/context для ревью | Подтверждения перед approval |
 | --- | --- | --- | --- | --- |
 | `bpf` | Fail | Exceptional security sign-off | eBPF/observability/CNI component; `CAP_BPF`, `CAP_PERFMON` или legacy `CAP_SYS_ADMIN`; kernel/runtime version | Component owner, точное назначение program, profile diff, runtime detection, expiry |
-| `ptrace` | Fail | Exceptional security sign-off | Debug/profiling scope; PID namespace boundaries; `CAP_SYS_PTRACE`; production access path | Изолированный debug design, audit logging, allowed subjects, expiry |
+| `ptrace` | Fail | Exceptional security sign-off | Debug/profiling scope; PID namespace boundaries; `CAP_SYS_PTRACE`; путь доступа в рабочую среду | Изолированный debug design, audit logging, allowed subjects, expiry |
 | `kexec_load`, `kexec_file_load` | Fail | Exceptional security sign-off | Только node-level agent; `CAP_SYS_BOOT`; host lifecycle control | Separate privileged security model, node scope, approval, expiry |
 | `init_module`, `finit_module`, `delete_module` | Fail | Exceptional security sign-off | Только node-level agent; `CAP_SYS_MODULE`; kernel module lifecycle | Separate privileged security model, module allowlist, node scope, expiry |
 | `io_uring_setup`, `io_uring_enter`, `io_uring_register` | Manual review | Strong justification | Performance need; заблокированные classic file/network syscalls; kernel/runtime behavior | Fallback plan, bypass analysis, load test, accepted residual risk |
@@ -160,7 +160,7 @@ Pod-wide profile часто расширяет разрешения, если в
 | Syscall / группа | Для чего обычно используется | Что дает процессу | Почему ограничиваем или требуем обоснования |
 | --- | --- | --- | --- |
 | `bpf` | Создание и управление eBPF maps/programs, загрузка eBPF-программ в ядро, attach к tracing/network/control-plane событиям. | Возможность выполнять проверенный, но все равно kernel-resident код и хранить состояние в kernel-managed структурах. | Это прямое взаимодействие с подсистемами ядра. Для обычного app workload почти никогда не нужно; часто появляется из-за observability/CNI/tracing noise. Разрешайте только для явно выделенных eBPF/observability компонентов с отдельным security review и минимальными capabilities (`CAP_BPF`, `CAP_PERFMON`, `CAP_SYS_ADMIN` в старых моделях). |
-| `ptrace` | Отладка, трассировка, инспекция и изменение состояния другого процесса. | Чтение/изменение регистров и памяти tracee, перехват syscalls и сигналов. | В контейнере это риск утечки секретов и вмешательства в соседние процессы того же PID namespace; при ошибочной namespace/capability модели риск выходит за границы workload. Для production app контейнеров обычно должен быть запрещен, кроме специально изолированных debug/profiling сценариев. |
+| `ptrace` | Отладка, трассировка, инспекция и изменение состояния другого процесса. | Чтение/изменение регистров и памяти tracee, перехват syscalls и сигналов. | В контейнере это риск утечки секретов и вмешательства в соседние процессы того же PID namespace; при ошибочной namespace/capability модели риск выходит за границы workload. Для рабочих сред app контейнеров обычно должен быть запрещен, кроме специально изолированных debug/profiling сценариев. |
 | `kexec_load`, `kexec_file_load` | Загрузка нового kernel image для последующего перехода без полного firmware boot. | Подготовка перезапуска системы в другой kernel. | Контейнерный workload не должен иметь путь к управлению kernel boot chain. Наличие такого syscall в профиле почти всегда означает ошибку профилирования или чрезмерные privileges; дополнительно связан с `CAP_SYS_BOOT`. |
 | `init_module`, `finit_module`, `delete_module` | Загрузка и удаление kernel modules. | Изменение кода, работающего в kernel space. | Это host-level операция, несовместимая с обычной моделью изоляции контейнеров. Разрешение допустимо только для очень специальных node-level агентов, и тогда это уже отдельная privileged security-модель, а не обычный workload profile. |
 | `io_uring_setup`, `io_uring_enter`, `io_uring_register` | Создание rings и выполнение асинхронных I/O операций через io_uring. | Высокопроизводительный I/O интерфейс, где один набор syscalls может инициировать разные file/network-like операции. | Это bypass-риск для профилей, которые блокируют "классические" file/network syscalls, но оставляют io_uring. Допускайте только при доказанной performance необходимости, зафиксированном fallback и проверке, что профиль не полагается на блокировки, обходящиеся через io_uring. |
@@ -224,7 +224,7 @@ Pod-wide profile часто расширяет разрешения, если в
 
 ### 8.1 Функциональная корректность
 
-Profile не должен ломать production, но и нельзя добавлять high-risk syscalls просто чтобы workload стартовал.
+Profile не должен ломать workload в рабочей среде, но и нельзя добавлять high-risk syscalls просто чтобы workload стартовал.
 
 ### 8.2 Реалистичная валидация
 
@@ -232,7 +232,7 @@ Profile не должен ломать production, но и нельзя доба
 - реальный startup path;
 - реальную инициализацию зависимостей;
 - sidecar/init поведение (если есть);
-- production-like kernel/runtime;
+- похожих на рабочие kernel/runtime;
 - релевантные архитектуры и libc.
 
 ### 8.3 Policy gates в CI/CD
@@ -295,3 +295,10 @@ Profile не должен ломать production, но и нельзя доба
 - поддерживается как непрерывный процесс, а не разовая настройка.
 
 Профиль, который просто "строгий" или присутствует в YAML, сам по себе недостаточен.
+---
+
+## 6. Связанные материалы
+
+- [Плейбук Pod Security](../pod-security/playbook.ru.md)
+- [Обзор container escape и capability abuse](../container-escape-capability-abuse/overview.ru.md)
+- [Плейбук ревью безопасности Kubernetes-кластера](../cluster-security-review/playbook.ru.md)

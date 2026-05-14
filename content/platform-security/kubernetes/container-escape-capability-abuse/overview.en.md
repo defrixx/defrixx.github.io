@@ -59,7 +59,7 @@ Important: this vector is specific to cgroup v1. In cgroup v1, a hierarchy can h
 
 cgroup v2 is a different API with a unified hierarchy and a safer delegation model; it does not expose a direct equivalent of the v1 `release_agent` path for this pattern. That does not make cgroup v2 a complete security boundary or remove all runtime bug classes, but this specific `release_agent` escape should be treated as a v1-specific risk.
 
-For Kubernetes production, prefer cgroup v2 on a supported OS: Kubernetes treats cgroup v2 as stable since `v1.25`, and cgroup v1 is deprecated since `v1.35`. A practical baseline is Linux kernel `5.8+`, containerd `1.4+` or CRI-O `1.20+`, the systemd cgroup driver, and a distribution that enables cgroup v2 by default. On a node, check the version with `stat -fc %T /sys/fs/cgroup/`: `cgroup2fs` means v2, while `tmpfs` usually indicates v1.
+For Kubernetes in live environments, prefer cgroup v2 on a supported OS: Kubernetes treats cgroup v2 as stable since `v1.25`, and cgroup v1 is deprecated since `v1.35`. A practical baseline is Linux kernel `5.8+`, containerd `1.4+` or CRI-O `1.20+`, the systemd cgroup driver, and a distribution that enables cgroup v2 by default. On a node, check the version with `stat -fc %T /sys/fs/cgroup/`: `cgroup2fs` means v2, while `tmpfs` usually indicates v1.
 
 ### Attack pattern
 The attacker mounts cgroup v1, creates a child cgroup, writes to control files such as:
@@ -300,7 +300,7 @@ A security review that looks only for "escape" can miss the more common operatio
 
 User namespaces do not remove every escape vector and do not turn containers into a full security boundary, but they change compromise impact. With `hostUsers: false`, root and capabilities inside the container are mapped to an unprivileged host UID/GID range, so UID `0` in the container is not UID `0` on the node.
 
-This is especially relevant for workloads that historically required root or selected capabilities. In Kubernetes `v1.36+`, User Namespaces are GA for Linux workloads, so `hostUsers: false` becomes a practical production control for reducing blast radius, not an experimental setting.
+This is especially relevant for workloads that historically required root or selected capabilities. In Kubernetes `v1.36+`, User Namespaces are GA for Linux workloads, so `hostUsers: false` becomes a practical live-environment control for reducing blast radius, not an experimental setting.
 
 Operational applicability improved because of ID-mapped mounts: the kubelet no longer needs to recursively `chown` volume data only to change UID/GID visibility inside the container. Kernel remapping at mount time makes this control more realistic for stateful and volume-heavy workloads.
 
@@ -349,3 +349,11 @@ When reviewing a workload, ask:
 - Is the node/kernel/runtime version exposed to known breakout paths?
 - Would compromise of this container expose host credentials or enable privileged follow-on actions?
 - What Kubernetes API impact becomes possible after node-level access?
+---
+
+## 7. Related Materials
+
+- [Pod Security playbook](../pod-security/playbook.en.md)
+- [Seccomp checklist](../seccomp/checklist.en.md)
+- [Kubernetes cluster security review playbook](../cluster-security-review/playbook.en.md)
+- [Kubernetes adversarial validation playbook](../adversarial-validation/playbook.en.md)

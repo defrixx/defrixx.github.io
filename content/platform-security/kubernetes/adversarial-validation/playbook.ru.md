@@ -2,7 +2,7 @@
 
 ## 1. Область и цель
 
-Этот плейбук описывает, как переводить Kubernetes attack paths в безопасные production-проверки. Фокус на проверяемом цикле:
+Этот плейбук описывает, как переводить Kubernetes attack paths в безопасные проверки для рабочих сред. Фокус на проверяемом цикле:
 - подтвердить доступ и границу доверия;
 - перечислить reachable surface;
 - доказать один контролируемый путь злоупотребления;
@@ -12,7 +12,7 @@
 **Цель:**
 - проверить, что Kubernetes-меры контроля закрывают реальные пути атаки, а не только выглядят корректно в YAML;
 - получить подтверждения для security review, устранения проблем и повторной проверки;
-- связать offensive lab-сценарии с production guardrails: RBAC, admission, NetworkPolicy, усиление защиты runtime, supply chain и observability.
+- связать offensive lab-сценарии с защитные меры рабочих сред: RBAC, admission, NetworkPolicy, усиление защиты runtime, supply chain и observability.
 
 ---
 
@@ -31,7 +31,7 @@
 
 ### 2.2 Безопасные ограничения
 
-Для production и shared staging:
+Для рабочих сред и shared staging:
 - выполняйте destructive/DoS/runtime escape проверки только в изолированном namespace или clone-среде;
 - заранее фиксируйте область: namespaces, workloads, identities, IP ranges, временное окно;
 - не читайте реальные секретные значения без отдельного approval; достаточно доказать наличие права `get/list/watch` или факт выдачи токена;
@@ -55,14 +55,14 @@
 - Git и registry scanning срабатывают до merge/release;
 - для найденных ранее секретов выполняется ротация, а не только удаление из текущей ветки.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - блокируйте служебные VCS/build paths на web tier и при упаковке артефактов;
 - запрещайте plaintext/base64 secrets в Git и image layers;
 - включите pre-merge и pre-release secret scanning;
 - любой секрет, попавший в Git или image layer, считается скомпрометированным и требует ротации.
 
 **Подтверждение:**
-Классификация: `safe in prod` для header checks и проверки статуса сканирования; `staging only` для image export или layer inspection; `requires approval` перед экспортом production images.
+Классификация: `safe in prod` для header checks и проверки статуса сканирования; `staging only` для image export или layer inspection; `requires approval` перед экспортом релизные images.
 
 ```bash
 curl -I https://<app>/.git/config
@@ -79,7 +79,7 @@ trufflehog git file://<repo>
 - build/CI workloads не получают host runtime control plane ради удобства;
 - `privileged: true`, `hostPID`, `hostNetwork`, `hostIPC` и dangerous capabilities имеют владельца, обоснование и expiry.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - deny runtime socket mounts через admission policy;
 - используйте rootless/isolated builders или выделенные build nodes вместо host socket sharing;
 - для исключений требуйте отдельный namespace, tight RBAC, NetworkPolicy, runtime detection и срок пересмотра не более `30d`.
@@ -98,14 +98,14 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - cloud metadata endpoints защищены provider-specific controls;
 - egress из frontend/workload namespaces ограничен явным allowlist.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - URL fetchers используют allowlist схем, доменов и портов;
 - запретите доступ к metadata IP ranges и cluster-internal sensitive services для workload'ов, которым он не нужен;
 - никогда не запрашивайте credential paths cloud metadata во время validation; доказывайте защиту через deny evidence, non-sensitive canaries или provider-specific metadata controls;
 - мониторьте неожиданные HTTP-запросы из frontend pods к internal service DNS и metadata endpoints.
 
 **Подтверждение:**
-Классификация: `safe in prod` для policy deny logs и non-sensitive canaries; `staging only` для активных service reachability probes; `requires approval` перед проверкой production metadata endpoints.
+Классификация: `safe in prod` для policy deny logs и non-sensitive canaries; `staging only` для активных service reachability probes; `requires approval` перед проверкой metadata endpoints рабочей среды.
 
 ```bash
 kubectl run -n <ns> --rm -it netcheck --image=curlimages/curl -- sh
@@ -125,9 +125,9 @@ kubectl logs -n <network-policy-or-runtime-security-ns> <policy-or-sensor-pod>
 - node security groups/firewalls не открывают NodePort range наружу без необходимости;
 - internet exposure проверяется фактическим подключением, а не только чтением Service YAML.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - для internal сервисов используйте `ClusterIP` или internal load balancer;
-- alert на новый `NodePort` в production namespace;
+- alert на новый `NodePort` в защищенном namespace;
 - инвентарь public entry points обновляется минимум каждые `30d`.
 
 **Подтверждение:**
@@ -147,8 +147,8 @@ nmap -Pn -p 30000-32767 <node-external-ip>
 - sensitive namespaces имеют default-deny ingress и egress;
 - разрешенные east-west потоки документированы и тестируются из low-trust pod.
 
-**Рекомендация для production:**
-- включите default deny для production и high-value namespaces;
+**Рекомендация для рабочих сред:**
+- включите default deny для рабочих сред и high-value namespaces;
 - явно разрешайте только необходимые service-to-service пути;
 - re-test NetworkPolicy после изменений CNI, namespace labels и service selectors.
 
@@ -166,10 +166,10 @@ curl -m 2 http://<target-service>.<target-ns>.svc.cluster.local
 - `automountServiceAccountToken` выключен для workload'ов без Kubernetes API access;
 - default ServiceAccount не используется application workload'ами.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - один ServiceAccount на workload, права выдаются по функции, а не по namespace convenience;
 - `get/list/watch secrets`, `pods/exec`, `pods/ephemeralcontainers`, `escalate`, `bind`, `impersonate`, `serviceaccounts/token` требуют отдельного approval;
-- quarterly recertification прав production ServiceAccounts.
+- quarterly recertification прав ServiceAccounts рабочей среды.
 
 **Подтверждение:**
 ```bash
@@ -182,16 +182,16 @@ kubectl get rolebindings,clusterrolebindings -A
 ### 3.7 Исчерпание ресурсов
 
 **Что проверять:**
-- каждый production container имеет CPU и memory `resources.requests`, чтобы scheduling отражал реальные потребности workload;
-- каждый production container имеет memory limit, чтобы ограничить node-level DoS и noisy-neighbor impact;
+- каждый контейнер в рабочей среде имеет CPU и memory `resources.requests`, чтобы scheduling отражал реальные потребности workload;
+- каждый контейнер в рабочей среде имеет memory limit, чтобы ограничить node-level DoS и noisy-neighbor impact;
 - CPU limits являются risk-based, а не blanket requirement; требуйте их, когда DoS/noisy-neighbor risk выше throttling/latency risk или когда этого требует platform policy;
 - workload'ы, которые пишут temporary files, caches, logs, uploads, generated artifacts или batch output, имеют `ephemeral-storage` requests и limits;
 - namespaces имеют `ResourceQuota` и, где нужно, `LimitRange`;
 - alerting покрывает CPU/memory spikes, OOMKilled, throttling и restart loops.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - используйте Pod Security playbook как canonical source для resource-constraint policy и исключений;
-- запретить BestEffort pods в production namespaces;
+- запретить BestEffort pods в защищенных namespace;
 - задавать namespace-level quotas для shared clusters;
 - DoS-проверки выполнять только в isolated load/staging среде.
 
@@ -207,13 +207,13 @@ kubectl top pods -A
 **Что проверять:**
 - private registry требует authentication, authorization и network restriction;
 - registry API не раскрывает catalog/manifests широкой аудитории;
-- production-развертывание идет по digest и проходит provenance/signature policy;
+- релизное развертывание идет по digest и проходит provenance/signature policy;
 - image history не содержит suspicious fetch-and-execute pattern;
 - batch/utility jobs не запускают image'и из неутвержденных registry без владельца и provenance.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - registry endpoints не должны быть доступны из general-purpose networks;
-- audit logging registry events обязателен для production-артефактов;
+- audit logging registry events обязателен для релизных артефактов;
 - deploy gate должен проверять digest, trusted builder identity, provenance/signature и policy outcome;
 - блокируйте image'и, которые скачивают и выполняют remote content во время build/startup без отдельного ревью.
 
@@ -233,7 +233,7 @@ kubectl get jobs -A -o wide
 - debug containers не обходят Pod Security/RBAC ожидания;
 - node-level `kubectl debug node/...` разрешен только break-glass ролям.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - `exec` в sensitive namespaces должен быть ограничен и audit-able;
 - ephemeral containers разрешайте только support/SRE ролям с коротким сроком и отдельным журналированием;
 - применяйте admission policy для запрета debug surfaces в high-value namespaces, где это операционно допустимо.
@@ -252,7 +252,7 @@ kubectl get events -A --field-selector reason=Started
 - runtime telemetry видит чтение sensitive paths, shell spawn, suspicious network tools, `nsenter`, host path access;
 - admission policy блокирует известные unsafe patterns до развертывания.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - используйте offensive lab behaviors как detection test cases, но адаптируйте их под безопасную staging-среду;
 - Falco/Tetragon или эквивалентные runtime sensors должны иметь настроенный signal-to-noise baseline;
 - Kyverno/Gatekeeper/ValidatingAdmissionPolicy policies должны иметь владельца, test cases и жизненный цикл исключений.
@@ -271,15 +271,15 @@ kubectl --namespace <sensitive-ns> exec -it <pod> -- sh
 **Что проверять:**
 - workload не раскрывает high-value secrets через environment variables, debug endpoints, shell-доступ или verbose error output;
 - в контейнере нет неожиданных mounts, writable sensitive paths, broad `/proc` visibility и service account token там, где Kubernetes API не нужен;
-- general-purpose helper images и security toolboxes не появляются в production namespace без change record и владельца.
+- general-purpose helper images и security toolboxes не появляются в защищенном namespace без change record и владельца.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - не помещайте долгоживущие секреты в env vars для application workload'ов; используйте secret manager, workload identity или short-lived mounted credentials;
 - выключайте `automountServiceAccountToken` и debug shell там, где они не нужны для runtime-функции;
-- alert на запуск multi-tool images, unexpected shells, package managers и network scanners в production namespaces.
+- alert на запуск multi-tool images, unexpected shells, package managers и network scanners в защищенных namespace.
 
 **Подтверждение:**
-Классификация: `safe in prod` для Kubernetes API metadata inventory; `staging only` для shell-based inspection; `requires approval` перед выполнением команд в production pods.
+Классификация: `safe in prod` для Kubernetes API metadata inventory; `staging only` для shell-based inspection; `requires approval` перед выполнением команд в pods в рабочей среде.
 
 ```bash
 # Не выводите значения environment variables. Проверяйте только имена/классы через approved debug path.
@@ -298,7 +298,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - kubeaudit/Popeye или эквивалентные scanners находят privileged pods, missing limits, weak security context, stale references и hygiene debt;
 - benchmark-замечания переводятся в backlog устранения с владельцем, severity и re-test подтверждением.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - запускайте сканирование профиля защищенности регулярно и после platform upgrades;
 - отделяйте exploitable misconfigurations от hygiene-замечаний, чтобы устранение не превращалось в шум;
 - не считайте чистый scanner output достаточным security assurance: подтверждайте critical controls targeted validation-тестами из этого playbook.
@@ -318,7 +318,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - management-plane services не доступны из application namespaces и low-trust pods;
 - service accounts для tooling развертывания не имеют cluster-admin по умолчанию и не могут читать Secrets без необходимости.
 
-**Рекомендация для production:**
+**Рекомендация для рабочих сред:**
 - Helm v2/Tiller должен быть выведен из эксплуатации; для Helm v3 храните release state и deploy credentials с минимально необходимыми правами;
 - любые in-cluster admin services требуют explicit owner, network isolation, authentication, audit logging и expiry для исключения;
 - проверяйте legacy components после migration, incident cleanup и cluster upgrades.

@@ -142,7 +142,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 
 Все численные лимиты для токенов, сессий, replay и rate-limiting задаются здесь. В остальных разделах ссылайтесь на этот базовый набор, а не дублируйте значения.
 
-Эти значения являются локальной рекомендованной production-базой этого плейбука, а не прямыми требованиями RFC или OIDC Core. Используйте их как дефолтные guardrails и уточняйте по профилю риска, UX, возможностям клиента и поведению IdP.
+Эти значения являются локальной рекомендованной базой для рабочих сред этого плейбука, а не прямыми требованиями RFC или OIDC Core. Используйте их как дефолтные guardrails и уточняйте по профилю риска, UX, возможностям клиента и поведению IdP.
 
 ### 5.1 Временные параметры токенов и сессий
 
@@ -182,7 +182,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - `nonce` обязателен для OIDC login и должен совпадать с исходным authorization request
 - Redirect/logout URI: только exact match и отдельные списки для каждого окружения
 - Блокируйте `implicit` grant по умолчанию; любое временное исключение требует migration plan, owner, expiry и компенсирующие меры.
-- OAuth password grant / Resource Owner Password Credentials flow запрещен для production clients. Не утверждайте его как обычное исключение; допускается только ограниченный по времени migration plan для существующих legacy clients.
+- OAuth password grant / Resource Owner Password Credentials flow запрещен для клиентов рабочих сред. Не утверждайте его как обычное исключение; допускается только ограниченный по времени migration plan для существующих legacy clients.
 - Replacement paths: Authorization Code + PKCE для browser/mobile/user login, device authorization flow для устройств с ограниченным пользовательским вводом и `client_credentials` для service-to-service доступа.
 
 Усиления для профиля Maximum:
@@ -285,7 +285,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - PKCE `plain` вместо `S256`
 - Wildcard redirect URI
 - Хранение refresh token в browser storage
-- Включение password grant / Keycloak Direct Access Grants для production clients
+- Включение password grant / Keycloak Direct Access Grants для клиентов рабочих сред
 - Длинный TTL access token (часы/дни)
 - Один client для user login и machine-to-machine трафика без сегрегации
 - Отсутствие rotation ключей и процедуры реагирования на компрометацию ключей
@@ -317,7 +317,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 
 - Standard Flow: ON
 - Implicit: OFF
-- Direct Access Grants: OFF. В Keycloak это соответствует password grant и должно оставаться выключенным для production clients; legacy-использование требует migration plan, а не постоянного исключения.
+- Direct Access Grants: OFF. В Keycloak это соответствует password grant и должно оставаться выключенным для клиентов рабочих сред; legacy-использование требует migration plan, а не постоянного исключения.
 - PKCE method: `S256`
 - Revoke Refresh Token: ON (обычно)
 
@@ -353,3 +353,11 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 
 - Введите набор метрик и алертов по домену Operations/Monitoring
 - Зафиксируйте сценарий реагирования для replay/brute-force/token-abuse сигналов
+---
+
+## 10. Связанные материалы
+
+- [Плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md)
+- [Плейбук безопасности API](../../api/api-security-patterns/playbook.ru.md)
+- [Плейбук Vault](../../../platform-security/secrets/vault/playbook.ru.md)
+- [Плейбук моделирования угроз](../../../review/threat-modeling/playbook.ru.md)

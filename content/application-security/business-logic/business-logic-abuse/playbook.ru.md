@@ -12,7 +12,8 @@
 Вне области:
 - низкоуровневые механики API-аутентификации и авторизации: используйте [плейбук API security](../../api/api-security-patterns/playbook.ru.md);
 - OAuth/OIDC session и token controls: используйте [плейбук OIDC + OAuth 2.0](../../identity/oidc-oauth/playbook.ru.md);
-- меры контроля только браузерного уровня: используйте [плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md).
+- меры контроля только браузерного уровня: используйте [плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md);
+- code-level review validation, encoding, auth/session implementation, injection, file handling, logging и crypto misuse: используйте [плейбук Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md).
 
 Цель:
 - выявлять чувствительные бизнес-потоки до запуска;
@@ -57,18 +58,18 @@ High-impact сценарии:
 | Tenant/admin/support | cross-tenant access, privileged action misuse | object/tenant authorization, JIT/JEA admin access, immutable audit, approval for destructive actions |
 | Export/reporting | bulk data theft, scraping through valid UI/API | row/object authorization, export quotas, async approval for high-volume exports, watermarking/logging |
 
-Production-рекомендация:
+Рабочая рекомендация:
 - Классифицируйте новые или измененные flows как `normal`, `sensitive` или `critical`.
 - `Sensitive` flows требуют явных abuse cases и мониторинга до релиза.
 - `Critical` flows требуют negative tests, покрытия runbook и owner-approved решения по релизу.
 
 ---
 
-## 4. Production-база
+## 4. Базовый профиль
 
 ### 4.1 Захват учетной записи и злоупотребление учетными данными
 
-Production-настройки:
+Рабочие настройки:
 - Настраивайте rate limit по account, source network, device/session signal и client/application, где это возможно. Одного IP-only лимита недостаточно.
 - Не раскрывайте, существует ли username, email, phone или reset token.
 - Используйте MFA или step-up для рискованных login, password reset completion, new device, payment change, admin action и bulk export.
@@ -82,7 +83,7 @@ Production-настройки:
 
 ### 4.2 Signup, trial, promo и referral abuse
 
-Production-настройки:
+Рабочие настройки:
 - Free-value flows имеют явные budgets per account, tenant, payment instrument, device/browser signal, source network и time window.
 - Promo и referral rewards задерживаются до real qualifying event у referred account.
 - Reward ledgers должны быть append-only или auditable; reversal возможен при подтвержденном abuse.
@@ -96,7 +97,7 @@ Production-настройки:
 
 ### 4.3 Tenant isolation и object/workflow authorization
 
-Production-настройки:
+Рабочие настройки:
 - Authorization enforced для каждого object и state transition в service/domain layer.
 - Tenant-контекст выводится из authenticated membership и политики, а не только из user-controlled request fields.
 - Cross-tenant admin/support actions требуют явный support-контекст, reason, ticket, JIT/JEA access там, где он применим, и immutable audit.
@@ -109,7 +110,7 @@ Production-настройки:
 
 ### 4.4 State machines, idempotency и replay
 
-Production-настройки:
+Рабочие настройки:
 - Critical workflows используют явные state machines с allowed transitions.
 - State-changing requests используют idempotency keys, где ожидаются retries или duplicate events.
 - Webhook, payment, refund, booking и fulfillment flows отклоняют stale, duplicate, out-of-order и already-consumed events.
@@ -122,10 +123,24 @@ Production-настройки:
 
 ### 4.5 Abuse monitoring и response
 
-Production-настройки:
+Рабочие настройки:
 - Sensitive flows создают structured events с actor, tenant, object, action, result, reason, correlation ID и релевантными risk signals.
 - Дашборды отслеживают flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters и export volume.
 - Abuse response имеет playbooks для throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation и customer support communication.
 
 Верификация:
 - Tabletop или simulation доказывает, что команда может определить affected accounts/tenants, остановить flow, reverse unsafe credits там, где это возможно, и сохранить подтверждения.
+
+---
+
+## 5. Related review overlay
+
+Используйте этот плейбук вместе с [плейбуком Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md). Secure coding review проверяет, корректно ли реализованы security primitives; business-logic abuse review проверяет, можно ли легитимными действиями нарушить product invariants. Для high-risk product flows перед release нужны оба review.
+---
+
+## 10. Связанные материалы
+
+- [Плейбук безопасности API](../../api/api-security-patterns/playbook.ru.md)
+- [Плейбук моделирования угроз](../../../review/threat-modeling/playbook.ru.md)
+- [Плейбук безопасной разработки и ревью кода](../../secure-coding/code-review/playbook.ru.md)
+- [Плейбук управления уязвимостями](../../../review/vulnerability-management/playbook.ru.md)

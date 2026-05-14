@@ -1,22 +1,22 @@
 # Infrastructure Technologies
 
-This document explains how key technologies commonly seen in production infrastructure and security reviews work. It does not replace playbooks: the focus here is purpose, operating model, responsibility boundaries, and common production patterns.
+This document explains how key technologies commonly seen in live infrastructure and security reviews work. It does not replace playbooks: the focus here is purpose, operating model, responsibility boundaries, and common live patterns.
 
-Sections are grouped by the role a technology plays in a production system: build and supply chain, container platform, identity/secrets, automation, data stores, and messaging.
+Sections are grouped by the role a technology plays in a live system: build and supply chain, container platform, identity/secrets, automation, data stores, and messaging.
 
 ## Build, Delivery, and Supply Chain
 
 ### CI/CD Platforms
 
 #### What It Is Used For
-CI/CD platforms are used to build, test, package, publish, and deploy software artifacts. Common examples include GitHub Actions, GitLab CI, Jenkins, Buildkite, and TeamCity. In production this is a central part of the software supply chain: the pipeline gets access to source code, secrets, package registries, cloud accounts, artifact registries, and deployment environments.
+CI/CD platforms are used to build, test, package, publish, and deploy software artifacts. Common examples include GitHub Actions, GitLab CI, Jenkins, Buildkite, and TeamCity. In live environments this is a central part of the software supply chain: the pipeline gets access to source code, secrets, package registries, cloud accounts, artifact registries, and deployment environments.
 
 #### Operating Model
 A pipeline or workflow describes a sequence of jobs. A job runs on a runner/agent and usually consists of steps: source checkout, dependency installation, tests, security scans, build, artifact upload, image push, and deployment. A runner can be hosted, where the CI/CD vendor provides the execution infrastructure, or self-hosted, where the team runs agents in its own network, cloud account, or Kubernetes cluster.
 
-Artifacts are used to pass build outputs between jobs and later stages. Cache speeds up repeated builds by storing dependencies or intermediate outputs. An environment defines a deployment target such as `staging` or `production`, and can have protection rules: required reviewers, wait timers, branch/tag restrictions, and environment-scoped secrets. A secret store holds tokens, passwords, certificates, and signing keys available to the pipeline during job execution.
+Artifacts are used to pass build outputs between jobs and later stages. Cache speeds up repeated builds by storing dependencies or intermediate outputs. An environment defines a deployment target such as `staging` or `prod`, and can have protection rules: required reviewers, wait timers, branch/tag restrictions, and environment-scoped secrets. A secret store holds tokens, passwords, certificates, and signing keys available to the pipeline during job execution.
 
-A modern production pattern is to use OIDC federation instead of long-lived static secrets. The CI/CD platform issues a short-lived OIDC token for a specific job/workflow with claims about the repository, branch/tag, pipeline, environment, and actor. A cloud provider or Vault verifies the issuer, audience, subject, and additional claims, then issues temporary credentials with a limited policy.
+A modern live pattern is to use OIDC federation instead of long-lived static secrets. The CI/CD platform issues a short-lived OIDC token for a specific job/workflow with claims about the repository, branch/tag, pipeline, environment, and actor. A cloud provider or Vault verifies the issuer, audience, subject, and additional claims, then issues temporary credentials with a limited policy.
 
 The deploy pipeline should not be the only trust point. The pipeline builds and publishes an artifact, while a deploy/admission gate separately verifies the digest, signature, provenance, policy result, environment approval, and release eligibility. The boundary usually sits where the pipeline hands an immutable artifact and deployment intent to Kubernetes, a GitOps controller, a release orchestrator, or a cloud deploy service.
 
@@ -45,9 +45,9 @@ A CI/CD platform runs automation and provides primitives for secrets, runners, a
 
 Hosted runners reduce operational burden and usually provide a clean ephemeral environment. Self-hosted runners are needed for private networks, specialized hardware, or compliance, but require hardening, cleanup, egress control, patching, and protection against persistence between jobs.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Protected branches and tags for release refs.
-- Environment approvals for production deployment.
+- Environment approvals for live deployment.
 - OIDC federation into a cloud provider or Vault instead of static deploy secrets.
 - Separate runners for trusted and untrusted workloads.
 - Ephemeral self-hosted runners for pull request builds from untrusted code.
@@ -64,16 +64,20 @@ Hosted runners reduce operational burden and usually provide a clean ephemeral e
 ### Docker
 
 #### What It Is Used For
-Docker is used to build, package, and run applications in containers. In production it most often appears as an image build tool, a local development tool, a CI/CD pipeline component, and part of the container supply chain, even when Kubernetes runs containers through containerd or CRI-O rather than Docker Engine.
+Docker is used to build, package, and run applications in containers. In live environments it most often appears as an image build tool, a local development tool, a CI/CD pipeline component, and part of the container supply chain, even when Kubernetes runs containers through containerd or CRI-O rather than Docker Engine.
 
 #### Operating Model
 `Dockerfile` describes what an image is built from: the base image, package installation, copied files, environment variables, user, working directory, and startup command. During a build, Docker turns instructions into a set of layers. Each layer records a filesystem change, and the final image becomes a portable artifact that can be pushed to a registry and run in different environments.
+
+At the OCI level, a runnable image is not a single opaque file. A platform-specific image manifest points to one image config object and an ordered set of filesystem layer descriptors. The config records runtime defaults such as entrypoint, command, environment, user, exposed ports, volumes, labels, and root filesystem metadata. Layers record filesystem changes; they do not carry the runtime configuration by themselves. An image index, also called a manifest list in Docker terminology, points to one or more platform-specific manifests.
 
 A registry stores and serves images. Docker CLI is the client used by developers or CI jobs to send build, publish, and run commands. Docker daemon executes those commands on the host: it builds images, creates containers, attaches volumes and networks, assigns constraints, and delegates low-level execution to the runtime.
 
 A container is a running process with an isolated view of the filesystem, processes, network, and resources. A volume is used for data that must survive container recreation. A network defines how a container communicates with other containers, the host, and external systems.
 
 A typical flow looks like this: a developer or CI job builds an image from a `Dockerfile`, publishes it to a registry, then a runtime pulls the image and starts a container from an immutable set of layers with configured namespaces, cgroups, capabilities, mounts, and networking. When used with Kubernetes, Docker usually remains in the build/package stage, while node-level execution is handled by a container runtime.
+
+The terms `tag`, `digest`, and image ID are easy to mix up in reviews. A tag is a mutable registry reference unless registry policy prevents mutation. A digest identifies registry content such as an index, manifest, config, or layer. The image ID is derived from the image config and is useful locally, but live deployment policy should bind to the registry digest that Kubernetes and the container runtime pull.
 
 #### Interaction Diagram
 ```mermaid
@@ -104,16 +108,18 @@ Docker helps package an application and define runtime parameters, but it does n
 
 The application still owns its own authentication, authorization, input handling, and safe use of secrets.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Building images in CI.
 - Storing images in a private registry.
 - Multi-stage builds.
 - Minimal base images.
 - Image scanning before publication or deployment.
 - Image signing and provenance for critical services.
+- Digest-pinned live deployments; tags are used for discovery or channels, not as the release trust anchor.
 - Running containers in Kubernetes through containerd or CRI-O rather than directly through Docker Engine.
 
 #### Related Project Files
+- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — OCI image model, Dockerfile baseline, registry promotion, digest pinning, scanning, and signing.
 - `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md` — container escape risks through capabilities and dangerous container settings.
 - `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — secure workload settings that apply to containers in Kubernetes.
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — artifact origin, supply chain, and build trust.
@@ -121,12 +127,14 @@ The application still owns its own authentication, authorization, input handling
 ### OCI Registry / Artifact Registry
 
 #### What It Is Used For
-An OCI registry stores and serves container images and related supply-chain artifacts: SBOMs, signatures, provenance attestations, scan results, Helm charts, and other OCI-compatible objects. In production, the registry is usually the central point between the build pipeline, the deployment platform, and runtime: CI publishes artifacts, the admission/deploy gate verifies them, and Kubernetes nodes pull digests to run workloads.
+An OCI registry stores and serves container images and related supply-chain artifacts: SBOMs, signatures, provenance attestations, scan results, Helm charts, and other OCI-compatible objects. In live environments, the registry is usually the central point between the build pipeline, the deployment platform, and runtime: CI publishes artifacts, the admission/deploy gate verifies them, and Kubernetes nodes pull digests to run workloads.
 
 #### Operating Model
-The OCI Distribution Specification defines the API for pushing and pulling content through a registry. The core objects are blobs, manifests, image indexes, digests, and tags. A blob stores an image layer or config. A manifest describes one image or artifact and references blobs by digest. An image index connects several platform-specific manifests, such as `linux/amd64` and `linux/arm64`. A digest is a content-addressed identifier; a tag is a human-readable reference to a manifest and may be mutable unless registry policy prevents it.
+The OCI Distribution Specification defines the API for pushing and pulling content through a registry. The core objects are blobs, manifests, image indexes, digests, and tags. A blob stores an image layer or config. A manifest describes one image or artifact and references blobs by digest. An image index connects several platform-specific manifests, such as `linux/amd64` and `linux/arm64`. A digest is a content-addressed identifier for specific registry content; a tag is a human-readable reference to a manifest or index and may be mutable unless registry policy prevents it.
 
-A repository inside a registry groups related artifacts, for example `prod/payments/api`. A client pushes blobs and a manifest, then may assign a tag. During pull, the client asks for a manifest by tag or digest, receives blob digests, and downloads the blobs. Production Kubernetes deployments should reference images by digest because a tag is not a reliable immutable reference without a separate tag immutability policy.
+A repository inside a registry groups related artifacts, for example `prod/payments/api`. A client pushes blobs and a manifest, then may assign a tag. During pull, the client asks for a manifest or index by tag or digest, receives descriptors for the selected content, and downloads the referenced blobs. For a multi-platform image, the client may first receive an index and then select the platform-specific manifest for its OS and architecture. Kubernetes deployments to live environments should reference images by digest because a tag is not a reliable immutable reference without a separate tag immutability policy.
+
+Registry promotion must preserve what was reviewed. Copying an image from one registry to another can change the repository reference and may produce a different top-level digest when the copied object, media type, or index shape changes. Review evidence therefore needs the source and destination references, the exact digest deployed, the platform manifest set, and the signature/provenance subject that was accepted by policy.
 
 Modern artifact registries often store not only images, but also referrers: signatures, SBOMs, and provenance linked to a subject digest. For example, image `sha256:...` can have a cosign signature, SLSA provenance, and SBOM as separate OCI artifacts. A deploy gate or admission policy first extracts the image digest, then looks for linked attestations/referrers and verifies the signature, builder identity, provenance predicate, and policy outcome.
 
@@ -168,12 +176,12 @@ flowchart LR
 #### Responsibility Boundaries
 A registry stores and serves artifacts through an API, but it does not automatically prove that an image is safe, signed by the right subject, or built from an approved source. The team owns authentication and authorization, immutable digest-based deployment, tag immutability for release tags, signatures, provenance, retention, vulnerability management, and audit trail.
 
-The artifact registry should not be the only control point. Even if the registry blocks some unsafe images, the deploy gate should independently verify digest, signature, builder identity, provenance, and policy decision before a workload reaches production.
+The artifact registry should not be the only control point. Even if the registry blocks some unsafe images, the deploy gate should independently verify digest, signature, builder identity, provenance, and policy decision before a workload reaches a live environment.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Private registry with IAM/RBAC and separate repositories by environment or domain.
 - Deployment only by digest (`image@sha256:...`); tags are used for discovery, not as the trust anchor.
-- Tag immutability for release tags and no overwrites for production tags.
+- Tag immutability for release tags and no overwrites for live-environment tags.
 - Image signing and SBOM/provenance publication as OCI artifacts/referrers.
 - Admission/deploy gate that verifies signature, trusted builder identity, SLSA provenance, and vulnerability policy.
 - Retention policy for old images while keeping artifacts required for rollback, incident response, and audit.
@@ -182,14 +190,15 @@ The artifact registry should not be the only control point. Even if the registry
 
 #### Related Project Files
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — provenance, verification policy, and trusted builders.
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — registry as part of the deployment chain and production gate.
+- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — container image and OCI registry security baseline.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — registry as part of the deployment chain and release gate.
 - `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md` — private registry exposure, image history, and supply-chain abuse path checks.
 - `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — runtime impact of running an untrusted image.
 
 ### Helm
 
 #### What It Is Used For
-Helm is used as a package manager for Kubernetes: manifest templating, release management, and application distribution through charts. In production it is often used to install platform components, ingress controllers, monitoring stacks, policy engines, and internal applications.
+Helm is used as a package manager for Kubernetes: manifest templating, release management, and application distribution through charts. In live environments it is often used to install platform components, ingress controllers, monitoring stacks, policy engines, and internal applications.
 
 #### Operating Model
 A chart is a package of Kubernetes manifests and templates for one application or platform component. A template contains Kubernetes YAML with Go templating. `values.yaml` and environment-specific values provide render parameters: image tag, replicas, resources, ingress, service account, RBAC, security context, and other settings.
@@ -231,7 +240,7 @@ Helm does not determine whether the resulting configuration is secure. A chart c
 
 The team is responsible for reviewing rendered manifests, controlling values, verifying chart provenance, pinning versions, limiting hooks, and checking the permissions that the chart creates in the cluster.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Internal chart repository.
 - Pinning chart/app versions.
 - Separate values per environment.
@@ -293,7 +302,7 @@ The runtime executes a container with the requested constraints, but it does not
 
 Policy, admission control, and baselines belong to the platform.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - containerd as the runtime in managed Kubernetes.
 - CRI-O in clusters oriented around a Kubernetes-native runtime stack.
 - RuntimeClass for isolating selected workloads.
@@ -309,7 +318,7 @@ Policy, admission control, and baselines belong to the platform.
 ### Kubernetes
 
 #### What It Is Used For
-Kubernetes is used to orchestrate containerized applications: scheduling, service discovery, rollouts, autoscaling, configuration, secrets, networking, and workload lifecycle management. In production it often acts as the base platform for microservices, batch jobs, internal platforms, and cloud-native infrastructure.
+Kubernetes is used to orchestrate containerized applications: scheduling, service discovery, rollouts, autoscaling, configuration, secrets, networking, and workload lifecycle management. In live environments it often acts as the base platform for microservices, batch jobs, internal platforms, and cloud-native infrastructure.
 
 #### Operating Model
 The API Server is the central management point: user commands, controller activity, kubelet communication, and external integrations go through it. It validates requests, applies authentication, authorization, and admission, then stores desired state in etcd. etcd stores cluster state: workload objects, services, secrets, bindings, configuration, and metadata.
@@ -361,7 +370,7 @@ Kubernetes provides APIs and workload management mechanisms, but it does not gua
 
 Application teams own secure pod specs, health checks, resource limits, secrets, ingress configuration, and application behavior.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Managed Kubernetes: EKS, GKE, AKS, or an equivalent platform.
 - GitOps through Argo CD or Flux.
 - Namespace separation by environment, team, or blast radius.
@@ -380,7 +389,7 @@ Application teams own secure pod specs, health checks, resource limits, secrets,
 ### CNI / Kubernetes Networking
 
 #### What It Is Used For
-CNI and Kubernetes networking provide pod connectivity, service discovery, Service load balancing, egress/ingress paths, and network policy enforcement. In production this is one of the main blast-radius control layers: the CNI decides whether a workload in one namespace can reach another workload, a metadata endpoint, a control-plane endpoint, or an external system.
+CNI and Kubernetes networking provide pod connectivity, service discovery, Service load balancing, egress/ingress paths, and network policy enforcement. In live environments this is one of the main blast-radius control layers: the CNI decides whether a workload in one namespace can reach another workload, a metadata endpoint, a control-plane endpoint, or an external system.
 
 Common implementations include Cilium, Calico, cloud-provider CNIs, Flannel, and other plugins. Cilium focuses on an eBPF datapath, observability, and kube-proxy replacement. Calico is widely used for Kubernetes NetworkPolicy and extended policy models, including GlobalNetworkPolicy in the Calico stack. Some managed clusters use cloud-native CNI where pod IPs integrate directly with the VPC/VNet.
 
@@ -428,8 +437,8 @@ CNI provides the datapath and may enforce NetworkPolicy, but it does not know se
 
 Application teams own correct labels, required service-to-service flow definitions, avoiding implicit "namespace isolation" assumptions, and connectivity testing after changes.
 
-#### Common Production Patterns
-- Default-deny ingress and egress for production/high-value namespaces.
+#### Common Live Patterns
+- Default-deny ingress and egress for live and high-value namespaces.
 - Explicit allow rules for service-to-service flows, DNS, and required egress.
 - Separate node pools or clusters for workloads with different trust levels.
 - Cilium/Hubble or Calico flow logs for network event investigation.
@@ -449,7 +458,7 @@ Application teams own correct labels, required service-to-service flow definitio
 #### What It Is Used For
 Ingress, Gateway, and API Gateway publish services outside the cluster or between network zones. They accept client traffic, terminate TLS or pass TLS through, route requests to Kubernetes Services, apply authentication/authorization integrations, rate limits, WAF/API security policies, header normalization, and observability.
 
-Production implementations include NGINX Ingress Controller, cloud load balancer controllers, Envoy Gateway, Kong Gateway/Kong Ingress Controller, HAProxy/Contour/Traefik, and service mesh gateway components. Kubernetes Ingress remains a stable API for HTTP/HTTPS routing, but its development is frozen; new Kubernetes networking capabilities are primarily developed in Gateway API. If the controller is implemented by Istio, this section describes the north-south entry point, while Istio mesh semantics (`VirtualService`, `DestinationRule`, `PeerAuthentication`, `AuthorizationPolicy`, sidecar/ambient) are covered separately in the Istio section.
+Common live-environment implementations include NGINX Ingress Controller, cloud load balancer controllers, Envoy Gateway, Kong Gateway/Kong Ingress Controller, HAProxy/Contour/Traefik, and service mesh gateway components. Kubernetes Ingress remains a stable API for HTTP/HTTPS routing, but its development is frozen; new Kubernetes networking capabilities are primarily developed in Gateway API. If the controller is implemented by Istio, this section describes the north-south entry point, while Istio mesh semantics (`VirtualService`, `DestinationRule`, `PeerAuthentication`, `AuthorizationPolicy`, sidecar/ambient) are covered separately in the Istio section.
 
 #### Operating Model
 An Ingress resource describes host/path routing to a backend Service. By itself, Ingress does not work without an Ingress Controller. The controller watches the Kubernetes API, selects Ingress objects by `ingressClassName`, generates proxy/load balancer configuration, and exposes an external endpoint through a `LoadBalancer` Service, NodePort, cloud load balancer, or edge appliance.
@@ -495,7 +504,7 @@ The Ingress/Gateway layer controls the network entry point, but it does not repl
 
 The platform owns controller hardening, class ownership, public exposure, certificate lifecycle, baseline annotations/plugins, default security headers, logging, and guardrails for cross-namespace routes. Application teams own route ownership, backend readiness, correct host/path rules, and application compatibility with proxy headers/timeouts.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Gateway API for new deployments, Ingress for existing workloads where migration is not complete.
 - Separate ingress/gateway classes for public, internal, and admin traffic.
 - TLS termination at the gateway with managed certificate lifecycle; upstream mTLS for sensitive backends.
@@ -515,7 +524,7 @@ The platform owns controller hardening, class ownership, public exposure, certif
 ### Istio
 
 #### What It Is Used For
-Istio is used as a service mesh for service-to-service traffic management: mTLS, traffic routing, retries, telemetry, authorization policies, and progressive delivery. In production it most often appears in Kubernetes clusters with many internal services and strict service-to-service security requirements.
+Istio is used as a service mesh for service-to-service traffic management: mTLS, traffic routing, retries, telemetry, authorization policies, and progressive delivery. In live environments it most often appears in Kubernetes clusters with many internal services and strict service-to-service security requirements.
 
 #### Operating Model
 Istiod is the mesh control plane. It consumes Kubernetes/Istio configuration, generates and distributes data plane configuration, manages service discovery, and participates in certificate distribution for mTLS. The data plane is represented by an Envoy proxy next to the application in the sidecar model, or by ambient mesh components when ambient mode is used. In ambient mode, the base L4 secure overlay is provided by per-node `ztunnel`, while L7 features are added through waypoint proxies.
@@ -561,7 +570,7 @@ Istio can provide mTLS between workloads and centralized mesh policy, but it doe
 
 The platform owns correct mesh onboarding, certificate lifecycle, policy model, gateway exposure, and compatibility with applications.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Mesh enabled only for selected namespaces instead of the whole cluster at once.
 - Strict mTLS for internal services.
 - AuthorizationPolicy for service-to-service access.
@@ -609,7 +618,7 @@ flowchart LR
 #### Responsibility Boundaries
 A policy engine makes decisions according to configured rules, but it does not define the right security policy by itself. The team owns rule ownership, tests, rollout mode, exceptions, failure behavior, versioning, observability, performance impact, and alignment between rules and real risk scenarios.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - CI checks for pull requests and Terraform/Kubernetes changes.
 - Admission enforcement for critical Kubernetes controls.
 - Audit mode before enforce for new or risky policies.
@@ -617,7 +626,7 @@ A policy engine makes decisions according to configured rules, but it does not d
 - Policy unit tests and fixtures for known-good/known-bad manifests.
 - Separate policy bundles by environment or risk tier.
 - Monitoring webhook latency, denial rates, audit violations, and policy engine availability.
-- Image verification policies for digest, signature, and attestations on production workloads.
+- Image verification policies for digest, signature, and attestations on live workloads.
 
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — admission control and cluster policy gates.
@@ -659,7 +668,7 @@ flowchart LR
 #### Responsibility Boundaries
 The cloud provider owns IAM primitives, token exchange, and enforcement on cloud APIs. The platform team owns identity mapping, trust policies, node metadata restrictions, least privilege, audit logs, credential lifetime, break-glass access, and separation between environments. Application teams own the correct workload identity selection, absence of embedded keys, and correct token refresh handling.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Separate cloud identity per service or bounded workload group.
 - Federation through OIDC instead of static cloud access keys.
 - Trust policy bound to issuer, audience, namespace, service account, repository, branch/tag, or environment.
@@ -677,7 +686,7 @@ The cloud provider owns IAM primitives, token exchange, and enforcement on cloud
 ### Vault
 
 #### What It Is Used For
-HashiCorp Vault is used for centralized secret management, dynamic credentials, encryption-as-a-service, and access to sensitive material. In production it often sits between applications, CI/CD, Kubernetes, and external systems such as databases, cloud IAM, PKI, SSH, and message brokers.
+HashiCorp Vault is used for centralized secret management, dynamic credentials, encryption-as-a-service, and access to sensitive material. In live environments it often sits between applications, CI/CD, Kubernetes, and external systems such as databases, cloud IAM, PKI, SSH, and message brokers.
 
 #### Operating Model
 Vault server receives API requests, performs authentication, checks policy, calls secret engines, and writes audit events. The storage backend stores encrypted Vault state: configuration, metadata, policies, and secret engine data. Seal/unseal protects master key material: while Vault is sealed, it cannot decrypt storage or serve normal requests.
@@ -721,7 +730,7 @@ flowchart LR
 #### Responsibility Boundaries
 Vault protects secret issuance and lifecycle, but it does not make every application that receives those secrets safe. Teams are responsible for minimal policies, short TTLs, audit logs, rotation, safe secret delivery into runtime, protection of root/admin tokens, and avoiding long-lived static secrets where dynamic ones are possible.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - HA Vault cluster.
 - Auto-unseal through cloud KMS or HSM.
 - Kubernetes auth method for workloads.
@@ -741,7 +750,7 @@ Vault protects secret issuance and lifecycle, but it does not make every applica
 ### Ansible
 
 #### What It Is Used For
-Ansible is used for configuration management, provisioning, infrastructure automation, and orchestration of changes across servers, network devices, and platforms. In production it often appears in bootstrap processes, hardening, patch management, middleware configuration, and operational runbooks.
+Ansible is used for configuration management, provisioning, infrastructure automation, and orchestration of changes across servers, network devices, and platforms. In live environments it often appears in bootstrap processes, hardening, patch management, middleware configuration, and operational runbooks.
 
 #### Operating Model
 Inventory describes managed nodes and groups them by environment, role, or other attributes. A playbook defines a sequence of plays: which hosts to target, which variables to use, which tasks to run, and which privilege escalation settings apply. A task calls a module, and a module performs a concrete action: installing a package, changing a file, managing a service, creating a user, or calling an API.
@@ -785,7 +794,7 @@ Ansible applies the described changes, but it does not guarantee that a playbook
 
 A mistake in a playbook can propagate insecure configuration at scale.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Git-hosted playbooks with review.
 - Inventory separation by environment.
 - Ansible Vault or an external secrets manager for sensitive variables.
@@ -809,7 +818,7 @@ Object storage is used to store files and blobs: user uploads, backups, logs, ar
 #### Operating Model
 A bucket or container is the top-level storage container. An object stores content, metadata, key/name, and versions if versioning is enabled. A prefix is not a real directory in most object storage systems, but is used as a namespace convention for grouping objects, lifecycle policies, and IAM conditions.
 
-Access is controlled through a combination of IAM policies, bucket/container policies, ACLs, or legacy access models. In production, a centralized IAM/policy model with public access blocked by default is preferred; ACLs should be used only where they are truly needed and understood. Signed URLs, presigned URLs, and SAS tokens provide time-limited upload/download access without giving users cloud credentials. Such a URL itself becomes a bearer credential until it expires or the signing credential is revoked.
+Access is controlled through a combination of IAM policies, bucket/container policies, ACLs, or legacy access models. In live environments, a centralized IAM/policy model with public access blocked by default is preferred; ACLs should be used only where they are truly needed and understood. Signed URLs, presigned URLs, and SAS tokens provide time-limited upload/download access without giving users cloud credentials. Such a URL itself becomes a bearer credential until it expires or the signing credential is revoked.
 
 Encryption can be provider-managed, customer-managed through KMS, or client-side. Versioning, retention, soft delete, and object lock/immutability help protect against accidental deletion, ransomware, and destructive insider actions, but increase cost and require lifecycle management. Access logs and cloud audit logs are needed for investigations: who read, wrote, deleted, or changed policy.
 
@@ -829,7 +838,7 @@ flowchart LR
 #### Responsibility Boundaries
 Object storage reliably stores objects and enforces access policy, but it does not understand the business semantics of the data. The team owns bucket ownership, public exposure, object naming, signed URL scope/lifetime, malware scanning for uploads, encryption/KMS policy, lifecycle, retention, backup restore tests, and protection of sensitive data in logs/artifacts.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Private buckets/containers by default and an explicit public access exception process.
 - Separate buckets by environment, data sensitivity, or ownership domain.
 - Presigned upload/download with short TTL and a restricted method/object key.
@@ -852,7 +861,7 @@ PostgreSQL and other relational databases are used for transactional state, acco
 #### Operating Model
 A database contains schemas, tables, indexes, views, functions, and roles. A schema groups database objects and is often used to separate domains or tenants, although it does not replace access control by itself. A role can be a login role for connections or a group role for granting privileges. Privileges define who can connect, read, write, change schema, execute functions, or manage objects.
 
-Connection pooling reduces database load and controls the number of active connections. Production deployments often use PgBouncer or managed poolers; the pooling mode matters because transaction/session pooling affects prepared statements, temp tables, session variables, and role switching. Migrations change schema and should be versioned, reviewed, reversible where practical, and compatible with rolling deployment.
+Connection pooling reduces database load and controls the number of active connections. Live deployments often use PgBouncer or managed poolers; the pooling mode matters because transaction/session pooling affects prepared statements, temp tables, session variables, and role switching. Migrations change schema and should be versioned, reviewed, reversible where practical, and compatible with rolling deployment.
 
 Row-level security can restrict rows at the database policy layer and is useful for tenant isolation, but it requires a strict ownership model, bypass scenario tests, and control over privileged roles. Backups and point-in-time recovery rely on base backups and WAL/archive logs. Read replicas offload reads and help recovery, but create separate access risks to the same data and lag-sensitive logic.
 
@@ -861,7 +870,7 @@ Extensions, superuser-like privileges, and procedural languages expand database 
 #### Responsibility Boundaries
 The database engine provides storage, transactions, privileges, and replication primitives. The team owns schema ownership, least-privilege roles, secret rotation, migration safety, backup restore tests, encryption, network exposure, audit, tenant isolation, and protection of sensitive data in queries, dumps, and replicas.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Managed PostgreSQL with private networking.
 - Separate app roles for read/write, migrations, and admin operations.
 - Connection pooling with an explicitly selected mode.
@@ -879,7 +888,7 @@ The database engine provides storage, transactions, privileges, and replication 
 ### Redis
 
 #### What It Is Used For
-Redis is used as a cache, session store, rate-limit store, lightweight queue, distributed lock backend, and fast key-value database. In production Redis often sits on the critical path for authentication, authorization decisions, shopping carts, background jobs, and anti-abuse controls.
+Redis is used as a cache, session store, rate-limit store, lightweight queue, distributed lock backend, and fast key-value database. In live environments Redis often sits on the critical path for authentication, authorization decisions, shopping carts, background jobs, and anti-abuse controls.
 
 #### Operating Model
 Redis stores keys of different types: strings, hashes, lists, sets, sorted sets, streams, and other structures. Data usually lives in memory, while persistence is configured through RDB snapshots, AOF, or both. Replication and clustering are used for availability and scale, but require understanding consistency, failover, and key distribution.
@@ -891,7 +900,7 @@ The eviction policy defines which keys are removed under memory pressure. For ca
 #### Responsibility Boundaries
 Redis provides a fast in-memory data store and primitives for persistence/replication, but it does not guarantee safe cache, session, or lock semantics. The team owns network isolation, AUTH/ACL/TLS, command restrictions, key namespace, memory limits, eviction behavior, backups where needed, monitoring, and protection of secrets/PII in values.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Managed Redis or isolated private deployment.
 - TLS and ACLs with separate users for applications and operations.
 - Dangerous commands disabled for app users.
@@ -908,7 +917,7 @@ Redis provides a fast in-memory data store and primitives for persistence/replic
 ### Vector Database / Vector DB
 
 #### What It Is Used For
-A vector database stores embeddings and performs similarity search over vectors. In production it is most often used for RAG, semantic search, recommendations, deduplication, anomaly detection, and other scenarios where the system needs to search by semantic or feature proximity rather than exact match.
+A vector database stores embeddings and performs similarity search over vectors. In live environments it is most often used for RAG, semantic search, recommendations, deduplication, anomaly detection, and other scenarios where the system needs to search by semantic or feature proximity rather than exact match.
 
 #### Operating Model
 An embedding model converts text, an image, an event, or another object into a vector embedding: a fixed-dimensional numeric representation. The vector database stores the embedding, object ID, metadata, and, in some architectures, a reference to the source document or chunk. At query time, the application builds an embedding for the query and searches for nearest neighbors using a similarity metric such as cosine similarity, dot product, or Euclidean distance.
@@ -920,13 +929,13 @@ A vector database usually does not replace source-of-truth storage. Source docum
 #### Responsibility Boundaries
 A vector database provides embedding storage and similarity-based retrieval, but it does not guarantee correct authorization semantics, source data quality, or safe retrieved context. The team owns tenant isolation, document-level authorization, metadata integrity, ingestion validation, deletion propagation, encryption, backups, audit logs, monitoring, and protection against poisoned corpora, embedding leakage, and unbounded retrieval.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Separate indexes or namespaces by tenant, environment, and sensitivity where a shared index complicates isolation.
 - Permission-aware retrieval: access filters are applied before context is returned to the model.
 - Metadata schema with owner, source, classification, tenant, document version, and deletion state.
 - Ingestion pipeline with validation, malware/content checks, provenance, and deduplication.
 - Retrieval limits: `top_k`, score threshold, payload size limit, and rate limits.
-- Evaluation set for retrieval quality and leakage tests before production changes.
+- Evaluation set for retrieval quality and leakage tests before live-environment changes.
 - Audit logging for queries, retrieved document IDs, metadata filters, and administrative changes.
 - Regular index rebuild/cleanup after document deletion, permission changes, and embedding model upgrades.
 
@@ -938,7 +947,7 @@ A vector database provides embedding storage and similarity-based retrieval, but
 ### Elasticsearch / OpenSearch
 
 #### What It Is Used For
-Elasticsearch and OpenSearch are used for search, log analytics, observability, security analytics, and document indexing. In production they often store application logs, audit events, customer-visible search indexes, and operational telemetry.
+Elasticsearch and OpenSearch are used for search, log analytics, observability, security analytics, and document indexing. In live environments they often store application logs, audit events, customer-visible search indexes, and operational telemetry.
 
 #### Operating Model
 A cluster consists of nodes and stores indexes. An index contains documents and a mapping that describes fields and types. Shards divide an index for scale and replication. An ingest pipeline can transform documents before write: parse logs, add fields, normalize events, or remove some data.
@@ -950,7 +959,7 @@ Snapshot repositories are used for backup/restore and migration. They often live
 #### Responsibility Boundaries
 A search cluster indexes and searches documents, but it does not decide which data is safe to log or who should see it. The team owns network exposure, authentication, authorization, tenant/index isolation, field masking, ingest redaction, dashboard access, snapshot security, retention, and cost/cardinality controls.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Managed or dedicated cluster in a private network.
 - Separate indexes or clusters for environments and sensitivity levels.
 - Index lifecycle management for retention and cost control.
@@ -967,7 +976,7 @@ A search cluster indexes and searches documents, but it does not decide which da
 ### Kafka
 
 #### What It Is Used For
-Apache Kafka is used as a distributed event streaming platform: event bus, ingestion pipeline, audit/event log, integration backbone, stream processing source, and buffer between services. In production Kafka is often a critical shared platform that carries business events, telemetry, and integrations.
+Apache Kafka is used as a distributed event streaming platform: event bus, ingestion pipeline, audit/event log, integration backbone, stream processing source, and buffer between services. In live environments Kafka is often a critical shared platform that carries business events, telemetry, and integrations.
 
 #### Operating Model
 A broker stores topic partition data and serves producers/consumers. A topic is a logical category of events, such as `orders.created`. A partition is an ordered append-only log inside a topic; partitions provide scaling and parallelism. A replica is a copy of a partition on another broker for fault tolerance. The controller manages cluster metadata, partition leader election, and state changes.
@@ -1012,7 +1021,7 @@ Kafka provides event delivery, storage, and replication, but it does not define 
 
 Kafka does not guarantee that a consumer interprets a message safely.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Managed Kafka or a dedicated platform cluster.
 - TLS for client-broker and inter-broker traffic.
 - SASL, OAuth, or mTLS for authentication.
@@ -1030,7 +1039,7 @@ Kafka does not guarantee that a consumer interprets a message safely.
 ### RabbitMQ
 
 #### What It Is Used For
-RabbitMQ is used as a message broker for queues, routing, asynchronous processing, task distribution, and service integration. In production it often appears in background jobs, transactional messaging, integration queues, and systems where routing semantics, acknowledgements, and backpressure matter.
+RabbitMQ is used as a message broker for queues, routing, asynchronous processing, task distribution, and service integration. In live environments it often appears in background jobs, transactional messaging, integration queues, and systems where routing semantics, acknowledgements, and backpressure matter.
 
 #### Operating Model
 A broker accepts messages, stores queues, and delivers messages to consumers. A virtual host separates a logical RabbitMQ space: exchanges, queues, bindings, user permissions, and policies live inside a vhost. An exchange accepts publications from producers and decides which queues should receive a message. A queue stores messages until a consumer reads them. A binding connects an exchange and a queue with a routing rule.
@@ -1072,7 +1081,7 @@ flowchart LR
 #### Responsibility Boundaries
 RabbitMQ owns broker delivery and routing, but not message content security or business processing semantics. The team owns TLS, users/permissions, vhost isolation, queue policies, DLQ, TTL, management UI exposure, credential protection, and payload control, especially when messages contain personal data or commands for internal systems.
 
-#### Common Production Patterns
+#### Common Live Patterns
 - Clustered RabbitMQ with quorum queues for critical queues.
 - Separate vhosts for domains, environments, or teams.
 - TLS for client connections.
@@ -1086,3 +1095,11 @@ RabbitMQ owns broker delivery and routing, but not message content security or b
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to asynchronous flows, trust boundaries, and message processing.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when broker credentials or TLS materials are managed through Vault.
 - There is no dedicated RabbitMQ playbook yet.
+---
+
+## Related Materials
+
+- [Container image security playbook](../../content/supply-chain/container-image-security/playbook.en.md)
+- [Kubernetes cluster security review playbook](../../content/platform-security/kubernetes/cluster-security-review/playbook.en.md)
+- [Vault playbook](../../content/platform-security/secrets/vault/playbook.en.md)
+- [Securing AI overview](../../content/ai-security/securing-ai/overview.en.md)

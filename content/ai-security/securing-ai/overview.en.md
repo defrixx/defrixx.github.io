@@ -2,7 +2,7 @@
 
 ## 1. Scope and objective
 
-This overview is aimed at securing production systems:
+This overview is aimed at securing live systems:
 - AI/LLM assistants and agentic workflows
 - RAG and knowledge retrieval
 - decisioning models (including antifraud/scoring)
@@ -35,7 +35,7 @@ Objective:
 ### 2.2 Control levels and source assumptions
 
 Control labels in this document are requirement profiles, not finding severity:
-- `Baseline`: minimum production baseline for the AI system class in scope.
+- `Baseline`: minimum baseline для рабочих сред for the AI system class in scope.
 - `High-impact/regulated`: required for autonomous state-changing actions, cross-tenant data access, financial/safety/privacy impact, regulated use cases, or externally exposed AI capabilities.
 - `Recommended maturity`: useful for mature programs, higher assurance, or future hardening, but not a default release blocker unless adopted by local policy.
 
@@ -105,7 +105,7 @@ Control labels in this document are requirement profiles, not finding severity:
 - `Baseline`: CVE scanning + gating for critical vulnerabilities
 - `High-impact/regulated`: controlled promotion flow (dev -> staging -> prod) with approvals
 - `High-impact/regulated`: legal review for third-party model terms
-- `Recommended maturity`: independent red team before production adoption
+- `Recommended maturity`: independent red team before live release adoption
 
 **Verification signals:**
 - release share with signed artifacts
@@ -160,7 +160,7 @@ Applicability matrix for numeric guardrails:
 | AI workflow class | Starting default | Hard cap | Exception rule | Verification signal |
 |---|---|---|---|---|
 | Public assistant without state-changing tools | `60 req/min per user`, `20k tokens/request`, no autonomous tool chain by default | Tenant/IP cost quota, max context and streaming duration per product tier | Higher limits require abuse/cost model, tenant quota, and alert owner | 429 rate, spend per tenant, prompt-flood detection, context-window rejection tests |
-| Internal copilot with read-only tools | `max tool-chain depth=3`, `max autonomous steps=5`, `20k tokens/request` | Tool calls only to approved read-only systems; no cross-tenant or production-write actions | Wider retrieval/tool access requires data-owner approval and audit sampling | Policy-denied tool calls, retrieval ACL test pass rate, sampled audit events |
+| Internal copilot with read-only tools | `max tool-chain depth=3`, `max autonomous steps=5`, `20k tokens/request` | Tool calls only to approved read-only systems; no cross-tenant or live-write actions | Wider retrieval/tool access requires data-owner approval and audit sampling | Policy-denied tool calls, retrieval ACL test pass rate, sampled audit events |
 | Autonomous state-changing agent | `preview -> explicit confirm -> execute`; default autonomous execution disabled for high-impact actions | `max autonomous steps=3` before re-authorization; kill switch SLO `<=60s`; no irreversible action without human approval | Any no-confirm action needs owner, expiry, rollback plan, and abuse-case tests | Unauthorized-action negative tests, approval coverage, mean time to kill runaway actions |
 | Batch/RAG ingestion or offline processing | Budget by job, tenant, corpus, and source; no per-chat request budget assumption | Max documents, max tokens per document, max runtime, max outbound fetches, and quarantine threshold | Larger batch requires staging run, cost estimate, malware/content scan, and source trust decision | Poisoned-document test results, ingestion reject rate, job cost variance, quarantine metrics |
 
@@ -193,7 +193,7 @@ Treat these numbers as local starting baselines. Tune them by model context wind
 - `High-impact/regulated`: detection for unknown MCP servers, new tool manifests, abnormal tool-chain depth, and unusual cross-tool data movement
 
 Assumption:
-- MCP-specific controls are local policy recommendations for agentic systems. They become release blockers when production agents can discover or call external tools, when tool calls can change business state, or when tool traffic can carry sensitive data.
+- MCP-specific controls are local policy recommendations for agentic systems. They become release blockers when live agents can discover or call external tools, when tool calls can change business state, or when tool traffic can carry sensitive data.
 
 **Verification signals:**
 - inventory coverage for MCP servers and registered tools
@@ -340,14 +340,14 @@ Assumption:
 
 **Augment, fine-tune, data:**
 - `Baseline`: validate training/fine-tuning/RAG data sources for usage rights, freshness, malware/content risk, and tenant boundaries
-- `Baseline`: protect the data pipeline and vector database as production data stores: document-level authorization, audit trail, encryption, backup/restore, and deletion workflow
+- `Baseline`: protect the data pipeline and vector database as live data stores: document-level authorization, audit trail, encryption, backup/restore, and deletion workflow
 - `High-impact/regulated`: version datasets, embeddings, prompt templates, and retrieval policies so incident response can roll back context, not only code
 
 **Develop & experiment:**
 - `Baseline`: apply the secure coding baseline to the AI gateway, tool adapters, prompt orchestration, and downstream integrations, not only to the web/API wrapper
-- `Baseline`: register MCP/tool servers before use; unregistered local, shadow, or developer-only tools must not be reachable from production agents
+- `Baseline`: register MCP/tool servers before use; unregistered local, shadow, or developer-only tools must not be reachable from live agents
 - `High-impact/regulated`: track experiments with model, parameters, prompt version, dataset snapshot, evaluator version, and security findings
-- `High-impact/regulated`: isolate developer sandboxes from production data and production tools; handle exceptions as temporary break-glass access
+- `High-impact/regulated`: isolate developer sandboxes from live data and live tools; handle exceptions as temporary break-glass access
 
 **Test & evaluate:**
 - `Baseline`: include adversarial testing, prompt-injection tests, authorization tests for tools/RAG, and output-handling tests in release evidence
@@ -356,11 +356,11 @@ Assumption:
 
 **Release:**
 - `High-impact/regulated`: produce an AI-BOM/SBOM for model artifacts, datasets where applicable, prompt/runtime components, dependencies, and external services
-- `Baseline`: sign and verify model/dataset artifacts; allow production promotion only from a trusted registry
-- `High-impact/regulated`: perform model security posture evaluation before production promotion and after a material model/provider change
+- `Baseline`: sign and verify model/dataset artifacts; allow promotion to live environments only from a trusted registry
+- `High-impact/regulated`: perform model security posture evaluation before live release promotion and after a material model/provider change
 
 **Deploy:**
-- `Baseline`: validate runtime configuration, secrets, network egress, API exposure, tenant isolation, and user/machine access before enabling production traffic
+- `Baseline`: validate runtime configuration, secrets, network egress, API exposure, tenant isolation, and user/machine access before enabling live traffic
 - `Baseline`: verify model and dataset artifact signatures/provenance during deployment, not only in CI
 - `Baseline`: verify MCP/tool manifest identity, version, transport, scopes, and outbound destinations before enabling agent access
 - `High-impact/regulated`: enable fallback, rollback, and kill switch before launching autonomous or high-impact tool flows
@@ -374,9 +374,17 @@ Assumption:
 - `Baseline`: collect security metrics for adversarial input, tool denial, policy bypass attempts, data leakage signals, anomaly in agent chains, and model behavior drift
 - `Baseline`: alert on unknown MCP servers, tool manifest drift, abnormal tool chains, and token/secret patterns in protocol logs
 - `High-impact/regulated`: route alerts to Security/SRE/Product with severity, owner, and runbook; AI alerts without an owner quickly become noise
-- `Recommended maturity`: track ethical/compliance signals where they are production risks: bias, unfair denial, regulated advice, unsafe recommendations
+- `Recommended maturity`: track ethical/compliance signals where they are live-environment risks: bias, unfair denial, regulated advice, unsafe recommendations
 
 **Govern:**
 - `Baseline`: conduct user/machine access audits for AI tools, model registries, prompt repositories, vector stores, and provider consoles
 - `Baseline`: retain audit evidence for model decisions, dataset versions, prompt/system changes, exceptions, and incident governance
 - `High-impact/regulated`: review the AI risk register at least quarterly and on major model/provider change
+---
+
+## 5. Related Materials
+
+- [OWASP LLM Top 10 threat overview](../owasp-llm-top-10/overview.en.md)
+- [Threat modeling playbook](../../review/threat-modeling/playbook.en.md)
+- [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
+- [Secure coding and code review playbook](../../application-security/secure-coding/code-review/playbook.en.md)

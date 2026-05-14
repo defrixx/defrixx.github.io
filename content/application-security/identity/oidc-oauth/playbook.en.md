@@ -142,7 +142,7 @@ Reading rule for controls below:
 
 All numeric limits for token/session/replay/rate-limiting are defined here. Other sections should reference this baseline instead of duplicating values.
 
-These numbers are a local recommended production baseline, not direct RFC or OIDC Core requirements. Treat them as default guardrails for this playbook and tune them by risk profile, user experience, client capability, and IdP behavior.
+These numbers are a local recommended baseline для рабочих сред, not direct RFC or OIDC Core requirements. Treat them as default guardrails for this playbook and tune them by risk profile, user experience, client capability, and IdP behavior.
 
 ### 5.1 Token and session timing
 
@@ -182,7 +182,7 @@ These numbers are a local recommended production baseline, not direct RFC or OID
 - `nonce` is mandatory for OIDC login and must match original authorization request value
 - Redirect/logout URIs: exact match only and separate lists per environment
 - Block the `implicit` grant by default; any temporary exception requires a migration plan, owner, expiry, and compensating controls.
-- The OAuth password grant / Resource Owner Password Credentials flow is forbidden for production clients. Do not approve it as a normal exception path; use only a time-boxed migration plan for existing legacy clients.
+- The OAuth password grant / Resource Owner Password Credentials flow is forbidden for live clients. Do not approve it as a normal exception path; use only a time-boxed migration plan for existing legacy clients.
 - Replacement paths: Authorization Code + PKCE for browser/mobile/user login, device authorization flow where user interaction happens on a constrained device, and `client_credentials` for service-to-service access.
 
 Maximum profile hardening:
@@ -285,7 +285,7 @@ Maximum profile hardening:
 - PKCE `plain` instead of `S256`
 - Wildcard redirect URI
 - Storing refresh token in browser storage
-- Enabling password grant / Keycloak Direct Access Grants for production clients
+- Enabling password grant / Keycloak Direct Access Grants for live clients
 - Long access token TTL (hours/days)
 - Single client for user login and machine-to-machine traffic without segregation
 - Missing key rotation and missing key-compromise response procedure
@@ -317,7 +317,7 @@ Maximum profile hardening:
 
 - Standard Flow: ON
 - Implicit: OFF
-- Direct Access Grants: OFF. In Keycloak this corresponds to the password grant and must remain disabled for production clients; legacy use requires a migration plan, not a standing exception.
+- Direct Access Grants: OFF. In Keycloak this corresponds to the password grant and must remain disabled for live clients; legacy use requires a migration plan, not a standing exception.
 - PKCE method: `S256`
 - Revoke Refresh Token: ON (typically)
 
@@ -353,3 +353,11 @@ Maximum profile hardening:
 
 - Implement the metrics and alerts set from Operations/Monitoring domain
 - Maintain response runbook for replay/brute-force/token-abuse signals
+---
+
+## 10. Related Materials
+
+- [Browser and frontend security playbook](../../web/browser-security/playbook.en.md)
+- [API security playbook](../../api/api-security-patterns/playbook.en.md)
+- [Vault playbook](../../../platform-security/secrets/vault/playbook.en.md)
+- [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)
