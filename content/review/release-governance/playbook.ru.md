@@ -52,7 +52,7 @@ High-impact сценарии:
 | Low-risk internal | Internal tool, no sensitive data, bounded blast radius | CI checks pass, owner approval, подтверждения сохранены |
 | Standard live release | Customer-facing service, normal API или UI release | Security gates, protected environment, deployment approval, artifact immutability |
 | High-risk live release | Auth, payment, tenant isolation, admin, secrets, platform, CI/CD, Kubernetes control plane | Independent security approval, stricter gates, rollback plan, пакет релизных подтверждений |
-| Emergency | Incident fix, срочное восстановление рабочей среды | Expedited approval, narrow scope, mandatory post-release review within `2 business days` |
+| Emergency | Incident fix, срочное восстановление рабочей среды, patch для KEV/public exploit, response при broken embargo | Expedited approval, narrow scope, с сохранением evidence, mandatory post-release review within `2 business days` |
 
 Recommended control:
 - Для каждого repository или deployable service задается default-класс релиза.
@@ -91,6 +91,7 @@ Recommended control:
 - Gates применяются к изменениям, а не только ко всему repository. Не блокируйте релиз только из-за unrelated legacy debt, если политика не говорит, что legacy debt превысил порог релиза.
 - Новые Critical-замечания блокируют релиз, если нет действительного Critical-исключения.
 - Новые High-замечания по умолчанию блокируют high-risk релизы в защищенные среды; standard live release может идти дальше только с owner, due date, компенсирующими мерами и explicit acceptance.
+- KEV, достоверный public exploit, active exploitation, broken embargo или срочный vendor security patch могут быть основанием для emergency release approval для узкого remediation change. Даже для такого release нужны artifact identity, approver, ссылка на rollback/mitigation и evidence post-release review.
 - Замечания по live secret блокируют релиз до revoke/rotation секрета и оценки exposure.
 - Scanner output должен быть разобран как confirmed issue, false positive, accepted risk или backlog debt. Raw unreviewed reports сами по себе не считаются релизным подтверждением.
 
@@ -176,7 +177,7 @@ Exception record должен включать:
 - High-исключения требуют approval service owner и security owner.
 - Exceptions без expiry недействительны.
 - Истекшие исключения автоматически проваливают следующий release gate, если не продлены через ревью.
-- Emergency bypass требует post-release review within `2 business days`: что было обойдено, причина, impact и план устранения.
+- Emergency bypass требует post-release review в течение `2 business days`: что обошли, причина, impact, deployed artifact, residual findings и план устранения.
 
 Escalation triggers:
 - релиз заблокирован из-за Critical without accepted risk;

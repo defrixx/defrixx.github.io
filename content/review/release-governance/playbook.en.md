@@ -52,7 +52,7 @@ High-impact scenarios:
 | Low-risk internal | Internal tool, no sensitive data, bounded blast radius | CI checks pass, owner approval, evidence retained |
 | Standard live release | Customer-facing service, normal API or UI release | Security gates, protected environment, deployment approval, artifact immutability |
 | High-risk live release | Auth, payment, tenant isolation, admin, secrets, platform, CI/CD, Kubernetes control plane | Independent security approval, stricter gates, rollback plan, release evidence pack |
-| Emergency | Incident fix, urgent live-environment restoration | Expedited approval, narrow scope, mandatory post-release review within `2 business days` |
+| Emergency | Incident fix, urgent live-environment restoration, KEV/public-exploit patch, broken embargo response | Expedited approval, narrow scope, evidence retained, mandatory post-release review within `2 business days` |
 
 Recommended control:
 - Every repository or deployable service declares its default release class.
@@ -91,6 +91,7 @@ Release-ready defaults:
 - Gates apply to changes, not only full repositories. Do not block a release solely because unrelated legacy debt exists unless policy says legacy debt has crossed the release threshold.
 - New Critical findings block release unless a valid Critical exception exists.
 - New High findings block high-risk release to a live environment by default; a standard live release may proceed only with owner, due date, compensating controls, and explicit acceptance.
+- A KEV, credible public exploit, active exploitation, broken embargo, or urgent vendor security patch may justify emergency release approval for a narrow remediation change. The release still needs artifact identity, approver, rollback/mitigation reference, and post-release review evidence.
 - Live secret findings block release until the secret is revoked/rotated and exposure is assessed.
 - Scanner output must be triaged into confirmed issue, false positive, accepted risk, or backlog debt. Raw unreviewed reports are not release evidence by themselves.
 
@@ -176,7 +177,7 @@ Release-ready defaults:
 - High exceptions require service owner plus security owner approval.
 - Exceptions without expiry are invalid.
 - Expired exceptions automatically fail the next release gate unless renewed through review.
-- Emergency bypass requires post-release review within `2 business days`, including what was bypassed, why, impact, and remediation plan.
+- Emergency bypass requires post-release review within `2 business days`, including what was bypassed, why, impact, deployed artifact, residual findings, and remediation plan.
 
 Escalation triggers:
 - release blocked by Critical without accepted risk;
