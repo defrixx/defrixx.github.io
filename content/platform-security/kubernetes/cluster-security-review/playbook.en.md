@@ -102,12 +102,14 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 
 **What to verify:**
 - all cluster entry points: `Ingress`, `Gateway`, `LoadBalancer`, `NodePort`;
+- Service objects with `spec.externalIPs` set;
 - workload egress dependencies (SaaS, cloud APIs, internal services);
 - allowed namespace/service-to-service communication paths;
 - existence of an actual live service/data-flow inventory.
 
 **Risk signals:**
 - unknown public endpoints;
+- use of `Service.spec.externalIPs` in live or multi-tenant clusters;
 - no default-deny network model;
 - unrestricted egress for critical workloads;
 - no ownership for external integrations.
@@ -115,7 +117,16 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 **Recommended control:**
 - north-south and east-west flow inventory updated at least every `30d`;
 - protected namespaces use default deny + explicit allow rules;
-- every public endpoint has owner, data classification, and vulnerability SLA.
+- every public endpoint has owner, data classification, and vulnerability SLA;
+- deny new `Service.spec.externalIPs` through admission policy: `DenyServiceExternalIPs`, `ValidatingAdmissionPolicy`, or a tested policy engine. In Kubernetes `v1.36+`, this field is deprecated; historically it has been insecure by default because a user who can create or modify a Service can intercept traffic to a chosen IP when the CVE-2020-8554 conditions are present.
+- create a migration plan with owner and deadline for existing `externalIPs`. Preferred targets are managed `type: LoadBalancer`, Ingress/Gateway API for HTTP(S)/L4 entry, or `NodePort` only behind an external load balancer/firewall with explicit IP ownership and network ACLs.
+- do not replace `externalIPs` with manual `status.loadBalancer.ingress` patching without a separate permission model: `services/status` must remain a privileged operation, unavailable to ordinary deploy identities.
+
+**Minimum evidence commands:**
+```bash
+kubectl get services -A -o jsonpath='{range .items[?(@.spec.externalIPs)]}{.metadata.namespace}{"/"}{.metadata.name}{" "}{.spec.externalIPs}{"\n"}{end}'
+kubectl auth can-i patch services/status --as=<subject> -n <ns>
+```
 
 ---
 
@@ -212,6 +223,7 @@ The minimum gatekeeping baseline should include:
 - deny tag-only images in live environments and require an immutable digest reference (`@sha256:...`); `tag@sha256` may be allowed for readability, but the digest must be the value used for deployment;
 - block high-risk RBAC verbs outside explicit allowlist;
 - require protected namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
+- block new Service objects with `spec.externalIPs`; existing use is allowed only as a migration exception with `owner`, `expiry`, verified external IP ownership, and a transition plan to `LoadBalancer`, Gateway API/Ingress, or controlled `NodePort`;
 - require Kubernetes audit logging with policy coverage for RBAC changes, admission/webhook changes, namespace security label changes, Secret reads, `exec`, attach/port-forward, and ephemeral-container updates;
 - restrict and periodically recertify `get/list/watch` access to Secrets in live environments;
 - require `automountServiceAccountToken: false` by default unless the workload has a documented Kubernetes API access need;
@@ -250,6 +262,7 @@ A review is complete only when it provides:
 - Live deployment via developer local kubeconfig.
 - Admission controls without RBAC protection for sensitive reads.
 - RBAC least privilege without protection of admission/webhook configs.
+- `Service.spec.externalIPs` as the standard way to publish a service externally.
 - One shared ServiceAccount for all namespace applications.
 - Secrets in Git (including base64 YAML) as normal process.
 - No reconstructable incident timeline from audit/logging data.

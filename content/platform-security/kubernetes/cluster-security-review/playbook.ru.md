@@ -102,12 +102,14 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 
 **Что проверять:**
 - все entry points в кластер: `Ingress`, `Gateway`, `LoadBalancer`, `NodePort`;
+- Service objects с заполненным `spec.externalIPs`;
 - список egress-зависимостей workload'ов (SaaS, cloud APIs, internal services);
 - какие namespace/service могут общаться между собой по сети;
 - есть ли фактический inventory сервисов и data-flows для рабочих сред.
 
 **Сигналы риска:**
 - неизвестные публичные endpoints;
+- использование `Service.spec.externalIPs` в рабочих или multi-tenant кластерах;
 - отсутствие default-deny модели NetworkPolicy;
 - критичные workloads с unrestricted egress;
 - отсутствие владельца у внешних интеграций.
@@ -115,7 +117,16 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 **Рекомендация для рабочих сред:**
 - инвентарь north-south и east-west потоков обновляется не реже `30d`;
 - для защищенных namespace: default deny + explicit allow rules;
-- каждый публичный endpoint имеет владельца, data-classification и SLA по уязвимостям.
+- каждый публичный endpoint имеет владельца, data-classification и SLA по уязвимостям;
+- запрещайте новые `Service.spec.externalIPs` через admission policy: `DenyServiceExternalIPs`, `ValidatingAdmissionPolicy` или проверенный policy engine. В Kubernetes `v1.36+` это поле deprecated; исторически оно небезопасно по умолчанию, потому что пользователь с правом создавать или менять Service может перехватывать трафик к выбранному IP при выполнении условий CVE-2020-8554.
+- для существующих `externalIPs` заведите migration plan с владельцем и сроком. Предпочтительные целевые варианты: управляемый `type: LoadBalancer`, ingress/Gateway API для HTTP(S)/L4-входа, либо `NodePort` только за внешним балансировщиком/фаерволом с явным ownership IP-адресов и сетевых ACL.
+- не заменяйте `externalIPs` ручным patch `status.loadBalancer.ingress` без отдельной модели прав: `services/status` должен оставаться privileged operation, недоступной обычным deploy identities.
+
+**Минимальные команды для подтверждения:**
+```bash
+kubectl get services -A -o jsonpath='{range .items[?(@.spec.externalIPs)]}{.metadata.namespace}{"/"}{.metadata.name}{" "}{.spec.externalIPs}{"\n"}{end}'
+kubectl auth can-i patch services/status --as=<subject> -n <ns>
+```
 
 ---
 
@@ -212,6 +223,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - запрет tag-only images в рабочей среде и требование immutable digest reference (`@sha256:...`); формат `tag@sha256` допустим для читаемости, но deployment должен использовать именно digest;
 - блокировка опасных RBAC-verb'ов вне явного allowlist;
 - обязательный ingress и egress default-deny NetworkPolicy для защищенных namespace либо документированная CNI-equivalent policy с проверенным enforcement;
+- блокировка новых Service objects с `spec.externalIPs`; существующие использования допускаются только как миграционное исключение с `owner`, `expiry`, подтвержденным ownership внешнего IP и планом перехода на `LoadBalancer`, Gateway API/Ingress или контролируемый `NodePort`;
 - обязательный Kubernetes audit logging с покрытием RBAC changes, admission/webhook changes, изменений namespace security labels, Secret reads, `exec`, attach/port-forward и обновлений ephemeral containers;
 - ограничение и периодическая recertification доступа `get/list/watch` к Secrets в рабочей среде;
 - `automountServiceAccountToken: false` по умолчанию, если у workload нет документированной необходимости обращаться к Kubernetes API;
@@ -250,6 +262,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - Релизное развертывание через локальный kubeconfig разработчика.
 - Admission rules без контроля RBAC read-доступа к чувствительным ресурсам.
 - RBAC least privilege без защиты admission/webhook конфигов.
+- `Service.spec.externalIPs` как штатный способ публикации сервиса наружу.
 - Общий ServiceAccount на все приложения namespace.
 - Секреты в Git (включая base64 в YAML) как штатный процесс.
 - Отсутствие проверяемого incident timeline по данным audit/logging.
