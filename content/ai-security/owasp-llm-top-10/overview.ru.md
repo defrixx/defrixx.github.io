@@ -222,5 +222,7 @@
 ## 5. Связанные материалы
 
 - [Обзор безопасности AI](../securing-ai/overview.ru.md)
+- [Плейбук безопасности Agentic AI](../agentic-ai/playbook.ru.md)
+- [Плейбук безопасности MCP](../mcp-security/playbook.ru.md)
 - [Плейбук моделирования угроз](../../review/threat-modeling/playbook.ru.md)
 - [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)

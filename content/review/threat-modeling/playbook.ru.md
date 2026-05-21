@@ -99,6 +99,13 @@
 - изменений CI/CD, artifact provenance, развертывания, платформы и Kubernetes control plane;
 - AI/agentic workflows, где важны утечки данных, prompt injection, tool abuse и autonomous actions.
 
+Триггеры эскалации для AI и MCP:
+- добавление или изменение MCP server, tool, resource, reusable prompt, gateway policy, transport, OAuth scope или authorization flow;
+- включение local `stdio` tools, remote Streamable HTTP MCP, third-party MCP servers, browser tools, URL fetchers, email/file integrations, code interpreters или shell execution;
+- появление agent memory, long-running autonomous workflows, checkpoints, multi-agent delegation или shared tool access;
+- расширение retrieval sources, vector-store scope, resource URI patterns, tool schemas, outbound destinations или agent autonomy level;
+- изменение model/provider/runtime behavior, если logs, retention, memory isolation, tool access или emergency disablement отличаются от утвержденного дизайна.
+
 Шаги рекомендуемого пути:
 
 1. Инвентаризация и диаграмма.
@@ -136,6 +143,8 @@
 - Привяжите каждый mitigation к test/evidence.
 - Артефакт: test plan, замечания, release verdict.
 - Пример: automated test отклоняет stale webhook, duplicate event, invalid signature и out-of-order transition; audit event виден в SIEM.
+
+Для Agentic AI и MCP release gate должен включать negative tests для prompt injection into tool use, retrieval или memory poisoning, unauthorized tool invocation, capability drift, wrong-audience/wrong-scope tokens, sandbox egress и kill-switch execution.
 
 ### 3.3 Единый пример: PSP webhook attack modeling
 
@@ -468,3 +477,5 @@ Threat intelligence повышает реалистичность сценари
 - [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)
 - [Обзор OWASP LLM Top 10](../../ai-security/owasp-llm-top-10/overview.ru.md)
 - [Обзор безопасности AI](../../ai-security/securing-ai/overview.ru.md)
+- [Плейбук безопасности Agentic AI](../../ai-security/agentic-ai/playbook.ru.md)
+- [Плейбук безопасности MCP](../../ai-security/mcp-security/playbook.ru.md)

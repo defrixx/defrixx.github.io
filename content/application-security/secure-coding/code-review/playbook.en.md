@@ -195,3 +195,5 @@ Required review output:
 - [Browser and frontend security playbook](../../web/browser-security/playbook.en.md)
 - [OIDC + OAuth 2.0 security guide](../../identity/oidc-oauth/playbook.en.md)
 - [Vulnerability management playbook](../../../review/vulnerability-management/playbook.en.md)
+- [MCP security playbook](../../../ai-security/mcp-security/playbook.en.md)
+- [Agentic AI security playbook](../../../ai-security/agentic-ai/playbook.en.md)

@@ -599,3 +599,5 @@ Required review output:
 - [Browser and frontend security playbook](../../web/browser-security/playbook.en.md)
 - [Business logic abuse playbook](../../business-logic/business-logic-abuse/playbook.en.md)
 - [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)
+- [MCP security playbook](../../../ai-security/mcp-security/playbook.en.md)
+- [Agentic AI security playbook](../../../ai-security/agentic-ai/playbook.en.md)

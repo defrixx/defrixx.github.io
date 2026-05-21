@@ -1,0 +1,191 @@
+# Плейбук безопасности MCP
+
+## 1. Область и цель
+
+Этот плейбук покрывает использование Model Context Protocol (MCP) в рабочих средах, где AI-приложения обнаруживают или вызывают tools, resources и reusable prompts через локальные или удаленные MCP servers.
+
+Используйте этот документ для:
+- ревью архитектуры MCP перед использованием в рабочей среде;
+- onboarding внутренних и third-party MCP servers;
+- ревью MCP gateways, OAuth flows, tool wrappers, resource exposure и prompt templates;
+- подготовки negative tests для tool execution, authorization, logging и capability drift.
+
+Вне области:
+- общее поведение моделей, prompt injection, RAG и AI release governance; используйте [обзор безопасности AI](../securing-ai/overview.ru.md);
+- основы OAuth/OIDC вне MCP-specific usage; используйте [плейбук OIDC + OAuth 2.0](../../application-security/identity/oidc-oauth/playbook.ru.md);
+- generic API hardening для downstream business APIs; используйте [плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md).
+
+Цель:
+- сделать каждую MCP capability явной, авторизованной, наблюдаемой и быстро отключаемой до того, как она сможет повлиять на production data или business state.
+
+---
+
+## 2. Границы доверия MCP
+
+Минимальные компоненты для моделирования:
+- host: AI-приложение или IDE/client, где встроен MCP client;
+- client: protocol component, который подключается к MCP servers;
+- server: локальный или удаленный процесс, который предоставляет tools, resources и prompts;
+- gateway: optional, но recommended control point для рабочей среды;
+- downstream systems: APIs, databases, filesystems, browsers, queues, SaaS и identity providers, к которым обращаются tools.
+
+MCP primitives сами являются security surfaces:
+- tools являются callable operations и должны рассматриваться как APIs;
+- resources являются data access paths и наследуют classification исходных данных;
+- prompts являются content supply-chain inputs и не должны считаться политикой или секретами;
+- sampling позволяет server запрашивать model completions через client и должен быть отключен, если нет проверенного use case.
+
+Сценарии с высоким воздействием:
+- локальный `stdio` server, установленный разработчиком, открывает file или shell access агенту, который может работать с production;
+- remote server незаметно добавляет write tool или широкий resource pattern после initial approval;
+- model-supplied parameter доходит до privileged backend, потому что tool handler доверяет schema hints вместо server-side validation;
+- OAuth tokens утекают через logs, prompts, resource payloads или token passthrough в downstream APIs;
+- third-party MCP server меняет behavior, dependencies или capability declarations без enterprise review.
+
+---
+
+## 3. Production Baseline
+
+### 3.1 MCP Registry
+
+`Baseline`:
+- Ведите enterprise MCP registry как authoritative inventory для production-approved servers, tools, resources, prompts, transports, owners, environments, scopes, downstream destinations и review expiry.
+- Фиксируйте capability baseline для каждого server: tool names, descriptions, input schemas, resource URI patterns, prompt identifiers, transport, authentication mode, package/artifact identity и expected logging fields.
+- Рассматривайте любой новый tool, resource, prompt, schema expansion, resource pattern expansion, transport change или authorization change как security-relevant change.
+- Политика по умолчанию для unregistered или changed capabilities: `deny`.
+
+`High-impact/regulated`:
+- Требуйте signed artifacts или pinned digests для MCP servers и tool wrappers.
+- Зеркалируйте approved third-party MCP artifacts во внутренний registry или package mirror; production hosts не должны устанавливать компоненты напрямую из community registries.
+- Устанавливайте review expiry не дольше `90 days` для servers, которые могут изменять данные, выполнять code, получать sensitive resources или использовать third-party infrastructure.
+
+Проверка:
+- сравнивайте runtime capability negotiation с registry baseline;
+- настройте alerts на `listChanged` events, unknown servers, unknown tools, schema drift и resource pattern expansion;
+- выборочно проверяйте production sessions и подтверждайте, что каждый tool call связан с approved registry entry.
+
+### 3.2 Deployment Patterns
+
+Предпочтительный production pattern:
+- Используйте gateway-mediated deployment для remote MCP там, где это возможно. Gateway должен принудительно применять server allowlists, user/workload authorization, capability filtering, redaction, audit logging, egress policy, rate limits и emergency disablement.
+
+Local `stdio` servers:
+- Разрешайте только утвержденные server binaries/scripts через endpoint management или application allowlisting.
+- Запускайте server с минимально привилегированной OS identity, достаточной для workflow.
+- Явно ограничивайте filesystem roots; не выдавайте home-directory или repository-wide access по умолчанию.
+- Ведите allowlist environment variables для каждого server и блокируйте credential-bearing variables без explicit approval.
+- Блокируйте outbound network access от local servers, если server не требует его и destination не утвержден.
+
+Remote Streamable HTTP servers:
+- Требуйте TLS для всего traffic.
+- Используйте enterprise-managed OAuth 2.1-compatible authorization для protected servers.
+- Требуйте PKCE с `S256` для public clients.
+- Проверяйте token issuer, expiry, audience/resource binding и scope на каждом request.
+- Не передавайте client access tokens дальше в downstream APIs. Tool handlers должны получать отдельные downstream credentials или использовать controlled token exchange pattern, утвержденный владельцами identity/security.
+
+Third-party MCP servers:
+- Требуйте provider onboarding до использования: data handling, subprocessors, security contact, vulnerability disclosure, patch SLA, log access, retention, capability-change notification и exit process.
+- Утверждайте server для конкретного environment и use case; approval для development не означает approval для production.
+
+### 3.3 Controls для Tools, Resources и Prompts
+
+Tools:
+- Принудительно применяйте server-side validation для всех tool parameters, включая type, size, enum, path, URL, identifier и business state constraints.
+- Применяйте object-level, tenant-level и action-level authorization внутри tool handler или gateway; не выводите authorization из model intent или natural-language instructions.
+- Разделяйте read и write operations на разные tools с отдельными scopes и approval policies.
+- Требуйте `preview -> explicit confirm -> execute` для state-changing tools, если исключение не утверждено с owner, expiry, rollback plan и abuse-case tests.
+
+Resources:
+- Ограничивайте resource URI patterns до минимально нужной области.
+- Применяйте classification, RBAC/ABAC, tenant isolation, DLP/redaction и audit logging до того, как resource content попадает в model context.
+- Считайте externally sourced или user-controlled resource content недоверенным и проверяйте на indirect prompt injection перед использованием.
+
+Prompts:
+- Версионируйте MCP prompts и ревьюйте их как code/configuration.
+- Не храните secrets, credentials, hidden policy assumptions, customer data или proprietary implementation details в prompt declarations.
+- По умолчанию логируйте prompt identifier и version, а не raw prompt text.
+
+Sampling:
+- Держите sampling отключенным по умолчанию.
+- Если sampling включен, ограничьте его утвержденными servers, утвержденными model endpoints, maximum prompt size и redacted/minimized logs.
+- Настройте alerts на repeated near-duplicate sampling requests, необычный prompt size или sensitive data classes в sampling payloads.
+
+### 3.4 Logging и Incident Readiness
+
+Логируйте минимум:
+- authenticated user или workload identity;
+- host, client, server, gateway, transport и environment;
+- tool/resource/prompt identifier и version;
+- scopes и policy decision;
+- request ID/session ID/correlation ID;
+- downstream destination и result class;
+- redaction status и denial reason, где применимо.
+
+Не логируйте по умолчанию:
+- raw access tokens или refresh tokens;
+- full prompt/context/resource payloads;
+- secrets, private keys, session cookies или full sensitive documents.
+
+Raw payload capture допустим только в scoped forensic mode с approval, case ID, encryption, restricted access, retention `<=30 days` и deletion evidence.
+
+Incident response должен поддерживать:
+- независимое отключение server, gateway route, tool, resource, prompt, OAuth client, OAuth grant и downstream credential;
+- freeze MCP registry на время active investigation;
+- rotation credentials, которые используются affected tool handlers;
+- восстановление action timeline по gateway, server, IdP и downstream logs;
+- graceful failure для dependent workflows, когда tool или server отключен.
+
+---
+
+## 4. Проверка
+
+Обязательные подтверждения:
+- MCP registry entry для каждого production server и capability;
+- capability baseline diff из deployment или session initialization;
+- OAuth metadata и token validation tests для remote servers;
+- endpoint/application allowlisting evidence для local `stdio` servers;
+- gateway policy, redaction и logging configuration;
+- provider onboarding record для third-party servers.
+
+Negative tests:
+- unregistered server блокируется;
+- registered server с новым tool или более широким resource URI pattern блокируется до approval;
+- model-supplied parameter вне schema или business constraints отклоняется server-side;
+- expired, wrong-audience, wrong-issuer или insufficient-scope token отклоняется;
+- token в query string, log field, tool output или prompt payload обнаруживается и блокируется/редактируется;
+- write tool не выполняется без required confirmation или approval;
+- malformed JSON-RPC messages fail closed и дают safe errors;
+- local `stdio` server не может читать вне declared roots или наследовать unapproved environment variables.
+
+Операционные сигналы:
+- доля MCP servers с registry baseline;
+- доля tool calls, evaluated by gateway или policy layer;
+- alerts по capability drift, unknown servers, abnormal tool sequences и redaction failures;
+- mean time to disable server/tool during drills, target `<=60s` для high-impact capabilities;
+- provider log export latency и completeness для third-party servers.
+
+---
+
+## 5. Review Decision
+
+| Severity | MCP condition | Обязательное действие |
+|---|---|---|
+| Critical | Unapproved MCP server может выполнять code, менять production data, получать secrets или обращаться к sensitive internal systems | Блокировать релиз или немедленно отключить доступ |
+| Critical | Remote MCP token validation принимает wrong issuer/audience/expiry или разрешает token passthrough в downstream APIs | Блокировать релиз до исправления и повторной проверки |
+| High | Capability drift не обнаруживается или новые tools/resources становятся доступными без approval | Блокировать high-impact workflows; разрешать только read-only low-risk use с compensating monitoring |
+| High | Tool handler полагается на model/client-side validation для privileged parameters | Исправить до production для state-changing или sensitive-data tools |
+| Medium | Registry есть, но без owner, review expiry или downstream destination metadata | Завести remediation с owner и due date |
+| Medium | Logs поддерживают operations, но не позволяют восстановить identity-to-tool-to-downstream action chain | Улучшить до широкого rollout |
+| Low | Naming, descriptions или prompt metadata inconsistent, но access не расширяется | Исправить opportunistically |
+
+Релиз считается одобренным только когда каждая production MCP capability зарегистрирована, ограничена scope, авторизована, логируется и может быть отключена независимо от остальных capabilities.
+
+---
+
+## 6. Связанные материалы
+
+- [Обзор безопасности AI](../securing-ai/overview.ru.md)
+- [Плейбук безопасности Agentic AI](../agentic-ai/playbook.ru.md)
+- [Плейбук моделирования угроз](../../review/threat-modeling/playbook.ru.md)
+- [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)
+- [Плейбук OIDC + OAuth 2.0](../../application-security/identity/oidc-oauth/playbook.ru.md)

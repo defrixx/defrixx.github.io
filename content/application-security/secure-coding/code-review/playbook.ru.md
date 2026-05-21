@@ -195,3 +195,5 @@
 - [Плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md)
 - [Плейбук OIDC + OAuth 2.0](../../identity/oidc-oauth/playbook.ru.md)
 - [Плейбук управления уязвимостями](../../../review/vulnerability-management/playbook.ru.md)
+- [Плейбук безопасности MCP](../../../ai-security/mcp-security/playbook.ru.md)
+- [Плейбук безопасности Agentic AI](../../../ai-security/agentic-ai/playbook.ru.md)

@@ -152,6 +152,7 @@ GitHub-specific notes:
 Дополнительные подтверждения для high-risk релиза в рабочую среду:
 - threat model или abuse-case update;
 - negative tests для auth, tenant isolation, payment/ledger, admin или secrets path, touched by the change;
+- для AI/agentic workflows: запись AI asset inventory, матрица политик, action-trace evidence, подтверждения tool/MCP registry и kill-switch/rollback drill там, где это применимо;
 - rollback/kill-switch plan;
 - monitoring и alert confirmation для changed sensitive flow;
 - explicit security owner approval.
@@ -192,5 +193,8 @@ Escalation triggers:
 
 - [Плейбук управления уязвимостями](../vulnerability-management/playbook.ru.md)
 - [Чеклист ревью архитектуры безопасности](../architecture/checklist.ru.md)
+- [Обзор безопасности AI](../../ai-security/securing-ai/overview.ru.md)
+- [Плейбук безопасности Agentic AI](../../ai-security/agentic-ai/playbook.ru.md)
+- [Плейбук безопасности MCP](../../ai-security/mcp-security/playbook.ru.md)
 - [Плейбук безопасности container images](../../supply-chain/container-image-security/playbook.ru.md)
 - [Плейбук ревью безопасности Kubernetes-кластера](../../platform-security/kubernetes/cluster-security-review/playbook.ru.md)

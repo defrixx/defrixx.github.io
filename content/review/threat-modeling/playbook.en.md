@@ -99,6 +99,13 @@ Use this path by default for:
 - CI/CD, artifact provenance, deployment, platform, and Kubernetes control plane changes;
 - AI/agentic workflows where data leakage, prompt injection, tool abuse, and autonomous actions matter.
 
+AI and MCP escalation triggers:
+- adding or changing an MCP server, tool, resource, reusable prompt, gateway policy, transport, OAuth scope, or authorization flow;
+- enabling local `stdio` tools, remote Streamable HTTP MCP, third-party MCP servers, browser tools, URL fetchers, email/file integrations, code interpreters, or shell execution;
+- introducing agent memory, long-running autonomous workflows, checkpoints, multi-agent delegation, or shared tool access;
+- widening retrieval sources, vector-store scope, resource URI patterns, tool schemas, outbound destinations, or agent autonomy level;
+- changing model/provider/runtime behavior where logs, retention, memory isolation, tool access, or emergency disablement differ from the approved design.
+
 Recommended path steps:
 
 1. Inventory and diagram.
@@ -136,6 +143,8 @@ Recommended path steps:
 - Tie every mitigation to a test/evidence item.
 - Artifact: test plan, findings, release verdict.
 - Example: automated test rejects stale webhook, duplicate event, invalid signature, and out-of-order transition; audit event is visible in SIEM.
+
+For agentic AI and MCP, the release gate must include negative tests for prompt injection into tool use, retrieval or memory poisoning, unauthorized tool invocation, capability drift, wrong-audience/wrong-scope tokens, sandbox egress, and kill-switch execution.
 
 ### 3.3 Unified Example: PSP Webhook Attack Modeling
 
@@ -468,3 +477,5 @@ Example:
 - [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
 - [OWASP LLM Top 10 overview](../../ai-security/owasp-llm-top-10/overview.en.md)
 - [Securing AI overview](../../ai-security/securing-ai/overview.en.md)
+- [Agentic AI security playbook](../../ai-security/agentic-ai/playbook.en.md)
+- [MCP security playbook](../../ai-security/mcp-security/playbook.en.md)

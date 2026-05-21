@@ -222,5 +222,7 @@ Uncontrolled consumption of LLM resources (requests, tokens, inference), leading
 ## 5. Related Materials
 
 - [Securing AI overview](../securing-ai/overview.en.md)
+- [Agentic AI security playbook](../agentic-ai/playbook.en.md)
+- [MCP security playbook](../mcp-security/playbook.en.md)
 - [Threat modeling playbook](../../review/threat-modeling/playbook.en.md)
 - [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)

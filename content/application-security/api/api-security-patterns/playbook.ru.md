@@ -599,3 +599,5 @@ flowchart LR
 - [Плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md)
 - [Плейбук злоупотребления бизнес-логикой](../../business-logic/business-logic-abuse/playbook.ru.md)
 - [Плейбук моделирования угроз](../../../review/threat-modeling/playbook.ru.md)
+- [Плейбук безопасности MCP](../../../ai-security/mcp-security/playbook.ru.md)
+- [Плейбук безопасности Agentic AI](../../../ai-security/agentic-ai/playbook.ru.md)

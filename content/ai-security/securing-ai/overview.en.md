@@ -80,6 +80,7 @@ Control labels in this document are requirement profiles, not finding severity:
 - `Baseline`: data classification + data handling matrix for AI use cases
 - `Baseline`: DLP/redaction before model call and before user response
 - `Baseline`: encryption in transit/at rest + tenant isolation
+- `Baseline`: classify embeddings, vector stores, memory, cached outputs, and interaction logs as sensitive data even when raw source text is not stored
 - `High-impact/regulated`: strict data minimization for inference/training
 - `High-impact/regulated`: enforceable retention/deletion controls
 - `Recommended maturity`: privacy impact assessment for new AI features
@@ -94,6 +95,7 @@ Control labels in this document are requirement profiles, not finding severity:
 - compromised models/adapters
 - vulnerable ML dependencies
 - legal exposure from licensing terms
+- unmanaged AI assets outside normal software and infrastructure inventory
 
 **OWASP LLM Top 10 coverage:**
 - `LLM03: Supply Chain`
@@ -101,6 +103,7 @@ Control labels in this document are requirement profiles, not finding severity:
 
 **Practical controls:**
 - `Baseline`: trusted registry + provenance checks (hash/signature/publisher)
+- `Baseline`: inventory AI assets beyond deployed services: model endpoints, prompt/config stores, vector stores, memory stores, evaluation harnesses, tool adapters, MCP servers, provider consoles, and local AI runtimes
 - `High-impact/regulated`: SBOM/AI-BOM for model artifacts and runtime
 - `Baseline`: CVE scanning + gating for critical vulnerabilities
 - `High-impact/regulated`: controlled promotion flow (dev -> staging -> prod) with approvals
@@ -109,6 +112,7 @@ Control labels in this document are requirement profiles, not finding severity:
 
 **Verification signals:**
 - release share with signed artifacts
+- inventory coverage for AI assets and owner/review-expiry completeness
 - time-to-fix for critical CVEs in AI stack
 
 ### 3.4 Prompt, context, and RAG security
@@ -127,13 +131,16 @@ Control labels in this document are requirement profiles, not finding severity:
 - `Baseline`: strict context separation (trusted vs untrusted)
 - `Baseline`: retrieval with document-level/tenant-level authorization
 - `Baseline`: ingestion security pipeline (malware/content/policy checks)
+- `Baseline`: memory write policy for agents; exclude secrets, tokens, raw regulated data, and unnecessary sensitive fields from working memory, long-term memory, checkpoints, and summaries
 - `High-impact/regulated`: detection for jailbreak/injection patterns
 - `High-impact/regulated`: prompt template versioning + mandatory security review
+- `High-impact/regulated`: semantic recovery tests for vector stores and agent memory so restored context is authorized, current, and not poisoned
 - `Recommended maturity`: adversarial test suite in CI/CD
 
 **Verification signals:**
 - injection success rate in red-team tests
 - share of RAG documents passing policy scan
+- memory write rejection rate and vector-store recovery test results
 
 ### 3.5 Output and agent-action security
 
@@ -187,8 +194,11 @@ Treat these numbers as local starting baselines. Tune them by model context wind
 - `High-impact/regulated`: approved registry for MCP servers and agent tools, with owner, environment, allowed clients, and review expiry
 - `Baseline`: deny-by-default tool discovery; agents may use only registered tools from approved transports and trust boundaries
 - `High-impact/regulated`: signed or version-pinned tool manifests, with review for changed descriptions, input schemas, scopes, and outbound destinations
+- `High-impact/regulated`: gateway-mediated MCP for production remote servers where feasible, with centralized authorization, capability filtering, redaction, audit logging, egress policy, and emergency disablement
+- `Baseline`: local `stdio` MCP servers are allowed only through endpoint/application allowlisting, declared filesystem roots, approved environment variables, and blocked outbound access unless explicitly required
 - `Baseline`: explicit user/workload authorization for every tool call, not only for initial agent session creation
 - `Baseline`: per-tool scopes and short-lived credentials; never reuse broad user or platform tokens across unrelated tools
+- `Baseline`: no token passthrough from MCP client credentials into downstream APIs; use separate downstream credentials or an approved token-exchange pattern
 - `Baseline`: no secrets in prompts, tool descriptions, context payloads, MCP traffic logs, or protocol traces
 - `High-impact/regulated`: detection for unknown MCP servers, new tool manifests, abnormal tool-chain depth, and unusual cross-tool data movement
 
@@ -198,7 +208,7 @@ Assumption:
 **Verification signals:**
 - inventory coverage for MCP servers and registered tools
 - percentage of tool calls evaluated by policy before execution
-- alerts for unknown tools, manifest drift, and protocol-log redaction failures
+- alerts for unknown tools, manifest drift, protocol-log redaction failures, and unexpected `listChanged` events
 
 ### 3.7 Infrastructure and runtime security
 
@@ -229,6 +239,7 @@ Assumption:
 - classic web/API vulnerabilities + AI-specific attack chains
 - unsafe frontend rendering of model output
 - SSRF/XSS/SQLi via LLM-mediated paths
+- agent browser, file, email, and code-execution tools becoming untrusted ingestion and execution paths
 
 **OWASP LLM Top 10 coverage:**
 - `LLM05: Improper Output Handling`
@@ -238,12 +249,16 @@ Assumption:
 - `Baseline`: secure coding baseline for web/API code plus AI-specific checks
 - `Baseline`: parameterized queries + context-aware output encoding
 - `Baseline`: CSP/HTML sanitization for LLM content
+- `Baseline`: run browser automation, URL fetchers, file parsers, and code interpreters in isolated sandboxes with deny-by-default egress and no default access to internal networks, host files, metadata services, or production credentials
+- `Baseline`: scan and sanitize downloaded files, HTML, PDFs, email content, and retrieved web content before they enter memory, RAG, or execution tools
 - `High-impact/regulated`: SAST/DAST/IAST profiles for AI endpoints
+- `High-impact/regulated`: human approval before third-party code execution, package installation, shell commands, or file operations outside a temporary workspace
 - `Recommended maturity`: security contract tests between AI gateway and downstream APIs
 
 **Verification signals:**
 - high-severity findings discovered before release
 - AI endpoint coverage in automated security testing
+- sandbox escape, egress-deny, and malicious-content rejection test results
 
 ### 3.9 Monitoring, detection, and incident response
 
@@ -256,10 +271,12 @@ Assumption:
 
 **Practical controls:**
 - `Baseline`: audit trail for prompts, retrieval, tool calls, policy decisions with field-level data minimization
+- `Baseline`: action trace for agent workflows that correlates model calls, retrieval events, memory writes, tool invocations, policy decisions, approvals, downstream actions, and final output
 - `Baseline`: secret/PII masking and redaction in logs before storage
 - `Baseline`: keep raw prompt/context/tool payload logging disabled by default; use redacted/minimized logs for normal operations
 - `Baseline`: keep raw payload capture limited to scoped forensic mode with approval, break-glass access, case ID, encryption, retention `<=30 days`, deletion evidence, and DLP/redaction where possible
 - `Baseline`: detection rules for injection, privilege misuse, data exfiltration
+- `Baseline`: confirm provider-managed AI runtimes expose enough logs, retention controls, export capability, memory isolation, and emergency disablement before production use
 - `High-impact/regulated`: AI incident runbooks (containment, rollback, customer comms)
 - `High-impact/regulated`: tabletop exercises for realistic AI attack paths
 - `Recommended maturity`: continuous purple teaming
@@ -268,6 +285,7 @@ Assumption:
 - MTTD/MTTR for AI security events
 - percentage of incidents handled with runbook compliance
 - share of raw-payload logs deleted on time per retention policy
+- percentage of high-impact agent actions reconstructable from redacted action traces
 
 ### 3.10 Governance, risk, and compliance
 
@@ -328,7 +346,9 @@ Assumption:
 - threat model for the AI feature
 - policy matrix (`who/what/can-do`)
 - data flow + data classification
+- AI asset inventory entry, including owner, autonomy level, tools, memory/retrieval stores, provider/runtime, and review expiry
 - model/supply chain provenance package
+- action-trace schema and kill-switch/rollback evidence for agentic workflows
 - test evidence (security + abuse + resilience)
 
 ### 4.3 LLMSecOps lifecycle gates
@@ -385,6 +405,8 @@ Assumption:
 ## 5. Related Materials
 
 - [OWASP LLM Top 10 threat overview](../owasp-llm-top-10/overview.en.md)
+- [Agentic AI security playbook](../agentic-ai/playbook.en.md)
+- [MCP security playbook](../mcp-security/playbook.en.md)
 - [Threat modeling playbook](../../review/threat-modeling/playbook.en.md)
 - [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
 - [Secure coding and code review playbook](../../application-security/secure-coding/code-review/playbook.en.md)

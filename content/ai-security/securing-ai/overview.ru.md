@@ -80,6 +80,7 @@
 - `Baseline`: классификация данных + матрица обработки данных для AI-сценариев
 - `Baseline`: DLP/redaction до модели и перед выдачей пользователю
 - `Baseline`: encryption in transit/at rest + tenant isolation
+- `Baseline`: classify embeddings, vector stores, memory, cached outputs и interaction logs как sensitive data, даже если raw source text не хранится
 - `High-impact/regulated`: строгая минимизация данных для inference/training
 - `High-impact/regulated`: принудительно применяемые меры контроля хранения и удаления
 - `Recommended maturity`: оценка влияния на приватность для новых AI-функций
@@ -94,6 +95,7 @@
 - компрометированные модели/адаптеры
 - уязвимые ML-зависимости
 - юридические риски по лицензиям
+- unmanaged AI assets вне обычного software и infrastructure inventory
 
 **Покрытие OWASP LLM Top 10:**
 - `LLM03: Supply Chain`
@@ -101,6 +103,7 @@
 
 **Практические меры контроля:**
 - `Baseline`: trusted registry + provenance checks (hash/signature/publisher)
+- `Baseline`: инвентаризация AI assets шире deployed services: model endpoints, prompt/config stores, vector stores, memory stores, evaluation harnesses, tool adapters, MCP servers, provider consoles и local AI runtimes
 - `High-impact/regulated`: SBOM/AI-BOM для model artifacts и runtime
 - `Baseline`: CVE scanning + gating на критичных уязвимостях
 - `High-impact/regulated`: контролируемый процесс продвижения (dev -> staging -> prod) с approvals
@@ -109,6 +112,7 @@
 
 **Сигналы проверки:**
 - доля релизов с подписанными артефактами
+- покрытие AI assets inventory и полнота owner/review-expiry
 - время закрытия критичных CVE в AI-stack
 
 ### 3.4 Безопасность промптов, контекста и RAG
@@ -127,13 +131,16 @@
 - `Baseline`: строгое разделение контекста (доверенный и недоверенный)
 - `Baseline`: retrieval с document-level/tenant-level authorization
 - `Baseline`: ingestion security pipeline (malware/content/policy checks)
+- `Baseline`: memory write policy для agents; исключайте secrets, tokens, raw regulated data и unnecessary sensitive fields из working memory, long-term memory, checkpoints и summaries
 - `High-impact/regulated`: обнаружение jailbreak/инъекционных паттернов
 - `High-impact/regulated`: версионирование prompt templates + обязательное security review
+- `High-impact/regulated`: semantic recovery tests для vector stores и agent memory, чтобы restored context был authorized, current и not poisoned
 - `Recommended maturity`: adversarial test suite в CI/CD
 
 **Сигналы проверки:**
 - success rate инъекций в red-team тестах
 - доля RAG-документов, прошедших проверку по политикам
+- memory write rejection rate и результаты vector-store recovery tests
 
 ### 3.5 Безопасность вывода и действий агента
 
@@ -187,8 +194,11 @@
 - `High-impact/regulated`: утвержденный registry для MCP servers и agent tools с owner, environment, allowed clients и сроком действия review
 - `Baseline`: deny-by-default tool discovery; agents могут использовать только зарегистрированные tools из утвержденных transports и trust boundaries
 - `High-impact/regulated`: signed или version-pinned tool manifests с ревью изменений descriptions, input schemas, scopes и outbound destinations
+- `High-impact/regulated`: gateway-mediated MCP для production remote servers там, где это возможно, с centralized authorization, capability filtering, redaction, audit logging, egress policy и emergency disablement
+- `Baseline`: local `stdio` MCP servers разрешены только через endpoint/application allowlisting, declared filesystem roots, approved environment variables и blocked outbound access, если outbound access явно не требуется
 - `Baseline`: явная user/workload authorization для каждого tool call, а не только при создании начальной agent session
 - `Baseline`: per-tool scopes и short-lived credentials; не переиспользуйте broad user или platform tokens между unrelated tools
+- `Baseline`: no token passthrough из MCP client credentials в downstream APIs; используйте separate downstream credentials или утвержденный token-exchange pattern
 - `Baseline`: не хранить secrets в промптах, tool descriptions, payloads контекста, MCP traffic logs или protocol traces
 - `High-impact/regulated`: обнаружение unknown MCP servers, новых tool manifests, abnormal tool-chain depth и необычного cross-tool data movement
 
@@ -198,7 +208,7 @@
 **Сигналы проверки:**
 - покрытие inventory для MCP servers и registered tools
 - доля tool calls, проверенных политикой до execution
-- alerts по unknown tools, manifest drift и сбоям protocol-log redaction
+- alerts по unknown tools, manifest drift, сбоям protocol-log redaction и unexpected `listChanged` events
 
 ### 3.7 Инфраструктура и безопасность runtime
 
@@ -229,6 +239,7 @@
 - классические web/API уязвимости + AI-специфичные цепочки
 - небезопасный frontend rendering model output
 - SSRF/XSS/SQLi через LLM-mediated paths
+- agent browser, file, email и code-execution tools как недоверенные ingestion и execution paths
 
 **Покрытие OWASP LLM Top 10:**
 - `LLM05: Improper Output Handling`
@@ -238,12 +249,16 @@
 - `Baseline`: базовый профиль безопасной разработки для web/API code плюс AI-специфичные проверки
 - `Baseline`: параметризованные запросы + output encoding с учетом контекста
 - `Baseline`: CSP/санитизация HTML для LLM content
+- `Baseline`: запускать browser automation, URL fetchers, file parsers и code interpreters в isolated sandboxes с deny-by-default egress и без default access к internal networks, host files, metadata services или production credentials
+- `Baseline`: scanning и sanitization для downloaded files, HTML, PDFs, email content и retrieved web content до попадания в memory, RAG или execution tools
 - `High-impact/regulated`: SAST/DAST/IAST профили для AI endpoints
+- `High-impact/regulated`: human approval перед third-party code execution, package installation, shell commands или file operations вне temporary workspace
 - `Recommended maturity`: security contract tests между AI gateway и downstream APIs
 
 **Сигналы проверки:**
 - число high-замечаний до релиза
 - покрытие AI endpoints в автоматизированных security тестах
+- результаты sandbox escape, egress-deny и malicious-content rejection tests
 
 ### 3.9 Мониторинг, обнаружение и реагирование на инциденты
 
@@ -256,10 +271,12 @@
 
 **Практические меры контроля:**
 - `Baseline`: аудит-трейл для промптов, retrieval, tool calls, решений политики с минимизацией данных на уровне полей
+- `Baseline`: action trace для agent workflows, который correlates model calls, retrieval events, memory writes, tool invocations, policy decisions, approvals, downstream actions и final output
 - `Baseline`: маскирование/редакция секретов и ПДн в логах до записи
 - `Baseline`: журналирование raw payloads промптов, контекста и tools должно быть отключено по умолчанию; для штатной эксплуатации используйте логи с маскированием чувствительных данных и минимальным набором полей
 - `Baseline`: ограничивайте raw payload capture только scoped forensic mode с approval, break-glass доступом, case ID, шифрованием, retention `<=30 days`, подтверждением удаления и DLP/redaction там, где это возможно
 - `Baseline`: правила обнаружения для инъекций, privilege misuse, data exfil
+- `Baseline`: подтверждать, что provider-managed AI runtimes дают достаточные logs, retention controls, export capability, memory isolation и emergency disablement до production use
 - `High-impact/regulated`: AI incident runbooks (containment, rollback, customer comms)
 - `High-impact/regulated`: tabletop exercises по realistic AI attack paths
 - `Recommended maturity`: continuous purple teaming
@@ -268,6 +285,7 @@
 - MTTD/MTTR для AI-событий безопасности
 - процент инцидентов с корректно отработанным runbook
 - доля raw payload логов, удаленных в срок по retention policy
+- доля high-impact agent actions, которые можно восстановить по redacted action traces
 
 ### 3.10 Управление, риск и соответствие требованиям
 
@@ -328,7 +346,9 @@
 - threat model для AI-функции
 - матрица политик (`who/what/can-do`)
 - поток данных + классификация данных
+- запись AI asset inventory, включая owner, autonomy level, tools, memory/retrieval stores, provider/runtime и review expiry
 - model/supply chain provenance package
+- action-trace schema и kill-switch/rollback evidence для agentic workflows
 - тестовые подтверждения (security + abuse + resilience)
 
 ### 4.3 LLMSecOps lifecycle gates
@@ -385,6 +405,8 @@
 ## 5. Связанные материалы
 
 - [OWASP LLM Top 10: обзор угроз](../owasp-llm-top-10/overview.ru.md)
+- [Плейбук безопасности Agentic AI](../agentic-ai/playbook.ru.md)
+- [Плейбук безопасности MCP](../mcp-security/playbook.ru.md)
 - [Плейбук моделирования угроз](../../review/threat-modeling/playbook.ru.md)
 - [Плейбук безопасности API](../../application-security/api/api-security-patterns/playbook.ru.md)
 - [Плейбук безопасной разработки и ревью кода](../../application-security/secure-coding/code-review/playbook.ru.md)

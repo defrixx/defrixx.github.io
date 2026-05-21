@@ -138,3 +138,4 @@ Verification:
 - [API security playbook](../../api/api-security-patterns/playbook.en.md)
 - [OWASP Top 10 web application defense playbook](../owasp-top-10/playbook.en.md)
 - [Secure coding and code review playbook](../../secure-coding/code-review/playbook.en.md)
+- [Agentic AI security playbook](../../../ai-security/agentic-ai/playbook.en.md)

@@ -152,6 +152,7 @@ Minimum evidence pack for standard live release:
 Additional evidence for high-risk live release:
 - threat model or abuse-case update;
 - negative tests for auth, tenant isolation, payment/ledger, admin, or secrets path touched by the change;
+- for AI/agentic workflows: AI asset inventory entry, policy matrix, action-trace evidence, tool/MCP registry evidence, and kill-switch/rollback drill where applicable;
 - rollback/kill-switch plan;
 - monitoring and alert confirmation for the changed sensitive flow;
 - explicit security owner approval.
@@ -192,5 +193,8 @@ Escalation triggers:
 
 - [Vulnerability management playbook](../vulnerability-management/playbook.en.md)
 - [Security architecture review checklist](../architecture/checklist.en.md)
+- [Securing AI overview](../../ai-security/securing-ai/overview.en.md)
+- [Agentic AI security playbook](../../ai-security/agentic-ai/playbook.en.md)
+- [MCP security playbook](../../ai-security/mcp-security/playbook.en.md)
 - [Container image security playbook](../../supply-chain/container-image-security/playbook.en.md)
 - [Kubernetes cluster security review playbook](../../platform-security/kubernetes/cluster-security-review/playbook.en.md)
