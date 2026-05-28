@@ -187,17 +187,21 @@ kubectl auth can-i patch services/status --as=<subject> -n <ns>
 - какой TTL у токенов/секретов и как проходит их отзыв (revocation).
 
 **Сигналы риска:**
-- секреты хранятся в repo или в values-файлах без внешнего secret manager;
+- plaintext/base64 секреты хранятся в репозитории, values-файлах, rendered manifests или CI artifacts;
+- Kubernetes Secret используется для high-value runtime secrets без подтвержденного etcd encryption at rest, строгого RBAC, audit и владельца;
+- External Secrets Operator или другой sync-процесс создает Kubernetes Secret без реальной необходимости совместимости;
 - long-lived ServiceAccount token secrets используются как основной механизм;
 - широкое `list/watch` на Secret для человеческих или CI identity;
 - нет подтверждаемого процесса ротации и аварийного отзыва.
 
 **Рекомендация для рабочих сред:**
-- используйте pull-модель из внешнего secret store (например, Vault) вместо хранения значений в манифестах;
+- для high-value runtime secrets предпочитайте доставку только файлами из внешнего secret store (например, Vault Agent Injector или Secrets Store CSI), чтобы не синхронизировать значения в Kubernetes Secret objects;
+- используйте встроенный Kubernetes Secret для секретов low/medium-value только при включенных etcd encryption at rest, строгом RBAC, audit и безопасной модели доставки;
+- если приложение или платформа требуют Kubernetes Secret object через External Secrets Operator или похожий sync-механизм, считайте это более высоким уровнем раскрытия и применяйте те же проверки, что для встроенного Secret;
 - включите etcd encryption at rest и проверяйте статус после изменений control plane;
 - ограничьте Secret ACL до минимально нужного набора workload identities;
 - применяйте short-lived токены и регулярную ротацию секретов;
-- если по операционным причинам используется push-модель (например, `sops`/`helm-secrets`), требуйте шифрование в Git, контролируемые ключи и запрет расшифровки вне доверенного CI/CD-контура;
+- если по операционным причинам используется encrypted-at-source push-модель (например, `sops`/`helm-secrets`), требуйте контролируемые ключи, review и запрет расшифровки вне доверенного CI/CD-контура;
 - периодически проверяйте, что журналирование не раскрывает чувствительные значения.
 
 ---
@@ -275,5 +279,6 @@ kubectl auth can-i patch services/status --as=<subject> -n <ns>
 - Kubernetes adversarial validation: [kubernetes/adversarial-validation/playbook.ru.md](../adversarial-validation/playbook.ru.md)
 - Seccomp review checklist: [kubernetes/seccomp/checklist.ru.md](../seccomp/checklist.ru.md)
 - Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](../container-escape-capability-abuse/overview.ru.md)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](../secrets/playbook.ru.md)
 - Vault и секреты: [secrets/vault/playbook.ru.md](../../secrets/vault/playbook.ru.md)
 - OIDC/OAuth для machine/human access patterns: [identity/oidc-oauth/playbook.ru.md](../../../application-security/identity/oidc-oauth/playbook.ru.md)

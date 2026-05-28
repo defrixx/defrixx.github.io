@@ -175,6 +175,47 @@ Capability abuse is different from full escape:
 - The attacker may remain inside container namespaces but still perform dangerous actions because the container has been granted excessive Linux capabilities or broad runtime privileges.
 This is often more realistic than a "clean" escape because many environments intentionally over-grant privileges for operational convenience.
 
+### 5.1 Capability sets: why `drop`/`add` is not the whole model
+
+Linux capabilities are not a single flat list. A process has several capability sets, and an executable file can have file capabilities. The kernel checks the effective capability state of a specific thread, not the Kubernetes YAML text.
+
+Simplified model:
+
+```text
+Bounding
+└── Permitted
+    └── Effective
+
+Ambient ⊆ Permitted ∩ Inheritable
+```
+
+Key sets:
+- `Effective` - capabilities currently used for kernel permission checks.
+- `Permitted` - upper bound for what the thread may make effective.
+- `Bounding` - ceiling for capabilities that can be acquired through `execve`, file capabilities, or the setuid-root path.
+- `Inheritable` - material for passing capabilities across `execve`; it does not grant permissions by itself.
+- `Ambient` - a way to preserve capabilities after `execve` for unprivileged files; it is cleared when executing a privileged file, such as a setuid binary or a file with file capabilities.
+
+File capabilities are stored on executable files, usually in the `security.capability` xattr. On `execve`, the kernel recalculates the new process capability sets from the current thread sets and the file capabilities. As a result, two configurations that look identical at the `capabilities.add/drop` level can behave differently after the entrypoint, `setuid`, `su-exec`, wrapper scripts, or a binary with file capabilities runs.
+
+Practical Kubernetes implications:
+- `securityContext.capabilities.drop/add` is a CRI/runtime abstraction over several Linux capability sets; verify the effective runtime state, not only YAML.
+- `drop: ["ALL"]` should remove a capability from Effective/Permitted/Bounding; if it remains in Bounding or can return through a file capability, least privilege has not been reached.
+- `allowPrivilegeEscalation: false` sets `no_new_privs` and blocks new privileges through `execve`, including setuid and file-capability paths. It does not replace `drop: ["ALL"]`, but it closes an important capability reacquisition path.
+- Kubernetes generally does not set Ambient capabilities. If an application starts with a capability, then performs `setuid`/drops privileges and expects to keep that capability after `execve`, it may break. That is not a reason to grant broad capabilities; it is a reason to change the startup model or document an explicit exception.
+
+Runtime check inside a Pod:
+
+```bash
+kubectl exec -n <ns> <pod> -- sh -c "grep -E 'Cap(Inh|Prm|Eff|Bnd|Amb)|NoNewPrivs' /proc/1/status"
+```
+
+Evidence should include:
+- `CapEff`, `CapPrm`, `CapBnd`, and `CapAmb` for the main process;
+- `NoNewPrivs: 1` when policy requires `allowPrivilegeEscalation: false`;
+- file capabilities inside the image for executables that actually need them;
+- why the capability cannot be replaced by an unprivileged port, init-time preparation, Kubernetes volume/CSI, sidecar/agent, or a separate isolated workload.
+
 ---
 
 ## 6. Main Capability Abuse Attack Vectors
@@ -351,9 +392,10 @@ When reviewing a workload, ask:
 - What Kubernetes API impact becomes possible after node-level access?
 ---
 
-## 7. Related Materials
+## 12. Related Materials
 
 - [Pod Security playbook](../pod-security/playbook.en.md)
 - [Seccomp checklist](../seccomp/checklist.en.md)
 - [Kubernetes cluster security review playbook](../cluster-security-review/playbook.en.md)
 - [Kubernetes adversarial validation playbook](../adversarial-validation/playbook.en.md)
+- [Kubernetes Secrets playbook](../secrets/playbook.en.md)

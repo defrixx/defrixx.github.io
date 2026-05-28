@@ -113,6 +113,8 @@ Where relevant, distinguish between:
 - Minimize kernel-exposed privileged operations
 - Reduce privilege escalation and breakout opportunities
 
+For review, do not stop at YAML. `capabilities.drop/add` controls several Linux capability sets through the CRI/runtime, and the final state depends on the entrypoint, `execve`, file capabilities, and `allowPrivilegeEscalation`. For disputed workloads, verify `CapEff`, `CapPrm`, `CapBnd`, `CapAmb`, and `NoNewPrivs` at runtime; the detailed model is covered in the [container escape and capability abuse overview](../container-escape-capability-abuse/overview.en.md).
+
 ---
 
 ### 4.3 Filesystem Hardening
@@ -334,3 +336,4 @@ Each anti-pattern directly increases risk from the threat model:
 ## 7. Related Materials
 
 - Adversarial validation for pod-level abuse paths: [kubernetes/adversarial-validation/playbook.en.md](../adversarial-validation/playbook.en.md)
+- Kubernetes Secrets for Secret volumes, env delivery, and ServiceAccount/RBAC boundaries: [kubernetes/secrets/playbook.en.md](../secrets/playbook.en.md)

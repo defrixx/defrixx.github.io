@@ -4,6 +4,36 @@ This document explains how key technologies commonly seen in live infrastructure
 
 Sections are grouped by the role a technology plays in a live system: build and supply chain, container platform, identity/secrets, automation, data stores, and messaging.
 
+## Table of Contents
+
+- [Build, Delivery, and Supply Chain](#build-delivery-and-supply-chain)
+  - [CI/CD Platforms](#cicd-platforms)
+  - [Docker](#docker)
+  - [OCI Registry / Artifact Registry](#oci-registry--artifact-registry)
+  - [Helm](#helm)
+- [Container Platform and Kubernetes Runtime](#container-platform-and-kubernetes-runtime)
+  - [Container Runtimes](#container-runtimes)
+  - [Kubernetes](#kubernetes)
+  - [CNI / Kubernetes Networking](#cni--kubernetes-networking)
+  - [Ingress / Gateway / API Gateway](#ingress--gateway--api-gateway)
+  - [Istio](#istio)
+  - [Policy Engines](#policy-engines)
+- [Identity, Secrets, and Access](#identity-secrets-and-access)
+  - [Cloud IAM / Workload Identity](#cloud-iam--workload-identity)
+  - [Vault](#vault)
+- [Automation and Configuration Management](#automation-and-configuration-management)
+  - [Ansible](#ansible)
+  - [Terraform / OpenTofu](#terraform--opentofu)
+- [Data Stores, Search, and Messaging](#data-stores-search-and-messaging)
+  - [Object Storage](#object-storage)
+  - [PostgreSQL / Relational Databases](#postgresql--relational-databases)
+  - [Redis](#redis)
+  - [Vector Database / Vector DB](#vector-database--vector-db)
+  - [Elasticsearch / OpenSearch](#elasticsearch--opensearch)
+  - [Kafka](#kafka)
+  - [RabbitMQ](#rabbitmq)
+- [Related Materials](#related-materials)
+
 ## Build, Delivery, and Supply Chain
 
 ### CI/CD Platforms
@@ -807,6 +837,63 @@ A mistake in a playbook can propagate insecure configuration at scale.
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to change management, privileged automation, and trust boundaries.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when Ansible retrieves secrets from Vault or stores sensitive variables.
 - There is no dedicated Ansible playbook yet.
+
+### Terraform / OpenTofu
+
+#### What It Is Used For
+Terraform and OpenTofu are used for Infrastructure as Code: describing, creating, and changing cloud resources, Kubernetes objects, IAM policies, DNS records, managed databases, network components, and SaaS configuration through declarative code. In live environments they are often the main mechanism for changing production infrastructure, so they should be treated as privileged automation rather than an ordinary configuration repository.
+
+#### Operating Model
+Configuration describes desired state through resources, data sources, variables, outputs, providers, and modules. A provider knows the API of a specific platform: cloud, Kubernetes, Vault, DNS, monitoring, or SaaS. The CLI builds a dependency graph, reads current state from the state file, creates a plan, and then apply calls provider operations to bring infrastructure to the desired state.
+
+State maps configuration to real remote objects and contains attributes of created resources. It is a critical artifact: state often includes internal identifiers, connection strings, generated passwords, private endpoints, IAM bindings, and other sensitive values even when variables are marked sensitive. A remote backend is needed not only for collaboration, but also for access control, audit, encryption, and locking. Locking protects against concurrent apply operations that can corrupt state or create conflicting changes.
+
+Modules provide reuse, but create a supply-chain boundary. Public modules, provider versions, and transitive module sources should be pinned and reviewed like application dependencies. A plan is an important review artifact, but not an absolute guarantee: drift, out-of-band changes, provider behavior, and data sources can change the final apply.
+
+In live environments Terraform/OpenTofu usually runs from CI/CD or a dedicated IaC platform, not from an operator laptop. The pipeline obtains short-lived credentials through OIDC/workload identity, builds a plan, stores it as evidence, passes approval, and applies changes with a limited role. Manual apply should be a break-glass process with an audit trail and later state reconciliation.
+
+#### Interaction Diagram
+```mermaid
+flowchart LR
+  Repo["IaC repository"] --> CI["CI / IaC runner"]
+  CI --> Init["init providers / modules"]
+  Init --> Plan["plan"]
+  Plan --> Approval["Review / approval"]
+  Approval --> Apply["apply"]
+
+  State["Remote state backend"] --> Plan
+  Apply --> State
+  Lock["State lock"] --> Plan
+  Lock --> Apply
+
+  OIDC["OIDC / workload identity"] --> Creds["Short-lived credentials"]
+  Creds --> Apply
+  Apply --> Providers["Providers"]
+  Providers --> Cloud["Cloud / Kubernetes / SaaS APIs"]
+  Cloud --> Resources["Managed resources"]
+```
+
+#### Responsibility Boundaries
+Terraform/OpenTofu applies infrastructure changes, but it does not decide whether the architecture itself is secure. The team owns module review, provider pinning, remote state security, separation of duties, least-privilege credentials, drift detection, plan/apply approvals, policy-as-code gates, and state recoverability.
+
+The state backend should be treated as high-value storage. Access to it is often equivalent to access to infrastructure topology, IAM bindings, and secrets.
+
+#### Common Live Patterns
+- Remote state backend with encryption, access control, audit logs, backup/versioning, and locking.
+- Separate state/workspaces or backends by environment, account, blast-radius zone, and ownership domain.
+- Plan in a pull request or change request; apply only after approval.
+- Short-lived cloud credentials through OIDC/workload identity instead of long-lived access keys.
+- Provider and module versions pinned; external module sources reviewed.
+- Policy-as-code to block public exposure, broad IAM, unencrypted storage, and unsafe Kubernetes resources.
+- Drift detection and import workflow for resources changed outside IaC.
+- No plaintext secrets in variables, outputs, state-sharing outputs, or CI logs.
+
+#### Related Project Files
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to trust boundaries, data flows, and architecture changes through IaC.
+- `content/review/release-governance/playbook.ru.md` / `playbook.en.md` — approvals, release evidence, and separation of duties for infrastructure changes.
+- `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC federation for CI/CD and workload identity.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when Terraform/OpenTofu retrieves credentials or secrets from Vault.
+- There is no dedicated Terraform/OpenTofu playbook yet.
 
 ## Data Stores, Search, and Messaging
 

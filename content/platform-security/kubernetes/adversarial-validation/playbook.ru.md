@@ -350,4 +350,5 @@ Adversarial validation считается завершенной, когда е�
 - Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](../container-escape-capability-abuse/overview.ru.md)
 - Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](../seccomp/checklist.ru.md)
 - SLSA provenance для container images: [supply-chain/slsa-provenance/overview.ru.md](../../../supply-chain/slsa-provenance/overview.ru.md)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](../secrets/playbook.ru.md)
 - Vault и секреты: [secrets/vault/playbook.ru.md](../../secrets/vault/playbook.ru.md)

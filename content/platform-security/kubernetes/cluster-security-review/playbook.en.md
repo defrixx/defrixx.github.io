@@ -187,17 +187,21 @@ kubectl auth can-i patch services/status --as=<subject> -n <ns>
 - token/secret TTL and revocation process quality.
 
 **Risk signals:**
-- secrets stored in repository or values files without external secret manager;
+- plaintext/base64 secrets stored in repository, values files, rendered manifests, or CI artifacts;
+- Kubernetes Secret used for high-value runtime secrets without confirmed etcd encryption at rest, strict RBAC, audit, and ownership;
+- External Secrets Operator or another sync process creates a Kubernetes Secret without a real compatibility need;
 - long-lived ServiceAccount token secrets used as the primary mechanism;
 - broad `list/watch` on Secrets for human or CI identities;
 - no provable rotation and emergency revocation process.
 
 **Recommended control:**
-- use pull model from external secret store (for example Vault) instead of storing values in manifests;
+- for high-value runtime secrets, prefer file-only delivery from an external secret store (for example Vault Agent Injector or Secrets Store CSI) so values are not synchronized into Kubernetes Secret objects;
+- use native Kubernetes Secret for low/medium-value secrets only when etcd encryption at rest, strict RBAC, audit, and a safe delivery model are in place;
+- if the application or platform requires a Kubernetes Secret object through External Secrets Operator or a similar sync mechanism, treat this as higher exposure and apply the same checks as for native Secret;
 - enable etcd encryption at rest and verify status after control-plane changes;
 - limit Secret ACL to minimum required workload identities;
 - use short-lived tokens and regular secret rotation;
-- if push model is used for operational reasons (for example `sops`/`helm-secrets`), require encrypted Git storage, controlled key management, and forbid decryption outside trusted CI/CD boundaries;
+- if an encrypted-at-source push model is used for operational reasons (for example `sops`/`helm-secrets`), require controlled keys, review, and no decryption outside trusted CI/CD boundaries;
 - periodically verify logging does not expose secret values.
 
 ---
@@ -275,13 +279,6 @@ A review is complete only when it provides:
 - Kubernetes adversarial validation: [kubernetes/adversarial-validation/playbook.en.md](../adversarial-validation/playbook.en.md)
 - Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](../seccomp/checklist.en.md)
 - Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](../container-escape-capability-abuse/overview.en.md)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](../secrets/playbook.en.md)
 - Vault and secrets: [secrets/vault/playbook.en.md](../../secrets/vault/playbook.en.md)
 - OIDC/OAuth for machine/human access patterns: [identity/oidc-oauth/playbook.en.md](../../../application-security/identity/oidc-oauth/playbook.en.md)
----
-
-## 7. Related Materials
-
-- [Kubernetes adversarial validation playbook](../adversarial-validation/playbook.en.md)
-- [Pod Security playbook](../pod-security/playbook.en.md)
-- [Seccomp checklist](../seccomp/checklist.en.md)
-- [Container image security playbook](../../../supply-chain/container-image-security/playbook.en.md)

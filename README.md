@@ -51,6 +51,7 @@ PRs are welcome if you want to improve existing materials or add new ones.
 - [`content/platform-security/kubernetes/cluster-security-review/`](content/platform-security/kubernetes/cluster-security-review/) - Kubernetes cluster security review playbook
 - [`content/platform-security/kubernetes/adversarial-validation/`](content/platform-security/kubernetes/adversarial-validation/) - Kubernetes adversarial validation and attack-path review playbook
 - [`content/platform-security/kubernetes/pod-security/`](content/platform-security/kubernetes/pod-security/) - Kubernetes pod security hardening playbook
+- [`content/platform-security/kubernetes/secrets/`](content/platform-security/kubernetes/secrets/) - Kubernetes Secrets security playbook
 - [`content/platform-security/kubernetes/seccomp/`](content/platform-security/kubernetes/seccomp/) - Kubernetes seccomp review checklist
 - [`content/platform-security/kubernetes/container-escape-capability-abuse/`](content/platform-security/kubernetes/container-escape-capability-abuse/) - container escape and Linux capability abuse overview
 - [`content/platform-security/secrets/vault/`](content/platform-security/secrets/vault/) - Vault security playbook

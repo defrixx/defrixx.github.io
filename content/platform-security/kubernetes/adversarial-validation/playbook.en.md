@@ -350,12 +350,5 @@ Adversarial validation is complete only when it provides:
 - Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](../container-escape-capability-abuse/overview.en.md)
 - Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](../seccomp/checklist.en.md)
 - SLSA provenance for container images: [supply-chain/slsa-provenance/overview.en.md](../../../supply-chain/slsa-provenance/overview.en.md)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](../secrets/playbook.en.md)
 - Vault and secrets: [secrets/vault/playbook.en.md](../../secrets/vault/playbook.en.md)
----
-
-## 12. Related Materials
-
-- [Kubernetes cluster security review playbook](../cluster-security-review/playbook.en.md)
-- [Pod Security playbook](../pod-security/playbook.en.md)
-- [Container image security playbook](../../../supply-chain/container-image-security/playbook.en.md)
-- [Container escape and capability abuse overview](../container-escape-capability-abuse/overview.en.md)

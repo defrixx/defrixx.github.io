@@ -205,6 +205,8 @@ vault token revoke -accessor <accessor>
 
 Use one approved pattern per workload and document why it was chosen.
 
+This section compares ways to deliver secrets from Vault. It does not mean Vault is mandatory for every Kubernetes secret; the decision between native Kubernetes Secret, sync-based delivery, and file-only external secret manager delivery is covered in the [Kubernetes Secrets playbook](../../kubernetes/secrets/playbook.en.md).
+
 Pattern A (preferred): Vault Agent Injector
 - Secrets rendered into files at runtime.
 - Works well for apps that support reload/restart on change.
@@ -360,5 +362,6 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 - [OIDC + OAuth 2.0 playbook](../../../application-security/identity/oidc-oauth/playbook.en.md)
 - [Kubernetes cluster security review playbook](../../kubernetes/cluster-security-review/playbook.en.md)
+- [Kubernetes Secrets playbook](../../kubernetes/secrets/playbook.en.md)
 - [SLSA provenance overview](../../../supply-chain/slsa-provenance/overview.en.md)
 - [Infrastructure technologies reference](../../../../reference/infrastructure-technologies/infrastructure-technologies.en.md)

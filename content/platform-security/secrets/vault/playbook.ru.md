@@ -205,6 +205,8 @@ vault token revoke -accessor <accessor>
 
 Используйте один утвержденный паттерн на workload и документируйте, почему он выбран.
 
+Этот раздел сравнивает способы доставки секретов из Vault. Он не означает, что Vault обязателен для каждого Kubernetes-секрета; решение между встроенным Kubernetes Secret, sync-подходом и доставкой только файлами из внешнего secret manager описано в [плейбуке Kubernetes Secrets](../../kubernetes/secrets/playbook.ru.md).
+
 Pattern A (preferred): Vault Agent Injector
 - Секреты рендерятся в файлы во время выполнения.
 - Хорошо подходит для приложений, поддерживающих reload/restart при изменениях.
@@ -360,5 +362,6 @@ Tag в формате `tag@sha256` оставлен только для чита
 
 - [Плейбук OIDC + OAuth 2.0](../../../application-security/identity/oidc-oauth/playbook.ru.md)
 - [Плейбук ревью безопасности Kubernetes-кластера](../../kubernetes/cluster-security-review/playbook.ru.md)
+- [Плейбук Kubernetes Secrets](../../kubernetes/secrets/playbook.ru.md)
 - [Обзор SLSA provenance](../../../supply-chain/slsa-provenance/overview.ru.md)
 - [Справочник infrastructure technologies](../../../../reference/infrastructure-technologies/infrastructure-technologies.ru.md)
