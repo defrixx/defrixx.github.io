@@ -60,6 +60,9 @@ This playbook defines a **practical Kubernetes cluster security review** across:
 - enforce automatic policy fail for high-risk RBAC verbs outside an approved allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
 - for Kubernetes `v1.36+`: `KubeletFineGrainedAuthz` is GA and the feature gate is locked/enabled, so observability workloads should use minimal subresources (`nodes/metrics`, `nodes/stats`, `nodes/pods`, and other required endpoints) instead of broad `nodes/proxy`;
 - deny new RBAC bindings to `nodes/proxy` for observability workloads when their kubelet scraping/logging use case is covered by fine-grained permissions.
+- primary evidence for reducing `nodes/proxy`: `kubectl auth can-i get nodes/metrics|nodes/stats|nodes/pods --as=<subject>` and equivalent checks for the actual kubelet endpoints required;
+- secondary evidence: Kubernetes version, managed-provider documentation, feature gate state, and kubelet/control-plane metrics where available;
+- if fine-grained subresources are unavailable or blocked by the cluster distribution, `nodes/proxy` is allowed only as an exception with owner, expiry, minimal subject scope, and a separate blast-radius review.
 
 **Minimum evidence commands:**
 ```bash
@@ -68,9 +71,11 @@ kubectl get clusterroles,roles -A -o yaml
 kubectl auth can-i create deployments --as=<subject> -n <ns>
 kubectl auth can-i get nodes/proxy --as=<subject>
 kubectl auth can-i get nodes/metrics --as=<subject>
+kubectl auth can-i get nodes/stats --as=<subject>
+kubectl auth can-i get nodes/pods --as=<subject>
 kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
-curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics \
-  | grep 'kubernetes_feature_enabled{name="KubeletFineGrainedAuthz",stage="GA"} 1'
+# Optional secondary evidence where kubelet/control-plane metrics are available:
+# curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics | grep KubeletFineGrainedAuthz
 ```
 
 ---
@@ -102,6 +107,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 
 **What to verify:**
 - all cluster entry points: `Ingress`, `Gateway`, `LoadBalancer`, `NodePort`;
+- which ingress controllers and Gateway API implementations are installed, who owns their `IngressClass`/`GatewayClass`, and which namespaces may attach routes;
 - Service objects with `spec.externalIPs` set;
 - workload egress dependencies (SaaS, cloud APIs, internal services);
 - allowed namespace/service-to-service communication paths;
@@ -109,6 +115,7 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 
 **Risk signals:**
 - unknown public endpoints;
+- new production exposure built on the community `ingress-nginx` controller without a migration plan after project retirement is announced;
 - use of `Service.spec.externalIPs` in live or multi-tenant clusters;
 - no default-deny network model;
 - unrestricted egress for critical workloads;
@@ -118,14 +125,35 @@ curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics 
 - north-south and east-west flow inventory updated at least every `30d`;
 - protected namespaces use default deny + explicit allow rules;
 - every public endpoint has owner, data classification, and vulnerability SLA;
+- do not treat the Ingress API itself as deprecated: the Ingress resource remains supported, but its feature set is frozen. For new complex L7/L4 edge scenarios and long-term platform development, prefer Gateway API with an explicitly chosen implementation and security review.
+- separate the `Ingress` resource from the concrete controller. CVEs and security fixes usually apply to the controller implementation, webhook, data plane, or admission path, not to the `Ingress` API object itself. For the community Kubernetes `ingress-nginx` controller, there will be no new bugfix/security patch releases after retirement; remaining on it after retirement means accepted exposure without upstream CVE remediation. Before retirement, apply supported releases and maintain a migration plan: inventory IngressClass/controller deployments, owned public endpoints, critical annotations, custom snippets, auth/TLS behavior, and replacement target. New production deployments on this controller are allowed only as an exception with owner, expiry, and patch/rollback plan.
+- use the Gateway API security baseline below. A namespace must not be able to attach a route to a shared/public Gateway or reference another namespace's backend/TLS secret without explicit permission from the owner of the referenced resource.
 - deny new `Service.spec.externalIPs` through admission policy: `DenyServiceExternalIPs`, `ValidatingAdmissionPolicy`, or a tested policy engine. In Kubernetes `v1.36+`, this field is deprecated; historically it has been insecure by default because a user who can create or modify a Service can intercept traffic to a chosen IP when the CVE-2020-8554 conditions are present.
 - create a migration plan with owner and deadline for existing `externalIPs`. Preferred targets are managed `type: LoadBalancer`, Ingress/Gateway API for HTTP(S)/L4 entry, or `NodePort` only behind an external load balancer/firewall with explicit IP ownership and network ACLs.
 - do not replace `externalIPs` with manual `status.loadBalancer.ingress` patching without a separate permission model: `services/status` must remain a privileged operation, unavailable to ordinary deploy identities.
+
+**Gateway API security baseline:**
+- `GatewayClass` is a platform-owned object. Permission to create or change `GatewayClass` and controller parameters must be limited to platform/security owners because it selects the controller implementation and trust boundary.
+- A `Gateway` for shared/public edge should live in a platform-owned namespace. Application namespaces may attach `HTTPRoute`/`GRPCRoute`/`TCPRoute` only through explicitly configured `allowedRoutes` on the intended listener.
+- `allowedRoutes` should be as narrow as possible: `Same` for a single-tenant Gateway, `Selector` only with managed labels and admission protection against unauthorized label changes, and `All` is not acceptable for shared/public Gateways without separate risk acceptance.
+- Cross-namespace references require a `ReferenceGrant` in the namespace that owns the target resource. This applies to backend Services, TLS Secrets, and other referents; missing `ReferenceGrant` must produce an invalid route/reference, not silent fallback.
+- TLS termination policy records where TLS terminates, which certificate sources are allowed, who may reference TLS Secrets, which protocols/ciphers/min TLS version the controller implementation enforces, and how rotation is performed.
+- Hostname and listener scope must be constrained: a route from an application namespace must not capture a wildcard hostname, another domain, privileged path prefix, or another tenant's listener without Gateway owner approval.
+- Route status conditions must be monitored as security signals: `Accepted=False`, `ResolvedRefs=False`, unexpected parentRefs/backendRefs/hostname changes require review before production traffic.
+- Policy attachment (authn/authz, WAF, rate limits, header normalization, CORS, request size, timeout, retry) must have an owner and precedence model. Do not rely on controller-specific defaults without explicit evidence.
+- During migration from `ingress-nginx`, do not copy annotations mechanically. For every critical annotation (`auth`, `rewrite`, `configuration-snippet`, body size, buffering, proxy headers, TLS, redirects), record the Gateway API equivalent, unsupported behavior, or compensating control.
 
 **Minimum evidence commands:**
 ```bash
 kubectl get services -A -o jsonpath='{range .items[?(@.spec.externalIPs)]}{.metadata.namespace}{"/"}{.metadata.name}{" "}{.spec.externalIPs}{"\n"}{end}'
 kubectl auth can-i patch services/status --as=<subject> -n <ns>
+kubectl get ingressclass,gatewayclass
+kubectl get ingress -A
+kubectl get gateway,httproute,tcproute,tlsroute,referencegrant -A
+kubectl get gateway -A -o yaml
+kubectl get httproute,grpcroutes,tcproutes,tlsroutes -A -o yaml
+kubectl auth can-i create gatewayclass --as=<subject>
+kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 ```
 
 ---
@@ -171,7 +199,7 @@ kubectl auth can-i patch services/status --as=<subject> -n <ns>
 - separate responsibilities: RBAC controls "who can", admission controls "with which parameters";
 - use `ValidatingAdmissionPolicy` (Kubernetes `v1.30+`) or webhook-based equivalent for policy enforcement;
 - deny `escalate` / `bind` / `impersonate` / `serviceaccounts/token` by default;
-- for control-plane hardening, evaluate `AlwaysPullImages` separately with operational impact considered where applicable;
+- for control-plane hardening, evaluate `AlwaysPullImages` separately with operational impact considered where applicable. It reduces reuse of locally cached images without repeat pull authorization, but increases dependence on registry availability and can break air-gapped or registry-outage scenarios. It does not replace digest pinning and signature/provenance verification: a fresh pull of a mutable tag can still fetch an unwanted artifact;
 - treat `EventRateLimit` as version- and deployment-dependent: it is an alpha admission controller and is disabled by default in upstream Kubernetes; prefer provider-supported API/event throttling or a tested custom policy where alpha admission plugins are not acceptable;
 - enforce one ServiceAccount per workload and quarterly permission recertification.
 
@@ -228,6 +256,7 @@ The minimum gatekeeping baseline should include:
 - block high-risk RBAC verbs outside explicit allowlist;
 - require protected namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
 - block new Service objects with `spec.externalIPs`; existing use is allowed only as a migration exception with `owner`, `expiry`, verified external IP ownership, and a transition plan to `LoadBalancer`, Gateway API/Ingress, or controlled `NodePort`;
+- maintain ingress controller and Gateway API implementation inventory; for the community `ingress-nginx` controller, require a migration plan or exception with owner/expiry; for Gateway API, enforce policy gates for `allowedRoutes`, cross-namespace `ReferenceGrant`, TLS secret ownership, and route attachment to shared Gateways;
 - require Kubernetes audit logging with policy coverage for RBAC changes, admission/webhook changes, namespace security label changes, Secret reads, `exec`, attach/port-forward, and ephemeral-container updates;
 - restrict and periodically recertify `get/list/watch` access to Secrets in live environments;
 - require `automountServiceAccountToken: false` by default unless the workload has a documented Kubernetes API access need;
@@ -267,6 +296,7 @@ A review is complete only when it provides:
 - Admission controls without RBAC protection for sensitive reads.
 - RBAC least privilege without protection of admission/webhook configs.
 - `Service.spec.externalIPs` as the standard way to publish a service externally.
+- the community `ingress-nginx` controller as the new production default without migration plan and ownership.
 - One shared ServiceAccount for all namespace applications.
 - Secrets in Git (including base64 YAML) as normal process.
 - No reconstructable incident timeline from audit/logging data.

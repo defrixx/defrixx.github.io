@@ -12,6 +12,13 @@ Objective:
 - cover all key security aspects starting from `Zero Trust`
 - provide practical, verifiable controls for each aspect
 
+Document ownership:
+- This document owns the cross-cutting production control baseline for AI systems.
+- It maps AI risks to practical controls, control levels, operational signals, and governance expectations.
+- It references the OWASP LLM Top 10 as a taxonomy, but does not re-own the threat catalogue.
+- It delegates deep agent autonomy, memory, tool execution, and action-trace requirements to the [Agentic AI security playbook](../agentic-ai/playbook.en.md).
+- It delegates MCP server registry, protocol deployment, OAuth usage, and capability drift controls to the [MCP security playbook](../mcp-security/playbook.en.md).
+
 ---
 
 ## 2. Foundational principles
@@ -171,7 +178,7 @@ Applicability matrix for numeric guardrails:
 | Autonomous state-changing agent | `preview -> explicit confirm -> execute`; default autonomous execution disabled for high-impact actions | `max autonomous steps=3` before re-authorization; kill switch SLO `<=60s`; no irreversible action without human approval | Any no-confirm action needs owner, expiry, rollback plan, and abuse-case tests | Unauthorized-action negative tests, approval coverage, mean time to kill runaway actions |
 | Batch/RAG ingestion or offline processing | Budget by job, tenant, corpus, and source; no per-chat request budget assumption | Max documents, max tokens per document, max runtime, max outbound fetches, and quarantine threshold | Larger batch requires staging run, cost estimate, malware/content scan, and source trust decision | Poisoned-document test results, ingestion reject rate, job cost variance, quarantine metrics |
 
-Treat these numbers as local starting baselines. Tune them by model context window, streaming mode, batch size, tenant tier, cost profile, tool risk, and downstream blast radius; record the chosen values in the release gate.
+Treat these numbers as local starting baselines. Tune them by model context window, streaming mode, batch size, tenant tier, cost profile, tool risk, and downstream blast radius; record the chosen values in the release gate. A small numeric limit is not safe if one allowed tool call can perform a destructive operation, and a larger limit can be acceptable for tightly scoped read-only tools. The release gate must assess blast radius per step, not only the number of steps or tokens.
 
 **Verification signals:**
 - number of blocked risky action attempts
@@ -191,24 +198,21 @@ Treat these numbers as local starting baselines. Tune them by model context wind
 - `LLM03: Supply Chain`
 
 **Practical controls:**
-- `High-impact/regulated`: approved registry for MCP servers and agent tools, with owner, environment, allowed clients, and review expiry
-- `Baseline`: deny-by-default tool discovery; agents may use only registered tools from approved transports and trust boundaries
-- `High-impact/regulated`: signed or version-pinned tool manifests, with review for changed descriptions, input schemas, scopes, and outbound destinations
-- `High-impact/regulated`: gateway-mediated MCP for production remote servers where feasible, with centralized authorization, capability filtering, redaction, audit logging, egress policy, and emergency disablement
-- `Baseline`: local `stdio` MCP servers are allowed only through endpoint/application allowlisting, declared filesystem roots, approved environment variables, and blocked outbound access unless explicitly required
-- `Baseline`: explicit user/workload authorization for every tool call, not only for initial agent session creation
-- `Baseline`: per-tool scopes and short-lived credentials; never reuse broad user or platform tokens across unrelated tools
-- `Baseline`: no token passthrough from MCP client credentials into downstream APIs; use separate downstream credentials or an approved token-exchange pattern
-- `Baseline`: no secrets in prompts, tool descriptions, context payloads, MCP traffic logs, or protocol traces
-- `High-impact/regulated`: detection for unknown MCP servers, new tool manifests, abnormal tool-chain depth, and unusual cross-tool data movement
+- `Baseline`: maintain an approved inventory for MCP servers and agent tools, including owner, environment, allowed clients, data classes, downstream destinations, and review expiry
+- `Baseline`: deny-by-default tool discovery; live agents may use only registered tools from approved transports and trust boundaries
+- `Baseline`: authorize every tool call with user/workload identity, tenant, action, data class, and workflow state before execution
+- `Baseline`: use per-tool scopes and short-lived credentials; secrets must not appear in prompts, tool descriptions, context payloads, or protocol traces
+- `High-impact/regulated`: require a dedicated MCP/agentic review for tools that can change business state, access sensitive data, execute code, browse external content, or move data across trust boundaries
+- `High-impact/regulated`: detect unknown tools, manifest/capability drift, abnormal tool chains, redaction failures, and unusual cross-tool data movement
 
-Assumption:
-- MCP-specific controls are local policy recommendations for agentic systems. They become release blockers when live agents can discover or call external tools, when tool calls can change business state, or when tool traffic can carry sensitive data.
+Canonical details:
+- MCP protocol deployment, `stdio`/remote server handling, token passthrough rules, gateway policy, `listChanged` handling, and protocol-layer logging are owned by the [MCP security playbook](../mcp-security/playbook.en.md).
+- Agent autonomy, memory, action traces, approvals, rollback, and kill-switch behavior are owned by the [Agentic AI security playbook](../agentic-ai/playbook.en.md).
 
 **Verification signals:**
 - inventory coverage for MCP servers and registered tools
 - percentage of tool calls evaluated by policy before execution
-- alerts for unknown tools, manifest drift, protocol-log redaction failures, and unexpected `listChanged` events
+- alerts for unknown tools, capability drift, redaction failures, and abnormal tool sequences
 
 ### 3.7 Infrastructure and runtime security
 
@@ -400,6 +404,7 @@ Assumption:
 - `Baseline`: conduct user/machine access audits for AI tools, model registries, prompt repositories, vector stores, and provider consoles
 - `Baseline`: retain audit evidence for model decisions, dataset versions, prompt/system changes, exceptions, and incident governance
 - `High-impact/regulated`: review the AI risk register at least quarterly and on major model/provider change
+
 ---
 
 ## 5. Related Materials

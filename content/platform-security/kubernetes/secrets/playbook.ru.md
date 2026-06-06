@@ -179,6 +179,8 @@ Policy/admission должны отклонять:
 |---|---|---|
 | Critical | Значение Secret опубликовано в Git или публичном артефакте, либо identity production-среды может массово читать Secret без необходимости | Немедленная ротация, закрытие канала раскрытия, audit timeline, блокировка релиза до устранения |
 | High | `list/watch secrets`, широкое право создания Pod или `pods/exec` доступны human/CI identity в production без обоснования | Назначить владельца и срок, исправить RBAC, провести recertification и проверить audit |
+| High | Субъект может создавать Pod/Deployment в namespace с high-value Secret без admission-ограничений на mount/env Secret, ServiceAccount и workload owner | Блокировать релиз для этого namespace до введения policy; проверить, что indirect Secret read через созданный Pod невозможен |
+| Critical | Право создания Pod в namespace с high-value Secret позволяет массово извлечь production credentials, tenant secrets, signing material или private keys | Блокировать релиз, отозвать/ротировать затронутые Secret, ограничить deploy-права и восстановить audit timeline |
 | High | Production Secret хранится в ConfigMap, незашифрованном manifest или CI artifact | Миграция в Secret/external store, ротация значения, запрет повторения через policy |
 | Medium | Secret доставляется через env для high-value workload без задокументированного исключения | План миграции на файловую или внешнюю доставку либо принятый риск со сроком пересмотра |
 | Medium | etcd encryption at rest не подтверждена или не покрывает существующие объекты Secret | Включить или повторно применить шифрование, приложить подтверждение, зафиксировать residual risk |

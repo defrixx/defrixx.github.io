@@ -133,12 +133,26 @@ High-impact сценарии:
 
 ---
 
-## 5. Related review overlay
+## 5. Решение по ревью
 
-Используйте этот плейбук вместе с [плейбуком Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md). Secure coding review проверяет, корректно ли реализованы security primitives; business-logic abuse review проверяет, можно ли легитимными действиями нарушить product invariants. Для high-risk product flows перед release нужны оба review.
+| Критичность | Условие | Требуемое действие |
+|---|---|---|
+| Critical | Злоупотребление позволяет выполнить cross-tenant action, массовый account takeover, payment/ledger manipulation, irreversible admin/support action или bulk export sensitive data | Блокировать релиз до устранения; exception допустим только через формальное принятие риска security leadership и business owner |
+| High | Обход лимита или state-machine guard в critical flow, promo/referral economic abuse, export scraping, signup/trial quota farming или privileged workflow abuse с bounded impact | Назначить owner и due date, внедрить mitigation или компенсирующие меры, подтвердить negative tests и monitoring |
+| Medium | Для sensitive flow нет owner, abuse objective, лимитов, monitoring, runbook или negative tests, но эксплуатация не дает немедленного high-impact business action | Завести remediation с owner, сроком и release follow-up; не расширять flow до закрытия базовых подтверждений |
+| Low | Naming, dashboards, labels или documentation неполны, но лимиты, authorization и state guards работают | Исправить планово и проверить при следующем review |
+
+Релиз high-risk product flow считается одобренным только когда есть явная классификация flow, abuse cases, лимиты, owner, negative tests, monitoring signal и решение по residual risk.
+
 ---
 
-## 10. Связанные материалы
+## 6. Related review overlay
+
+Используйте этот плейбук вместе с [плейбуком Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md). Secure coding review проверяет, корректно ли реализованы security primitives; business-logic abuse review проверяет, можно ли легитимными действиями нарушить product invariants. Для high-risk product flows перед release нужны оба review.
+
+---
+
+## 7. Связанные материалы
 
 - [Плейбук безопасности API](../../api/api-security-patterns/playbook.ru.md)
 - [Плейбук моделирования угроз](../../../review/threat-modeling/playbook.ru.md)

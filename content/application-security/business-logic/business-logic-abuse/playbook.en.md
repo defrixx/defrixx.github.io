@@ -133,12 +133,26 @@ Verification:
 
 ---
 
-## 5. Related Review Overlay
+## 5. Review Decision
 
-Use this playbook together with the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md). Secure coding review checks whether security primitives are implemented correctly; business-logic abuse review checks whether valid actions can still break product invariants. For high-risk product flows, both reviews are required before release.
+| Severity | Condition | Required action |
+|---|---|---|
+| Critical | Abuse enables cross-tenant action, account takeover at scale, payment/ledger manipulation, irreversible admin/support action, or bulk export of sensitive data | Block release until remediated; exception requires formal risk acceptance by security leadership and business owner |
+| High | Bypass of a limit or state-machine guard in a critical flow, promo/referral economic abuse, export scraping, signup/trial quota farming, or privileged workflow abuse with bounded impact | Assign owner and due date, implement mitigation or compensating controls, and confirm negative tests and monitoring |
+| Medium | Sensitive flow lacks owner, abuse objective, limits, monitoring, runbook, or negative tests, but exploitation does not immediately enable high-impact business action | Create remediation with owner, due date, and release follow-up; do not expand the flow until baseline evidence exists |
+| Low | Naming, dashboards, labels, or documentation are incomplete, but limits, authorization, and state guards work | Fix opportunistically and verify during the next review |
+
+A high-risk product flow is release-ready only when it has explicit flow classification, abuse cases, limits, owner, negative tests, monitoring signal, and residual-risk decision.
+
 ---
 
-## 10. Related Materials
+## 6. Related Review Overlay
+
+Use this playbook together with the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md). Secure coding review checks whether security primitives are implemented correctly; business-logic abuse review checks whether valid actions can still break product invariants. For high-risk product flows, both reviews are required before release.
+
+---
+
+## 7. Related Materials
 
 - [API security playbook](../../api/api-security-patterns/playbook.en.md)
 - [Threat modeling playbook](../../../review/threat-modeling/playbook.en.md)

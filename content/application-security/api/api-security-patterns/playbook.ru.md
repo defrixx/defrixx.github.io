@@ -130,7 +130,7 @@ gRPC часто применяется для внутреннего service-to-
 | Модель экспозиции | Граница доверия | Основные риски | Базовый профиль безопасности |
 |---|---|---|---|
 | Browser/frontend -> Backend API | Браузер и бэкенд разделены internet boundary; браузер недоверенный | CSRF, CORS ошибки, утечка токенов, BOLA, XSS-to-API abuse | BFF или HttpOnly session cookie, CSRF controls, strict CORS, object-level authz |
-| Public API -> API Gateway -> Internal services | Internet client к public edge | API key theft, OAuth misuse, bot abuse, quota bypass, inventory drift | OAuth/client credentials или signed API keys, gateway validation, per-client quotas, schema enforcement |
+| Public API -> API Gateway -> Internal services | Internet client к public edge | API key theft, OAuth misuse, bot abuse, quota bypass, inventory drift | OAuth/client credentials или HMAC/request signing, gateway validation, per-client quotas, schema enforcement |
 | Partner API | Договорной внешний клиент | credential sharing, weak partner controls, excessive access | mTLS или OAuth client credentials, allowlisting где оправдано, scoped access, contract monitoring |
 | Internal service-to-service API | Внутренняя сеть не считается доверенной | lateral movement, confused deputy, missing authz | workload identity, mTLS, method/resource authorization, network policy |
 | Webhook receiver | Внешний провайдер вызывает вашу точку входа | spoofing, replay, duplicate delivery, payload abuse | проверка подписи, timestamp window, idempotency key, изоляция через async queue |
@@ -215,7 +215,7 @@ gRPC часто применяется для внутреннего service-to-
 - authorization в resolvers на object, field и mutation уровне;
 - лимиты query depth, query complexity и operation count;
 - запрет или строгая авторизация introspection и GraphiQL в рабочей среде;
-- persisted queries для public/high-risk GraphQL API, если это совместимо с продуктом;
+- persisted queries или allowlisted operations для high-impact, public abuse-prone GraphQL API, если это совместимо с продуктом;
 - лимиты batching и отдельная защита от brute force внутри одного запроса;
 - timeout и cancellation propagation в downstream calls;
 - schema review для sensitive fields и deprecated fields.
@@ -225,12 +225,16 @@ gRPC часто применяется для внутреннего service-to-
 - max operations per request: `1` по умолчанию для public API; batching только с явным лимитом;
 - timeout resolver: `<=2-5s`, общий request timeout: `<=10-15s`;
 - introspection disabled для anonymous/public clients; для внутренних клиентов - только с authenticated developer role.
+- dynamic GraphQL queries допустимы для public API только с более строгим cost budget, per-client abuse monitoring и owner-approved exception; persisted queries не заменяют resolver authorization и query cost controls.
 
 ### 6.4 Webhooks
 
 Обязательные меры:
 - проверяйте provider signature до parsing бизнес-payload;
+- ограничивайте request body size до чтения всего payload в память;
 - сохраняйте и проверяйте точный raw request body, который использует signature scheme провайдера, до JSON/XML/form parsing, normalization, decompression, charset conversion или изменения со стороны middleware;
+- запрещайте compression/decompression webhook body, если provider явно не требует это в контракте;
+- если compression требуется, задавайте decompression ratio limit и фиксируйте, над чем считается signature: compressed bytes или decompressed payload;
 - документируйте provider-specific canonical string, signed fields, timestamp field, разрешенные algorithms, key identifier rules и логику выбора secret/certificate;
 - сравнивайте signatures в constant time и отклоняйте unsigned, duplicate-signature, unknown-algorithm, unknown-key и malformed-signature cases;
 - timestamp freshness window и replay cache по event ID/signature nonce;
@@ -278,7 +282,7 @@ gRPC часто применяется для внутреннего service-to-
 
 Рекомендации:
 - Потоки browser/frontend: предпочтительно BFF + HttpOnly/Secure/SameSite cookie; не храните refresh token в browser storage.
-- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE для user-delegated access или подписанные API keys с rotation и scoped access.
+- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE для user-delegated access или HMAC/request signing с timestamp, nonce, canonical request, key ID, replay cache, rotation и scoped access. Подписанный request без canonicalization и replay semantics считается bearer secret, а не полноценной защитой от replay/подмены.
 - Service-to-service: workload identity + mTLS; не полагайтесь только на внутреннюю сеть.
 - Webhooks: provider-specific signature scheme + timestamp/replay checks.
 
@@ -477,7 +481,7 @@ flowchart LR
 - authn до execution;
 - resolver-level authorization;
 - лимиты depth/complexity/cost;
-- persisted queries для high-risk public API;
+- persisted queries или allowlisted operations для high-risk public API;
 - controlled introspection и disabled GraphiQL для public API в рабочей среде;
 - downstream timeouts и cancellation.
 

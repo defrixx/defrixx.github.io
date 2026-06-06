@@ -10,6 +10,12 @@ Use this document for:
 - reviewing MCP gateways, OAuth flows, tool wrappers, resource exposure, and prompt templates;
 - building negative tests for tool execution, authorization, logging, and capability drift.
 
+Document ownership:
+- This playbook owns MCP protocol deployment patterns, server/tool/resource/prompt registry, capability baselines, transport choices, MCP-specific OAuth usage, gateway policy, protocol logging, and capability drift controls.
+- It treats tool abuse and data leakage through the MCP boundary: server approval, capability negotiation, resource exposure, token handling, and downstream destination control.
+- It relies on [Securing AI](../securing-ai/overview.en.md) for the general AI control baseline and on the [Agentic AI security playbook](../agentic-ai/playbook.en.md) for agent autonomy, memory, action traces, approvals, rollback, and kill switches.
+- It uses the [OWASP LLM Top 10 overview](../owasp-llm-top-10/overview.en.md) for threat taxonomy, not as a deployment checklist.
+
 Out of scope:
 - general model behavior, prompt injection, RAG, and AI release governance; use the [Securing AI overview](../securing-ai/overview.en.md);
 - OAuth/OIDC fundamentals outside MCP-specific usage; use the [OIDC + OAuth 2.0 security guide](../../application-security/identity/oidc-oauth/playbook.en.md);

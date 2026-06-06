@@ -9,6 +9,12 @@ This overview focuses on:
 - what technical and business risks it creates
 - what adjacent risks can amplify impact
 
+Document ownership:
+- This document owns the threat taxonomy and risk vocabulary for LLM application reviews.
+- It explains prompt injection, data leakage, tool abuse, excessive agency, and related risks as categories and attack mechanics.
+- It does not define the production control baseline; use [Securing AI](../securing-ai/overview.en.md) for controls, implementation priorities, and verification signals.
+- It does not replace the specialized playbooks for agent autonomy or MCP protocol governance.
+
 ---
 
 ## 2. Threat context (how LLM incidents happen in reality)
@@ -31,7 +37,7 @@ In real reviews, these areas are non-negotiable:
 ## 3. Threat-focused breakdown of OWASP LLM Top 10
 
 This document intentionally focuses on threats, attack mechanics, and risks.
-For practical controls, implementation priorities, and verification signals, see [Securing AI](../securing-ai/overview.en.md).
+For practical controls, implementation priorities, and verification signals, see [Securing AI](../securing-ai/overview.en.md). For agent autonomy, memory, tool execution, and action traces, use the [Agentic AI security playbook](../agentic-ai/playbook.en.md). For MCP server registry, protocol deployment, OAuth usage, and capability drift, use the [MCP security playbook](../mcp-security/playbook.en.md).
 
 ## 3.1 LLM01: Prompt Injection
 
@@ -217,6 +223,7 @@ Uncontrolled consumption of LLM resources (requests, tokens, inference), leading
 - `LLM08 Vector and Embedding Weaknesses`: weaknesses in retrieval/embeddings/RAG storage; distinction is the context and retrieval layer.
 - `LLM09 Misinformation`: produces plausible but false content; distinction is decision-quality and trust risk rather than direct exploitation.
 - `LLM10 Unbounded Consumption`: allows uncontrolled token/resource usage; distinction is availability and cost impact (DoS/denial-of-wallet).
+
 ---
 
 ## 5. Related Materials

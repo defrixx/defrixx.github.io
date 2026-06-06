@@ -356,9 +356,10 @@ Tag в формате `tag@sha256` оставлен только для чита
 - Поведение reload секретов в приложениях протестировано в staging.
 - Audit logging и alerting активны и регулярно проверяются.
 - Backup restore и DR актуальны.
+
 ---
 
-## 8. Связанные материалы
+## 7. Связанные материалы
 
 - [Плейбук OIDC + OAuth 2.0](../../../application-security/identity/oidc-oauth/playbook.ru.md)
 - [Плейбук ревью безопасности Kubernetes-кластера](../../kubernetes/cluster-security-review/playbook.ru.md)

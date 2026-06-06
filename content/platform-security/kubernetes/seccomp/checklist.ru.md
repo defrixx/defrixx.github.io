@@ -295,9 +295,10 @@ Profile не должен ломать workload в рабочей среде, н
 - поддерживается как непрерывный процесс, а не разовая настройка.
 
 Профиль, который просто "строгий" или присутствует в YAML, сам по себе недостаточен.
+
 ---
 
-## 6. Связанные материалы
+## 11. Связанные материалы
 
 - [Плейбук Pod Security](../pod-security/playbook.ru.md)
 - [Обзор container escape и capability abuse](../container-escape-capability-abuse/overview.ru.md)

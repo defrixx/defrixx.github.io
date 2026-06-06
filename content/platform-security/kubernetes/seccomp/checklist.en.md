@@ -295,9 +295,10 @@ A good seccomp profile:
 - is maintained as a continuous process, not a one-time setup.
 
 A profile that is merely "strict" or present in YAML is not sufficient by itself.
+
 ---
 
-## 6. Related Materials
+## 11. Related Materials
 
 - [Pod Security playbook](../pod-security/playbook.en.md)
 - [Container escape and capability abuse overview](../container-escape-capability-abuse/overview.en.md)

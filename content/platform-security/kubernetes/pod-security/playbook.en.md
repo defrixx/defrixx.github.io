@@ -81,6 +81,8 @@ Where relevant, distinguish between:
 
 **Compatibility and failure modes for `hostUsers: false`:**
 - Do not treat `hostUsers: false` as a drop-in YAML flag. Verify it on the same Kubernetes minor version, kernel, runtime, CSI/storage stack, and admission policy used in live environments.
+- Roll out in stages: first stateless workloads without `hostNetwork`, `hostPID`, `hostIPC`, raw block `volumeDevices`, or special storage assumptions; then stateful/storage-heavy workloads only after CSI/storage compatibility testing; then platform workloads through separate design review.
+- For images that genuinely need root-like behavior inside the container, use a dedicated exception path: owner, expiry, incompatibility reason for `runAsNonRoot`, evidence that host UID/GID remain unprivileged, and compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
 - Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and should fail admission or deployment validation.
 - Raw block `volumeDevices` are not compatible with Pods using user namespaces. Stateful or storage-heavy workloads need an explicit storage compatibility test before adopting this control.
 - Pod Security Standards relax `runAsNonRoot` and `runAsUser` checks for Pods with user namespaces because container UID `0` is mapped to an unprivileged host UID. This does not mean "root is safe by default"; keep `runAsNonRoot: true` for normal app workloads unless the workload has a documented reason to run as root inside the user namespace.
@@ -298,37 +300,37 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
 
 Each anti-pattern directly increases risk from the threat model:
 
-- Running containers as root  
+- Running containers as root
   -> Enables privilege escalation and increases escape impact
 
-- `privileged: true`  
+- `privileged: true`
   -> Grants near-host-level access and breaks isolation assumptions
 
-- Adding broad Linux capabilities without strict need  
+- Adding broad Linux capabilities without strict need
   -> Expands the kernel attack surface and privilege boundary
 
-- Uncontrolled `hostPath` usage  
+- Uncontrolled `hostPath` usage
   -> Enables direct access to the host filesystem and possible node compromise
 
-- Mounting sensitive host interfaces such as container runtime sockets  
+- Mounting sensitive host interfaces such as container runtime sockets
   -> Can enable host takeover or control over other containers
 
-- Missing seccomp profile  
+- Missing seccomp profile
   -> Exposes a broader syscall surface and increases kernel exploitability
 
-- Non-default `procMount` usage  
+- Non-default `procMount` usage
   -> Weakens process information isolation
 
-- Use of `shareProcessNamespace: true`  
+- Use of `shareProcessNamespace: true`
   -> Breaks process-isolation boundaries between containers in the same Pod and simplifies in-Pod lateral movement
 
-- Writable root filesystem (`readOnlyRootFilesystem: false`)  
+- Writable root filesystem (`readOnlyRootFilesystem: false`)
   -> Enables persistence, runtime payload storage, and modification of application files or configuration inside the container
 
-- Automatic mounting of ServiceAccount tokens by default  
+- Automatic mounting of ServiceAccount tokens by default
   -> Increases Kubernetes API abuse risk after compromise
 
-- Use of the namespace `default` ServiceAccount  
+- Use of the namespace `default` ServiceAccount
   -> Encourages privilege reuse and weak identity separation between workloads
 
 ---

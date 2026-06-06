@@ -4,6 +4,13 @@
 
 This document defines a practical baseline for protecting web applications against the key OWASP Top 10 risks.
 
+Document boundaries:
+- This playbook defines web-level review decision, severity, and minimum negative tests for OWASP Top 10 categories.
+- Detailed requirements for API authorization, GraphQL, webhooks, and gRPC are owned by the [API security playbook](../../api/api-security-patterns/playbook.en.md).
+- Browser-specific controls for CSP, CORS, cookies, embedded content, and frontend supply chain are owned by the [browser and frontend security playbook](../browser-security/playbook.en.md).
+- Secure coding details for validation, output encoding, injection, file handling, and crypto misuse are owned by the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md).
+- Supply-chain and container-image controls are owned by the dedicated supply-chain playbooks; this document uses them only as web release decision context.
+
 ---
 
 ## 2. A01:2025 Broken Access Control

@@ -10,6 +10,12 @@ Use this document for:
 - defining policy enforcement, action tracing, approval, rollback, and kill-switch requirements;
 - building negative tests for tool misuse, memory poisoning, delegation abuse, and runaway loops.
 
+Document ownership:
+- This playbook owns agent autonomy, tool use by agents, memory/scratchpad/checkpoint handling, action traces, approvals, rollback, and kill-switch behavior.
+- It treats prompt injection, data leakage, and excessive agency through the lens of agent execution and business impact.
+- It relies on [Securing AI](../securing-ai/overview.en.md) for the general AI control baseline and on the [OWASP LLM Top 10 overview](../owasp-llm-top-10/overview.en.md) for threat taxonomy.
+- It does not define MCP protocol, server registry, or transport governance controls; use the [MCP security playbook](../mcp-security/playbook.en.md).
+
 Out of scope:
 - MCP protocol-specific controls; use the [MCP security playbook](../mcp-security/playbook.en.md);
 - general LLM threat taxonomy; use the [OWASP LLM Top 10 overview](../owasp-llm-top-10/overview.en.md);

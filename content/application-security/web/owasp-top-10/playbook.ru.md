@@ -4,6 +4,13 @@
 
 Этот документ задает практический базовый уровень защиты веб-приложений от ключевых рисков OWASP Top 10.
 
+Границы документа:
+- Этот playbook задает web-level review decision, severity и минимальные negative tests по категориям OWASP Top 10.
+- Детальные требования по API authorization, GraphQL, webhooks и gRPC находятся в [плейбуке безопасности API](../../api/api-security-patterns/playbook.ru.md).
+- Browser-specific controls для CSP, CORS, cookies, embedded content и frontend supply chain находятся в [плейбуке безопасности браузера и frontend-части](../browser-security/playbook.ru.md).
+- Secure coding details по validation, output encoding, injection, file handling и crypto misuse находятся в [плейбуке безопасной разработки и ревью кода](../../secure-coding/code-review/playbook.ru.md).
+- Supply-chain и container-image controls находятся в профильных supply-chain плейбуках; здесь они используются только как web release decision context.
+
 ---
 
 ## 2. A01:2025 Broken Access Control

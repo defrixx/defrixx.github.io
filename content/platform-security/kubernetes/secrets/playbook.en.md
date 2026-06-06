@@ -179,6 +179,8 @@ Operational signals:
 |---|---|---|
 | Critical | Secret value published in Git/public artifact or production identity can mass-read Secrets without need | Immediate rotation, exposure removal, audit timeline, release block until remediation |
 | High | `list/watch secrets`, broad Pod creation, or `pods/exec` is available to human/CI identity in production without justification | Owner, due date, RBAC fix, recertification, and audit verification |
+| High | A subject can create Pod/Deployment in a namespace with high-value Secrets without admission restrictions on Secret mount/env, ServiceAccount, and workload owner | Block release for that namespace until policy is enforced; verify indirect Secret read through a created Pod is impossible |
+| Critical | Pod creation rights in a namespace with high-value Secrets allow mass extraction of production credentials, tenant secrets, signing material, or private keys | Block release, revoke/rotate affected Secrets, restrict deploy rights, and reconstruct audit timeline |
 | High | Production Secret is stored in a ConfigMap, unencrypted manifest, or CI artifact | Migrate to Secret/external store, rotate value, prevent recurrence through policy |
 | Medium | Secret is delivered through env for a high-value workload without documented exception | Migration plan to file/external delivery or accepted risk with expiry |
 | Medium | Etcd encryption at rest is not confirmed or does not cover existing Secret objects | Enable/reencrypt, attach evidence, record residual risk |

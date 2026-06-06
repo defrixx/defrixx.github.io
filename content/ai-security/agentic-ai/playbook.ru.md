@@ -10,6 +10,12 @@
 - определения требований к policy enforcement, action tracing, approval, rollback и kill switch;
 - подготовки negative tests для tool misuse, memory poisoning, delegation abuse и runaway loops.
 
+Ответственность документа:
+- Этот плейбук отвечает за автономию агентов, использование tools агентами, обработку memory/scratchpad/checkpoints, action traces, approvals, rollback и kill-switch behavior.
+- Prompt injection, data leakage и excessive agency рассматриваются здесь через призму выполнения агентом действий и business impact.
+- Общий AI control baseline находится в [обзоре безопасности AI](../securing-ai/overview.ru.md), а таксономия угроз — в [обзоре OWASP LLM Top 10](../owasp-llm-top-10/overview.ru.md).
+- Этот плейбук не задает MCP protocol, server registry или transport governance controls; для них используйте [плейбук безопасности MCP](../mcp-security/playbook.ru.md).
+
 Вне области:
 - MCP protocol-specific controls; используйте [плейбук безопасности MCP](../mcp-security/playbook.ru.md);
 - general LLM threat taxonomy; используйте [обзор OWASP LLM Top 10](../owasp-llm-top-10/overview.ru.md);

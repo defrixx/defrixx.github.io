@@ -195,9 +195,10 @@ Additionally:
 - `Critical` is rejected by default; an exception is allowed only through the release governance process with security leadership and business owner approval, TTL, compensating controls, and post-release review;
 - mandatory pre-release fixes must be tracked explicitly;
 - residual risks must be explicitly accepted by an authorized owner.
+
 ---
 
-## 7. Related Materials
+## 8. Related Materials
 
 - [Threat modeling playbook](../threat-modeling/playbook.en.md)
 - [Release governance playbook](../release-governance/playbook.en.md)

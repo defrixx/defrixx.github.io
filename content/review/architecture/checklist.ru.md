@@ -195,9 +195,10 @@
 - `Critical` по умолчанию отклоняется; исключение допустимо только через release governance process с approval security leadership и business owner, TTL, компенсирующими мерами и post-release review;
 - обязательные исправления до релиза фиксируются отдельным списком;
 - остаточные риски должны быть явно приняты уполномоченным владельцем.
+
 ---
 
-## 7. Связанные материалы
+## 8. Связанные материалы
 
 - [Плейбук моделирования угроз](../threat-modeling/playbook.ru.md)
 - [Плейбук release governance](../release-governance/playbook.ru.md)

@@ -130,7 +130,7 @@ API style and exposure model must be separated. REST can be public, internal or 
 | Exposure model | Trust Boundary | Main Risks | Baseline Security Posture |
 |---|---|---|---|
 | Browser/frontend -> Backend API | Browser and backend are separated by an internet boundary; browser is untrusted | CSRF, CORS mistakes, token leakage, BOLA, XSS-to-API abuse | BFF or HttpOnly session cookie, CSRF controls, strict CORS, object-level authz |
-| Public API -> API Gateway -> Internal services | Internet client to public edge | API key theft, OAuth misuse, bot abuse, quota bypass, inventory drift | OAuth/client credentials or signed API keys, gateway validation, per-client quotas, schema enforcement |
+| Public API -> API Gateway -> Internal services | Internet client to public edge | API key theft, OAuth misuse, bot abuse, quota bypass, inventory drift | OAuth/client credentials or HMAC/request signing, gateway validation, per-client quotas, schema enforcement |
 | Partner API | Contracted external client | credential sharing, weak partner controls, excessive access | mTLS or OAuth client credentials, allowlisting where justified, scoped access, contract monitoring |
 | Internal service-to-service API | Internal network is not trusted | lateral movement, confused deputy, missing authz | workload identity, mTLS, method/resource authorization, network policy |
 | Webhook receiver | External provider calls your endpoint | spoofing, replay, duplicate delivery, payload abuse | signature verification, timestamp window, idempotency key, async queue isolation |
@@ -215,7 +215,7 @@ Mandatory measures:
 - authorization in resolvers at object, field and mutation level;
 - query depth, query complexity and operation count limits;
 - disabled or strictly authorized introspection and GraphiQL in live environments;
-- persisted queries for public/high-risk GraphQL APIs when compatible with the product;
+- persisted queries or allowlisted operations for high-impact, public abuse-prone GraphQL APIs when compatible with the product;
 - batching limits and separate protection against brute force inside one request;
 - timeout and cancellation propagation into downstream calls;
 - schema review for sensitive fields and deprecated fields.
@@ -225,12 +225,16 @@ Release-ready defaults:
 - max operations per request: `1` by default for public APIs; batching only with an explicit limit;
 - resolver timeout: `<=2-5s`, total request timeout: `<=10-15s`;
 - introspection disabled for anonymous/public clients; for internal clients, only with an authenticated developer role.
+- dynamic GraphQL queries are acceptable for public APIs only with a stricter cost budget, per-client abuse monitoring, and owner-approved exception; persisted queries do not replace resolver authorization and query cost controls.
 
 ### 6.4 Webhooks
 
 Mandatory measures:
 - verify provider signature before parsing the business payload;
+- enforce request body size limits before reading the full payload into memory;
 - preserve and verify the exact raw request body used by the provider signature scheme before JSON/XML/form parsing, normalization, decompression, charset conversion, or middleware mutation;
+- disallow webhook body compression/decompression unless the provider explicitly requires it in the contract;
+- if compression is required, set a decompression ratio limit and document what is signed: compressed bytes or decompressed payload;
 - document the provider-specific canonical string, signed fields, timestamp field, allowed algorithms, key identifier rules, and secret/certificate selection logic;
 - compare signatures in constant time and reject unsigned, duplicate-signature, unknown-algorithm, unknown-key, and malformed-signature cases;
 - timestamp freshness window and replay cache by event ID/signature nonce;
@@ -278,7 +282,7 @@ Release-ready defaults:
 
 Recommendations:
 - Browser/frontend flows: prefer BFF + HttpOnly/Secure/SameSite cookie; do not store refresh tokens in browser storage.
-- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE for user-delegated access or signed API keys with rotation and scoped access.
+- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE for user-delegated access or HMAC/request signing with timestamp, nonce, canonical request, key ID, replay cache, rotation, and scoped access. A signed request without canonicalization and replay semantics is a bearer secret, not full replay/tamper protection.
 - Service-to-service: workload identity + mTLS; do not rely only on the internal network.
 - Webhooks: provider-specific signature scheme + timestamp/replay checks.
 
@@ -477,7 +481,7 @@ Required controls:
 - authn before execution;
 - resolver-level authorization;
 - depth/complexity/cost limits;
-- persisted queries for high-risk public API;
+- persisted queries or allowlisted operations for high-risk public API;
 - controlled introspection and disabled GraphiQL for public live APIs;
 - downstream timeouts and cancellation.
 

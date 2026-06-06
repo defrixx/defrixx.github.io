@@ -10,6 +10,12 @@
 - ревью MCP gateways, OAuth flows, tool wrappers, resource exposure и prompt templates;
 - подготовки negative tests для tool execution, authorization, logging и capability drift.
 
+Ответственность документа:
+- Этот плейбук отвечает за MCP protocol deployment patterns, registry servers/tools/resources/prompts, capability baselines, transport choices, MCP-specific OAuth usage, gateway policy, protocol logging и capability drift controls.
+- Tool abuse и data leakage рассматриваются здесь через границу MCP: approval server, capability negotiation, resource exposure, token handling и контроль downstream destinations.
+- Общий AI control baseline находится в [обзоре безопасности AI](../securing-ai/overview.ru.md), а автономия agents, memory, action traces, approvals, rollback и kill switches — в [плейбуке безопасности Agentic AI](../agentic-ai/playbook.ru.md).
+- [Обзор OWASP LLM Top 10](../owasp-llm-top-10/overview.ru.md) используется как таксономия угроз, а не как deployment checklist.
+
 Вне области:
 - общее поведение моделей, prompt injection, RAG и AI release governance; используйте [обзор безопасности AI](../securing-ai/overview.ru.md);
 - основы OAuth/OIDC вне MCP-specific usage; используйте [плейбук OIDC + OAuth 2.0](../../application-security/identity/oidc-oauth/playbook.ru.md);

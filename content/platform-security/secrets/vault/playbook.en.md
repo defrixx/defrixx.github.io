@@ -356,9 +356,10 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 - Application secret reload behavior is tested in staging.
 - Audit logging and alerting are active and reviewed.
 - Backup restore and DR exercises are current.
+
 ---
 
-## 8. Related Materials
+## 7. Related Materials
 
 - [OIDC + OAuth 2.0 playbook](../../../application-security/identity/oidc-oauth/playbook.en.md)
 - [Kubernetes cluster security review playbook](../../kubernetes/cluster-security-review/playbook.en.md)

@@ -12,6 +12,13 @@
 - покрыть все ключевые аспекты безопасности, начиная с `Zero Trust`
 - для каждого аспекта дать практические, проверяемые меры контроля
 
+Ответственность документа:
+- Этот документ отвечает за общий production baseline мер контроля для AI-систем.
+- Он связывает AI-риски с практическими мерами контроля, уровнями требований, операционными сигналами и governance-ожиданиями.
+- Он использует OWASP LLM Top 10 как таксономию, но не забирает на себя каталог угроз.
+- Глубокие требования к автономии агентов, memory, выполнению tools и action traces вынесены в [плейбук безопасности Agentic AI](../agentic-ai/playbook.ru.md).
+- MCP server registry, protocol deployment, OAuth usage и capability drift controls вынесены в [плейбук безопасности MCP](../mcp-security/playbook.ru.md).
+
 ---
 
 ## 2. Базовые принципы
@@ -171,7 +178,7 @@
 | Autonomous state-changing agent | `preview -> explicit confirm -> execute`; autonomous execution по умолчанию отключен для действий с высоким воздействием | `max autonomous steps=3` до re-authorization; irreversible action только с human approval | Любое no-confirm действие требует owner, expiry, rollback plan и abuse-case tests | Negative tests на unauthorized actions, approval coverage, mean time to kill runaway actions |
 | Batch/RAG ingestion или offline processing | Budget по job, tenant, corpus и source; per-chat request budget не применяется напрямую | Max documents, max tokens per document, max runtime, max outbound fetches и quarantine threshold | Больший batch требует staging run, cost estimate, malware/content scan и source trust decision | Poisoned-document test results, ingestion reject rate, job cost variance, quarantine metrics |
 
-Эти числа являются локальной стартовой базой. Уточняйте их по контекстному окну модели, streaming mode, batch size, tenant tier, cost profile, tool risk и downstream blast radius; фиксируйте выбранные значения в release gate.
+Эти числа являются локальной стартовой базой. Уточняйте их по контекстному окну модели, streaming mode, batch size, tenant tier, cost profile, tool risk и downstream blast radius; фиксируйте выбранные значения в release gate. Маленький числовой лимит не делает сценарий безопасным, если один разрешенный tool call может выполнить destructive operation; больший лимит может быть приемлемым для строго scoped read-only tools. Security gate должен оценивать blast radius каждого шага, а не только количество steps или tokens.
 
 **Сигналы проверки:**
 - число заблокированных попыток рискованных действий
@@ -191,24 +198,21 @@
 - `LLM03: Supply Chain`
 
 **Практические меры контроля:**
-- `High-impact/regulated`: утвержденный registry для MCP servers и agent tools с owner, environment, allowed clients и сроком действия review
-- `Baseline`: deny-by-default tool discovery; agents могут использовать только зарегистрированные tools из утвержденных transports и trust boundaries
-- `High-impact/regulated`: signed или version-pinned tool manifests с ревью изменений descriptions, input schemas, scopes и outbound destinations
-- `High-impact/regulated`: gateway-mediated MCP для production remote servers там, где это возможно, с centralized authorization, capability filtering, redaction, audit logging, egress policy и emergency disablement
-- `Baseline`: local `stdio` MCP servers разрешены только через endpoint/application allowlisting, declared filesystem roots, approved environment variables и blocked outbound access, если outbound access явно не требуется
-- `Baseline`: явная user/workload authorization для каждого tool call, а не только при создании начальной agent session
-- `Baseline`: per-tool scopes и short-lived credentials; не переиспользуйте broad user или platform tokens между unrelated tools
-- `Baseline`: no token passthrough из MCP client credentials в downstream APIs; используйте separate downstream credentials или утвержденный token-exchange pattern
-- `Baseline`: не хранить secrets в промптах, tool descriptions, payloads контекста, MCP traffic logs или protocol traces
-- `High-impact/regulated`: обнаружение unknown MCP servers, новых tool manifests, abnormal tool-chain depth и необычного cross-tool data movement
+- `Baseline`: ведите approved inventory для MCP servers и agent tools с owner, environment, allowed clients, data classes, downstream destinations и review expiry
+- `Baseline`: deny-by-default tool discovery; live agents могут использовать только зарегистрированные tools из утвержденных transports и trust boundaries
+- `Baseline`: авторизуйте каждый tool call по user/workload identity, tenant, action, data class и workflow state до выполнения
+- `Baseline`: используйте per-tool scopes и short-lived credentials; secrets не должны попадать в prompts, tool descriptions, context payloads или protocol traces
+- `High-impact/regulated`: требуйте отдельное MCP/agentic review для tools, которые могут менять business state, получать sensitive data, выполнять code, обращаться к external content или переносить данные через trust boundaries
+- `High-impact/regulated`: обнаруживайте unknown tools, manifest/capability drift, abnormal tool chains, redaction failures и необычное cross-tool data movement
 
-Предположение:
-- MCP-specific controls являются локальными рекомендациями политик для agentic systems. Они становятся блокерами релиза, когда agents в рабочей среде могут обнаруживать или вызывать внешние tools, tool calls меняют business state или tool traffic может переносить sensitive data.
+Канонические детали:
+- MCP protocol deployment, `stdio`/remote server handling, token passthrough rules, gateway policy, `listChanged` handling и protocol-layer logging находятся в [плейбуке безопасности MCP](../mcp-security/playbook.ru.md).
+- Автономия agents, memory, action traces, approvals, rollback и kill-switch behavior находятся в [плейбуке безопасности Agentic AI](../agentic-ai/playbook.ru.md).
 
 **Сигналы проверки:**
 - покрытие inventory для MCP servers и registered tools
 - доля tool calls, проверенных политикой до execution
-- alerts по unknown tools, manifest drift, сбоям protocol-log redaction и unexpected `listChanged` events
+- alerts по unknown tools, capability drift, redaction failures и abnormal tool sequences
 
 ### 3.7 Инфраструктура и безопасность runtime
 
@@ -400,6 +404,7 @@
 - `Baseline`: проводить user/machine access audits для AI tools, model registries, prompt repositories, vector stores и provider consoles
 - `Baseline`: хранить audit evidence по model decisions, dataset versions, prompt/system changes, исключениям и incident governance
 - `High-impact/regulated`: пересматривать AI risk register минимум ежеквартально и при major model/provider change
+
 ---
 
 ## 5. Связанные материалы
