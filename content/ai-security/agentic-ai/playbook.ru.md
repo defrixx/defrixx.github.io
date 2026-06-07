@@ -53,6 +53,9 @@
 `Baseline`:
 - Ведите inventory production agents, owners, runtime location, model/provider, autonomy level, tools, memory stores, retrieval sources, identities, data classes и business operations.
 - Классифицируйте каждый agent по максимальному impact, а не по intended use. Read-only assistant с доступом к confidential data все равно sensitive; agent с одним write tool может быть high-impact.
+- Делайте первичный triage по трем осям: attack surface, blast radius и доказуемость defense controls. Минимальный быстрый вопрос: выполняет ли agent tools, и если да, изолировано ли execution от host, internal network, credentials и production data.
+- Оценивайте agent в двух состояниях: vendor-as-shipped/default configuration и фактически deployed configuration. Если безопасная posture зависит от opt-in settings, paid features, customer-managed gateway, sandbox или egress policy, это должно быть видно в release decision.
+- Не засчитывайте vendor claim как control без evidence, что он принудительно применяется. Detection-only guardrail, который только логирует или предупреждает после irreversible action, является forensic signal, а не preventive control.
 - Назначайте явный autonomy profile:
   - `Assistive`: нет tool execution или только user-visible draft output.
   - `Read-only tool user`: может извлекать данные, но не менять business state.
@@ -137,6 +140,7 @@ Production defaults:
 
 Обязательные подтверждения:
 - agent inventory entry с autonomy profile, owner, tools, memory stores, identities и data classes;
+- vendor-as-shipped vs deployed-configuration assessment, включая enabled tools, memory, connectors, sandboxing, egress controls, approval modes и paid/optional security features;
 - policy matrix: `who/what/can-do` для каждого tool и memory source;
 - action trace schema и sample redacted trace;
 - sandbox configuration для browser/file/code tools;
@@ -172,6 +176,7 @@ Negative tests:
 | High | Memory/checkpoints могут сохранять active credentials, secrets или regulated data без retention и deletion controls | Блокировать high-impact workflows до исправления |
 | High | Multi-agent workflow теряет original authorization context или допускает privilege escalation through delegation | Блокировать релиз для privileged workflows |
 | High | Action traces не позволяют reconstruct high-impact downstream actions | Исправить до production launch |
+| High | Tool-executing agent зависит от vendor-claimed, opt-in или detection-only controls без доказуемого sandboxing, egress control и authorization enforcement в deployed configuration | Блокировать state-changing/execution workflows до подтверждения controls |
 | Medium | Inventory или policy matrix incomplete для read-only или low-impact agents | Завести remediation с owner и due date |
 | Medium | Behavior drift monitoring отсутствует после model/prompt changes | Требовать compensating review и test evidence |
 | Low | Prompt, tool или memory metadata без consistent naming, но access или logging не затронуты | Исправить opportunistically |

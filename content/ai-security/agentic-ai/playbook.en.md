@@ -53,6 +53,9 @@ High-impact scenarios:
 `Baseline`:
 - Maintain an inventory of production agents, owners, runtime location, model/provider, autonomy level, tools, memory stores, retrieval sources, identities, data classes, and business operations.
 - Classify each agent by maximum impact, not by intended use. A read-only assistant with access to confidential data is still sensitive; an agent with a single write tool may be high-impact.
+- Perform initial triage across three axes: attack surface, blast radius, and evidence for defense controls. The minimum fast question is whether the agent executes tools, and if so, whether execution is isolated from the host, internal network, credentials, and production data.
+- Assess the agent in two states: vendor-as-shipped/default configuration and the actually deployed configuration. If the safe posture depends on opt-in settings, paid features, a customer-managed gateway, sandbox, or egress policy, that must be visible in the release decision.
+- Do not count a vendor claim as a control without evidence that it is enforced. A detection-only guardrail that only logs or warns after an irreversible action is a forensic signal, not a preventive control.
 - Assign an explicit autonomy profile:
   - `Assistive`: no tool execution or only user-visible draft output.
   - `Read-only tool user`: can retrieve data but cannot change business state.
@@ -137,6 +140,7 @@ Production defaults:
 
 Required evidence:
 - agent inventory entry with autonomy profile, owner, tools, memory stores, identities, and data classes;
+- vendor-as-shipped vs deployed-configuration assessment, including enabled tools, memory, connectors, sandboxing, egress controls, approval modes, and paid/optional security features;
 - policy matrix: `who/what/can-do` for each tool and memory source;
 - action trace schema and sample redacted trace;
 - sandbox configuration for browser/file/code tools;
@@ -172,6 +176,7 @@ Operational signals:
 | High | Memory/checkpoints can persist active credentials, secrets, or regulated data without retention and deletion controls | Block high-impact workflows until fixed |
 | High | Multi-agent workflow loses original authorization context or allows privilege escalation through delegation | Block release for privileged workflows |
 | High | Action traces cannot reconstruct high-impact downstream actions | Fix before production launch |
+| High | Tool-executing agent depends on vendor-claimed, opt-in, or detection-only controls without proven sandboxing, egress control, and authorization enforcement in the deployed configuration | Block state-changing/execution workflows until controls are confirmed |
 | Medium | Inventory or policy matrix is incomplete for read-only or low-impact agents | Track remediation with owner and due date |
 | Medium | Behavior drift monitoring is missing after model/prompt changes | Require compensating review and test evidence |
 | Low | Prompt, tool, or memory metadata lacks consistent naming but does not affect access or logging | Fix opportunistically |
