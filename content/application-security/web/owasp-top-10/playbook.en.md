@@ -618,7 +618,7 @@ If security events are not logged or alerted in time, incidents stay invisible. 
 Types:
 - Missing logs for critical security events: attack leaves no detection trail. Example: failed logins and role changes are not recorded.
 - Local log tampering/deletion: attacker erases evidence after compromise. Example: `app.log` is deleted on host after initial foothold.
-- No `SIEM` (Security Information and Event Management) correlation: separate signals never become incident alert. Example: auth failures and suspicious API access are not correlated.
+- No `SIEM` (Security Information and Event Management) correlation: separate signals never become incident alert. Example: 50 authorization failures and suspicious API access are not correlated.
 - `PII` (Personally Identifiable Information) and secret leakage through logs: logs become a high-value breach source. Example: `Authorization: Bearer ...` is written in plain logs.
 - `SOC` (Security Operations Center) overload from noise/false positives: real incidents are missed. Example: thousands of low-priority alerts hide a real takeover attempt.
 

@@ -164,7 +164,7 @@ An attacker may exploit kernel bugs reachable from a container, for example thro
 ### Typical impact
 - privilege escalation
 - namespace escape
-- credential corruption
+- credential compromise
 - host-level execution
 
 ---
@@ -343,7 +343,7 @@ User namespaces do not remove every escape vector and do not turn containers int
 
 This is especially relevant for workloads that historically required root or selected capabilities. In Kubernetes `v1.36+`, User Namespaces are GA for Linux workloads, so `hostUsers: false` becomes a practical live-environment control for reducing blast radius, not an experimental setting.
 
-Operational applicability improved because of ID-mapped mounts: the kubelet no longer needs to recursively `chown` volume data only to change UID/GID visibility inside the container. Kernel remapping at mount time makes this control more realistic for stateful and volume-heavy workloads.
+Operational applicability improved because of ID-mapped mounts: the kubelet no longer needs to recursively `chown` volume data only to change UID/GID visibility inside the container. Kernel remapping at mount time makes this control more realistic for stateful and volume-heavy workloads, but production rollout still needs node/runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all workload filesystems, containerd `2.0+` or CRI-O `1.25+`, and an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`.
 
 Even with user namespaces, continue to deny `privileged: true`, minimize capabilities, enforce seccomp/LSM controls, and control host namespaces, hostPath, and runtime sockets. This layer reduces consequences; it does not replace the rest of the runtime controls.
 

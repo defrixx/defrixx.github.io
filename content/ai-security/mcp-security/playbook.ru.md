@@ -11,8 +11,8 @@
 - подготовки negative tests для tool execution, authorization, logging и capability drift.
 
 Ответственность документа:
-- Этот плейбук отвечает за MCP protocol deployment patterns, registry servers/tools/resources/prompts, capability baselines, transport choices, MCP-specific OAuth usage, gateway policy, protocol logging и capability drift controls.
-- Tool abuse и data leakage рассматриваются здесь через границу MCP: approval server, capability negotiation, resource exposure, token handling и контроль downstream destinations.
+- Этот плейбук отвечает за MCP protocol deployment patterns, registry для servers/tools/resources/prompts, capability baselines, transport choices, MCP-specific OAuth usage, gateway policy, protocol logging и capability drift controls.
+- Tool abuse и data leakage рассматриваются здесь через границу MCP: процесс утверждения server, capability negotiation, resource exposure, token handling и контроль downstream destinations.
 - Общий AI control baseline находится в [обзоре безопасности AI](../securing-ai/overview.ru.md), а автономия agents, memory, action traces, approvals, rollback и kill switches — в [плейбуке безопасности Agentic AI](../agentic-ai/playbook.ru.md).
 - [Обзор OWASP LLM Top 10](../owasp-llm-top-10/overview.ru.md) используется как таксономия угроз, а не как deployment checklist.
 
@@ -84,9 +84,11 @@ Local `stdio` servers:
 
 Remote Streamable HTTP servers:
 - Требуйте TLS для всего traffic.
-- Используйте enterprise-managed OAuth 2.1-compatible authorization для protected servers.
+- Используйте enterprise-managed authorization, согласованную с текущим MCP authorization profile: поведение OAuth 2.1 draft плюс обязательные для MCP metadata, `resource` parameter и проверки token audience.
 - Требуйте PKCE с `S256` для public clients.
-- Проверяйте token issuer, expiry, audience/resource binding и scope на каждом request.
+- Публикуйте OAuth Protected Resource Metadata и возвращайте `WWW-Authenticate` на `401`, чтобы clients обнаруживали правильный authorization server от MCP server, а не из user-supplied configuration.
+- Требуйте, чтобы MCP clients передавали OAuth `resource` parameter и в authorization request, и в token request, используя canonical MCP server URI.
+- Проверяйте token issuer, expiry, audience/resource binding, resource indicator и scope на каждом request.
 - Не передавайте client access tokens дальше в downstream APIs. Tool handlers должны получать отдельные учетные данные для downstream-систем или использовать controlled token exchange pattern, утвержденный владельцами identity/security.
 
 Third-party MCP servers:
@@ -148,7 +150,7 @@ Incident response должен поддерживать:
 Обязательные подтверждения:
 - MCP registry entry для каждого production server и capability;
 - capability baseline diff из deployment или session initialization;
-- OAuth metadata и token validation tests для remote servers;
+- OAuth Protected Resource Metadata, authorization server metadata, поведение `WWW-Authenticate`, обработка `resource` parameter и token validation tests для remote servers;
 - подтверждение endpoint/application allowlisting для local `stdio` servers;
 - gateway policy, redaction и logging configuration;
 - provider onboarding record для third-party servers.
@@ -158,6 +160,7 @@ Negative tests:
 - registered server с новым tool или более широким resource URI pattern блокируется до approval;
 - model-supplied parameter вне schema или business constraints отклоняется server-side;
 - expired, wrong-audience, wrong-issuer или insufficient-scope token отклоняется;
+- отсутствующий или неправильный OAuth `resource` parameter отклоняется либо не позволяет получить token, пригодный для MCP server;
 - token в query string, log field, tool output или prompt payload обнаруживается и блокируется/редактируется;
 - write tool не выполняется без required confirmation или approval;
 - malformed JSON-RPC messages fail closed и дают safe errors;

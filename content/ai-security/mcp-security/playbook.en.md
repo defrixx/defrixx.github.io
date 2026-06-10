@@ -84,9 +84,11 @@ Local `stdio` servers:
 
 Remote Streamable HTTP servers:
 - Require TLS for all traffic.
-- Use enterprise-managed OAuth 2.1-compatible authorization for protected servers.
+- Use enterprise-managed authorization aligned with the current MCP authorization profile: OAuth 2.1 draft behavior plus the MCP-required metadata, `resource` parameter, and token audience checks.
 - Require PKCE with `S256` for public clients.
-- Validate token issuer, expiry, audience/resource binding, and scope on every request.
+- Publish OAuth Protected Resource Metadata and return `WWW-Authenticate` on `401` so clients discover the correct authorization server from the MCP server, not from user-supplied configuration.
+- Require MCP clients to send the OAuth `resource` parameter in both authorization and token requests, using the canonical MCP server URI.
+- Validate token issuer, expiry, audience/resource binding, resource indicator, and scope on every request.
 - Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners.
 
 Third-party MCP servers:
@@ -148,7 +150,7 @@ Incident response must support:
 Required evidence:
 - MCP registry entry for every production server and capability;
 - capability baseline diff from deployment or session initialization;
-- OAuth metadata and token validation tests for remote servers;
+- OAuth Protected Resource Metadata, authorization server metadata, `WWW-Authenticate` behavior, `resource` parameter handling, and token validation tests for remote servers;
 - endpoint/application allowlisting evidence for local `stdio` servers;
 - gateway policy, redaction, and logging configuration;
 - provider onboarding record for third-party servers.
@@ -158,6 +160,7 @@ Negative tests:
 - registered server with a new tool or wider resource URI pattern is blocked until approved;
 - model-supplied parameter outside schema or business constraints is rejected server-side;
 - expired, wrong-audience, wrong-issuer, or insufficient-scope token is rejected;
+- missing or wrong OAuth `resource` parameter is rejected or fails to obtain a token usable for the MCP server;
 - token in query string, log field, tool output, or prompt payload is detected and blocked/redacted;
 - write tool cannot execute without required confirmation or approval;
 - malformed JSON-RPC messages fail closed and produce safe errors;

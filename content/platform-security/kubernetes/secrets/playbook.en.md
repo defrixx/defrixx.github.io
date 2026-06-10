@@ -8,6 +8,7 @@ This playbook covers protection of native Kubernetes `Secret` objects and the pa
 - `Secret` objects and their use through volumes and environment variables;
 - Secret data stored in etcd and on worker nodes;
 - RBAC, ServiceAccount, and indirect Secret access through Pod creation;
+- registry credentials stored as `imagePullSecrets` and attached through Pod specs or ServiceAccounts;
 - choosing between native Kubernetes Secrets and an external secret manager;
 - verification for production review, CI/CD policy, and incident response.
 
@@ -29,6 +30,7 @@ This playbook covers protection of native Kubernetes `Secret` objects and the pa
 **Assets:**
 - application credentials, API keys, database passwords, signing material, and private keys;
 - ServiceAccount tokens and credentials obtained through external secret integration;
+- container registry credentials used by `imagePullSecrets`;
 - etcd snapshots, control-plane storage, worker node filesystem, and runtime memory;
 - audit trail for Secret reads/changes and deployment intent.
 
@@ -43,6 +45,7 @@ This playbook covers protection of native Kubernetes `Secret` objects and the pa
 - a subject can create a Pod in a namespace and mounts any available Secret into that new Pod, bypassing the absence of direct `get secrets`;
 - a Secret is stored as base64 in Git, Helm values, rendered manifests, or CI artifacts and is effectively plaintext to every reader of that path;
 - a privileged Pod or arbitrary `hostPath` gains access to Secret volumes of other Pods on the same node;
+- a broad `imagePullSecret` is attached to a shared ServiceAccount and lets unrelated workloads pull private images or enumerate registry content outside their release boundary;
 - a Secret is delivered through environment variables and leaks through debug dumps, error reports, process inspection, or observability pipelines.
 
 ---
@@ -126,6 +129,17 @@ An external secret manager is not an automatic replacement for Kubernetes Secret
 - External Secrets Operator is appropriate when the application or platform requires a Kubernetes Secret object; this increases exposure and requires etcd encryption, RBAC review, and audit.
 - Dynamic credentials are preferred over long-lived static secrets when the downstream system supports TTL, lease, and revoke.
 
+### 3.7 Registry credentials and imagePullSecrets
+
+Registry pull credentials are Secrets with direct supply-chain impact. A subject that can read or reuse a broad `imagePullSecret` may pull private images, inspect layers for embedded secrets, or run unapproved images from a registry path outside the intended release boundary.
+
+**Production defaults:**
+- prefer node or workload credential providers that issue scoped, short-lived registry credentials where the platform supports them;
+- scope `kubernetes.io/dockerconfigjson` credentials to the minimum registry, repository, and pull-only permission set; do not reuse organization-wide or push-capable tokens as `imagePullSecrets`;
+- attach `imagePullSecrets` only to the ServiceAccounts and Pods that need them; do not put high-value registry credentials on the namespace `default` ServiceAccount;
+- treat any broad `imagePullSecret` as high-value: owner, expiry or review date, rotation path, and evidence that it is not readable by human/CI identities outside the release path;
+- admission policy should reject workloads that reference unapproved `imagePullSecrets`, use default ServiceAccount registry credentials in protected namespaces, or pull from registries outside the approved source list.
+
 ---
 
 ## 4. Verification
@@ -136,7 +150,9 @@ An external secret manager is not an automatic replacement for Kubernetes Secret
 kubectl get secrets -A
 kubectl get secrets -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" type="}{.type}{" immutable="}{.immutable}{"\n"}{end}'
 kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/service-account-token")]}{.metadata.namespace}/{.metadata.name}{" sa="}{.metadata.annotations.kubernetes\.io/service-account\.name}{"\n"}{end}'
+kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/dockerconfigjson")]}{.metadata.namespace}/{.metadata.name}{"\n"}{end}'
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{"\n"}{end}'
+kubectl get serviceaccounts -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" imagePullSecrets="}{.imagePullSecrets[*].name}{"\n"}{end}'
 kubectl get roles,clusterroles -A -o yaml | grep -n 'resources:.*secrets'
 kubectl get rolebindings,clusterrolebindings -A
 ```
@@ -159,6 +175,7 @@ Policy/admission must reject:
 - Pod that passes a Secret through env for high-value classes without an approved exception;
 - workload with `serviceAccountName: default`;
 - workload without `automountServiceAccountToken: false` when Kubernetes API access is not required;
+- workload in a protected namespace that references an unapproved `imagePullSecret` or inherits broad registry credentials from the ServiceAccount;
 - manually created `kubernetes.io/service-account-token` Secret without an approved legacy or break-glass exception;
 - arbitrary `hostPath`, `privileged: true`, `pods/exec`, and ephemeral debug in protected namespaces.
 
@@ -177,6 +194,7 @@ Operational signals:
 - human identity reads a Secret in a production namespace without a break-glass ticket;
 - CI identity receives `list/watch secrets`;
 - new workload mounts a Secret that does not belong to its service owner;
+- new or changed `imagePullSecret` is attached to the default ServiceAccount, shared across unrelated workloads, or grants broader registry access than the workload owner needs;
 - Secret values are detected in logs, traces, metric labels, crash dumps, or support bundles.
 
 ---
@@ -191,6 +209,7 @@ Operational signals:
 | Critical | Pod creation rights in a namespace with high-value Secrets allow mass extraction of production credentials, tenant secrets, signing material, or private keys | Block release, revoke/rotate affected Secrets, restrict deploy rights, and reconstruct audit timeline |
 | High | Production Secret is stored in a ConfigMap, unencrypted manifest, or CI artifact | Migrate to Secret/external store, rotate value, prevent recurrence through policy |
 | High | Manually created long-lived ServiceAccount token Secret exists in production without an approved exception | Revoke the token, migrate to TokenRequest/projected token flow, and audit all consumers |
+| High | Broad or push-capable registry credential is used as `imagePullSecret` for unrelated workloads or the default ServiceAccount | Replace with scoped pull-only credentials or credential provider integration, rotate the registry token, and audit image pulls |
 | Medium | Secret is delivered through env for a high-value workload without documented exception | Migration plan to file/external delivery or accepted risk with expiry |
 | Medium | Etcd encryption at rest is not confirmed or does not cover existing Secret objects | Enable/reencrypt, attach evidence, record residual risk |
 | Low | Missing owner labels/annotations, rotation metadata, or inventory for low-value Secret | Fix during planned work and add a drift check |

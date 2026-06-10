@@ -2,7 +2,7 @@
 
 ## 1. Scope and Objective
 
-This playbook defines a release review baseline for browser-facing applications: CSP, CORS, cookies, browser storage, third-party scripts, embedded content, and frontend supply-chain controls.
+This playbook defines a release review baseline for browser-facing applications: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content, and frontend supply-chain controls.
 
 Use this document for:
 - SPA, server-rendered web applications, BFF-backed browser flows, admin panels, and embedded widgets;
@@ -15,7 +15,7 @@ Out of scope:
 - general OWASP Top 10 coverage: use the [web application defense playbook](../owasp-top-10/playbook.en.md).
 
 Objective:
-- reduce account/session theft, browser-side data exposure, cross-origin data leakage, clickjacking, and third-party script compromise;
+- reduce account/session theft, browser-side data exposure, cross-origin data leakage, CSRF, clickjacking, and third-party script compromise;
 - make browser controls testable before release instead of treating headers as scanner-only hardening.
 
 ---
@@ -35,6 +35,7 @@ Attackers and entry points:
 High-impact scenarios:
 - XSS steals non-HttpOnly tokens from `localStorage`, calls privileged APIs through the victim session, or modifies checkout/admin actions.
 - CORS reflects arbitrary origins and allows credentialed reads from a victim browser session.
+- A cross-site request triggers a state-changing action through the victim's cookie-authenticated session because the route relies on cookies and `SameSite` without server-side request validation.
 - A compromised analytics or tag-manager script reads sensitive DOM content, session-adjacent data, or payment fields.
 - Clickjacking frames an admin or approval screen and tricks a user into a destructive action.
 - A third-party CDN script changes after release and executes unexpected code because no integrity or ownership control exists.
@@ -47,18 +48,20 @@ High-impact scenarios:
 
 Release-ready defaults:
 - Browser-facing applications define CSP in the `Content-Security-Policy` response header, not only in a `<meta>` tag.
-- Start new applications with `default-src 'none'` and explicitly allow required classes: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, and `form-action`.
+- Start new applications with `default-src 'none'` and explicitly allow required classes: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, `form-action`, and `object-src`.
 - Use `frame-ancestors 'none'` by default for admin, account, checkout, and internal tools. Use explicit origins only when embedding is a product requirement.
 - Set `base-uri 'none'` unless the application intentionally uses `<base>`.
+- Set `object-src 'none'` unless a reviewed legacy plugin requirement exists; such exceptions should be release-blocking for new applications.
 - Set `form-action 'self'` plus explicit payment/IdP endpoints where required.
 - Avoid `unsafe-inline` and `unsafe-eval` for new code. If legacy code needs them, document owner, affected routes, expiry, and compensating controls.
 - Use nonce- or hash-based script execution for applications that still require inline bootstrap scripts.
+- For modern applications with DOM XSS exposure, use `script-src-attr 'none'` and enforce Trusted Types where supported; legacy rollout requires route owners, compatibility testing, and a migration plan for unsafe DOM sinks.
 - Roll out material CSP changes through `Content-Security-Policy-Report-Only` first, then enforce after false positives are reviewed.
 
 Verification:
 - Confirm the effective header on every browser entry point, including error pages, login/callback pages, admin pages, and static shell routes.
 - Run a representative user journey with CSP reporting enabled and review violations before enforcement.
-- Negative test: injected inline script and unapproved external script must not execute in the enforced profile.
+- Negative test: injected inline script, inline event handler, `<object>`/plugin load, and unapproved external script must not execute in the enforced profile.
 
 ### 3.2 CORS and Cross-Origin Data Exposure
 
@@ -91,7 +94,22 @@ Verification:
 - Confirm session ID rotation after login and privilege changes.
 - Negative test: JavaScript cannot read session cookies; stolen local browser state does not contain reusable refresh tokens.
 
-### 3.4 Third-Party Scripts and Frontend Supply Chain
+### 3.4 State-Changing Requests and CSRF
+
+Release-ready defaults:
+- Cookie-authenticated applications protect every state-changing route with framework CSRF protection, a synchronizer token, signed double-submit cookie, or a Fetch Metadata policy with a tested fallback for unsupported clients.
+- Do not rely on `SameSite` alone for normal web applications. Treat it as defense in depth alongside server-side request validation.
+- State-changing operations do not use `GET`, including login, logout, password reset consumption, email change, approval, checkout, and admin actions.
+- CSRF tokens are unique to the user session, unpredictable, validated server-side, and never placed in URLs, logs, analytics events, or referrer-bearing links.
+- API-style browser flows that cannot use form tokens require a custom request header and strict CORS policy. The server must reject simple cross-site requests that lack the expected header or fail `Origin`/Fetch Metadata checks.
+- High-impact actions require user interaction or step-up when replay or clickjacking would cause material damage, even if the CSRF token is valid.
+
+Verification:
+- Negative test: a cross-site form POST, image/script tag, and simple `fetch` from an attacker origin cannot perform a state-changing action.
+- Confirm token failure is logged as a security event without logging token values.
+- Test login, logout, account change, payment, approval, admin mutation, and API mutation routes separately; do not assume one middleware covers every route group.
+
+### 3.5 Third-Party Scripts and Frontend Supply Chain
 
 Release-ready defaults:
 - Maintain an inventory of third-party scripts, owners, purpose, data touched, and approval date.
@@ -107,7 +125,7 @@ Verification:
 - Validate SRI hashes for static CDN resources.
 - Confirm sensitive DOM fields are not exposed to scripts that do not need them.
 
-### 3.5 Embedded Content and Browser APIs
+### 3.6 Embedded Content and Browser APIs
 
 Release-ready defaults:
 - Use `frame-ancestors` for anti-clickjacking. Keep `X-Frame-Options` only as compatibility defense where needed.
@@ -131,7 +149,7 @@ Verification:
 - Inspect the effective `Permissions-Policy` response header on sensitive routes with browser DevTools or an automated header check.
 - Negative test: unapproved origins and unrelated routes cannot access camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth, or clipboard-read capabilities.
 
-### 3.6 Transport, Referrer, and Browser Isolation Headers
+### 3.7 Transport, Referrer, and Browser Isolation Headers
 
 Release-ready defaults:
 - Use `Strict-Transport-Security` on HTTPS applications after certificate automation and rollback ownership are ready. Production default: `max-age=31536000`; add `includeSubDomains` only when every subdomain is HTTPS-ready, and use `preload` only after a separate domain-ownership review.

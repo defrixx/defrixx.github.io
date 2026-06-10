@@ -8,6 +8,7 @@
 - объекты `Secret`, их использование через volumes и переменные окружения;
 - хранение Secret-данных в etcd и на worker nodes;
 - RBAC, ServiceAccount и косвенный доступ к Secret через создание Pod;
+- registry credentials, хранящиеся как `imagePullSecrets` и подключаемые через Pod specs или ServiceAccounts;
 - выбор между встроенными Kubernetes Secrets и внешним secret manager;
 - проверки для production review, CI/CD policy и реагирования на инциденты.
 
@@ -29,6 +30,7 @@
 **Что защищаем:**
 - учетные данные приложений, API-ключи, пароли баз данных, signing material и private keys;
 - ServiceAccount tokens и credentials, полученные через интеграцию с внешним secret manager;
+- container registry credentials, используемые через `imagePullSecrets`;
 - snapshots etcd, control-plane storage, файловую систему worker nodes и runtime memory;
 - audit trail чтения и изменения Secret-объектов, а также deployment intent.
 
@@ -43,6 +45,7 @@
 - субъект может создавать Pod в namespace, монтирует любой доступный Secret в новый Pod и обходит отсутствие прямого `get secrets`;
 - Secret хранится как base64 в Git, Helm values, rendered manifests или CI artifacts и фактически становится plaintext для всех читателей этого контура;
 - privileged Pod или произвольный `hostPath` получает доступ к Secret volumes других Pod на той же node;
+- широкий `imagePullSecret` подключен к shared ServiceAccount и позволяет несвязанным workload'ам pull private images или enumerate registry content вне их release boundary;
 - Secret попадает в переменные окружения и утекает через debug dumps, error reports, инспекцию процессов или observability pipeline.
 
 ---
@@ -126,6 +129,17 @@ Encryption at rest снижает риск чтения etcd storage, disks и b
 - External Secrets Operator подходит, когда приложение или платформа требуют Kubernetes Secret object; это повышает риск раскрытия и требует etcd encryption, RBAC review и audit.
 - Dynamic credentials предпочтительнее long-lived static secrets, если downstream system поддерживает TTL, lease и revoke.
 
+### 3.7 Registry credentials и imagePullSecrets
+
+Registry pull credentials - это Secret с прямым влиянием на software supply chain. Субъект, который может читать или переиспользовать широкий `imagePullSecret`, может pull private images, инспектировать layers на embedded secrets или запускать unapproved images из registry path вне разрешенной release boundary.
+
+**Базовые требования:**
+- предпочитайте node или workload credential providers, которые выдают scoped, short-lived registry credentials, если platform это поддерживает;
+- ограничивайте `kubernetes.io/dockerconfigjson` credentials минимальным registry, repository и pull-only permission set; не используйте organization-wide или push-capable tokens как `imagePullSecrets`;
+- подключайте `imagePullSecrets` только к ServiceAccounts и Pods, которым они нужны; не размещайте high-value registry credentials на namespace `default` ServiceAccount;
+- считайте любой широкий `imagePullSecret` high-value: owner, expiry или review date, rotation path и подтверждение, что его не читают human/CI identities вне release path;
+- admission policy должна отклонять workloads, которые ссылаются на unapproved `imagePullSecrets`, наследуют default ServiceAccount registry credentials в protected namespaces или pull images из registries вне approved source list.
+
 ---
 
 ## 4. Проверка
@@ -136,7 +150,9 @@ Encryption at rest снижает риск чтения etcd storage, disks и b
 kubectl get secrets -A
 kubectl get secrets -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" type="}{.type}{" immutable="}{.immutable}{"\n"}{end}'
 kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/service-account-token")]}{.metadata.namespace}/{.metadata.name}{" sa="}{.metadata.annotations.kubernetes\.io/service-account\.name}{"\n"}{end}'
+kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/dockerconfigjson")]}{.metadata.namespace}/{.metadata.name}{"\n"}{end}'
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{"\n"}{end}'
+kubectl get serviceaccounts -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" imagePullSecrets="}{.imagePullSecrets[*].name}{"\n"}{end}'
 kubectl get roles,clusterroles -A -o yaml | grep -n 'resources:.*secrets'
 kubectl get rolebindings,clusterrolebindings -A
 ```
@@ -159,6 +175,7 @@ Policy/admission должны отклонять:
 - Pod, который передает Secret в env для high-value classes без approved exception;
 - workload с `serviceAccountName: default`;
 - workload без `automountServiceAccountToken: false`, если Kubernetes API access не требуется;
+- workload в protected namespace, который ссылается на unapproved `imagePullSecret` или наследует широкие registry credentials от ServiceAccount;
 - вручную созданный `kubernetes.io/service-account-token` Secret без approved legacy или break-glass exception;
 - arbitrary `hostPath`, `privileged: true`, `pods/exec` и ephemeral debug в protected namespaces.
 
@@ -177,6 +194,7 @@ Policy/admission должны отклонять:
 - human identity читает Secret в production namespace без break-glass ticket;
 - CI identity получает `list/watch secrets`;
 - новый workload монтирует Secret, который не принадлежит его service owner;
+- новый или измененный `imagePullSecret` подключен к default ServiceAccount, shared между несвязанными workload'ами или дает более широкий registry access, чем нужен workload owner;
 - значения Secret обнаружены в logs, traces, metrics labels, crash dumps или support bundles.
 
 ---
@@ -191,6 +209,7 @@ Policy/admission должны отклонять:
 | Critical | Право создания Pod в namespace с high-value Secret позволяет массово извлечь production credentials, tenant secrets, signing material или private keys | Блокировать релиз, отозвать/ротировать затронутые Secret, ограничить deploy-права и восстановить audit timeline |
 | High | Production Secret хранится в ConfigMap, незашифрованном manifest или CI artifact | Миграция в Secret/external store, ротация значения, запрет повторения через policy |
 | High | В production есть вручную созданный long-lived ServiceAccount token Secret без approved exception | Отозвать token, мигрировать на TokenRequest/projected token flow и проверить всех потребителей по audit |
+| High | Широкий или push-capable registry credential используется как `imagePullSecret` для несвязанных workload'ов или default ServiceAccount | Заменить на scoped pull-only credentials или credential provider integration, ротировать registry token и проверить image pulls по audit |
 | Medium | Secret доставляется через env для high-value workload без задокументированного исключения | План миграции на файловую или внешнюю доставку либо принятый риск со сроком пересмотра |
 | Medium | etcd encryption at rest не подтверждена или не покрывает существующие объекты Secret | Включить или повторно применить шифрование, приложить подтверждение, зафиксировать residual risk |
 | Low | Нет owner labels/annotations, rotation metadata или inventory для low-value Secret | Исправить в плановом порядке и добавить проверку drift |

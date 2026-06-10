@@ -61,7 +61,7 @@
 - для Kubernetes `v1.36+`: `KubeletFineGrainedAuthz` находится в GA, feature gate locked/enabled, поэтому observability workload'ы должны использовать минимальные subresources (`nodes/metrics`, `nodes/stats`, `nodes/pods` и другие нужные endpoint'ы), а не общий `nodes/proxy`;
 - запрещайте новые RBAC bindings на `nodes/proxy` для observability workload'ов, если их kubelet scraping/logging сценарий покрывается fine-grained правами.
 - primary evidence для сокращения `nodes/proxy`: `kubectl auth can-i get nodes/metrics|nodes/stats|nodes/pods --as=<subject>` и аналогичные проверки фактически нужных kubelet endpoints;
-- secondary evidence: версия Kubernetes, документация managed-provider, состояние feature gate и kubelet/control-plane metrics там, где они доступны;
+- secondary evidence: версия Kubernetes, документация managed-provider, конфигурация авторизации kubelet и vendor release notes для точной minor-версии кластера;
 - если fine-grained subresources недоступны или заблокированы конкретной поставкой кластера, `nodes/proxy` допустим только как exception с owner, expiry, минимальным subject scope и отдельным blast-radius review.
 
 **Минимальные команды для подтверждения:**
@@ -74,8 +74,8 @@ kubectl auth can-i get nodes/metrics --as=<subject>
 kubectl auth can-i get nodes/stats --as=<subject>
 kubectl auth can-i get nodes/pods --as=<subject>
 kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
-# Optional secondary evidence where kubelet/control-plane metrics are available:
-# curl -sk --header "Authorization: Bearer $TOKEN" https://$NODE_IP:10250/metrics | grep KubeletFineGrainedAuthz
+# Secondary evidence зависит от provider и способа развертывания:
+# соберите Kubernetes minor version, kubelet authorization configuration и managed-provider release notes
 ```
 
 ---
@@ -115,7 +115,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 
 **Сигналы риска:**
 - неизвестные публичные endpoints;
-- новый production exposure строится на community `ingress-nginx` controller без migration plan после объявления retirement проекта;
+- новый production exposure строится на community `ingress-nginx` controller без инвентаря controller, ownership, отслеживания patch и migration plan на случай объявленного EOL/retirement;
 - использование `Service.spec.externalIPs` в рабочих или multi-tenant кластерах;
 - отсутствие default-deny модели NetworkPolicy;
 - критичные workloads с unrestricted egress;
@@ -126,7 +126,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 - для защищенных namespace: default deny + explicit allow rules;
 - каждый публичный endpoint имеет владельца, data-classification и SLA по уязвимостям;
 - не считайте Ingress API deprecated: ресурс Ingress остается поддерживаемым, но его feature set заморожен. Для новых сложных L7/L4 edge-сценариев и долгосрочного развития предпочитайте Gateway API с явно выбранной реализацией и security review.
-- разделяйте `Ingress` resource и конкретный controller. CVE и security fixes обычно относятся к controller implementation, webhook, data plane или admission path, а не к самому API object `Ingress`. Для community Kubernetes `ingress-nginx` после retirement новых bugfix/security patch releases не будет; оставаться на нем после retirement означает accepted exposure без upstream CVE remediation. До retirement применяйте поддерживаемые releases и фиксируйте migration plan: inventory IngressClass/controller deployments, owned public endpoints, critical annotations, custom snippets, auth/TLS behavior и replacement target. Новые production deployments на этом controller допустимы только как exception с owner, expiry и patch/rollback plan.
+- разделяйте `Ingress` resource и конкретный controller. CVE и security fixes обычно относятся к controller implementation, webhook, data plane или admission path, а не к самому API object `Ingress`. Для community Kubernetes `ingress-nginx` фиксируйте явное lifecycle decision: inventory IngressClass/controller deployments, owned public endpoints, critical annotations, custom snippets, auth/TLS behavior, upstream support status, patch cadence и replacement target. Если объявлен EOL/retirement или patch cadence больше не соответствует production SLA, оставаться на нем означает accepted exposure и требует owner, expiry, compensating controls и migration deadline. Новые production deployments на этом controller допустимы только как exception с owner, expiry и patch/rollback plan.
 - для Gateway API используйте отдельный security baseline ниже. Namespace не должен иметь возможность прикрепить route к shared/public Gateway или сослаться на backend/TLS secret другого namespace без явного разрешения владельца соответствующего ресурса.
 - запрещайте новые `Service.spec.externalIPs` через admission policy: `DenyServiceExternalIPs`, `ValidatingAdmissionPolicy` или проверенный policy engine. В Kubernetes `v1.36+` это поле deprecated; исторически оно небезопасно по умолчанию, потому что пользователь с правом создавать или менять Service может перехватывать трафик к выбранному IP при выполнении условий CVE-2020-8554.
 - для существующих `externalIPs` заведите migration plan с владельцем и сроком. Предпочтительные целевые варианты: управляемый `type: LoadBalancer`, ingress/Gateway API для HTTP(S)/L4-входа, либо `NodePort` только за внешним балансировщиком/фаерволом с явным ownership IP-адресов и сетевых ACL.
@@ -212,6 +212,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - есть ли в Git plaintext/base64 секреты в манифестах;
 - включено ли encryption at rest для Secret-данных в etcd;
 - кто имеет `get/list/watch` к Secret в рабочей среде;
+- где хранятся registry pull credentials, какие ServiceAccounts подключают `imagePullSecrets` и являются ли credentials pull-only и scoped;
 - какой TTL у токенов/секретов и как проходит их отзыв (revocation).
 
 **Сигналы риска:**
@@ -220,6 +221,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - External Secrets Operator или другой sync-процесс создает Kubernetes Secret без реальной необходимости совместимости;
 - long-lived ServiceAccount token secrets используются как основной механизм;
 - широкое `list/watch` на Secret для человеческих или CI identity;
+- broad или push-capable registry credentials подключены как `imagePullSecrets`, особенно на shared или default ServiceAccounts;
 - нет подтверждаемого процесса ротации и аварийного отзыва.
 
 **Рекомендация для рабочих сред:**
@@ -229,6 +231,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - включите etcd encryption at rest и проверяйте статус после изменений control plane;
 - ограничьте Secret ACL до минимально нужного набора workload identities;
 - применяйте short-lived токены и регулярную ротацию секретов;
+- ограничивайте registry pull credentials минимальным repository и pull-only permission set; где возможно, предпочитайте provider-supported credential providers вместо long-lived `imagePullSecrets`;
 - если по операционным причинам используется encrypted-at-source push-модель (например, `sops`/`helm-secrets`), требуйте контролируемые ключи, review и запрет расшифровки вне доверенного CI/CD-контура;
 - периодически проверяйте, что журналирование не раскрывает чувствительные значения.
 

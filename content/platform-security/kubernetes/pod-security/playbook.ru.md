@@ -81,6 +81,7 @@
 
 **Совместимость и failure modes для `hostUsers: false`:**
 - Не считайте `hostUsers: false` простым YAML-флагом. Проверяйте его на той же minor-версии Kubernetes, kernel, runtime, CSI/storage stack и admission policy, которые используются в рабочей среде.
+- Минимальное runtime evidence: Linux `6.3+` или vendor-supported kernel с поддержкой ID-mapped mounts для всех файловых систем, которые использует workload, containerd `2.0+` или CRI-O `1.25+`, OCI runtime с поддержкой user namespaces, например `runc` `1.2+` или `crun` `1.9+`, и kubelet events/metrics, показывающие успешное создание user-namespace Pod.
 - Rollout выполняйте поэтапно: сначала stateless workload'ы без `hostNetwork`, `hostPID`, `hostIPC`, raw block `volumeDevices` и специальных storage assumptions; затем stateful/storage-heavy workload'ы только после CSI/storage compatibility test; затем platform workload'ы по отдельному design review.
 - Для images, которым реально нужен root-like behavior внутри контейнера, используйте отдельный exception path: owner, expiry, причина несовместимости с `runAsNonRoot`, подтверждение, что host UID/GID остаются непривилегированными, и compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
 - Pods с user namespaces не могут использовать host namespaces: `hostNetwork: true`, `hostPID: true` и `hostIPC: true` несовместимы и должны падать на admission или deploy validation.

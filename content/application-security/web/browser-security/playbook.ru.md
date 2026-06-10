@@ -2,7 +2,7 @@
 
 ## 1. Область и цель
 
-Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, third-party scripts, embedded content и мер контроля frontend supply chain.
+Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content и мер контроля frontend supply chain.
 
 Используйте документ для:
 - SPA, server-rendered web applications, BFF-backed browser flows, административных панелей и встраиваемых виджетов;
@@ -15,7 +15,7 @@
 - общее покрытие OWASP Top 10: используйте [плейбук защиты web application](../owasp-top-10/playbook.ru.md).
 
 Цель:
-- снизить риск кражи учетных записей и сессий, browser-side data exposure, межсайтовых утечек данных, clickjacking и компрометации third-party scripts;
+- снизить риск кражи учетных записей и сессий, browser-side data exposure, межсайтовых утечек данных, CSRF, clickjacking и компрометации third-party scripts;
 - сделать browser controls проверяемыми перед релизом, а не воспринимать headers как формальное усиление только для сканеров.
 
 ---
@@ -35,6 +35,7 @@
 High-impact сценарии:
 - XSS крадет non-HttpOnly tokens из `localStorage`, вызывает privileged APIs через сессию жертвы или меняет checkout/admin actions.
 - CORS отражает произвольные origins и разрешает credentialed reads из browser session жертвы.
+- Cross-site request запускает state-changing action через cookie-authenticated session жертвы, потому что route полагается на cookies и `SameSite` без server-side request validation.
 - Скомпрометированный analytics или tag-manager script читает sensitive DOM content, session-adjacent data или payment fields.
 - Clickjacking встраивает admin или approval screen и вынуждает пользователя выполнить destructive action.
 - Third-party CDN script меняется после релиза и выполняет неожиданный код, потому что нет integrity или ownership control.
@@ -47,18 +48,20 @@ High-impact сценарии:
 
 Рабочие настройки:
 - Browser-facing applications должны задавать CSP через response header `Content-Security-Policy`, а не только через `<meta>` tag.
-- Для новых приложений начинайте с `default-src 'none'` и явно разрешайте нужные классы: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri` и `form-action`.
+- Для новых приложений начинайте с `default-src 'none'` и явно разрешайте нужные классы: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, `form-action` и `object-src`.
 - Используйте `frame-ancestors 'none'` по умолчанию для admin, account, checkout и internal tools. Явные origins допустимы только если embedding нужен по product requirement.
 - Устанавливайте `base-uri 'none'`, если приложение намеренно не использует `<base>`.
+- Устанавливайте `object-src 'none'`, если нет проверенного legacy plugin requirement; для новых приложений такие исключения должны блокировать релиз.
 - Устанавливайте `form-action 'self'` плюс явные payment/IdP endpoints, когда они нужны.
 - Избегайте `unsafe-inline` и `unsafe-eval` для нового кода. Если legacy code требует их, фиксируйте owner, affected routes, expiry и компенсирующие меры.
 - Используйте nonce- или hash-based script execution для приложений, где все еще нужны inline bootstrap scripts.
+- Для современных приложений с DOM XSS exposure используйте `script-src-attr 'none'` и включайте Trusted Types там, где они поддерживаются; legacy rollout требует route owners, compatibility testing и migration plan для unsafe DOM sinks.
 - Существенные изменения CSP сначала внедряйте через `Content-Security-Policy-Report-Only`, затем включайте enforcement после разбора false positives.
 
 Верификация:
 - Проверьте effective header на всех browser entry points, включая error pages, login/callback pages, admin pages и static shell routes.
 - Пройдите representative user journey с включенным CSP reporting и разберите нарушения до enforcement.
-- Негативный тест: injected inline script и unapproved external script не должны выполняться в enforced profile.
+- Негативный тест: injected inline script, inline event handler, `<object>`/plugin load и unapproved external script не должны выполняться в enforced profile.
 
 ### 3.2 CORS и cross-origin data exposure
 
@@ -91,7 +94,22 @@ High-impact сценарии:
 - Подтвердите session ID rotation после login и privilege changes.
 - Негативный тест: JavaScript не может читать session cookies; украденное local browser state не содержит reusable refresh tokens.
 
-### 3.4 Third-party scripts и frontend supply chain
+### 3.4 State-changing requests и CSRF
+
+Рабочие настройки:
+- Приложения с cookie-based authentication защищают каждый state-changing route через framework CSRF protection, synchronizer token, signed double-submit cookie или Fetch Metadata policy с проверенным fallback для неподдерживаемых clients.
+- Не полагайтесь только на `SameSite` для обычных web applications. Считайте его defense in depth рядом с server-side request validation.
+- State-changing operations не используют `GET`, включая login, logout, password reset consumption, email change, approval, checkout и admin actions.
+- CSRF tokens уникальны для user session, непредсказуемы, проверяются server-side и никогда не попадают в URLs, logs, analytics events или links, передающие referrer.
+- API-style browser flows, где нельзя использовать form tokens, требуют custom request header и strict CORS policy. Server должен отклонять simple cross-site requests без ожидаемого header или при провале `Origin`/Fetch Metadata checks.
+- High-impact actions требуют user interaction или step-up, если replay или clickjacking может привести к существенному ущербу, даже когда CSRF token валиден.
+
+Верификация:
+- Negative test: cross-site form POST, image/script tag и simple `fetch` из attacker origin не могут выполнить state-changing action.
+- Подтвердите, что token failure логируется как security event без записи token values.
+- Отдельно протестируйте login, logout, account change, payment, approval, admin mutation и API mutation routes; не считайте, что один middleware покрывает все route groups.
+
+### 3.5 Third-party scripts и frontend supply chain
 
 Рабочие настройки:
 - Ведите inventory third-party scripts: owner, purpose, touched data и approval date.
@@ -107,7 +125,7 @@ High-impact сценарии:
 - Проверьте SRI hashes для static CDN resources.
 - Убедитесь, что sensitive DOM fields не доступны scripts, которым они не нужны.
 
-### 3.5 Embedded content и browser APIs
+### 3.6 Embedded content и browser APIs
 
 Рабочие настройки:
 - Используйте `frame-ancestors` для anti-clickjacking. `X-Frame-Options` оставляйте только как compatibility defense, где это нужно.
@@ -131,7 +149,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 - Проверьте effective `Permissions-Policy` response header на sensitive routes через browser DevTools или automated header check.
 - Negative test: unapproved origins и unrelated routes не могут получить доступ к camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth или clipboard-read capabilities.
 
-### 3.6 Transport, referrer и browser isolation headers
+### 3.7 Transport, referrer и browser isolation headers
 
 Рабочие настройки:
 - Используйте `Strict-Transport-Security` для HTTPS-приложений после готовности certificate automation и rollback ownership. Production default: `max-age=31536000`; добавляйте `includeSubDomains` только когда все subdomains готовы к HTTPS, а `preload` — только после отдельного ревью владения domain.
