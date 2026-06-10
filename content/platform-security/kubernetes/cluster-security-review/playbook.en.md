@@ -268,7 +268,8 @@ The minimum gatekeeping baseline should include:
   - `pod-security.kubernetes.io/audit-version: <same pinned version>`
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
-- require effective seccomp hardening separately from the PSS label: live workloads must explicitly set `seccompProfile.type: RuntimeDefault` at Pod or container level, or nodes must enforce kubelet `--seccomp-default` / `seccompDefault` so unspecified profiles become `RuntimeDefault`; evidence must show the effective runtime profile, not only namespace labels;
+- require effective seccomp hardening evidence, not only namespace labels: enforced `restricted` admission must reject workloads without explicit `RuntimeDefault` or approved `Localhost`; namespaces using `baseline`, custom policy, or temporary exceptions must either require explicit seccomp fields or prove kubelet `--seccomp-default` / `seccompDefault` so unspecified profiles become `RuntimeDefault`;
+- do not treat this list as the complete workload `securityContext` baseline; maintain detailed requirements for capabilities, AppArmor/SELinux, sysctls, groups, volumes, and user namespaces in the [Kubernetes Pod Security playbook](../pod-security/playbook.en.md);
 - use `warn`/`audit=restricted` without `enforce=restricted` only during a documented rollout or migration window with owner, expiry, and a blocking date for enforcement;
 - monitor Pod Security label drift and block deployment if live-environment labels regress, are removed, or point to an unapproved version;
 - verify through admission policy tests that live workloads without an image digest are rejected, including `:latest`, version-like tags, and image names with no explicit tag;

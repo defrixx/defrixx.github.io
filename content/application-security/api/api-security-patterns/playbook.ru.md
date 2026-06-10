@@ -4,6 +4,8 @@
 
 Этот плейбук описывает основные виды API, применимые угрозы, базовые меры защиты и типовые схемы интеграций для REST, SOAP/XML, GraphQL, Webhook и gRPC.
 
+Базовый профиль согласован с OWASP API Security Top 10 2023. Это не пересказ списка: цель документа — превратить категории в проверяемые production controls, рабочие настройки и evidence для ревью.
+
 Используйте документ для:
 - проектирования публичных, партнерских, внутренних и обращенных к фронтенду API;
 - архитектурного ревью API до релиза;
@@ -150,6 +152,8 @@ gRPC часто применяется для внутреннего service-to-
 - какие события журналируются для расследования и обнаружения.
 
 ### 5.1 Базовая матрица угроз
+
+Матрица покрывает категории OWASP API Security Top 10 2023: BOLA, Broken Authentication, BOPLA, Unrestricted Resource Consumption, BFLA, Unrestricted Access to Sensitive Business Flows, SSRF, Security Misconfiguration, Improper Inventory Management и Unsafe Consumption of APIs.
 
 | Угроза | Где проявляется | Обязательные меры контроля | Проверка |
 |---|---|---|---|

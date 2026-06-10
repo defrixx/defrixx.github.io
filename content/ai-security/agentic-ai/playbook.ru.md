@@ -130,7 +130,7 @@ Production defaults:
 - Не храните raw prompts, context, tool payloads и scratchpads в обычных logs; используйте minimized metadata и redacted fields.
 
 `High-impact/regulated`:
-- Поддерживайте runbooks для data leakage, runaway agent, malicious tool use, poisoned memory/RAG source, compromised tool credential и unsafe state-changing action.
+- Поддерживайте runbooks для data leakage, runaway agent, malicious tool use, poisoned memory/RAG source, компрометации учетных данных tool и unsafe state-changing action.
 - Тестируйте kill switch и rollback paths до launch и после major runtime/tool changes.
 - Проверяйте incident timelines на реальных log fields; runbook не готов, если responders не могут восстановить, кто или что вызвало downstream action.
 
@@ -154,7 +154,7 @@ Negative tests:
 - write action не выполняется без preview и confirmation;
 - serialized checkpoint не содержит active tokens или secrets;
 - browser tool не может обратиться к cloud metadata, internal admin services или unapproved external domains;
-- code execution не может access host filesystem, production credentials или unrestricted network egress;
+- code execution не может получить доступ к host filesystem, учетным данным production-среды или unrestricted network egress;
 - multi-agent delegation сохраняет original authorization context.
 
 Операционные сигналы:
@@ -172,8 +172,8 @@ Negative tests:
 | Severity | Agent condition | Обязательное действие |
 |---|---|---|
 | Critical | Agent может autonomously выполнять irreversible, financial, administrative, cross-tenant или external-disclosure actions без policy enforcement и approval | Блокировать релиз |
-| Critical | Execution/browser tool может обратиться к production credentials, host filesystem, cloud metadata или internal network by default | Блокировать релиз и изолировать runtime |
-| High | Memory/checkpoints могут сохранять active credentials, secrets или regulated data без retention и deletion controls | Блокировать high-impact workflows до исправления |
+| Critical | Execution/browser tool может обратиться к учетным данным production-среды, host filesystem, cloud metadata или internal network by default | Блокировать релиз и изолировать runtime |
+| High | Memory/checkpoints могут сохранять активные учетные данные, secrets или regulated data без retention и deletion controls | Блокировать high-impact workflows до исправления |
 | High | Multi-agent workflow теряет original authorization context или допускает privilege escalation through delegation | Блокировать релиз для privileged workflows |
 | High | Action traces не позволяют reconstruct high-impact downstream actions | Исправить до production launch |
 | High | Tool-executing agent зависит от vendor-claimed, opt-in или detection-only controls без доказуемого sandboxing, egress control и authorization enforcement в deployed configuration | Блокировать state-changing/execution workflows до подтверждения controls |

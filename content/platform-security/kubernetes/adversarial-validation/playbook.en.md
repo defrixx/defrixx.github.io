@@ -330,6 +330,31 @@ kubectl auth can-i '*' '*' --as=system:serviceaccount:<ns>:<deploy-sa>
 kubectl get clusterrolebinding -A -o wide
 ```
 
+### 3.14 Workload `securityContext` drift
+
+**What to verify:**
+- application workloads on Linux nodes with AppArmor do not run with `appArmorProfile.type: Unconfined` and have evidence for `RuntimeDefault` or an approved `Localhost` profile;
+- workloads do not set unsafe `spec.securityContext.sysctls` in normal application namespaces;
+- `fsGroup`, `supplementalGroups`, and `supplementalGroupsPolicy` do not grant broad group memberships without an ownership model for shared storage;
+- sensitive workloads on Kubernetes `v1.33+` use `supplementalGroupsPolicy: Strict` when they need a strict group model.
+
+**Recommended control:**
+- verify these fields with admission policy tests, not only manual YAML review;
+- deny AppArmor `Unconfined` and unsafe sysctls by default; exceptions require an owner, expiry, isolated node pool where needed, and rollback plan;
+- for group-based volume access, document the contract: which GID is needed, which paths are writable, which workloads share storage, and why that is acceptable.
+
+**Evidence:**
+Classification: `safe in live` for inventory and admission dry-run; `staging only` for runtime checks through `exec` in sensitive workloads.
+
+```bash
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorPod="}{.spec.securityContext.appArmorProfile.type}{" sysctls="}{.spec.securityContext.sysctls}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorContainers="}{.spec.containers[*].securityContext.appArmorProfile.type}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorInit="}{.spec.initContainers[*].securityContext.appArmorProfile.type}{" appArmorEphemeral="}{.spec.ephemeralContainers[*].securityContext.appArmorProfile.type}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" fsGroup="}{.spec.securityContext.fsGroup}{" supplementalGroups="}{.spec.securityContext.supplementalGroups}{" supplementalGroupsPolicy="}{.spec.securityContext.supplementalGroupsPolicy}{"\n"}{end}'
+kubectl exec -n <ns> <pod> -- id
+kubectl exec -n <ns> <pod> -- stat -c '%u:%g %a %n' <mounted-path>
+```
+
 ---
 
 ## 4. Review Outputs

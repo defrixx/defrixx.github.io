@@ -127,9 +127,23 @@ Release-ready defaults:
 - Sensitive flows emit structured events with actor, tenant, object, action, result, reason, correlation ID, and relevant risk signals.
 - Dashboards track flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters, and export volume.
 - Abuse response has playbooks for throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation, and customer support communication.
+- High-risk flows have an emergency control that can disable, throttle, or add friction to the risky action without redeploying application code.
 
 Verification:
 - A tabletop or simulation proves that the team can identify affected accounts/tenants, stop the flow, reverse unsafe credits where possible, and preserve evidence.
+
+### 4.6 Abuse budgets and configuration governance
+
+Release-ready defaults:
+- Every sensitive flow has a versioned abuse budget: actor keys, counters, time windows, thresholds, friction path, owner, and expiry/review cadence.
+- Starting budgets are explicit even when the final values are product-specific: signup/trial by account, tenant, payment instrument, device/browser signal, source network, and `24h`/`7d` windows; reset and OTP by account plus delivery destination; booking/inventory by actor plus scarce resource; export by actor, tenant, object count, byte volume, and time window.
+- Limit configuration changes are treated as production policy changes. High-risk limit increases require owner approval, reason, rollout time, rollback path, and monitoring confirmation.
+- Fail-open behavior is documented. If the limiter, risk engine, queue, or ledger is degraded, critical flows either fail closed or fall back to a bounded safe mode with an explicit maximum window.
+
+Verification:
+- Compare configured limits against the flow inventory and confirm each sensitive flow has owner-approved thresholds.
+- Test that limit bypass through alternate identifiers, batch APIs, GraphQL aliases, async jobs, retries, and partner credentials is rejected or counted under the same abuse budget.
+- Simulate risk-engine or limiter outage and confirm the flow follows the documented fail-closed or bounded safe-mode behavior.
 
 ---
 
@@ -139,6 +153,7 @@ Verification:
 |---|---|---|
 | Critical | Abuse enables cross-tenant action, account takeover at scale, payment/ledger manipulation, irreversible admin/support action, or bulk export of sensitive data | Block release until remediated; exception requires formal risk acceptance by security leadership and business owner |
 | High | Bypass of a limit or state-machine guard in a critical flow, promo/referral economic abuse, export scraping, signup/trial quota farming, or privileged workflow abuse with bounded impact | Assign owner and due date, implement mitigation or compensating controls, and confirm negative tests and monitoring |
+| High | High-risk flow has no versioned abuse budget, emergency throttle/friction control, or tested fail-closed/safe-mode behavior | Block broad rollout until limits, owner, monitoring, and fallback behavior are defined and tested |
 | Medium | Sensitive flow lacks owner, abuse objective, limits, monitoring, runbook, or negative tests, but exploitation does not immediately enable high-impact business action | Create remediation with owner, due date, and release follow-up; do not expand the flow until baseline evidence exists |
 | Low | Naming, dashboards, labels, or documentation are incomplete, but limits, authorization, and state guards work | Fix opportunistically and verify during the next review |
 

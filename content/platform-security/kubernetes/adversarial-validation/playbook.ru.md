@@ -12,7 +12,7 @@
 **Цель:**
 - проверить, что Kubernetes-меры контроля закрывают реальные пути атаки, а не только выглядят корректно в YAML;
 - получить подтверждения для security review, устранения проблем и повторной проверки;
-- связать offensive lab-сценарии с защитные меры рабочих сред: RBAC, admission, NetworkPolicy, усиление защиты runtime, supply chain и observability.
+- связать offensive lab-сценарии с защитными мерами рабочих сред: RBAC, admission, NetworkPolicy, усиление защиты runtime, supply chain и observability.
 
 ---
 
@@ -39,7 +39,7 @@
 - для доказательства исправления используйте тот же минимальный test case, а не более сильную технику.
 
 Команды подтверждения классифицируются так:
-- `safe in prod`: read-only проверки metadata или policy, которые не раскрывают значения секретов;
+- `safe in live`: read-only проверки metadata или policy, которые не раскрывают значения секретов;
 - `staging only`: команды, которые инспектируют артефакты или запускают активные probes и должны использовать clone, canary или изолированный namespace;
 - `requires approval`: команды, которые могут раскрыть sensitive data, сканировать инфраструктуру или затронуть реальные workloads.
 
@@ -62,7 +62,7 @@
 - любой секрет, попавший в Git или image layer, считается скомпрометированным и требует ротации.
 
 **Подтверждение:**
-Классификация: `safe in prod` для header checks и проверки статуса сканирования; `staging only` для image export или layer inspection; `requires approval` перед экспортом релизные images.
+Классификация: `safe in live` для header checks и проверки статуса сканирования; `staging only` для image export или layer inspection; `requires approval` перед экспортом release images.
 
 ```bash
 curl -I https://<app>/.git/config
@@ -105,7 +105,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - мониторьте неожиданные HTTP-запросы из frontend pods к internal service DNS и metadata endpoints.
 
 **Подтверждение:**
-Классификация: `safe in prod` для policy deny logs и non-sensitive canaries; `staging only` для активных service reachability probes; `requires approval` перед проверкой metadata endpoints рабочей среды.
+Классификация: `safe in live` для policy deny logs и non-sensitive canaries; `staging only` для активных service reachability probes; `requires approval` перед проверкой metadata endpoints рабочей среды.
 
 ```bash
 kubectl run -n <ns> --rm -it netcheck --image=curlimages/curl -- sh
@@ -131,7 +131,7 @@ kubectl logs -n <network-policy-or-runtime-security-ns> <policy-or-sensor-pod>
 - инвентарь public entry points обновляется минимум каждые `30d`.
 
 **Подтверждение:**
-Классификация: `safe in prod` для inventory сервисов; `requires approval` для внешних connectivity scans по node IP.
+Классификация: `safe in live` для inventory сервисов; `requires approval` для внешних connectivity scans по node IP.
 
 ```bash
 kubectl get svc -A -o wide
@@ -279,7 +279,7 @@ kubectl --namespace <sensitive-ns> exec -it <pod> -- sh
 - alert на запуск multi-tool images, unexpected shells, package managers и network scanners в защищенных namespace.
 
 **Подтверждение:**
-Классификация: `safe in prod` для Kubernetes API metadata inventory; `staging only` для shell-based inspection; `requires approval` перед выполнением команд в pods в рабочей среде.
+Классификация: `safe in live` для Kubernetes API metadata inventory; `staging only` для shell-based inspection; `requires approval` перед выполнением команд в pods в рабочей среде.
 
 ```bash
 # Не выводите значения environment variables. Проверяйте только имена/классы через approved debug path.
@@ -328,6 +328,31 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 kubectl get svc,deploy,sa,rolebinding,clusterrolebinding -A | grep -Ei 'tiller|dashboard|admin|operator'
 kubectl auth can-i '*' '*' --as=system:serviceaccount:<ns>:<deploy-sa>
 kubectl get clusterrolebinding -A -o wide
+```
+
+### 3.14 Дрейф `securityContext` workload'ов
+
+**Что проверять:**
+- application workload'ы на Linux nodes с AppArmor не запускаются с `appArmorProfile.type: Unconfined` и имеют подтверждение для `RuntimeDefault` или утвержденного `Localhost` profile;
+- workload'ы не задают unsafe `spec.securityContext.sysctls` в обычных namespace приложений;
+- `fsGroup`, `supplementalGroups` и `supplementalGroupsPolicy` не выдают широкое членство в группах без модели владения shared storage;
+- sensitive workload'ы на Kubernetes `v1.33+` используют `supplementalGroupsPolicy: Strict`, если им нужна строгая модель групп.
+
+**Рекомендация для рабочих сред:**
+- проверяйте эти поля admission policy тестами, а не только ручным YAML review;
+- запрещайте AppArmor `Unconfined` и unsafe sysctls по умолчанию; исключения оформляйте с владельцем, expiry, выделенным node pool там, где это нужно, и rollback plan;
+- для group-based volume access фиксируйте контракт: какой GID нужен, какие paths доступны на запись, какие workload'ы разделяют storage и почему это допустимо.
+
+**Подтверждение:**
+Классификация: `safe in live` для inventory и admission dry-run; `staging only` для runtime-проверок через `exec` в чувствительных workload'ах.
+
+```bash
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorPod="}{.spec.securityContext.appArmorProfile.type}{" sysctls="}{.spec.securityContext.sysctls}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorContainers="}{.spec.containers[*].securityContext.appArmorProfile.type}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" appArmorInit="}{.spec.initContainers[*].securityContext.appArmorProfile.type}{" appArmorEphemeral="}{.spec.ephemeralContainers[*].securityContext.appArmorProfile.type}{"\n"}{end}'
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" fsGroup="}{.spec.securityContext.fsGroup}{" supplementalGroups="}{.spec.securityContext.supplementalGroups}{" supplementalGroupsPolicy="}{.spec.securityContext.supplementalGroupsPolicy}{"\n"}{end}'
+kubectl exec -n <ns> <pod> -- id
+kubectl exec -n <ns> <pod> -- stat -c '%u:%g %a %n' <mounted-path>
 ```
 
 ---

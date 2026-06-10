@@ -85,6 +85,9 @@
 - выделяйте отдельный ServiceAccount на workload и не переиспользуйте его между несвязанными сервисами;
 - запрещайте default ServiceAccount для application workload'ов;
 - `automountServiceAccountToken: false` по умолчанию для workload'ов без Kubernetes API access;
+- считайте объекты `kubernetes.io/service-account-token` legacy long-lived credentials; не создавайте их для application workload'ов по умолчанию;
+- предпочитайте TokenRequest API или projected ServiceAccount tokens с явным `audience` и коротким expiration для workload'ов, которым нужен Kubernetes API или интеграция с внешней аутентификацией;
+- любой вручную созданный long-lived ServiceAccount token Secret требует owner, expiry или review date, break-glass/migration justification, access review и проверенного пути rotation/revocation;
 - `pods/exec`, `pods/ephemeralcontainers`, `serviceaccounts/token`, `escalate`, `bind`, `impersonate`, `get/list/watch secrets` требуют отдельного approval;
 - выполняйте quarterly recertification для live-environment ServiceAccount permissions;
 - namespace с высокоценными Secret не должен быть shared namespace для произвольных workload'ов.
@@ -100,6 +103,7 @@ Encryption at rest снижает риск чтения etcd storage, disks и b
 - используйте KMS provider или managed control-plane encryption там, где это поддерживается и операционно устойчиво;
 - ограничивайте доступ к etcd endpoints, snapshots, backup storage и control-plane node filesystem;
 - регулярно тестируйте restore/rotation для encryption configuration и KMS keys;
+- задавайте `immutable: true` для static Secrets, которые должны меняться только через versioned rollout; не используйте это для Secrets, которые ротируются in place или обновляются controller'ом;
 - запрещайте arbitrary `hostPath`, privileged workloads и debug containers в namespaces, где работают workloads с высокоценными Secret.
 
 ### 3.5 Secret при передаче и доступ к control plane
@@ -130,6 +134,8 @@ Encryption at rest снижает риск чтения etcd storage, disks и b
 
 ```bash
 kubectl get secrets -A
+kubectl get secrets -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" type="}{.type}{" immutable="}{.immutable}{"\n"}{end}'
+kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/service-account-token")]}{.metadata.namespace}/{.metadata.name}{" sa="}{.metadata.annotations.kubernetes\.io/service-account\.name}{"\n"}{end}'
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{"\n"}{end}'
 kubectl get roles,clusterroles -A -o yaml | grep -n 'resources:.*secrets'
 kubectl get rolebindings,clusterrolebindings -A
@@ -153,12 +159,14 @@ Policy/admission должны отклонять:
 - Pod, который передает Secret в env для high-value classes без approved exception;
 - workload с `serviceAccountName: default`;
 - workload без `automountServiceAccountToken: false`, если Kubernetes API access не требуется;
+- вручную созданный `kubernetes.io/service-account-token` Secret без approved legacy или break-glass exception;
 - arbitrary `hostPath`, `privileged: true`, `pods/exec` и ephemeral debug в protected namespaces.
 
 ### 4.3 Аудит и обнаружение
 
 Минимальный набор событий для централизованного audit:
 - `get/list/watch` на `secrets`;
+- create/update/delete на `secrets`, особенно для объектов `kubernetes.io/service-account-token`;
 - creation/update workloads, которые ссылаются на Secret;
 - изменения `roles`, `clusterroles`, `rolebindings`, `clusterrolebindings`;
 - `pods/exec`, `pods/ephemeralcontainers`, `serviceaccounts/token`;
@@ -182,6 +190,7 @@ Policy/admission должны отклонять:
 | High | Субъект может создавать Pod/Deployment в namespace с high-value Secret без admission-ограничений на mount/env Secret, ServiceAccount и workload owner | Блокировать релиз для этого namespace до введения policy; проверить, что indirect Secret read через созданный Pod невозможен |
 | Critical | Право создания Pod в namespace с high-value Secret позволяет массово извлечь production credentials, tenant secrets, signing material или private keys | Блокировать релиз, отозвать/ротировать затронутые Secret, ограничить deploy-права и восстановить audit timeline |
 | High | Production Secret хранится в ConfigMap, незашифрованном manifest или CI artifact | Миграция в Secret/external store, ротация значения, запрет повторения через policy |
+| High | В production есть вручную созданный long-lived ServiceAccount token Secret без approved exception | Отозвать token, мигрировать на TokenRequest/projected token flow и проверить всех потребителей по audit |
 | Medium | Secret доставляется через env для high-value workload без задокументированного исключения | План миграции на файловую или внешнюю доставку либо принятый риск со сроком пересмотра |
 | Medium | etcd encryption at rest не подтверждена или не покрывает существующие объекты Secret | Включить или повторно применить шифрование, приложить подтверждение, зафиксировать residual risk |
 | Low | Нет owner labels/annotations, rotation metadata или inventory для low-value Secret | Исправить в плановом порядке и добавить проверку drift |

@@ -39,6 +39,7 @@ High-impact сценарии:
 - Развертывание в рабочую среду использует mutable tag или артефакт, который не был создан trusted release workflow.
 - Critical-замечание сканера подавлено без owner, expiry, compensating control или подтверждений.
 - Untrusted fork или branch получает доступ к signing, deployment или environment secrets.
+- Untrusted pull request, issue, comment, branch name, tag name или release note text интерполируется в privileged workflow step и приводит к command/script injection.
 - Emergency release обходит normal gates и не оставляет следов post-release review.
 
 ---
@@ -52,7 +53,7 @@ High-impact сценарии:
 | Low-risk internal | Internal tool, no sensitive data, bounded blast radius | CI checks pass, owner approval, подтверждения сохранены |
 | Standard live release | Customer-facing service, normal API или UI release | Security gates, protected environment, deployment approval, artifact immutability |
 | High-risk live release | Auth, payment, tenant isolation, admin, secrets, platform, CI/CD, Kubernetes control plane | Independent security approval, stricter gates, rollback plan, пакет релизных подтверждений |
-| Emergency | Incident fix, срочное восстановление рабочей среды, patch для KEV/public exploit, response при broken embargo | Expedited approval, narrow scope, с сохранением evidence, mandatory post-release review within `2 business days` |
+| Emergency | Incident fix, срочное восстановление рабочей среды, patch для KEV/public exploit, response при broken embargo | Expedited approval, narrow scope, с сохранением подтверждений, mandatory post-release review within `2 business days` |
 
 Recommended control:
 - Для каждого repository или deployable service задается default-класс релиза.
@@ -65,11 +66,27 @@ Recommended control:
 - Direct human deployment допускается только как break-glass.
 - Один человек не должен быть sole author, sole approver и sole deploy approver для high-risk релиза в рабочую среду.
 - Изменения pipeline definitions, reusable workflows, deployment manifests, IaC modules, signing configuration и environment protection rules требуют review by owners из CODEOWNERS или эквивалентной политики.
+- Build, sign, publish и deploy jobs используют отдельные identities и permissions. Build job может публиковать unsigned candidate artifact, но не должен одновременно иметь unrestricted production deploy или signing authority, если workflow явно не прошел review как trusted release builder.
 
 Верификация:
 - Получите список users/groups/service accounts, которым разрешен deploy в рабочую среду.
 - Подтвердите, что environment secrets доступны только jobs, ссылающимся на protected environments после прохождения required rules.
 - Проверьте audit events для изменений protected environment rules и deployment approvals.
+
+### 3.3 Hardening CI/CD execution plane
+
+Рабочие настройки:
+- Default workflow token permission — read-only; write permissions, `id-token: write`, package publish, signing и deployment permissions выдаются только jobs, которым они нужны.
+- OIDC federation для CI/CD привязывает trust policy к issuer, audience, repository или immutable repository ID там, где это доступно, protected ref или environment, workflow identity и ожидаемому trigger. Wildcard trust на organization, project или branch prefix недопустим для развертывания в рабочую среду.
+- Untrusted forks, external pull requests, issues, comments, branch names, tag names, release notes и commit messages считаются attacker-controlled input. Их нельзя напрямую интерполировать в shell, deployment manifests, prompts или release commands.
+- Third-party actions, reusable workflows, plugins и pipeline images закреплены на immutable versions или digests для release workflows; широкие floating tags допустимы только в non-release experimentation.
+- Self-hosted runners разделяются по trust tier. Untrusted code не должен выполняться на persistent runners с network access к live environments, artifact signing, production secrets или deployment credentials.
+- Release runners должны быть ephemeral или очищаться по задокументированному standard; caches должны быть scoped по trust boundary и считаться untrusted build input.
+
+Верификация:
+- Проверьте workflow definitions на минимальные `permissions`, pinned dependencies, использование protected environments и прямую shell interpolation для untrusted context.
+- Запустите fork/feature-branch workflow и подтвердите, что он не получает environment secrets, OIDC cloud roles, signing material или deployment jobs.
+- Подтвердите, что runner groups/labels не позволяют untrusted jobs попадать на release или production-connected self-hosted runners.
 
 ---
 
@@ -91,7 +108,7 @@ Recommended control:
 - Gates применяются к изменениям, а не только ко всему repository. Не блокируйте релиз только из-за unrelated legacy debt, если политика не говорит, что legacy debt превысил порог релиза.
 - Новые Critical-замечания блокируют релиз, если нет действительного Critical-исключения.
 - Новые High-замечания по умолчанию блокируют high-risk релизы в защищенные среды; standard live release может идти дальше только с owner, due date, компенсирующими мерами и explicit acceptance.
-- KEV, достоверный public exploit, active exploitation, broken embargo или срочный vendor security patch могут быть основанием для emergency release approval для узкого remediation change. Даже для такого release нужны artifact identity, approver, ссылка на rollback/mitigation и evidence post-release review.
+- KEV, достоверный public exploit, active exploitation, broken embargo или срочный vendor security patch могут быть основанием для emergency release approval для узкого remediation change. Даже для такого release нужны artifact identity, approver, ссылка на rollback/mitigation и подтверждения post-release review.
 - Замечания по live secret блокируют релиз до revoke/rotation секрета и оценки exposure.
 - Scanner output должен быть разобран как confirmed issue, false positive, accepted risk или backlog debt. Raw unreviewed reports сами по себе не считаются релизным подтверждением.
 
@@ -152,7 +169,7 @@ GitHub-specific notes:
 Дополнительные подтверждения для high-risk релиза в рабочую среду:
 - threat model или abuse-case update;
 - negative tests для auth, tenant isolation, payment/ledger, admin или secrets path, touched by the change;
-- для AI/agentic workflows: запись AI asset inventory, матрица политик, action-trace evidence, подтверждения tool/MCP registry и kill-switch/rollback drill там, где это применимо;
+- для AI/agentic workflows: запись AI asset inventory, матрица политик, подтверждение action trace, подтверждения tool/MCP registry и kill-switch/rollback drill там, где это применимо;
 - rollback/kill-switch plan;
 - monitoring и alert confirmation для changed sensitive flow;
 - explicit security owner approval.

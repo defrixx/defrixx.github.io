@@ -130,6 +130,24 @@ Verification:
 - Review iframe `sandbox` and `allow` attributes for least privilege.
 - Inspect the effective `Permissions-Policy` response header on sensitive routes with browser DevTools or an automated header check.
 - Negative test: unapproved origins and unrelated routes cannot access camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth, or clipboard-read capabilities.
+
+### 3.6 Transport, Referrer, and Browser Isolation Headers
+
+Release-ready defaults:
+- Use `Strict-Transport-Security` on HTTPS applications after certificate automation and rollback ownership are ready. Production default: `max-age=31536000`; add `includeSubDomains` only when every subdomain is HTTPS-ready, and use `preload` only after a separate domain-ownership review.
+- Set `X-Content-Type-Options: nosniff` on script, style, JSON, file download, and API responses to reduce MIME confusion and unsafe content interpretation.
+- Set `Referrer-Policy: strict-origin-when-cross-origin` as a general default. Use `no-referrer` or `same-origin` for admin, identity, payment, support, and sensitive data-entry routes where external analytics or partner redirects do not need referrer context.
+- Use `Cache-Control: no-store` for authenticated pages and responses containing user, tenant, payment, admin, or regulated data. Static assets may use long cache lifetimes only when filename/content hashing is in place.
+- Use `Cross-Origin-Opener-Policy: same-origin` for admin, account, checkout, and internal-tool pages unless OAuth/payment popup behavior requires `same-origin-allow-popups`.
+- Use `Cross-Origin-Resource-Policy` on sensitive JSON, media, documents, and downloads so they are not embedded or consumed by unrelated origins. Start with `same-origin`; use `same-site` only when sibling subdomain sharing is intentional.
+- Require `Cross-Origin-Embedder-Policy` only for applications that intentionally need cross-origin isolation, such as `SharedArrayBuffer` or high-resolution timing features. Do not enable it blindly: every embedded script, worker, frame, and media resource must be compatible through CORP or CORS.
+- Do not rely on `X-XSS-Protection`; keep it disabled or absent. Modern XSS defense comes from output encoding, safe DOM APIs, CSP, Trusted Types where supported, and review of dangerous sinks.
+
+Verification:
+- Check headers on success, error, redirect, login/callback, logout, API, file download, and static asset responses; edge/CDN and application responses must not conflict.
+- Validate HSTS in a staging domain before enabling `includeSubDomains` or `preload` on a parent domain.
+- Negative test: authenticated sensitive responses are not stored by the browser cache, CDN, or shared proxy; cross-origin pages cannot retain opener access to sensitive routes; unrelated origins cannot embed protected resources.
+
 ---
 
 ## 4. Related Materials

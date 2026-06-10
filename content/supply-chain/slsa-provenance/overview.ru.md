@@ -77,7 +77,7 @@
 
 ### 3.3 Меры контроля артефактов
 
-- публикация и policy decisions только по digest (`sha256:...`), не по mutable tag; релизные manifests, Helm values, Kustomize overlays, GitOps state и release evidence должны сохранять точный digest, который планируется к deploy
+- публикация и policy decisions только по digest (`sha256:...`), не по mutable tag; релизные manifests, Helm values, Kustomize overlays, GitOps state и релизные подтверждения должны сохранять точный digest, который планируется к deploy
 - различайте digest OCI image index и digest platform-specific manifest. У multi-arch image может быть один index digest, который указывает на разные manifests для `linux/amd64`, `linux/arm64` или других платформ
 - проверяйте фактический digest, который будет потреблять runtime. Если deployment ссылается на index, gate должен либо проверить index и все разрешенные platform manifests, либо resolve и проверить platform-specific manifest, выбранный для целевого cluster
 - registry copy или promotion не должны незаметно менять reviewed artifact reference. Если index или manifest копируется между registries, фиксируйте source digest, destination digest, media type, platform set и subject подписи/provenance, который проверяет policy
@@ -212,7 +212,7 @@ sequenceDiagram
 ### 6.2 Связь artifact <-> attestation
 
 - поддерживать one-to-many (несколько attestations на артефакт)
-- принимать attestations только если одновременно выполняются два условия: `builder.id` в allowlist и issuer/identity подписи в allowlist
+- принимать attestations только если одновременно выполняются два условия: `builder.id` в списке разрешенных значений и issuer/identity подписи в списке разрешенных значений
 - attestations должны быть immutable: не перезаписывать attestation для того же digest
 - для multi-arch images явно определяйте, что является subject: image index digest, каждый platform-specific manifest digest или оба уровня. Политика для рабочих сред должна быть явной, иначе verified index может скрыть unverified platform manifest, а verified platform manifest может быть развернут через unapproved index
 - при promotion между registries проверяйте attestation subject относительно digest, используемого в destination deployment, а не только относительно source-registry reference, который CI видел раньше
@@ -252,7 +252,7 @@ trusted_builders:
 ### 7.2 Ротация trust roots/identity без outage
 
 - проводить ротацию через controlled overlap: временно принимать old+new identity, затем удалять old
-- каждое изменение trust roots/allowlist оформлять как policy change с ревью и audit trail
+- каждое изменение trust roots или списка разрешенных значений оформлять как policy change с ревью и audit trail
 
 ---
 
@@ -267,13 +267,13 @@ SLSA conformance и локальная deployment policy — разные про
 1. Проверка структуры statement: `_type = https://in-toto.io/Statement/v1` и наличие `subject[]`, `predicate.buildDefinition`, `predicate.runDetails`
 2. Проверка аутентичности provenance envelope и соответствия `subject`
 3. Проверка `predicateType = https://slsa.dev/provenance/v1`
-4. Проверка наличия `predicate.runDetails.builder` и соответствия `builder.id` trusted builder allowlist
-5. Проверка roots of trust и issuer/identity подписи по allowlist
+4. Проверка наличия `predicate.runDetails.builder` и соответствия `builder.id` списку trusted builders
+5. Проверка roots of trust и issuer/identity подписи по списку разрешенных значений
 6. Проверка expectations по source/build parameters; ключи в `externalParameters`, не входящие в утвержденную schema для конкретного `buildType` и версии policy, => fail
 
 Локальные проверки deployment policy:
 
-1. Если `predicate.runDetails.metadata.startedOn` и `finishedOn` присутствуют, проверяйте `startedOn <= finishedOn`; если они отсутствуют, требуйте builder-specific evidence или документированное policy-исключение, а не считайте отсутствие SLSA failure
+1. Если `predicate.runDetails.metadata.startedOn` и `finishedOn` присутствуют, проверяйте `startedOn <= finishedOn`; если они отсутствуют, требуйте builder-specific подтверждение или документированное policy-исключение, а не считайте отсутствие SLSA failure
 2. Проверяйте freshness provenance через локальный `max_provenance_age` per environment (например, prod `24h`, staging `7d`), кроме утвержденных delayed deploy/promote сценариев
 3. Для delayed deploy/promote повторный deploy ранее одобренного digest допускается при неизменности digest артефакта, неизменности provenance/attestation digest и наличии валидного предыдущего gate-pass в audit trail
 
@@ -297,7 +297,7 @@ SLSA conformance и локальная deployment policy — разные про
 
 2. Phase B (L2):
 - перенести релизные сборки на hosted runner
-- включить проверку подписи provenance + `builder.id` + issuer/identity allowlist
+- включить проверку подписи provenance + `builder.id` + списка разрешенных issuer/identity
 - запретить deploy без полного mandatory gate-pass
 
 3. Phase C (L3):

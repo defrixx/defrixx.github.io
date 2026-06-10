@@ -69,6 +69,9 @@
   - `token_period`: только для periodic long-running workload tokens, с явным владельцем роли, renewal monitoring и путем incident revocation
   - `token_explicit_max_ttl`: задавайте, когда роли нужен жесткий cap, который renewal не может превысить
   - Human/admin token TTL относится к policy OIDC/SSO auth method: `<=1h`, без бессрочных admin tokens
+- Предпочитайте non-renewable short-lived tokens для jobs и restartable services, где повторная аутентификация дешева.
+- Считайте periodic tokens исключением: используйте `token_period <=15m`, alerting на renewal failure и `token_explicit_max_ttl <=24h`, если нет задокументированного platform exception, почему token должен оставаться renewable indefinitely.
+- Не используйте periodic tokens для human или administrator sessions.
 - Избегайте wildcard role bindings.
 
 Пример Kubernetes auth role:
@@ -85,7 +88,7 @@ vault write auth/kubernetes/role/payments-api-prod \
 
 ### 2.5 Аудит и обнаружение
 
-- Включайте Vault audit devices до onboarding рабочий workload'ов.
+- Включайте Vault audit devices до onboarding рабочих workload'ов.
 - Пишите audit logs в долговечные и управляемые по доступу sinks.
 - Где операционно возможно, включайте минимум два audit devices. Если используется только один audit sink, явно фиксируйте availability risk: Vault может отказывать в обслуживании requests, когда все включенные audit devices не могут записывать события.
 - Мониторьте audit device health, write failures, disk/backpressure signals и sink reachability.
@@ -190,6 +193,7 @@ vault write pki_int/tidy tidy_cert_store=true tidy_revoked_certs=true safety_buf
 ### 3.6 Гигиена токенов
 
 - Не храните long-lived широкие токены.
+- Не создавайте orphan tokens для workload'ов, если отказ от parent revocation semantics не является намеренным и runbook не содержит evidence для revoke-by-accessor или revoke-by-path.
 - Немедленно отзывайте токены для offboarded users/services.
 - Используйте accessors в incident-процессах, чтобы не раскрывать полные значения токенов.
 

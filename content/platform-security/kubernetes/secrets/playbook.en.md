@@ -85,6 +85,9 @@ Pod creation in a namespace is also a sensitive permission: a subject that can c
 - use one ServiceAccount per workload, with no reuse across unrelated services;
 - forbid the default ServiceAccount for application workloads;
 - set `automountServiceAccountToken: false` by default for workloads that do not need Kubernetes API access;
+- treat `kubernetes.io/service-account-token` Secret objects as legacy long-lived credentials; do not create them for application workloads by default;
+- prefer TokenRequest API or projected ServiceAccount tokens with explicit `audience` and short expiration for workloads that need Kubernetes API or external auth integration;
+- any manually created long-lived ServiceAccount token Secret requires an owner, expiry or review date, break-glass/migration justification, access review, and a tested rotation/revocation path;
 - require separate approval for `pods/exec`, `pods/ephemeralcontainers`, `serviceaccounts/token`, `escalate`, `bind`, `impersonate`, and `get/list/watch secrets`;
 - perform quarterly recertification for live-environment ServiceAccount permissions;
 - a namespace holding high-value Secrets must not be a shared namespace for arbitrary workloads.
@@ -100,6 +103,7 @@ Encryption at rest reduces the risk of reading etcd storage, disks, and backups,
 - use a KMS provider or managed control-plane encryption where it is supported and operationally reliable;
 - restrict access to etcd endpoints, snapshots, backup storage, and control-plane node filesystem;
 - regularly test restore/rotation for encryption configuration and KMS keys;
+- set `immutable: true` for static Secrets that should change only through versioned rollout; do not use it for Secrets that are rotated in place or updated by a controller;
 - forbid arbitrary `hostPath`, privileged workloads, and debug containers in namespaces running workloads with high-value Secrets.
 
 ### 3.5 Secret in transit and control-plane access
@@ -130,6 +134,8 @@ An external secret manager is not an automatic replacement for Kubernetes Secret
 
 ```bash
 kubectl get secrets -A
+kubectl get secrets -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" type="}{.type}{" immutable="}{.immutable}{"\n"}{end}'
+kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/service-account-token")]}{.metadata.namespace}/{.metadata.name}{" sa="}{.metadata.annotations.kubernetes\.io/service-account\.name}{"\n"}{end}'
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{"\n"}{end}'
 kubectl get roles,clusterroles -A -o yaml | grep -n 'resources:.*secrets'
 kubectl get rolebindings,clusterrolebindings -A
@@ -153,12 +159,14 @@ Policy/admission must reject:
 - Pod that passes a Secret through env for high-value classes without an approved exception;
 - workload with `serviceAccountName: default`;
 - workload without `automountServiceAccountToken: false` when Kubernetes API access is not required;
+- manually created `kubernetes.io/service-account-token` Secret without an approved legacy or break-glass exception;
 - arbitrary `hostPath`, `privileged: true`, `pods/exec`, and ephemeral debug in protected namespaces.
 
 ### 4.3 Audit and detection
 
 Minimum centralized audit events:
 - `get/list/watch` on `secrets`;
+- create/update/delete on `secrets`, especially `kubernetes.io/service-account-token` objects;
 - creation/update of workloads that reference a Secret;
 - changes to `roles`, `clusterroles`, `rolebindings`, `clusterrolebindings`;
 - `pods/exec`, `pods/ephemeralcontainers`, `serviceaccounts/token`;
@@ -182,6 +190,7 @@ Operational signals:
 | High | A subject can create Pod/Deployment in a namespace with high-value Secrets without admission restrictions on Secret mount/env, ServiceAccount, and workload owner | Block release for that namespace until policy is enforced; verify indirect Secret read through a created Pod is impossible |
 | Critical | Pod creation rights in a namespace with high-value Secrets allow mass extraction of production credentials, tenant secrets, signing material, or private keys | Block release, revoke/rotate affected Secrets, restrict deploy rights, and reconstruct audit timeline |
 | High | Production Secret is stored in a ConfigMap, unencrypted manifest, or CI artifact | Migrate to Secret/external store, rotate value, prevent recurrence through policy |
+| High | Manually created long-lived ServiceAccount token Secret exists in production without an approved exception | Revoke the token, migrate to TokenRequest/projected token flow, and audit all consumers |
 | Medium | Secret is delivered through env for a high-value workload without documented exception | Migration plan to file/external delivery or accepted risk with expiry |
 | Medium | Etcd encryption at rest is not confirmed or does not cover existing Secret objects | Enable/reencrypt, attach evidence, record residual risk |
 | Low | Missing owner labels/annotations, rotation metadata, or inventory for low-value Secret | Fix during planned work and add a drift check |

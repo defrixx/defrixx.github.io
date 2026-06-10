@@ -69,6 +69,9 @@ Kubernetes auth minimums:
   - `token_period`: only for periodic long-running workload tokens, with explicit role owner, renewal monitoring, and incident revocation path
   - `token_explicit_max_ttl`: set when the role needs a hard cap that renewal cannot exceed
   - Human/admin token TTL belongs to the OIDC/SSO auth method policy: `<=1h`, no non-expiring admin tokens
+- Prefer non-renewable short-lived tokens for jobs and restartable services where re-authentication is cheap.
+- Treat periodic tokens as an exception path: use `token_period <=15m`, renewal failure alerting, and `token_explicit_max_ttl <=24h` unless a documented platform exception explains why the token must remain renewable indefinitely.
+- Do not use periodic tokens for human or administrator sessions.
 - Avoid wildcard role bindings.
 
 Example Kubernetes auth role:
@@ -190,6 +193,7 @@ Important: revocation works only where relying systems actually validate CRL/OCS
 ### 3.6 Token hygiene
 
 - Do not keep long-lived broad tokens.
+- Do not create orphan tokens for workloads unless parent revocation semantics are explicitly unwanted and the runbook includes revoke-by-accessor or revoke-by-path evidence.
 - Revoke tokens for offboarded users/services immediately.
 - Use accessors in incident workflows to avoid exposing full token values.
 

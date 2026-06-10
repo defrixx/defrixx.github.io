@@ -39,6 +39,7 @@ High-impact scenarios:
 - Live deployment uses a mutable tag or artifact that was not produced by the trusted release workflow.
 - Critical scanner finding is suppressed without owner, expiry, compensating control, or evidence.
 - Untrusted fork or branch gains access to signing, deployment, or environment secrets.
+- Untrusted pull request, issue, comment, branch name, tag name, or release note text is interpolated into a privileged workflow step and turns into command/script injection.
 - Emergency release bypasses normal gates and leaves no post-release review trail.
 
 ---
@@ -65,11 +66,27 @@ Release-ready defaults:
 - Human direct live deployment is break-glass only.
 - The same person should not be the sole author, sole approver, and sole deploy approver for a high-risk release to a live environment.
 - Changes to pipeline definitions, reusable workflows, deployment manifests, IaC modules, signing configuration, and environment protection rules require review by owners listed in CODEOWNERS or equivalent policy.
+- Build, sign, publish, and deploy jobs use separate identities and permissions. A build job may publish an unsigned candidate artifact, but it must not also hold unrestricted production deploy or signing authority unless the workflow is explicitly reviewed as a trusted release builder.
 
 Verification:
 - List users/groups/service accounts allowed to deploy to live environments.
 - Confirm environment secrets are only exposed to jobs that reference protected environments after required rules pass.
 - Review audit events for changes to protected environment rules and deployment approvals.
+
+### 3.3 CI/CD execution-plane hardening
+
+Release-ready defaults:
+- Default workflow token permission is read-only; write permissions, `id-token: write`, package publish, signing, and deployment permissions are granted only to the jobs that need them.
+- OIDC federation for CI/CD binds trust policy to issuer, audience, repository or immutable repository ID where available, protected ref or environment, workflow identity, and expected trigger. Wildcard trust for an organization, project, or branch prefix is not acceptable for live deployment.
+- Untrusted forks, external pull requests, issues, comments, branch names, tag names, release notes, and commit messages are treated as attacker-controlled input. They must not be interpolated directly into shell, deployment manifests, prompts, or release commands.
+- Third-party actions, reusable workflows, plugins, and pipeline images are pinned to immutable versions or digests for release workflows; broad floating tags are acceptable only in non-release experimentation.
+- Self-hosted runners are separated by trust tier. Untrusted code must not run on persistent runners that have network access to live environments, artifact signing, production secrets, or deployment credentials.
+- Release runners are ephemeral or cleaned to a documented standard; caches are scoped by trust boundary and treated as untrusted build input.
+
+Verification:
+- Inspect workflow definitions for minimal `permissions`, pinned dependencies, protected environment use, and direct shell interpolation of untrusted context.
+- Attempt a fork/feature-branch workflow run and confirm it cannot access environment secrets, OIDC cloud roles, signing material, or deployment jobs.
+- Confirm runner groups/labels prevent untrusted jobs from landing on release or production-connected self-hosted runners.
 
 ---
 

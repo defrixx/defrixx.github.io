@@ -2,7 +2,7 @@
 
 ## 1. Scope
 
-This overview is threat-focused summary of OWASP Top 10 for LLM Applications (2025).
+This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2025).
 
 This overview focuses on:
 - how each threat emerges in real systems

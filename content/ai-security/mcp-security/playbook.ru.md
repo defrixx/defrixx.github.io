@@ -73,13 +73,13 @@ MCP primitives сами являются security surfaces:
 ### 3.2 Deployment Patterns
 
 Предпочтительный production pattern:
-- Используйте gateway-mediated deployment для remote MCP там, где это возможно. Gateway должен принудительно применять server allowlists, user/workload authorization, capability filtering, redaction, audit logging, egress policy, rate limits и emergency disablement.
+- Используйте gateway-mediated deployment для remote MCP там, где это возможно. Gateway должен принудительно применять список разрешенных MCP servers, user/workload authorization, capability filtering, redaction, журналирование аудита, egress policy, rate limits и emergency disablement.
 
 Local `stdio` servers:
 - Разрешайте только утвержденные server binaries/scripts через endpoint management или application allowlisting.
 - Запускайте server с минимально привилегированной OS identity, достаточной для workflow.
 - Явно ограничивайте filesystem roots; не выдавайте home-directory или repository-wide access по умолчанию.
-- Ведите allowlist environment variables для каждого server и блокируйте credential-bearing variables без explicit approval.
+- Ведите список разрешенных environment variables для каждого server и блокируйте переменные с учетными данными без explicit approval.
 - Блокируйте outbound network access от local servers, если server не требует его и destination не утвержден.
 
 Remote Streamable HTTP servers:
@@ -87,7 +87,7 @@ Remote Streamable HTTP servers:
 - Используйте enterprise-managed OAuth 2.1-compatible authorization для protected servers.
 - Требуйте PKCE с `S256` для public clients.
 - Проверяйте token issuer, expiry, audience/resource binding и scope на каждом request.
-- Не передавайте client access tokens дальше в downstream APIs. Tool handlers должны получать отдельные downstream credentials или использовать controlled token exchange pattern, утвержденный владельцами identity/security.
+- Не передавайте client access tokens дальше в downstream APIs. Tool handlers должны получать отдельные учетные данные для downstream-систем или использовать controlled token exchange pattern, утвержденный владельцами identity/security.
 
 Third-party MCP servers:
 - Требуйте provider onboarding до использования: data handling, subprocessors, security contact, vulnerability disclosure, patch SLA, log access, retention, capability-change notification и exit process.
@@ -103,12 +103,12 @@ Tools:
 
 Resources:
 - Ограничивайте resource URI patterns до минимально нужной области.
-- Применяйте classification, RBAC/ABAC, tenant isolation, DLP/redaction и audit logging до того, как resource content попадает в model context.
+- Применяйте classification, RBAC/ABAC, tenant isolation, DLP/redaction и журналирование аудита до того, как resource content попадает в model context.
 - Считайте externally sourced или user-controlled resource content недоверенным и проверяйте на indirect prompt injection перед использованием.
 
 Prompts:
 - Версионируйте MCP prompts и ревьюйте их как code/configuration.
-- Не храните secrets, credentials, hidden policy assumptions, customer data или proprietary implementation details в prompt declarations.
+- Не храните secrets, учетные данные, hidden policy assumptions, customer data или proprietary implementation details в prompt declarations.
 - По умолчанию логируйте prompt identifier и version, а не raw prompt text.
 
 Sampling:
@@ -132,12 +132,12 @@ Sampling:
 - full prompt/context/resource payloads;
 - secrets, private keys, session cookies или full sensitive documents.
 
-Raw payload capture допустим только в scoped forensic mode с approval, case ID, encryption, restricted access, retention `<=30 days` и deletion evidence.
+Raw payload capture допустим только в scoped forensic mode с approval, case ID, encryption, restricted access, retention `<=30 days` и подтверждением удаления.
 
 Incident response должен поддерживать:
-- независимое отключение server, gateway route, tool, resource, prompt, OAuth client, OAuth grant и downstream credential;
+- независимое отключение server, gateway route, tool, resource, prompt, OAuth client, OAuth grant и учетных данных downstream-систем;
 - freeze MCP registry на время active investigation;
-- rotation credentials, которые используются affected tool handlers;
+- ротацию учетных данных, которые используются affected tool handlers;
 - восстановление action timeline по gateway, server, IdP и downstream logs;
 - graceful failure для dependent workflows, когда tool или server отключен.
 
@@ -149,7 +149,7 @@ Incident response должен поддерживать:
 - MCP registry entry для каждого production server и capability;
 - capability baseline diff из deployment или session initialization;
 - OAuth metadata и token validation tests для remote servers;
-- endpoint/application allowlisting evidence для local `stdio` servers;
+- подтверждение endpoint/application allowlisting для local `stdio` servers;
 - gateway policy, redaction и logging configuration;
 - provider onboarding record для third-party servers.
 

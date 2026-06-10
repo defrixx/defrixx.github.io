@@ -42,7 +42,7 @@ Document ownership:
 ### 2.2 Control levels and source assumptions
 
 Control labels in this document are requirement profiles, not finding severity:
-- `Baseline`: minimum baseline для рабочих сред for the AI system class in scope.
+- `Baseline`: minimum live-environment baseline for the AI system class in scope.
 - `High-impact/regulated`: required for autonomous state-changing actions, cross-tenant data access, financial/safety/privacy impact, regulated use cases, or externally exposed AI capabilities.
 - `Recommended maturity`: useful for mature programs, higher assurance, or future hardening, but not a default release blocker unless adopted by local policy.
 

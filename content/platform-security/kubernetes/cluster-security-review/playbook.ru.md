@@ -268,7 +268,8 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
   - `pod-security.kubernetes.io/audit-version: <same pinned version>`
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
-- требуйте подтверждение effective seccomp-профиля отдельно от PSS label: рабочие workload'ы должны явно задавать `seccompProfile.type: RuntimeDefault` на уровне Pod или container либо nodes должны enforce kubelet `--seccomp-default` / `seccompDefault`, чтобы unspecified profiles становились `RuntimeDefault`; подтверждение должно показывать effective runtime profile, а не только namespace labels;
+- требуйте подтверждение effective seccomp-профиля, а не только namespace labels: enforced `restricted` admission должен отклонять workload'ы без явного `RuntimeDefault` или утвержденного `Localhost`; namespace с `baseline`, custom policy или временными исключениями должны либо требовать явные seccomp fields, либо доказывать kubelet `--seccomp-default` / `seccompDefault`, чтобы unspecified profiles становились `RuntimeDefault`;
+- не считайте этот список полным baseline для workload `securityContext`; детальные требования к capabilities, AppArmor/SELinux, sysctls, группам, volumes и user namespaces ведите по [Kubernetes Pod Security playbook](../pod-security/playbook.ru.md);
 - используйте `warn`/`audit=restricted` без `enforce=restricted` только во время документированного rollout или migration window с owner, expiry и blocking date для включения enforcement;
 - мониторьте drift Pod Security labels и блокируйте развертывание, если labels рабочей среды ослаблены, удалены или указывают на неутвержденную версию;
 - проверяйте admission policy тестами, что рабочие workload'ы без image digest отклоняются, включая `:latest`, version-like tags и image names без явного tag;

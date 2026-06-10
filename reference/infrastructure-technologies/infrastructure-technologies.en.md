@@ -50,6 +50,8 @@ A modern live pattern is to use OIDC federation instead of long-lived static sec
 
 The deploy pipeline should not be the only trust point. The pipeline builds and publishes an artifact, while a deploy/admission gate separately verifies the digest, signature, provenance, policy result, environment approval, and release eligibility. The boundary usually sits where the pipeline hands an immutable artifact and deployment intent to Kubernetes, a GitOps controller, a release orchestrator, or a cloud deploy service.
 
+Untrusted workflow input is a separate boundary. Pull request titles and bodies, issue comments, branch names, tag names, release notes, commit messages, and forked code must be treated as attacker-controlled when they reach shell scripts, deployment commands, release notes, AI-assisted workflow steps, or policy inputs.
+
 #### Interaction Diagram
 ```mermaid
 flowchart LR
@@ -79,8 +81,10 @@ Hosted runners reduce operational burden and usually provide a clean ephemeral e
 - Protected branches and tags for release refs.
 - Environment approvals for live deployment.
 - OIDC federation into a cloud provider or Vault instead of static deploy secrets.
+- OIDC trust bound to issuer, audience, protected ref/environment, workflow identity, and repository identity; broad organization-wide trust is not a live-deploy default.
 - Separate runners for trusted and untrusted workloads.
 - Ephemeral self-hosted runners for pull request builds from untrusted code.
+- No production secrets, signing material, or deploy credentials on runners that execute untrusted fork or branch code.
 - Artifact upload by digest and publication of SBOM/provenance/signatures.
 - Read-only source token by default; write permissions only for selected jobs.
 - A deploy gate that does not trust pipeline success alone.
@@ -678,6 +682,8 @@ Short-lived credentials are issued through federation. A workload receives a sig
 
 The metadata service is a separate important boundary. On a cloud VM/node, the metadata endpoint can issue credentials for the instance/node identity. If a pod can reach the metadata service and the node role is too broad, workload compromise becomes lateral movement from Kubernetes into the cloud control plane. Workload identity reduces this risk, but only when node metadata access is restricted, service accounts are separated, trust policies are narrow, and cloud permissions are minimal.
 
+Trust policies must bind to stable workload attributes, not only to a human-readable name. For Kubernetes, bind to issuer, audience, namespace, service account, and where the provider supports it, cluster/project/account identity. For CI/CD, bind to issuer, audience, repository or immutable repository ID where available, protected ref or environment, workflow identity, and expected trigger. A wildcard subject that lets any workload in a namespace, repository, or organization assume a live cloud role is a production finding.
+
 Kubernetes RBAC and cloud IAM solve different problems. Kubernetes RBAC controls access to Kubernetes API objects. Cloud IAM controls cloud resources outside Kubernetes. A ServiceAccount with minimal Kubernetes RBAC can still have dangerously broad cloud permissions, and the reverse is also true.
 
 #### Interaction Diagram
@@ -702,6 +708,8 @@ The cloud provider owns IAM primitives, token exchange, and enforcement on cloud
 - Separate cloud identity per service or bounded workload group.
 - Federation through OIDC instead of static cloud access keys.
 - Trust policy bound to issuer, audience, namespace, service account, repository, branch/tag, or environment.
+- Short credential lifetime for federated sessions; live deploy and runtime sessions should normally be measured in minutes to a few hours, not days.
+- Deny wildcard assume-role or token-exchange subjects for production identities.
 - Workload access to the node metadata service blocked unless required.
 - Narrow permissions on data-plane actions, without wildcard admin policies.
 - Separate identities for build, deploy, and runtime.
@@ -1072,7 +1080,7 @@ A producer publishes records to a topic, selecting a partition explicitly or thr
 
 Schema Registry stores event schemas and helps control compatibility between producer and consumer contracts. Kafka Connect runs connectors that integrate Kafka with databases, object storage, search engines, and other systems. ACLs define who may read, write, create, or administer topics, groups, and cluster resources.
 
-Modern clusters can run in KRaft mode without ZooKeeper. In a working flow, a producer sends an event to the broker leader for a partition, the broker writes it to the log and replicates it to followers, a consumer group reads events and commits offsets, and downstream services use those events for processing, integration, or analytics.
+Current Kafka `4.x` clusters run in KRaft mode without ZooKeeper; older `3.x` clusters may still have ZooKeeper during migration. In a working flow, a producer sends an event to the broker leader for a partition, the broker writes it to the log and replicates it to followers, a consumer group reads events and commits offsets, and downstream services use those events for processing, integration, or analytics.
 
 #### Interaction Diagram
 ```mermaid
@@ -1109,7 +1117,7 @@ Kafka provides event delivery, storage, and replication, but it does not define 
 Kafka does not guarantee that a consumer interprets a message safely.
 
 #### Common Live Patterns
-- Managed Kafka or a dedicated platform cluster.
+- Managed Kafka or a dedicated platform cluster; for self-managed Kafka `4.x`, operate KRaft quorum explicitly and treat any remaining ZooKeeper dependency as legacy migration scope.
 - TLS for client-broker and inter-broker traffic.
 - SASL, OAuth, or mTLS for authentication.
 - ACLs by topic and group.
@@ -1169,7 +1177,7 @@ flowchart LR
 RabbitMQ owns broker delivery and routing, but not message content security or business processing semantics. The team owns TLS, users/permissions, vhost isolation, queue policies, DLQ, TTL, management UI exposure, credential protection, and payload control, especially when messages contain personal data or commands for internal systems.
 
 #### Common Live Patterns
-- Clustered RabbitMQ with quorum queues for critical queues.
+- Clustered RabbitMQ with quorum queues for critical queues; do not design new HA paths around classic mirrored queues, which are removed in RabbitMQ `4.x`.
 - Separate vhosts for domains, environments, or teams.
 - TLS for client connections.
 - Least-privilege permissions on exchanges and queues.

@@ -13,7 +13,7 @@
 - для каждого аспекта дать практические, проверяемые меры контроля
 
 Ответственность документа:
-- Этот документ отвечает за общий production baseline мер контроля для AI-систем.
+- Этот документ отвечает за общий production baseline для мер контроля AI-систем.
 - Он связывает AI-риски с практическими мерами контроля, уровнями требований, операционными сигналами и governance-ожиданиями.
 - Он использует OWASP LLM Top 10 как таксономию, но не забирает на себя каталог угроз.
 - Глубокие требования к автономии агентов, memory, выполнению tools и action traces вынесены в [плейбук безопасности Agentic AI](../agentic-ai/playbook.ru.md).
@@ -364,14 +364,14 @@
 
 **Augment, fine-tune, data:**
 - `Baseline`: проверять источники training/fine-tuning/RAG данных на право использования, актуальность, malware/content risk и tenant boundary
-- `Baseline`: защищать data pipeline и векторную БД как данные рабочих сред store: authz на документном уровне, audit trail, encryption, backup/restore и процесс удаления
+- `Baseline`: защищать data pipeline и векторную БД как хранилища данных рабочих сред: authz на документном уровне, audit trail, encryption, backup/restore и процесс удаления
 - `High-impact/regulated`: вести версионирование datasets, embeddings, prompt templates и retrieval policies, чтобы incident response мог откатить не только код, но и контекст
 
 **Develop & experiment:**
 - `Baseline`: применять базовый профиль безопасной разработки к AI gateway, tool adapters, prompt orchestration и downstream integrations, а не только к web/API оболочке
 - `Baseline`: регистрировать MCP/tool servers до использования; unregistered local, shadow или developer-only tools не должны быть доступны из рабочей среды agents
 - `High-impact/regulated`: вести tracking экспериментов с моделью, параметрами, версией prompt, snapshot датасета, версией evaluator и security-замечаниями
-- `High-impact/regulated`: ограничивать developer sandbox от данные рабочих сред и инструменты рабочих сред; любые исключения оформлять как временный break-glass доступ
+- `High-impact/regulated`: изолировать developer sandbox от данных рабочих сред и инструментов рабочих сред; любые исключения оформлять как временный break-glass доступ
 
 **Test & evaluate:**
 - `Baseline`: включить adversarial testing, prompt-injection tests, authorization tests для tools/RAG и output-handling tests в релизные подтверждения

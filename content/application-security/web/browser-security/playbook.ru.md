@@ -130,6 +130,24 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 - Проверьте iframe `sandbox` и `allow` attributes на least privilege.
 - Проверьте effective `Permissions-Policy` response header на sensitive routes через browser DevTools или automated header check.
 - Negative test: unapproved origins и unrelated routes не могут получить доступ к camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth или clipboard-read capabilities.
+
+### 3.6 Transport, referrer и browser isolation headers
+
+Рабочие настройки:
+- Используйте `Strict-Transport-Security` для HTTPS-приложений после готовности certificate automation и rollback ownership. Production default: `max-age=31536000`; добавляйте `includeSubDomains` только когда все subdomains готовы к HTTPS, а `preload` — только после отдельного ревью владения domain.
+- Задавайте `X-Content-Type-Options: nosniff` для script, style, JSON, file download и API responses, чтобы снизить риск MIME confusion и небезопасной интерпретации content.
+- Задавайте `Referrer-Policy: strict-origin-when-cross-origin` как общий default. Используйте `no-referrer` или `same-origin` для admin, identity, payment, support и sensitive data-entry routes, где внешней analytics или partner redirects не нужен referrer context.
+- Используйте `Cache-Control: no-store` для authenticated pages и responses с user, tenant, payment, admin или regulated data. Static assets могут иметь долгий cache lifetime только при filename/content hashing.
+- Используйте `Cross-Origin-Opener-Policy: same-origin` для admin, account, checkout и internal-tool pages, если OAuth/payment popup behavior не требует `same-origin-allow-popups`.
+- Используйте `Cross-Origin-Resource-Policy` для sensitive JSON, media, documents и downloads, чтобы unrelated origins не могли их embedding/consume. Начинайте с `same-origin`; `same-site` используйте только когда sharing между sibling subdomains намеренный.
+- Требуйте `Cross-Origin-Embedder-Policy` только для приложений, которым intentionally нужна cross-origin isolation, например `SharedArrayBuffer` или high-resolution timing features. Не включайте его вслепую: каждый embedded script, worker, frame и media resource должен быть совместим через CORP или CORS.
+- Не полагайтесь на `X-XSS-Protection`; держите его disabled или absent. Современная XSS-защита строится на output encoding, safe DOM APIs, CSP, Trusted Types там, где они поддерживаются, и ревью dangerous sinks.
+
+Верификация:
+- Проверяйте headers на success, error, redirect, login/callback, logout, API, file download и static asset responses; edge/CDN и application responses не должны конфликтовать.
+- Валидируйте HSTS на staging domain перед включением `includeSubDomains` или `preload` на parent domain.
+- Negative test: authenticated sensitive responses не сохраняются browser cache, CDN или shared proxy; cross-origin pages не сохраняют opener access к sensitive routes; unrelated origins не могут embed protected resources.
+
 ---
 
 ## 4. Связанные материалы

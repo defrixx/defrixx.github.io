@@ -27,7 +27,7 @@ sequenceDiagram
     U->>I: Authorization request
     I->>U: Login + consent
     I->>B: Redirect callback with code + state
-    B->>B: Validate state + nonce context
+    B->>B: Validate state + nonce binding
     B->>I: POST /token (code + code_verifier)
     I-->>B: id_token + access_token + refresh_token
     B->>B: Validate id_token (iss, aud, exp, nonce, sig)
@@ -142,7 +142,7 @@ Reading rule for controls below:
 
 All numeric limits for token/session/replay/rate-limiting are defined here. Other sections should reference this baseline instead of duplicating values.
 
-These numbers are a local recommended baseline для рабочих сред, not direct RFC or OIDC Core requirements. Treat them as default guardrails for this playbook and tune them by risk profile, user experience, client capability, and IdP behavior.
+These numbers are a local recommended baseline for live environments, not direct RFC or OIDC Core requirements. Treat them as default guardrails for this playbook and tune them by risk profile, user experience, client capability, and IdP behavior.
 
 ### 5.1 Token and session timing
 

@@ -55,8 +55,8 @@ Focus: **what is being protected and from whom**
 Controls are grouped by security domain.
 
 Where relevant, distinguish between:
-- **Pod-level controls**  -  affect the entire Pod
-- **Container-level controls**  -  must be enforced for each container
+- **Pod-level controls:** affect the entire Pod
+- **Container-level controls:** must be enforced for each container
 
 ---
 
@@ -167,13 +167,24 @@ For review, do not stop at YAML. `capabilities.drop/add` controls several Linux 
 
 **Container-level controls:**
 - `seccompProfile.type: RuntimeDefault`
+- `appArmorProfile.type: RuntimeDefault` on Linux nodes with AppArmor
 - `procMount: Default`
 - For custom profiles: allow only justified syscalls, and review high-risk syscalls and bypass combinations separately
 
-**Important PSS limitation:**
-- Pod Security Standards `restricted` is not enough evidence that seccomp is effectively enabled. Upstream PSS blocks explicit `Unconfined`, but it can allow an unspecified seccomp profile.
-- If kubelet `--seccomp-default` / `seccompDefault` is not enabled on the node, an unspecified seccomp profile can run as `Unconfined`.
-- Live-environment evidence must show either explicit `seccompProfile.type: RuntimeDefault` in the Pod/container spec or node-level seccomp defaulting to `RuntimeDefault`, plus effective runtime verification where possible.
+**Important seccomp evidence:**
+- Current Pod Security Standards `restricted` requires `seccompProfile.type` to be explicitly set to `RuntimeDefault` or `Localhost` at Pod or container level; `baseline` only blocks explicit `Unconfined`.
+- Workloads outside enforced `restricted`, legacy namespaces, and exception paths can still run with an unspecified seccomp profile. If kubelet `--seccomp-default` / `seccompDefault` is not enabled on the node, that unspecified profile can run as `Unconfined`.
+- Live-environment evidence must show either enforced `restricted` admission with explicit seccomp fields, an equivalent custom admission policy, or node-level seccomp defaulting to `RuntimeDefault`, plus effective runtime verification where possible.
+
+**AppArmor and SELinux:**
+- If nodes support AppArmor, explicitly set `appArmorProfile.type: RuntimeDefault` for application workloads. Do not rely only on the implicit default: if AppArmor is disabled on the node, an unspecified profile may provide no runtime restriction.
+- Deny `appArmorProfile.type: Unconfined` through admission policy. Allow `Localhost` only for profiles preloaded on all eligible nodes, with an owner, rollout process, and regression test.
+- Use `seLinuxOptions` only in SELinux-enabled clusters where labels, storage behavior, and runtime policy are owned by the platform team. Custom SELinux labels without an ownership model often break volume compatibility and make investigations harder.
+- When using `SELinuxChangePolicy` or `SELinuxMount` behavior in SELinux-enabled clusters, check Pod events and platform metrics for volume label conflicts before rollout, especially for shared volumes and different SELinux labels.
+
+**Sysctls:**
+- By default, deny workloads that set `spec.securityContext.sysctls`, except for an explicitly allowed safe subset from Pod Security Standards for your Kubernetes minor version.
+- Allow unsafe sysctls only for special performance or real-time scenarios: dedicated node pool, taints/tolerations, owner, expiry, load test, and rollback plan. Do not run normal application workloads on nodes with expanded `allowed-unsafe-sysctls`.
 
 Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI governance): [kubernetes/seccomp/checklist.en.md](../seccomp/checklist.en.md)
 
@@ -259,6 +270,30 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 
 ---
 
+### 4.10 Process Groups and Volume Ownership
+
+**Pod-level controls:**
+- `runAsGroup` sets the primary GID for container processes; use a fixed non-zero GID instead of implicit values from the image.
+- Use `fsGroup` only when the workload genuinely needs group-based access to a volume. Do not use it as a generic way to "fix permissions" without understanding storage behavior.
+- Grant `supplementalGroups` minimally: each additional GID expands process access to files and mounted storage.
+- For Kubernetes `v1.33+`, use `supplementalGroupsPolicy: Strict` for sensitive workloads so groups from `/etc/group` inside the image are not implicitly added to the container process.
+- For large PVCs and stateful workloads, use `fsGroupChangePolicy: OnRootMismatch` when the storage driver and permission model support it; this reduces startup delays from recursive ownership changes.
+
+**Operational caveats:**
+- `fsGroup` and `fsGroupChangePolicy` work only for volume types and CSI drivers that support ownership/permission management. For CSI volumes, the driver may handle permission changes itself; verify the effective owner/group inside the running Pod.
+- Do not assign one broad GID to unrelated workloads for convenient shared-storage access. That turns the storage group into an implicit boundary bypassing namespace/RBAC separation.
+- If `supplementalGroupsPolicy: Strict` is unavailable on part of the nodes, Kubernetes `v1.33+` should have the kubelet reject that Pod; in the `v1.31-v1.32` alpha behavior, it could silently fall back to `Merge`. Verify feature support on the node pool and runtime evidence through `id` inside the container or `.status.containerStatuses[].user.linux` where the field is available.
+- For a multi-container Pod with shared `emptyDir` or PVC, document the ownership contract: which container writes, which reads, which paths are writable, which GID is required, and who owns the exception.
+
+**Checks:**
+```bash
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"/"}{.metadata.name}{" runAsGroup="}{.spec.securityContext.runAsGroup}{" fsGroup="}{.spec.securityContext.fsGroup}{" supplementalGroups="}{.spec.securityContext.supplementalGroups}{" supplementalGroupsPolicy="}{.spec.securityContext.supplementalGroupsPolicy}{"\n"}{end}'
+kubectl exec -n <ns> <pod> -- id
+kubectl exec -n <ns> <pod> -- stat -c '%u:%g %a %n' <mounted-path>
+```
+
+---
+
 ## 5. Pod Security Standards (PSS)
 
 Baseline alignment:
@@ -277,9 +312,9 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
 - Runtime threat detection
 - Network isolation
 - Cluster-wide hardening
-- Effective seccomp verification: `restricted` blocks explicit `Unconfined`, but an unspecified profile can still be effectively `Unconfined` when node-level seccomp defaulting is not enabled
+- Effective seccomp verification outside enforced `restricted`: namespaces using `baseline`, legacy exceptions, or custom policies must still prove explicit `RuntimeDefault`/approved `Localhost` or node-level seccomp defaulting.
 
-### 5.1 Enforcement baseline
+### 5.1 Enforcement Baseline
 
 - `pod-security.kubernetes.io/enforce: restricted` on all protected namespaces.
 - Pin the policy version for all modes to the approved Kubernetes minor version:
@@ -288,7 +323,7 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
   - `pod-security.kubernetes.io/warn-version: v<minor>`
 - Use `latest` only in explicitly owned canary or non-protected namespaces where policy drift is intentionally tested before cluster-wide adoption.
 - Separate `warn`/`audit` from `enforce`; live environments must not rely on warn-only mode.
-- Treat seccomp as a separate runtime evidence requirement: either workloads explicitly set `seccompProfile.type: RuntimeDefault`, or node configuration proves kubelet `--seccomp-default` / `seccompDefault` is enabled.
+- Treat seccomp as a separate runtime evidence requirement: `restricted` admission must reject workloads without explicit `RuntimeDefault` or approved `Localhost`, equivalent custom policies must do the same, or node configuration must prove kubelet `--seccomp-default` / `seccompDefault` is enabled for namespaces where unspecified profiles are temporarily tolerated.
 - Namespace policy drift check every `24h`.
 - Block deployment if namespace labels regress or are removed.
 - During Kubernetes upgrades, run a dry-run evaluation of the next PSS version before changing namespace labels, record violations by workload owner, remediate or approve time-boxed exceptions, then update `enforce-version`, `audit-version`, and `warn-version` together.
@@ -323,6 +358,18 @@ Each anti-pattern directly increases risk from the threat model:
 
 - Use of `shareProcessNamespace: true`
   -> Breaks process-isolation boundaries between containers in the same Pod and simplifies in-Pod lateral movement
+
+- Implicit supplementary groups from the container image
+  -> Can grant process access to shared storage or files that is not visible in the manifest without runtime verification
+
+- Broad `fsGroup`/`supplementalGroups` without an ownership model
+  -> Turns group-based volume access into a side channel between workloads
+
+- `appArmorProfile.type: Unconfined` or missing AppArmor evidence on supported nodes
+  -> Removes the expected LSM protection layer and makes PSS/audit output incomplete
+
+- Unsafe sysctls in normal application namespaces
+  -> Can affect the node or neighboring workloads and should remain an exception for isolated node pools
 
 - Writable root filesystem (`readOnlyRootFilesystem: false`)
   -> Enables persistence, runtime payload storage, and modification of application files or configuration inside the container

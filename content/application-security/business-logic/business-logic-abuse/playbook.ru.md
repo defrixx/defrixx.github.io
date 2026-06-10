@@ -13,7 +13,7 @@
 - низкоуровневые механики API-аутентификации и авторизации: используйте [плейбук API security](../../api/api-security-patterns/playbook.ru.md);
 - OAuth/OIDC session и token controls: используйте [плейбук OIDC + OAuth 2.0](../../identity/oidc-oauth/playbook.ru.md);
 - меры контроля только браузерного уровня: используйте [плейбук безопасности браузера и frontend-части](../../web/browser-security/playbook.ru.md);
-- code-level review validation, encoding, auth/session implementation, injection, file handling, logging и crypto misuse: используйте [плейбук Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md).
+- code-level review validation, encoding, auth/session implementation, injection, file handling, журналирования и crypto misuse: используйте [плейбук Secure Coding and Code Review](../../secure-coding/code-review/playbook.ru.md).
 
 Цель:
 - выявлять чувствительные бизнес-потоки до запуска;
@@ -56,7 +56,7 @@ High-impact сценарии:
 | Checkout/payment | scalping, card testing, duplicate capture, refund abuse | idempotency, state machine, payment risk controls, лимиты per-account/device/payment |
 | Booking/inventory | denial of inventory, reservation hoarding | hold TTL, payment commitment, release jobs, per-actor quotas, обнаружение аномалий |
 | Tenant/admin/support | cross-tenant access, privileged action misuse | object/tenant authorization, JIT/JEA admin access, immutable audit, approval for destructive actions |
-| Export/reporting | bulk data theft, scraping through valid UI/API | row/object authorization, export quotas, async approval for high-volume exports, watermarking/logging |
+| Export/reporting | bulk data theft, scraping through valid UI/API | row/object authorization, export quotas, async approval for high-volume exports, watermarking/журналирование |
 
 Рабочая рекомендация:
 - Классифицируйте новые или измененные flows как `normal`, `sensitive` или `critical`.
@@ -127,9 +127,23 @@ High-impact сценарии:
 - Sensitive flows создают structured events с actor, tenant, object, action, result, reason, correlation ID и релевантными risk signals.
 - Дашборды отслеживают flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters и export volume.
 - Abuse response имеет playbooks для throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation и customer support communication.
+- High-risk flows имеют emergency control, который может отключить рискованное действие, включить throttling или добавить friction без redeploy application code.
 
 Верификация:
 - Tabletop или simulation доказывает, что команда может определить affected accounts/tenants, остановить flow, reverse unsafe credits там, где это возможно, и сохранить подтверждения.
+
+### 4.6 Abuse budgets и governance конфигурации
+
+Рабочие настройки:
+- У каждого sensitive flow есть versioned abuse budget: actor keys, counters, time windows, thresholds, friction path, owner и expiry/review cadence.
+- Starting budgets задаются явно, даже если финальные значения зависят от продукта: signup/trial по account, tenant, payment instrument, device/browser signal, source network и окнам `24h`/`7d`; reset и OTP по account плюс delivery destination; booking/inventory по actor плюс scarce resource; export по actor, tenant, object count, byte volume и time window.
+- Изменения limit configuration считаются production policy changes. Повышение лимитов для high-risk flow требует owner approval, reason, rollout time, rollback path и monitoring confirmation.
+- Fail-open behavior документируется. Если limiter, risk engine, queue или ledger degraded, critical flows либо fail closed, либо переходят в bounded safe mode с явным maximum window.
+
+Верификация:
+- Сравните configured limits с flow inventory и подтвердите, что у каждого sensitive flow есть owner-approved thresholds.
+- Проверьте, что bypass лимитов через alternate identifiers, batch APIs, GraphQL aliases, async jobs, retries и учетные данные partner/B2B client отклоняется или учитывается в том же abuse budget.
+- Смоделируйте outage risk engine или limiter и подтвердите, что flow следует documented fail-closed или bounded safe-mode behavior.
 
 ---
 
@@ -139,6 +153,7 @@ High-impact сценарии:
 |---|---|---|
 | Critical | Злоупотребление позволяет выполнить cross-tenant action, массовый account takeover, payment/ledger manipulation, irreversible admin/support action или bulk export sensitive data | Блокировать релиз до устранения; exception допустим только через формальное принятие риска security leadership и business owner |
 | High | Обход лимита или state-machine guard в critical flow, promo/referral economic abuse, export scraping, signup/trial quota farming или privileged workflow abuse с bounded impact | Назначить owner и due date, внедрить mitigation или компенсирующие меры, подтвердить negative tests и monitoring |
+| High | High-risk flow не имеет versioned abuse budget, emergency throttle/friction control или проверенного fail-closed/safe-mode behavior | Блокировать широкий rollout, пока не определены и не проверены limits, owner, monitoring и fallback behavior |
 | Medium | Для sensitive flow нет owner, abuse objective, лимитов, monitoring, runbook или negative tests, но эксплуатация не дает немедленного high-impact business action | Завести remediation с owner, сроком и release follow-up; не расширять flow до закрытия базовых подтверждений |
 | Low | Naming, dashboards, labels или documentation неполны, но лимиты, authorization и state guards работают | Исправить планово и проверить при следующем review |
 

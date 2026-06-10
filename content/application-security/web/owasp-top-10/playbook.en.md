@@ -1,8 +1,8 @@
-# Web Application Defense Playbook for OWASP Top 10:2025
+# Web Application Defense Playbook for OWASP Top 10:2021
 
 ## 1. Scope
 
-This document defines a practical baseline for protecting web applications against the key OWASP Top 10 risks.
+This document defines a practical baseline for protecting web applications against the official OWASP Top 10:2021 web application risk categories.
 
 Document boundaries:
 - This playbook defines web-level review decision, severity, and minimum negative tests for OWASP Top 10 categories.
@@ -13,7 +13,7 @@ Document boundaries:
 
 ---
 
-## 2. A01:2025 Broken Access Control
+## 2. A01:2021 Broken Access Control
 
 ### 2.1 Threat, description, and attacker objective
 
@@ -88,7 +88,7 @@ False positives / false negatives:
 
 ---
 
-## 3. A02:2025 Security Misconfiguration
+## 3. A05:2021 Security Misconfiguration
 
 ### 3.1 Threat, description, and attacker objective
 
@@ -161,22 +161,24 @@ False positives / false negatives:
 
 ---
 
-## 4. A03:2025 Software Supply Chain Failures
+## 4. A06:2021 Vulnerable and Outdated Components
 
 ### 4.1 Threat, description, and attacker objective
 
-This category covers compromise of dependencies, CI/CD, artifact repositories, plugins, and build tools. The attacker objective is to inject malicious code into a trusted release path.
+This category covers vulnerable, unsupported, or untrusted components in application code, runtime images, plugins, client packages, and build tooling. The attacker objective is to exploit a known weakness or introduce malicious code through a trusted dependency path.
 
 ### 4.2 Types and typical exploitation flow
 
 Types:
-- Dependency confusion: build system resolves package from public registry instead of private one. Example: internal `corp-utils` gets installed from npm/PyPI where attacker published same package name.
+- Known vulnerable dependency or framework: application ships a component with exploitable CVE or end-of-life support status. Example: a public RCE proof of concept works against the deployed parser or web framework.
+- Dependency confusion: build system resolves package from public registry instead of private one. Example: internal `corp-utils` gets installed from npm/PyPI where attacker published the same package name.
 - Typosquatting: package name looks legitimate but is malicious. Example: `reqeusts` is installed instead of `requests` and exfiltrates tokens.
 - CI runner/plugin compromise: malicious build step executes in trusted pipeline. Example: poisoned CI plugin reads `CI_SECRET` and sends it to attacker endpoint.
 - Artifact substitution between build and deploy: modified artifact is pushed under expected tag. Example: tag `v1.4.2` is overwritten with backdoored container image.
-- Vulnerable/unmaintained dependencies with known `CVE` (Common Vulnerabilities and Exposures): known exploit path remains open in live environments. Example: outdated library is exploitable by public RCE PoC.
+- Unmaintained base image or runtime: OS packages and language runtimes no longer receive security fixes. Example: a container image keeps an end-of-life runtime because the application still builds on it.
 
 Typical flow:
+- Finding exposed components with known vulnerabilities or unsupported versions
 - Finding dependencies without strict source pinning
 - Injecting malicious package or plugin update
 - Compromising CI token/secret
@@ -185,18 +187,19 @@ Typical flow:
 
 What gets impacted:
 - Product code and release artifacts
-- CI/CD secrets and trust credentials
+- CI/CD secrets and trust credentials when component updates or build plugins are abused
 - Release infrastructure and downstream services
 
 Impact:
-- Broad release compromise and supply-chain persistence
+- Exploitation of known weaknesses, broad release compromise, and supply-chain persistence
 
 ### 4.3 Practical defense
 
 - Maintain `SBOM` (Software Bill of Materials)
 - Sign artifacts and verify signatures at deploy time
 - Use internal trusted mirrors and block unapproved sources
-- Use `SCA` (Software Composition Analysis) as mandatory gate
+- Use `SCA` (Software Composition Analysis) as a mandatory gate for known vulnerable, end-of-life, and policy-banned components
+- Track component ownership, upgrade path, and exception expiry for dependencies, base images, and plugins
 - Use short-lived CI credentials and runner isolation
 - Verification:
   - provenance/attestation gates in CD
@@ -206,34 +209,35 @@ Impact:
 ### 4.4 Release review baseline
 
 Priority:
-- Default severity is `High`; raise to `Critical` when compromise can affect signed release artifacts, CI secrets, live deployment credentials, or widely consumed packages/images.
+- Default severity is `High`; raise to `Critical` when a reachable component vulnerability enables RCE, auth bypass, tenant/data compromise, signed release artifact compromise, CI secret exposure, live deployment credential exposure, or compromise of widely consumed packages/images.
 
 Release-ready defaults:
-- Live deployments use immutable artifact references (`sha256` digest for images) and reject mutable tags such as `latest`.
+- Live deployments use supported components and immutable artifact references (`sha256` digest for images) and reject mutable tags such as `latest`.
 - Release artifacts are signed or accompanied by verified provenance/attestation from a trusted builder.
 - CI credentials are short-lived, scoped to the pipeline, and unavailable to untrusted pull-request or fork builds.
 - Dependency sources are pinned to approved registries or mirrors; dependency confusion controls exist for private package names.
+- End-of-life frameworks, runtimes, base images, and critical libraries require a migration owner, deadline, compensating controls, and explicit risk acceptance.
 
 Required evidence:
-- SBOM or dependency inventory for release artifacts.
-- SCA results with policy outcome and exception handling.
+- SBOM or dependency inventory for release artifacts, including runtime/base image components where available.
+- SCA results with policy outcome, reachability/risk context, and exception handling.
 - Provenance/signature verification result from deploy gate.
 - CI/CD permissions review for runners, workflow files, release tokens, and artifact registry access.
 
 Negative tests:
-- Deploy by mutable tag is rejected in live environments.
+- Deploy by mutable tag or unsupported base image is rejected in live environments.
 - Unsigned artifact, wrong builder identity, wrong repository, or wrong workflow identity fails the gate.
 - Build from fork/untrusted branch cannot access live-environment signing or deploy credentials.
 - Dependency from an unapproved source or private-name public package is blocked.
 
 False positives / false negatives:
 - An SBOM without a deploy-time policy gate is inventory, not enforcement.
-- SCA can miss malicious packages with no CVE; combine it with source pinning, provenance, and behavior review.
+- SCA can miss malicious packages with no CVE and can overstate unreachable findings; combine it with source pinning, provenance, reachability review, and behavior review.
 - Signature validity alone is insufficient; verify signer identity, builder identity, source, parameters, and subject digest.
 
 ---
 
-## 5. A04:2025 Cryptographic Failures
+## 5. A02:2021 Cryptographic Failures
 
 ### 5.1 Threat, description, and attacker objective
 
@@ -306,7 +310,7 @@ False positives / false negatives:
 
 ---
 
-## 6. A05:2025 Injection
+## 6. A03:2021 Injection
 
 ### 6.1 Threat, description, and attacker objective
 
@@ -387,7 +391,7 @@ False positives / false negatives:
 
 ---
 
-## 7. A06:2025 Insecure Design
+## 7. A04:2021 Insecure Design
 
 ### 7.1 Threat, description, and attacker objective
 
@@ -459,7 +463,7 @@ False positives / false negatives:
 
 ---
 
-## 8. A07:2025 Authentication Failures
+## 8. A07:2021 Identification and Authentication Failures
 
 ### 8.1 Threat, description, and attacker objective
 
@@ -533,7 +537,7 @@ False positives / false negatives:
 
 ---
 
-## 9. A08:2025 Software or Data Integrity Failures
+## 9. A08:2021 Software and Data Integrity Failures
 
 ### 9.1 Threat, description, and attacker objective
 
@@ -603,7 +607,7 @@ False positives / false negatives:
 
 ---
 
-## 10. A09:2025 Security Logging and Alerting Failures
+## 10. A09:2021 Security Logging and Monitoring Failures
 
 ### 10.1 Threat, description, and attacker objective
 
@@ -676,74 +680,77 @@ False positives / false negatives:
 
 ---
 
-## 11. A10:2025 Mishandling of Exceptional Conditions
+## 11. A10:2021 Server-Side Request Forgery
 
 ### 11.1 Threat, description, and attacker objective
 
-Unsafe handling of exceptional states (network/database/dependency/input errors) can move systems into fail-open mode and bypass security controls. The attacker objective is to trigger such states and execute blocked actions.
+Server-Side Request Forgery appears when an application fetches attacker-controlled URLs or resolves attacker-controlled destinations from server-side infrastructure. The attacker objective is to make a trusted server reach cloud metadata, internal services, management planes, or sensitive network locations that the attacker cannot access directly.
 
 ### 11.2 Types and typical exploitation flow
 
 Types:
-- Fail-open when authz/introspection is unavailable: access is incorrectly allowed on dependency error. Example: token validation fails upstream but API still returns `200 OK`.
-- Unhandled exceptions in critical workflows: service crashes or skips controls after exception. Example: validation exception routes request into branch without authorization check.
-- Internal detail leakage via error response: attacker gains implementation data for next step. Example: response reveals SQL fragment, file path, and framework version.
-- Partially completed transactions without rollback: system state becomes inconsistent. Example: funds are debited but audit/event record is not created after second-step failure.
+- URL fetchers and importers: application retrieves a user-supplied URL for image preview, webhook validation, document import, or link unfurling. Example: `image_url=http://169.254.169.254/latest/meta-data/` reaches cloud metadata.
+- Parser or converter callbacks: PDF, XML, SVG, office, or media processing resolves remote references. Example: a document conversion job follows an internal URL embedded in attacker-controlled content.
+- Webhook and integration testing features: user configures a callback endpoint and the service probes it from a privileged network. Example: validation endpoint reaches an internal admin panel.
+- DNS rebinding and redirect chains: initial URL looks allowed, then redirects or resolves to private ranges. Example: allowed public host redirects to `http://127.0.0.1:8080/admin`.
+- Cloud metadata access: workload can reach provider metadata service and retrieve identity tokens or credentials when metadata protections and egress policy are missing.
 
 Typical flow:
-- Trigger exception condition (timeout/malformed input/race)
-- Observe system behavior under failure state
-- Repeat requests until insecure fallback appears
-- Abuse lifted control (for example, authorization bypass)
+- Find server-side fetch, preview, webhook, import, or parser feature
+- Supply URL or content that reaches private networks, loopback, link-local, metadata, or internal DNS names
+- Bypass naive deny rules with redirects, DNS rebinding, alternate IP notation, IPv6, or parser behavior
+- Use response timing, error messages, callbacks, or stored output to infer or exfiltrate internal data
 
 What gets impacted:
-- Authorization and integrity controls
-- Transaction reliability
-- Service availability and predictability
+- Cloud workload credentials and metadata services
+- Internal admin panels, service APIs, and control planes
+- Network segmentation and tenant/service boundaries
 
 Impact:
-- Unauthorized operations without direct perimeter breach
+- Internal reconnaissance, credential theft, unauthorized internal actions, and lateral movement through a trusted server
 
 ### 11.3 Practical defense
 
-- Secure-failure model: critical operations must fail-closed
-- Local exception handling + global fallback handler
-- Hide internal stack/implementation details from clients
-- Mandatory rollback for partial failures
-- Timeout/retry/circuit-breaker policies that preserve security invariants
+- Allowlist exact outbound destinations by business purpose; avoid generic "any URL" fetchers in live environments.
+- Resolve and validate the final destination after redirects, canonicalization, DNS resolution, and IP normalization; block private, loopback, link-local, multicast, and cloud metadata ranges unless explicitly approved.
+- Enforce network egress policy from the workload namespace/VPC/subnet so application validation is not the only control.
+- Disable or tightly configure parser features that resolve remote references in XML, SVG, PDF, office, media, and archive processing.
+- Use dedicated fetcher services with low privilege, no ambient cloud credentials, no access to internal admin networks, response size/time limits, and audited destination policy.
+- For cloud metadata, require provider-specific protections such as IMDSv2/hop limits, workload identity scoping, metadata concealment, and egress deny rules.
 - Verification:
-  - dependency failure chaos tests
-  - missing/invalid input tests
-  - rollback correctness and error-path observability tests
+  - redirect and DNS rebinding tests
+  - private/link-local/metadata IP negative tests
+  - egress policy and cloud metadata deny evidence
 
 ### 11.4 Release review baseline
 
 Priority:
-- Default severity is `Medium`; raise to `High` or `Critical` when exceptional states bypass authorization, integrity, payment, safety, or audit controls.
+- Default severity is `High`; raise to `Critical` when SSRF can reach cloud metadata credentials, control-plane APIs, internal admin panels, tenant data services, signing/deploy credentials, or state-changing internal endpoints.
 
 Release-ready defaults:
-- AuthN/AuthZ, token introspection, policy, payment, and entitlement failures are fail-closed by default.
-- Error responses are stable and do not expose stack traces, SQL fragments, secrets, filesystem paths, or internal topology.
-- Timeouts, retries, circuit breakers, and fallback modes preserve security invariants.
-- Critical multi-step operations have idempotency, transaction boundaries, rollback/compensation, and audit guarantees.
-- Degraded mode has an explicit owner, max duration, visible alert, and release approval for high-value systems.
+- User-controlled fetch destinations are either not supported or constrained to approved schemes, hosts, ports, content types, and response sizes.
+- Final effective destination is validated after redirects and DNS resolution; private, loopback, link-local, multicast, and metadata destinations are blocked by both application policy and network egress control.
+- Fetching runs under a dedicated identity with no broad cloud metadata, service-mesh admin, Kubernetes API, Vault, CI/CD, or internal admin access.
+- Parser/converter features that can fetch remote content are disabled or routed through the same controlled fetcher.
+- SSRF attempts produce security events with source actor, feature, requested URL class, resolved destination class, decision, and correlation ID.
 
 Required evidence:
-- Failure-mode matrix for critical dependencies and operations.
-- Chaos/fault-injection or integration tests for authz, database, queue, payment, IdP, and policy-engine failures.
-- Rollback/compensation evidence for partial transactions.
-- Alert and audit samples for fail-closed and degraded-mode events.
+- Inventory of all URL fetch, webhook validation, import, preview, parser, and converter features with owner and destination policy.
+- Egress policy, DNS, proxy, and cloud metadata protection evidence for the deployed environment.
+- Negative test results for redirects, DNS rebinding, alternate IP formats, IPv6, private ranges, and metadata endpoints.
+- Alert/audit samples for denied and allowed fetches.
 
 Negative tests:
-- Unavailable policy, token introspection, or entitlement service does not grant access to protected operations.
-- Malformed input and parser errors cannot skip validation or authorization.
-- Retry storms cannot duplicate payment, order, export, or privilege-change effects.
-- Error responses do not disclose internal details.
+- `http://127.0.0.1`, `localhost`, RFC1918, link-local, IPv6 loopback, multicast, and cloud metadata endpoints are denied.
+- Redirects to denied destinations are blocked even when the first URL is public and allowlisted.
+- DNS rebinding from public to private address is denied after re-resolution.
+- Parser-embedded remote references cannot reach internal networks.
 
 False positives / false negatives:
-- Generic exception handlers can hide details from users but still skip audit or rollback.
-- Chaos tests must assert security outcomes, not only availability.
-- Fail-open may be acceptable for narrowly defined low-risk read paths, but only with documented exception and short degraded window.
+- A URL regex or hostname denylist alone is not enough; validate normalized URLs, resolved addresses, redirects, and effective network path.
+- A proxy can centralize policy, but only if direct egress from the workload is blocked.
+- Blind SSRF may not return data directly; verify timing, callbacks, DNS logs, egress logs, and denied metadata access.
+
 ---
 
 ## 12. Related Materials

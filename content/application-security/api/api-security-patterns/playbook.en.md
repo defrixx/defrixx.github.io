@@ -4,6 +4,8 @@
 
 This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook and gRPC APIs.
 
+The baseline is aligned with OWASP API Security Top 10 2023. It is not a restatement of that list: the goal is to turn the categories into reviewable production controls, defaults and verification evidence.
+
 Use this document for:
 - designing public, partner, internal and frontend-facing APIs;
 - API architecture security review before release;
@@ -150,6 +152,8 @@ The minimum threat model for any API must cover:
 - which events are logged for investigation and detection.
 
 ### 5.1 Baseline Threat Matrix
+
+The matrix covers the OWASP API Security Top 10 2023 categories: BOLA, Broken Authentication, BOPLA, Unrestricted Resource Consumption, BFLA, Unrestricted Access to Sensitive Business Flows, SSRF, Security Misconfiguration, Improper Inventory Management, and Unsafe Consumption of APIs.
 
 | Threat | Where It Appears | Required Controls | Verification |
 |---|---|---|---|
