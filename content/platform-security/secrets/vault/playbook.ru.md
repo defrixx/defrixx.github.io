@@ -66,12 +66,13 @@
 - Оставляйте `alias_name_source=serviceaccount_uid` для Kubernetes auth roles, если нет утвержденной причины использовать `serviceaccount_name`. Name-based aliases хуже переживают удаление и пересоздание ServiceAccount, поэтому требуют строгого контроля создания ServiceAccount и отдельного принятия риска.
 - Не делайте long-lived reviewer JWT стратегией TokenReview по умолчанию. Если Vault работает внутри Kubernetes, предпочитайте local service account token Vault pod или client JWT pattern; long-lived reviewer token допустим только как исключение с owner, rotation, RBAC scope и сроком пересмотра.
 - Используйте явные параметры Vault token вместо общего "short-lived":
-  - `token_ttl`: `15m` по умолчанию для workload login tokens
-  - `token_max_ttl`: `<=1h` для non-renewable workload tokens
+  - `token_ttl`: `15m` по умолчанию для initial TTL workload login tokens
+  - `token_max_ttl`: `<=1h` как cap для renewable service tokens, которые workload или Vault Agent может продлевать
+  - `token_type=batch`: используйте для jobs и short-running workloads, которым не нужны renewal, child tokens или lease tree semantics
   - `token_period`: только для periodic long-running workload tokens, с явным владельцем роли, renewal monitoring и путем incident revocation
   - `token_explicit_max_ttl`: задавайте, когда роли нужен жесткий cap, который renewal не может превысить
   - Human/admin token TTL относится к policy OIDC/SSO auth method: `<=1h`, без бессрочных admin tokens
-- Предпочитайте non-renewable short-lived tokens для jobs и restartable services, где повторная аутентификация дешева.
+- Предпочитайте batch/non-renewable short-lived tokens для jobs и одноразовых workloads, где повторная аутентификация дешева. Для long-running services через Vault Agent допустим renewable service token с коротким `token_ttl`, ограниченным `token_max_ttl` или `token_explicit_max_ttl`, и мониторингом renewal.
 - Считайте periodic tokens исключением: используйте `token_period <=15m`, alerting на renewal failure и `token_explicit_max_ttl <=24h`, если нет задокументированного platform exception, почему token должен оставаться renewable indefinitely.
 - Не используйте periodic tokens для human или administrator sessions.
 - Избегайте wildcard role bindings.
@@ -232,7 +233,7 @@ Pattern C: External Secrets Operator
 
 Vault Agent Injector мутирует Pod и по умолчанию сам монтирует shared memory volume в `/vault/secrets`. Не добавляйте ручной `emptyDir` или `volumeMount` приложения для этого пути, если нет проверенной custom-конфигурации injector'а; иначе пример может конфликтовать с мутацией или скрывать реальную модель работы injector'а.
 
-В этом примере отключен стандартный mount Kubernetes ServiceAccount token с API-audience и используется отдельный projected ServiceAccount token с `audience: vault`. Vault Agent Kubernetes auth настроен читать login JWT только из этого projected token. Делайте его короткоживущим и согласуйте с `audience` в Kubernetes auth role Vault.
+В этом примере отключен стандартный mount Kubernetes ServiceAccount token с API-audience и используется отдельный projected ServiceAccount token с `audience: vault`. Vault Agent Injector монтирует этот volume только в agent/init containers и читает login JWT по своему service-account token path. Делайте token короткоживущим и согласуйте `audience` с Kubernetes auth role Vault.
 
 Application container не должен монтировать projected Vault login token. Он должен читать только отрендеренные secret files из `/vault/secrets`; иначе скомпрометированный процесс приложения сможет использовать projected JWT для прямой аутентификации в Vault под workload role.
 
@@ -249,7 +250,7 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "payments-api-prod"
         vault.hashicorp.com/agent-service-account-token-volume-name: "vault-token"
-        vault.hashicorp.com/auth-config-token-path: "/var/run/secrets/vaultprojected/token"
+        vault.hashicorp.com/auth-config-token-path: "/var/run/secrets/vault.hashicorp.com/serviceaccount/token"
         vault.hashicorp.com/agent-inject-containers: "app"
         vault.hashicorp.com/agent-inject-secret-app-config: "kv/data/prod/payments/api"
         vault.hashicorp.com/secret-volume-path-app-config: "/vault/secrets"
@@ -287,7 +288,7 @@ spec:
 Tag в формате `tag@sha256` оставлен только для читаемости. Admission/deploy policy для рабочей среды должна требовать digest как immutable identity артефакта.
 
 Проверка:
-- `kubectl exec deploy/payments-api -n prod-payments -c app -- ls /var/run/secrets/vaultprojected` должен завершаться ошибкой или возвращать `not found`.
+- `kubectl exec deploy/payments-api -n prod-payments -c app -- ls /var/run/secrets/vault.hashicorp.com/serviceaccount` должен завершаться ошибкой или возвращать `not found`.
 - Vault Agent auto-auth должен по-прежнему успешно выполняться, а `/vault/secrets/app-config.env` должен появляться в application container после injection.
 - Deployment policy должна отклонять тот же manifest, если image заменен на tag-only reference.
 

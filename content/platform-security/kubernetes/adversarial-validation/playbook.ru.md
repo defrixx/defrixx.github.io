@@ -242,7 +242,10 @@ kubectl get jobs -A -o wide
 ```bash
 kubectl auth can-i create pods/exec --as=<subject> -n <ns>
 kubectl auth can-i update pods/ephemeralcontainers --as=<subject> -n <ns>
-kubectl get events -A --field-selector reason=Started
+# Kubernetes Events не являются надежным evidence для exec. Проверяйте audit logs/SIEM:
+# verb=create resource=pods subresource=exec|attach|portforward
+# verb=update resource=pods subresource=ephemeralcontainers
+kubectl get events -A --field-selector involvedObject.kind=Pod | grep -Ei 'ephemeral|debug'
 ```
 
 ### 3.10 Обнаружение и проверка policy
