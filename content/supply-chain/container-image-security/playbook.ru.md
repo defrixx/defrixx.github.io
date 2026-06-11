@@ -159,6 +159,7 @@ Image hardening не заменяет Kubernetes hardening.
 - Для keyless signing закрепляйте OIDC issuer и certificate identity/SAN за release workflow identity. Используйте exact matches или строго ограниченные patterns для одного repository/workflow/ref class.
 - Для key-based signing закрепляйте public key или KMS/HSM key identity, владельца, rotation process и emergency revocation path.
 - Для SLSA provenance закрепляйте trusted `builder.id`, expected `predicateType`, expected source identity и schema `externalParameters`, разрешенную для build type.
+- Не смешивайте SLSA predicate versions в одной policy. `predicateType`, `builder.id`, `buildType`, source/materials fields и parameters schema должны соответствовать реальному attestation sample конкретного builder; для v0.2 и v1 нужны разные проверки или явный migration mapping.
 - Для SBOMs и attestations проверяйте attestation signature и то, что attestation subject совпадает с exact image digest, который разворачивается, включая index и platform manifest policy для multi-arch images.
 - Для OCI referrers или sidecar artifacts retention должен сохранять image, signature, SBOM и provenance вместе. Удаление referrer до окончания срока хранения подтверждений является нарушением release evidence.
 - Deploy gates должны fail closed для high-value и internet-facing сервисов в рабочих средах, если required signature/provenance/SBOM evidence отсутствует, не проходит verification или привязано к другому digest. Временное fail-open behavior требует explicit break-glass approval, срока действия, alerting и post-release review.
@@ -170,7 +171,8 @@ allowed_signers:
   - oidc_issuer: https://token.actions.githubusercontent.com
     certificate_identity: repo:ORG/REPO:ref:refs/tags/v*
 trusted_builders:
-  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v*
+  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
+    build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
 expected_source:
   repository: github.com/ORG/REPO
   ref_pattern: refs/tags/v*

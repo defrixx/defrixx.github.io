@@ -87,9 +87,12 @@ Remote Streamable HTTP servers:
 - Use enterprise-managed authorization aligned with the current MCP authorization profile: OAuth 2.1 draft behavior plus the MCP-required metadata, `resource` parameter, and token audience checks.
 - Require PKCE with `S256` for public clients.
 - Publish OAuth Protected Resource Metadata and return `WWW-Authenticate` on `401` so clients discover the correct authorization server from the MCP server, not from user-supplied configuration.
+- If Dynamic Client Registration is supported, constrain it with a registration policy: approved redirect URI patterns, client type, grant types, scopes, token lifetimes, and owner. For high-impact or regulated MCP clients, prefer pre-registered enterprise clients; do not allow self-service registration to issue broad scopes or refresh tokens without review.
 - Require MCP clients to send the OAuth `resource` parameter in both authorization and token requests, using the canonical MCP server URI.
+- Require MCP clients or the gateway to validate `iss` in authorization responses when the authorization server publishes `authorization_response_iss_parameter_supported=true`; if `iss` is present without metadata advertisement, reject it unless local policy explicitly accepts that issuer, and still compare it with the issuer from the validated authorization server metadata document.
 - Validate token issuer, expiry, audience/resource binding, resource indicator, and scope on every request.
 - Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners.
+- Do not make `offline_access` or refresh-token issuance part of the MCP resource-server baseline. If an approved client receives a refresh token, it must be sender-constrained or rotated with reuse detection; storage and revocation are separate identity controls. The MCP server must not request or advertise `offline_access` through `WWW-Authenticate` challenges or Protected Resource Metadata `scopes_supported` without an explicitly approved use case.
 
 Third-party MCP servers:
 - Require provider onboarding before use: data handling, subprocessors, security contact, vulnerability disclosure, patch SLA, log access, retention, capability-change notification, and exit process.
@@ -151,6 +154,7 @@ Required evidence:
 - MCP registry entry for every production server and capability;
 - capability baseline diff from deployment or session initialization;
 - OAuth Protected Resource Metadata, authorization server metadata, `WWW-Authenticate` behavior, `resource` parameter handling, and token validation tests for remote servers;
+- Dynamic Client Registration policy or evidence that production MCP clients are pre-registered and self-service registration is disabled/constrained;
 - endpoint/application allowlisting evidence for local `stdio` servers;
 - gateway policy, redaction, and logging configuration;
 - provider onboarding record for third-party servers.
@@ -161,6 +165,8 @@ Negative tests:
 - model-supplied parameter outside schema or business constraints is rejected server-side;
 - expired, wrong-audience, wrong-issuer, or insufficient-scope token is rejected;
 - missing or wrong OAuth `resource` parameter is rejected or fails to obtain a token usable for the MCP server;
+- authorization response with missing or mismatched `iss` is rejected by the MCP client or gateway according to authorization server metadata;
+- refresh token issuance or `offline_access` is not requested, required, or advertised without an approved use case;
 - token in query string, log field, tool output, or prompt payload is detected and blocked/redacted;
 - write tool cannot execute without required confirmation or approval;
 - malformed JSON-RPC messages fail closed and produce safe errors;

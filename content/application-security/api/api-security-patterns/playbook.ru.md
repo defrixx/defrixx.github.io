@@ -222,13 +222,14 @@ gRPC часто применяется для внутреннего service-to-
 - persisted queries или allowlisted operations для high-impact, public abuse-prone GraphQL API, если это совместимо с продуктом;
 - лимиты batching и отдельная защита от brute force внутри одного запроса;
 - timeout и cancellation propagation в downstream calls;
-- schema review для sensitive fields и deprecated fields.
+- schema review для sensitive fields и deprecated fields;
+- persisted-query или operation allowlists версионируются вместе со schema и ревьюятся при изменении auth-relevant fields, resolvers или directives.
 
 Рабочие настройки:
 - максимальная query depth: `5-10` для публичных API, выше только по обоснованию;
 - max operations per request: `1` по умолчанию для public API; batching только с явным лимитом;
 - timeout resolver: `<=2-5s`, общий request timeout: `<=10-15s`;
-- introspection disabled для anonymous/public clients; для внутренних клиентов - только с authenticated developer role.
+- introspection disabled для anonymous/public clients; для внутренних клиентов - только с authenticated developer role;
 - dynamic GraphQL queries допустимы для public API только с более строгим cost budget, per-client abuse monitoring и owner-approved exception; persisted queries не заменяют resolver authorization и query cost controls.
 
 ### 6.4 Webhooks

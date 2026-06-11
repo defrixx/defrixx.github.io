@@ -87,9 +87,12 @@ Remote Streamable HTTP servers:
 - Используйте enterprise-managed authorization, согласованную с текущим MCP authorization profile: поведение OAuth 2.1 draft плюс обязательные для MCP metadata, `resource` parameter и проверки token audience.
 - Требуйте PKCE с `S256` для public clients.
 - Публикуйте OAuth Protected Resource Metadata и возвращайте `WWW-Authenticate` на `401`, чтобы clients обнаруживали правильный authorization server от MCP server, а не из user-supplied configuration.
+- Если поддерживается Dynamic Client Registration, ограничивайте его registration policy: утвержденные redirect URI patterns, client type, grant types, scopes, token lifetimes и owner. Для high-impact или regulated MCP clients предпочитайте pre-registered enterprise clients; не разрешайте self-service registration выдавать broad scopes или refresh tokens без review.
 - Требуйте, чтобы MCP clients передавали OAuth `resource` parameter и в authorization request, и в token request, используя canonical MCP server URI.
+- Требуйте, чтобы MCP clients или gateway валидировали `iss` в authorization response, когда authorization server публикует `authorization_response_iss_parameter_supported=true`; если `iss` присутствует без объявления в metadata, отклоняйте response, кроме явно принятого local policy issuer, и все равно сравнивайте значение с issuer из проверенного authorization server metadata document.
 - Проверяйте token issuer, expiry, audience/resource binding, resource indicator и scope на каждом request.
 - Не передавайте client access tokens дальше в downstream APIs. Tool handlers должны получать отдельные учетные данные для downstream-систем или использовать controlled token exchange pattern, утвержденный владельцами identity/security.
+- Не делайте `offline_access` или выдачу refresh token частью baseline для MCP resource server. Если утвержденный client получает refresh token, он должен быть sender-constrained или ротироваться с reuse detection; хранение и отзыв остаются отдельными identity controls. MCP server не должен запрашивать или рекламировать `offline_access` через `WWW-Authenticate` challenges или `scopes_supported` в Protected Resource Metadata без явно утвержденного use case.
 
 Third-party MCP servers:
 - Требуйте provider onboarding до использования: data handling, subprocessors, security contact, vulnerability disclosure, patch SLA, log access, retention, capability-change notification и exit process.
@@ -151,6 +154,7 @@ Incident response должен поддерживать:
 - MCP registry entry для каждого production server и capability;
 - capability baseline diff из deployment или session initialization;
 - OAuth Protected Resource Metadata, authorization server metadata, поведение `WWW-Authenticate`, обработка `resource` parameter и token validation tests для remote servers;
+- Dynamic Client Registration policy или подтверждение, что production MCP clients pre-registered и self-service registration отключен/ограничен;
 - подтверждение endpoint/application allowlisting для local `stdio` servers;
 - gateway policy, redaction и logging configuration;
 - provider onboarding record для third-party servers.
@@ -161,6 +165,8 @@ Negative tests:
 - model-supplied parameter вне schema или business constraints отклоняется server-side;
 - expired, wrong-audience, wrong-issuer или insufficient-scope token отклоняется;
 - отсутствующий или неправильный OAuth `resource` parameter отклоняется либо не позволяет получить token, пригодный для MCP server;
+- authorization response с missing/mismatched `iss` отклоняется MCP client или gateway в соответствии с metadata выбранного authorization server;
+- выдача refresh token или `offline_access` не запрашивается, не требуется и не рекламируется без утвержденного use case;
 - token в query string, log field, tool output или prompt payload обнаруживается и блокируется/редактируется;
 - write tool не выполняется без required confirmation или approval;
 - malformed JSON-RPC messages fail closed и дают safe errors;

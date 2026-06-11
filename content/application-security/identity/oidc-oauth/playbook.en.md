@@ -126,7 +126,7 @@ Reading rule for controls below:
 | Control | Recommended (R) | Maximum (M) | Rationale / Threat |
 |---|---|---|---|
 | Flow and base client model | Authorization Code + PKCE (`S256`), SPA+BFF/server-side web app, mobile public + system browser, service confidential + client_credentials | In addition to R: mandatory strict client policies at IdP level | Reduces code interception risk, token misuse, and misconfiguration drift |
-| Sender-constrained tokens | Bearer tokens are acceptable only after an explicit risk decision; public, partner, and high-value APIs must evaluate DPoP or mTLS and document any exception | In addition to R: require DPoP and/or mTLS, minimum refresh-token binding for public clients | Reduces impact of bearer token theft and replay |
+| Sender-constrained tokens | Bearer tokens are acceptable only after an explicit risk decision; public, partner, and high-value APIs must evaluate DPoP or mTLS and document any exception | In addition to R: require DPoP and/or mTLS; public clients must use sender-constrained refresh tokens or refresh token rotation with reuse detection | Reduces impact of bearer token theft and replay |
 | PAR/JAR | Not mandatory by default | In addition to R: PAR (RFC 9126) + JAR (RFC 9101) for critical clients | Protects authorization parameters from tampering/mix-up, reduces front-channel risks |
 | MFA/step-up | Risk-based according to business policy | In addition to R: mandatory MFA/step-up for critical operations | Protects against account takeover and unauthorized privilege escalation |
 | Token TTL/rotation | Short TTLs, refresh token rotation, explicit numeric limits from section 5 | In addition to R: stricter TTLs and degraded windows for high-risk environments | Reduces exploitation window for compromised tokens |
@@ -181,6 +181,8 @@ These numbers are a local recommended baseline for live environments, not direct
 - Enforce strict callback integrity checks: `state` is mandatory and must match request->callback exactly
 - `nonce` is mandatory for OIDC login and must match original authorization request value
 - Redirect/logout URIs: exact match only and separate lists per environment
+- For clients that can use more than one authorization server, realm, or tenant issuer, require mix-up protection: validate the authorization response `iss` parameter when the authorization server advertises RFC 9207 support, or use distinct redirect URIs bound to one issuer. Store the expected issuer in transaction state and reject callbacks where the issuer does not match.
+- In Keycloak, use Client Policies/Profiles to enforce OAuth 2.1/FAPI-relevant settings supported by the deployed version and adapters: PKCE `S256`, safe redirect URIs, blocked implicit/password flows, request object/PAR/JAR where required by profile, and holder-of-key/DPoP for selected clients.
 - Block the `implicit` grant by default; any temporary exception requires a migration plan, owner, expiry, and compensating controls.
 - The OAuth password grant / Resource Owner Password Credentials flow is forbidden for live clients. Do not approve it as a normal exception path; use only a time-boxed migration plan for existing legacy clients.
 - Replacement paths: Authorization Code + PKCE for browser/mobile/user login, device authorization flow where user interaction happens on a constrained device, and `client_credentials` for service-to-service access.
@@ -202,7 +204,7 @@ Maximum profile hardening:
 
 Maximum profile hardening:
 - Require sender-constrained tokens (DPoP and/or mTLS)
-- For public clients: minimum bind refresh token, preferably refresh + access
+- For public clients: require sender-constrained refresh tokens or refresh token rotation with reuse detection; prefer sender-constrained access tokens for high-replay-impact APIs.
 - Verify holder-of-key validation support in adapters/runtime for DPoP/mTLS
 
 ### 6.3 Session and Cookies
@@ -320,6 +322,7 @@ Maximum profile hardening:
 - Direct Access Grants: OFF. In Keycloak this corresponds to the password grant and must remain disabled for live clients; legacy use requires a migration plan, not a standing exception.
 - PKCE method: `S256`
 - Revoke Refresh Token: ON (typically)
+- Client Policies: enabled for the relevant client class and actually blocking unsafe grant/redirect/PKCE/holder-of-key settings, not only documenting the baseline.
 
 Maximum profile hardening:
 - Enable PAR/JAR and sender-constrained tokens for selected high-risk clients

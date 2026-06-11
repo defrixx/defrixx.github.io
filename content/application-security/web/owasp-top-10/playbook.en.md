@@ -1,8 +1,8 @@
-# Web Application Defense Playbook for OWASP Top 10:2021
+# Web Application Defense Playbook for OWASP Top 10
 
 ## 1. Scope
 
-This document defines a practical baseline for protecting web applications against the official OWASP Top 10:2021 web application risk categories.
+This document keeps the detailed OWASP Top 10:2021 structure for stable review links and adds an explicit mapping to OWASP Top 10:2025, which is the current OWASP web application Top 10 release. Use the category-specific sections as the control baseline; use the mapping below when reporting against 2025.
 
 Document boundaries:
 - This playbook defines web-level review decision, severity, and minimum negative tests for OWASP Top 10 categories.
@@ -10,6 +10,21 @@ Document boundaries:
 - Browser-specific controls for CSP, CORS, cookies, embedded content, and frontend supply chain are owned by the [browser and frontend security playbook](../browser-security/playbook.en.md).
 - Secure coding details for validation, output encoding, injection, file handling, and crypto misuse are owned by the [Secure Coding and Code Review playbook](../../secure-coding/code-review/playbook.en.md).
 - Supply-chain and container-image controls are owned by the dedicated supply-chain playbooks; this document uses them only as web release decision context.
+
+OWASP Top 10:2025 mapping:
+
+| OWASP Top 10:2025 category | Primary section in this playbook | Review note |
+|---|---|---|
+| A01 Broken Access Control | Section 2 | Same primary risk; API-specific BOLA/BFLA depth is in the API playbook. |
+| A02 Security Misconfiguration | Section 3 | Includes headers, CORS, XML parser settings, cloud permissions, and environment separation. |
+| A03 Software Supply Chain Failures | Section 4 and supply-chain playbooks | 2025 broadens the old vulnerable-components category to build, developer, artifact, registry, and vendor paths. |
+| A04 Cryptographic Failures | Section 5 | Same control family; verify transport, key lifecycle, token validation, and storage. |
+| A05 Injection | Section 6 | Includes SQL, shell, template, XSS, XXE, SSRF-style URL interpretation, and parser-mediated injection. |
+| A06 Insecure Design | Section 7 | Includes business logic, state machines, abuse economics, and exceptional-condition failure behavior. |
+| A07 Authentication Failures | Section 8 | Identity and session details are cross-referenced to the OIDC/OAuth playbook where applicable. |
+| A08 Software or Data Integrity Failures | Section 9 | Includes tampered artifacts/configs, unsafe deserialization, and client-controlled object integrity. |
+| A09 Security Logging and Alerting Failures | Section 10 | Same operational detection and response control family. |
+| A10 Mishandling of Exceptional Conditions | Section 7 and Section 10 | Treat fail-open handling, partial transaction recovery, resource exhaustion, and sensitive error disclosure as release-review items even when no classic injection or auth bypass exists. |
 
 ---
 
@@ -401,6 +416,7 @@ Insecure design means critical security controls were never built into architect
 
 Types:
 - Unsafe recovery/fallback logic: simplified mode bypasses critical checks. Example: when SMS provider fails, transaction confirmation is silently disabled.
+- Mishandled exceptional conditions: missing input, partial dependency failure, timeout, duplicate callback, or privilege-check error leaves the system in an unknown or fail-open state. Example: a payment flow debits one ledger, fails on crediting the destination, and retries without a full rollback/idempotency guard.
 - Missing controls for critical operations (limit/rate/approval): no anti-abuse guardrails. Example: user performs 1000 transfers in minutes without velocity limit.
 - Weak tenant isolation: tenant boundaries exist only in UI logic. Example: changing `tenant_id` in API request exposes another tenant's objects.
 - State-machine flaws: invalid transitions are accepted. Example: order moves from `draft` directly to `paid` without payment verification.
@@ -410,6 +426,7 @@ Typical flow:
 - Analyze business process/state transitions
 - Find uncontrolled state transition
 - Trigger edge states (retry/race/partial failure)
+- Force exception paths such as timeouts, malformed optional parameters, dependency errors, and interrupted transactions
 - Bypass expected control flow
 - Execute forbidden operation without exploiting low-level code bugs
 
@@ -442,6 +459,7 @@ Release-ready defaults:
 - Critical flows have a documented state machine, allowed transitions, idempotency model, replay handling, and failure behavior.
 - Abuse controls exist for signup, login, checkout, transfer, refund, export, invite, support, and privilege-change flows where applicable.
 - High-impact operations require step-up, approval, rate/velocity limits, or dual control based on risk.
+- Exceptional-condition handling is designed per critical flow: fail closed, roll back partial state, preserve idempotency, emit a security-relevant event, and return a safe user-facing error without internal details.
 - Threat modeling is mandatory before release for new trust boundaries, sensitive data, external integrations, AI/agentic flows, and payment/security workflows.
 
 Required evidence:
@@ -454,6 +472,7 @@ Negative tests:
 - Invalid state transitions are rejected.
 - Duplicate, replayed, out-of-order, delayed, and concurrent requests cannot create unauthorized business state.
 - Dependency failure does not silently skip mandatory checks.
+- Missing parameters, malformed optional fields, timeout, partial dependency failure, and retry storms do not create inconsistent state, privilege bypass, or sensitive error disclosure.
 - Normal users cannot trigger high-risk support/admin/business operations without required controls.
 
 False positives / false negatives:

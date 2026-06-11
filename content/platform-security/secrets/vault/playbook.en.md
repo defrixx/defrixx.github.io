@@ -63,6 +63,8 @@ Kubernetes auth minimums:
 
 - Bind roles to exact `serviceAccount` and namespace.
 - Set and validate `audience` for Kubernetes auth roles. `bound_audiences` is the JWT/OIDC auth role parameter; do not use it in Kubernetes auth role examples.
+- Keep `alias_name_source=serviceaccount_uid` for Kubernetes auth roles unless there is an approved reason to use `serviceaccount_name`. Name-based aliases tolerate ServiceAccount deletion and recreation worse, so they require strict ServiceAccount creation controls and separate risk acceptance.
+- Do not make a long-lived reviewer JWT the default TokenReview strategy. If Vault runs inside Kubernetes, prefer the Vault pod's local service account token or the client JWT pattern; a long-lived reviewer token is acceptable only as an exception with owner, rotation, RBAC scope, and review expiry.
 - Use explicit Vault token parameters instead of generic "short-lived" wording:
   - `token_ttl`: `15m` default for workload login tokens
   - `token_max_ttl`: `<=1h` for non-renewable workload tokens
@@ -354,6 +356,7 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 - Vault admin model excludes root token from routine work.
 - Roles are tightly bound to workload identity (`serviceAccount`, namespace, audience).
+- Kubernetes auth uses `alias_name_source=serviceaccount_uid`, and reviewer JWT strategy does not depend on a non-expiring ServiceAccount token without an exception.
 - Policy scopes are explicit by environment and service.
 - Secret class ownership, TTL, and rotation cadence are documented.
 - Certificate revocation is tested end-to-end (issuer to relying service).

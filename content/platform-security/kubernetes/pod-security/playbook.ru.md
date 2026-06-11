@@ -86,8 +86,9 @@
 - Для images, которым реально нужен root-like behavior внутри контейнера, используйте отдельный exception path: owner, expiry, причина несовместимости с `runAsNonRoot`, подтверждение, что host UID/GID остаются непривилегированными, и compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
 - Pods с user namespaces не могут использовать host namespaces: `hostNetwork: true`, `hostPID: true` и `hostIPC: true` несовместимы и должны падать на admission или deploy validation.
 - Raw block `volumeDevices` несовместимы с Pods, использующими user namespaces. Stateful или storage-heavy workload'ы требуют отдельного storage compatibility test перед внедрением этого контроля.
+- NFS volumes несовместимы с user-namespace Pods, пока Linux NFS client не поддерживает idmapped mounts; считайте workload'ы на NFS несовместимыми, если platform team не подтвердила поддержку на точном kernel и storage path.
 - Pod Security Standards ослабляют проверки `runAsNonRoot` и `runAsUser` для Pods с user namespaces, потому что UID `0` контейнера мапится в непривилегированный host UID. Это не означает, что "root безопасен по умолчанию"; для обычных app workload'ов сохраняйте `runAsNonRoot: true`, если нет документированной причины запускаться root внутри user namespace.
-- Обязательная проверка: admission test для запрещенных host namespace комбинаций, deploy test с реальными volumes workload'а, evidence совместимости node/runtime и PSS test, показывающий, что результат namespace policy понятен команде.
+- Обязательная проверка: admission test для запрещенных host namespace комбинаций, deploy test с реальными volumes workload'а, evidence совместимости node/runtime, мониторинг kubelet `started_user_namespaced_pods_total` / `started_user_namespaced_pods_errors_total` и PSS test, показывающий, что результат namespace policy понятен команде.
 
 **Важная семантика `securityContext` (Kubernetes):**
 - Если одно и то же поле задано и на уровне Pod, и на уровне Container, значение из `container.securityContext` перекрывает значение из `pod.spec.securityContext`.

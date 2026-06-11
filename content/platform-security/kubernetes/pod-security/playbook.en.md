@@ -86,8 +86,9 @@ Where relevant, distinguish between:
 - For images that genuinely need root-like behavior inside the container, use a dedicated exception path: owner, expiry, incompatibility reason for `runAsNonRoot`, evidence that host UID/GID remain unprivileged, and compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
 - Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and should fail admission or deployment validation.
 - Raw block `volumeDevices` are not compatible with Pods using user namespaces. Stateful or storage-heavy workloads need an explicit storage compatibility test before adopting this control.
+- NFS volumes are not compatible with user-namespace Pods until the Linux NFS client supports idmapped mounts; treat NFS-backed workloads as incompatible unless the platform team has verified support on the exact kernel and storage path.
 - Pod Security Standards relax `runAsNonRoot` and `runAsUser` checks for Pods with user namespaces because container UID `0` is mapped to an unprivileged host UID. This does not mean "root is safe by default"; keep `runAsNonRoot: true` for normal app workloads unless the workload has a documented reason to run as root inside the user namespace.
-- Required verification: admission test for forbidden host namespace combinations, deploy test with the workload's real volumes, node/runtime compatibility evidence, and a PSS test proving the namespace policy outcome is understood.
+- Required verification: admission test for forbidden host namespace combinations, deploy test with the workload's real volumes, node/runtime compatibility evidence, kubelet `started_user_namespaced_pods_total` / `started_user_namespaced_pods_errors_total` monitoring, and a PSS test proving the namespace policy outcome is understood.
 
 **Important `securityContext` semantics (Kubernetes):**
 - If the same field is set at both Pod and Container levels, the value in `container.securityContext` overrides `pod.spec.securityContext`.

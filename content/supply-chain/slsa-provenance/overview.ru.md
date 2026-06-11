@@ -233,7 +233,7 @@ sequenceDiagram
 
 Не сворачивайте эти identity в одно поле `subject`. Формат GitHub Actions OIDC `sub` зависит от настроек organization/repository и для новых repositories может включать immutable owner/repository identifiers. Перед enforcement policy нужно протестировать на реальных signing certificates и реальных provenance samples из release workflow.
 
-Минимальная модель policy:
+Минимальная модель policy для SLSA GitHub container generator. Для другого builder не копируйте эти значения: извлеките `builder.id`, `buildType`, issuer и certificate identity из реального provenance/signing sample и закрепите именно их.
 
 ```yaml
 trusted_builders:
@@ -243,10 +243,10 @@ trusted_builders:
     source_repository: github.com/ORG/REPO
     source_ref_pattern: refs/tags/v*
     workflow_ref: ORG/REPO/.github/workflows/release.yml@refs/tags/v*
-    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v*
+    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
     max_slsa_build_level: 3
-    build_type: https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1
-    external_parameters_schema: policy://slsa/github-actions/v3
+    build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
+    external_parameters_schema: policy://slsa/github-container-generator/v1
 ```
 
 ### 7.2 Ротация trust roots/identity без outage
@@ -270,6 +270,7 @@ SLSA conformance и локальная deployment policy — разные про
 4. Проверка наличия `predicate.runDetails.builder` и соответствия `builder.id` списку trusted builders
 5. Проверка roots of trust и issuer/identity подписи по списку разрешенных значений
 6. Проверка expectations по source/build parameters; ключи в `externalParameters`, не входящие в утвержденную schema для конкретного `buildType` и версии policy, => fail
+7. Проверка версии provenance predicate: не смешивайте SLSA v0.2 и v1 policy. Если builder/tooling еще выпускает `https://slsa.dev/provenance/v0.2`, gate должен иметь отдельную migration/compatibility policy с явным mapping полей (`builder.id`, `buildType`, source/materials, parameters) или отклонять attestation; нельзя применять v1 `buildDefinition/runDetails` checks к v0.2 statement как будто структура одинаковая.
 
 Локальные проверки deployment policy:
 

@@ -63,6 +63,8 @@
 
 - Привязывайте роли к точным `serviceAccount` и namespace.
 - Задавайте и валидируйте `audience` для Kubernetes auth roles. `bound_audiences` — параметр JWT/OIDC auth role; не используйте его в примерах Kubernetes auth role.
+- Оставляйте `alias_name_source=serviceaccount_uid` для Kubernetes auth roles, если нет утвержденной причины использовать `serviceaccount_name`. Name-based aliases хуже переживают удаление и пересоздание ServiceAccount, поэтому требуют строгого контроля создания ServiceAccount и отдельного принятия риска.
+- Не делайте long-lived reviewer JWT стратегией TokenReview по умолчанию. Если Vault работает внутри Kubernetes, предпочитайте local service account token Vault pod или client JWT pattern; long-lived reviewer token допустим только как исключение с owner, rotation, RBAC scope и сроком пересмотра.
 - Используйте явные параметры Vault token вместо общего "short-lived":
   - `token_ttl`: `15m` по умолчанию для workload login tokens
   - `token_max_ttl`: `<=1h` для non-renewable workload tokens
@@ -354,6 +356,7 @@ Tag в формате `tag@sha256` оставлен только для чита
 
 - Модель администрирования Vault исключает root token из рутинной работы.
 - Роли жестко привязаны к workload identity (`serviceAccount`, namespace, audience).
+- Kubernetes auth использует `alias_name_source=serviceaccount_uid`, а reviewer JWT strategy не зависит от бессрочного ServiceAccount token без исключения.
 - Области policy явно определены по окружению и сервису.
 - Для классов секретов задокументированы владение, TTL и cadence rotation.
 - Отзыв сертификатов протестирован end-to-end (issuer -> relying service).

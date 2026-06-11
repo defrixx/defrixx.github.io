@@ -233,7 +233,7 @@ Recommended minimum:
 
 Do not collapse these identities into one `subject` field. GitHub Actions OIDC `sub` format depends on organization/repository configuration and, for new repositories, may include immutable owner/repository identifiers. Policy must be tested against real signing certificates and real provenance samples from the release workflow before enforcement.
 
-Minimum policy model:
+Minimum policy model for the SLSA GitHub container generator. For a different builder, do not copy these values: extract `builder.id`, `buildType`, issuer, and certificate identity from a real provenance/signing sample and pin those exact identities.
 
 ```yaml
 trusted_builders:
@@ -243,10 +243,10 @@ trusted_builders:
     source_repository: github.com/ORG/REPO
     source_ref_pattern: refs/tags/v*
     workflow_ref: ORG/REPO/.github/workflows/release.yml@refs/tags/v*
-    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v*
+    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
     max_slsa_build_level: 3
-    build_type: https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1
-    external_parameters_schema: policy://slsa/github-actions/v3
+    build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
+    external_parameters_schema: policy://slsa/github-container-generator/v1
 ```
 
 ### 7.2 Rotating trust roots/identity without outage
@@ -270,6 +270,7 @@ SLSA-required and expectation checks:
 4. Verify presence of `predicate.runDetails.builder` and match `builder.id` against the trusted builder allowlist
 5. Verify roots of trust and signature issuer/identity against allowlist
 6. Verify expectations for source/build parameters; keys in `externalParameters` that are outside the approved schema for the specific `buildType` and policy version => fail
+7. Verify the provenance predicate version: do not silently mix SLSA v0.2 and v1 policy. If the builder/tooling still emits `https://slsa.dev/provenance/v0.2`, the gate needs a separate migration/compatibility policy with explicit field mapping (`builder.id`, `buildType`, source/materials, parameters) or must reject the attestation; do not apply v1 `buildDefinition/runDetails` checks to a v0.2 statement as if the structure were identical.
 
 Organization deployment policy checks:
 

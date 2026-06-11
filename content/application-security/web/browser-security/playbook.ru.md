@@ -86,6 +86,7 @@ High-impact сценарии:
 - Используйте `SameSite=Strict` для high-risk admin или step-up cookies, если UX это допускает.
 - Используйте `SameSite=None; Secure` только для документированных cross-site embed или federated flows.
 - Сужайте `Domain` и `Path`. Не делите session cookies между unrelated subdomains.
+- Используйте cookie prefix `__Host-` для host-only session cookies там, где framework и deployment model это поддерживают: `Secure`, без `Domain` и с `Path=/`.
 - Не храните access tokens, refresh tokens, session IDs или long-lived secrets в `localStorage`.
 - Для browser apps с durable authentication предпочитайте BFF/session-cookie patterns. Если SPA вынуждена хранить tokens, оформляйте risk decision и держите token lifetime коротким согласно OIDC/OAuth playbook.
 
@@ -102,6 +103,7 @@ High-impact сценарии:
 - State-changing operations не используют `GET`, включая login, logout, password reset consumption, email change, approval, checkout и admin actions.
 - CSRF tokens уникальны для user session, непредсказуемы, проверяются server-side и никогда не попадают в URLs, logs, analytics events или links, передающие referrer.
 - API-style browser flows, где нельзя использовать form tokens, требуют custom request header и strict CORS policy. Server должен отклонять simple cross-site requests без ожидаемого header или при провале `Origin`/Fetch Metadata checks.
+- Валидируйте `Origin` на state-changing cookie-authenticated requests там, где browsers его отправляют; `Referer` используйте только как fallback поверх HTTPS. Отсутствие Fetch Metadata headers должно обрабатываться по явному compatibility rule, а не молча обходить CSRF enforcement.
 - High-impact actions требуют user interaction или step-up, если replay или clickjacking может привести к существенному ущербу, даже когда CSRF token валиден.
 
 Верификация:

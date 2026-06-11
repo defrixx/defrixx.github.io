@@ -159,6 +159,7 @@ Minimum trust policy:
 - For keyless signing, pin OIDC issuer and certificate identity/SAN to the release workflow identity. Use exact matches or tightly scoped patterns for one repository/workflow/ref class.
 - For key-based signing, pin the public key or KMS/HSM key identity, owner, rotation process, and emergency revocation path.
 - For SLSA provenance, pin trusted `builder.id`, expected `predicateType`, expected source identity, and the `externalParameters` schema allowed for the build type.
+- Do not mix SLSA predicate versions in one policy. `predicateType`, `builder.id`, `buildType`, source/material fields, and parameter schema must match a real attestation sample from the specific builder; v0.2 and v1 need separate checks or an explicit migration mapping.
 - For SBOMs and attestations, verify the attestation signature and that the attestation subject matches the exact image digest being deployed, including index and platform manifest policy for multi-arch images.
 - For OCI referrers or sidecar artifacts, retention must preserve the image, signature, SBOM, and provenance together. Deleting a referrer before evidence expiry is a release-evidence failure.
 - Deploy gates must fail closed for high-value and internet-facing live services when required signature/provenance/SBOM evidence is missing, unverifiable, or bound to a different digest. Temporary fail-open behavior requires explicit break-glass approval, expiry, alerting, and post-release review.
@@ -170,7 +171,8 @@ allowed_signers:
   - oidc_issuer: https://token.actions.githubusercontent.com
     certificate_identity: repo:ORG/REPO:ref:refs/tags/v*
 trusted_builders:
-  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v*
+  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
+    build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
 expected_source:
   repository: github.com/ORG/REPO
   ref_pattern: refs/tags/v*

@@ -68,6 +68,7 @@ This playbook defines a **practical Kubernetes cluster security review** across:
 ```bash
 kubectl get clusterrolebindings,rolebindings -A
 kubectl get clusterroles,roles -A -o yaml
+kubectl get validatingadmissionpolicy,validatingadmissionpolicybinding -o yaml
 kubectl auth can-i create deployments --as=<subject> -n <ns>
 kubectl auth can-i get nodes/proxy --as=<subject>
 kubectl auth can-i get nodes/metrics --as=<subject>
@@ -198,6 +199,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 **Recommended control:**
 - separate responsibilities: RBAC controls "who can", admission controls "with which parameters";
 - use `ValidatingAdmissionPolicy` (Kubernetes `v1.30+`) or webhook-based equivalent for policy enforcement;
+- for protected namespaces, admission policy must enforce, not only audit/warn: `ValidatingAdmissionPolicyBinding.validationActions` includes `Deny`, `failurePolicy` remains `Fail`, and parameterized policies use `parameterNotFoundAction: Deny` when a missing parameter should block an unsafe default;
 - deny `escalate` / `bind` / `impersonate` / `serviceaccounts/token` by default;
 - for control-plane hardening, evaluate `AlwaysPullImages` separately with operational impact considered where applicable. It reduces reuse of locally cached images without repeat pull authorization, but increases dependence on registry availability and can break air-gapped or registry-outage scenarios. It does not replace digest pinning and signature/provenance verification: a fresh pull of a mutable tag can still fetch an unwanted artifact;
 - treat `EventRateLimit` as version- and deployment-dependent: it is an alpha admission controller and is disabled by default in upstream Kubernetes; prefer provider-supported API/event throttling or a tested custom policy where alpha admission plugins are not acceptable;

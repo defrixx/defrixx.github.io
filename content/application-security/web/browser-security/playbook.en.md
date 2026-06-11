@@ -86,6 +86,7 @@ Release-ready defaults:
 - Use `SameSite=Strict` for high-risk admin or step-up cookies where UX allows it.
 - Use `SameSite=None; Secure` only for documented cross-site embed or federated flows.
 - Scope `Domain` and `Path` narrowly. Do not share session cookies across unrelated subdomains.
+- Use the `__Host-` cookie prefix for host-only session cookies where the framework and deployment model support it: `Secure`, no `Domain`, and `Path=/`.
 - Do not store access tokens, refresh tokens, session IDs, or long-lived secrets in `localStorage`.
 - Prefer BFF/session-cookie patterns for browser apps that need durable authentication. If an SPA must hold tokens, document the risk decision and keep token lifetime short per the OIDC/OAuth playbook.
 
@@ -102,6 +103,7 @@ Release-ready defaults:
 - State-changing operations do not use `GET`, including login, logout, password reset consumption, email change, approval, checkout, and admin actions.
 - CSRF tokens are unique to the user session, unpredictable, validated server-side, and never placed in URLs, logs, analytics events, or referrer-bearing links.
 - API-style browser flows that cannot use form tokens require a custom request header and strict CORS policy. The server must reject simple cross-site requests that lack the expected header or fail `Origin`/Fetch Metadata checks.
+- Validate `Origin` on state-changing cookie-authenticated requests where browsers send it; use `Referer` only as a fallback over HTTPS. Missing Fetch Metadata headers must follow an explicit compatibility rule, not silently bypass CSRF enforcement.
 - High-impact actions require user interaction or step-up when replay or clickjacking would cause material damage, even if the CSRF token is valid.
 
 Verification:

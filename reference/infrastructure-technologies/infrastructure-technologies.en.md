@@ -1141,7 +1141,7 @@ A broker accepts messages, stores queues, and delivers messages to consumers. A 
 
 A routing key is used by an exchange to select matching bindings. A direct exchange routes by exact routing key, a topic exchange by patterns, a fanout exchange to all bound queues, and a headers exchange by message headers. A consumer reads a message from a queue and sends an acknowledgement after successful processing. If an acknowledgement is not received, the broker can return the message to the queue or send it through a dead-letter topology, depending on configuration.
 
-A policy defines queue and exchange behavior: TTL, max length, dead-letter exchange, quorum settings, and other parameters. User/permission defines which operations are allowed inside a vhost: configure, write, and read.
+A policy defines queue and exchange behavior: TTL, max length, dead-letter exchange, quorum settings, and other parameters. Operator policy acts as a guardrail above client-provided arguments and ordinary policies, especially for resource limits. User/permission defines which operations are allowed inside a vhost: configure, write, and read.
 
 The working flow is: a producer publishes a message to an exchange, the exchange uses routing key and bindings to select a queue, the broker stores the message, a consumer takes it and acknowledges processing. If processing fails or the message expires, DLX/retry topology decides whether it is retried, delayed, or sent to a dead-letter queue.
 
@@ -1178,11 +1178,12 @@ RabbitMQ owns broker delivery and routing, but not message content security or b
 
 #### Common Live Patterns
 - Clustered RabbitMQ with quorum queues for critical queues; do not design new HA paths around classic mirrored queues, which are removed in RabbitMQ `4.x`.
+- Durable queues for live messages; transient non-exclusive classic queues are deprecated in RabbitMQ `4.3+` and should not be a new production model. For temporary state, use exclusive/server-named queues or durable queues with TTL.
 - Separate vhosts for domains, environments, or teams.
 - TLS for client connections.
 - Least-privilege permissions on exchanges and queues.
 - DLQ and retry topology.
-- Policies for TTL, max length, and quorum settings.
+- Policies and operator policies for TTL, max length, quorum settings, and upper resource limits.
 - Restricted access to the management UI.
 - Monitoring queue depth, consumer count, unacked messages, and publish/ack rates.
 

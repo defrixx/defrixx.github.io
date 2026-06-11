@@ -126,7 +126,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 | Контроль | Recommended (R) | Maximum (M) | Обоснование / Угроза |
 |---|---|---|---|
 | Потоки и базовая модель клиентов | Authorization Code + PKCE (`S256`), SPA+BFF/server-side web app, mobile public + system browser, service confidential + client_credentials | Дополнительно к R: обязательные строгие client policies на уровне IdP | Снижение риска перехвата кода, злоупотребления токенами и дрейфа конфигурации |
-| Sender-constrained токены | Bearer tokens допустимы только после явного risk decision; для public, partner и high-value API нужно оценить DPoP или mTLS и документировать любое исключение | Дополнительно к R: требовать DPoP и/или mTLS, минимум binding refresh token для public clients | Уменьшение ущерба от кражи bearer-токена и повторного использования |
+| Sender-constrained токены | Bearer tokens допустимы только после явного risk decision; для public, partner и high-value API нужно оценить DPoP или mTLS и документировать любое исключение | Дополнительно к R: требовать DPoP и/или mTLS; public clients должны использовать sender-constrained refresh tokens или refresh token rotation с reuse detection | Уменьшение ущерба от кражи bearer-токена и повторного использования |
 | PAR/JAR | Не обязательно по умолчанию | Дополнительно к R: PAR (RFC 9126) + JAR (RFC 9101) для критичных клиентов | Защита параметров авторизации от подмены и mix-up, снижение рисков front-channel |
 | MFA/step-up | По риск-ориентированной бизнес-политике | Дополнительно к R: обязательный MFA/step-up для критичных операций | Защита от захвата аккаунта и несанкционированной эскалации |
 | TTL/rotation токенов | Короткие TTL, refresh token rotation, явные численные лимиты из раздела 5 | Дополнительно к R: более жесткие TTL и окна деградации для контуров повышенного риска | Снижение окна эксплуатации компрометированных токенов |
@@ -181,6 +181,8 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - Выполняйте строгие проверки целостности callback: `state` обязателен и должен точно совпадать в связке request->callback
 - `nonce` обязателен для OIDC login и должен совпадать с исходным authorization request
 - Redirect/logout URI: только exact match и отдельные списки для каждого окружения
+- Для clients, которые могут работать с несколькими authorization servers, realms или tenant issuers, требуйте защиту от mix-up: валидируйте `iss` в authorization response, когда authorization server объявляет поддержку RFC 9207, либо используйте отдельные redirect URI, привязанные к одному issuer. Сохраняйте ожидаемый issuer в transaction state и отклоняйте callbacks, где issuer не совпадает.
+- В Keycloak применяйте Client Policies/Profiles для enforcement OAuth 2.1/FAPI-relevant settings, поддерживаемых развернутой версией и adapters: PKCE `S256`, безопасные redirect URI, запрет implicit/password flows, request object/PAR/JAR там, где это требуется профилем, и holder-of-key/DPoP для выбранных clients.
 - Блокируйте `implicit` grant по умолчанию; любое временное исключение требует migration plan, owner, expiry и компенсирующие меры.
 - OAuth password grant / Resource Owner Password Credentials flow запрещен для клиентов рабочих сред. Не утверждайте его как обычное исключение; допускается только ограниченный по времени migration plan для существующих legacy clients.
 - Replacement paths: Authorization Code + PKCE для browser/mobile/user login, device authorization flow для устройств с ограниченным пользовательским вводом и `client_credentials` для service-to-service доступа.
@@ -202,7 +204,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 
 Усиления для профиля Maximum:
 - Требуйте sender-constrained tokens (DPoP и/или mTLS)
-- Для public clients: минимум bind refresh token, предпочтительно refresh + access
+- Для public clients требуйте sender-constrained refresh tokens или refresh token rotation с reuse detection; для API с высоким replay-impact предпочитайте sender-constrained access tokens.
 - Проверяйте holder-of-key validation в adapters/runtime для DPoP/mTLS
 
 ### 6.3 Сессии и cookie
@@ -320,6 +322,7 @@ Maximum-профиль задается как **delta** к Recommended: в ко
 - Direct Access Grants: OFF. В Keycloak это соответствует password grant и должно оставаться выключенным для клиентов рабочих сред; legacy-использование требует migration plan, а не постоянного исключения.
 - PKCE method: `S256`
 - Revoke Refresh Token: ON (обычно)
+- Client Policies: включены для нужного client class и реально блокируют небезопасные grant/redirect/PKCE/holder-of-key настройки, а не только документируют baseline.
 
 Усиления для профиля Maximum:
 - Включите PAR/JAR и sender-constrained tokens для выбранных клиентов повышенного риска

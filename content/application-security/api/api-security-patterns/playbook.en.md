@@ -222,13 +222,14 @@ Mandatory measures:
 - persisted queries or allowlisted operations for high-impact, public abuse-prone GraphQL APIs when compatible with the product;
 - batching limits and separate protection against brute force inside one request;
 - timeout and cancellation propagation into downstream calls;
-- schema review for sensitive fields and deprecated fields.
+- schema review for sensitive fields and deprecated fields;
+- persisted-query or operation allowlists are versioned with the schema and reviewed when auth-relevant fields, resolvers, or directives change.
 
 Release-ready defaults:
 - max query depth: `5-10` for public APIs, higher only with justification;
 - max operations per request: `1` by default for public APIs; batching only with an explicit limit;
 - resolver timeout: `<=2-5s`, total request timeout: `<=10-15s`;
-- introspection disabled for anonymous/public clients; for internal clients, only with an authenticated developer role.
+- introspection disabled for anonymous/public clients; for internal clients, only with an authenticated developer role;
 - dynamic GraphQL queries are acceptable for public APIs only with a stricter cost budget, per-client abuse monitoring, and owner-approved exception; persisted queries do not replace resolver authorization and query cost controls.
 
 ### 6.4 Webhooks

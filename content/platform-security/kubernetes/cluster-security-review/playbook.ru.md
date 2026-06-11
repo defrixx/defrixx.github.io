@@ -68,6 +68,7 @@
 ```bash
 kubectl get clusterrolebindings,rolebindings -A
 kubectl get clusterroles,roles -A -o yaml
+kubectl get validatingadmissionpolicy,validatingadmissionpolicybinding -o yaml
 kubectl auth can-i create deployments --as=<subject> -n <ns>
 kubectl auth can-i get nodes/proxy --as=<subject>
 kubectl auth can-i get nodes/metrics --as=<subject>
@@ -198,6 +199,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 **Рекомендация для рабочих сред:**
 - разделяйте ответственность: RBAC отвечает за "кто может", admission отвечает за "с какими параметрами";
 - для policy enforcement используйте `ValidatingAdmissionPolicy` (Kubernetes `v1.30+`) или webhook-based equivalent;
+- для защищенных namespace admission policy должна реально enforce, а не только audit/warn: `ValidatingAdmissionPolicyBinding.validationActions` включает `Deny`, `failurePolicy` остается `Fail`, а parameterized policies используют `parameterNotFoundAction: Deny`, если отсутствие параметра должно блокировать небезопасный default;
 - запретите доступ к `escalate` / `bind` / `impersonate` / `serviceaccounts/token` по умолчанию;
 - для усиления защиты control plane отдельно оцените `AlwaysPullImages` с учетом операционного влияния, если он релевантен вашему окружению. Он снижает reuse локально закешированного image без повторной проверки pull authorization, но усиливает зависимость от registry availability и может ломать air-gapped или registry-outage сценарии. Он не заменяет digest pinning и signature/provenance verification: свежий pull mutable tag все равно может подтянуть нежелательный artifact;
 - рассматривайте `EventRateLimit` как зависящий от версии и способа поставки кластера: в upstream Kubernetes это alpha admission controller, отключенный по умолчанию; если alpha admission plugins неприемлемы, предпочитайте throttling API/events, поддерживаемый провайдером, или проверенную custom policy;
