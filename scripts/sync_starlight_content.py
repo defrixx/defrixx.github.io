@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import sys
@@ -13,7 +14,21 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "content", ROOT / "reference")
 DOCS_ROOT = ROOT / "site" / "src" / "content" / "docs"
 REPO_EDIT_BASE = "https://github.com/defrixx/Product-security-playbook/edit/main/"
-SITE_BASE = "/Product-security-playbook"
+
+
+def configured_site_base() -> str:
+    explicit = os.environ.get("PUBLIC_SITE_BASE")
+    if explicit is not None:
+        return explicit.rstrip("/")
+
+    repository = os.environ.get("GITHUB_REPOSITORY", "")
+    if repository.endswith("/defrixx.github.io"):
+        return ""
+
+    return "/Product-security-playbook"
+
+
+SITE_BASE = configured_site_base()
 
 LANG_RE = re.compile(r"^(?P<stem>.+)\.(?P<lang>ru|en)\.md$")
 H1_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
@@ -91,7 +106,7 @@ def source_info(path: Path) -> tuple[str, str, Path]:
 
 def source_route(path: Path, anchor: str = "") -> str:
     lang, logical_key, _ = source_info(path)
-    route = f"{SITE_BASE}/{lang}/{logical_key}/"
+    route = f"{SITE_BASE}/{lang}/{logical_key}/" if SITE_BASE else f"/{lang}/{logical_key}/"
     if anchor:
         route += f"#{anchor}"
     return route
