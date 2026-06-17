@@ -21,17 +21,9 @@ Some sections compile and adapt existing practices, references, and public knowl
 
 Treat this repository as curated working material rather than purely original standalone writing.
 
-## Contributions
-
-Feel free to use, adapt, and extend this repository.
-
-PRs are welcome if you want to improve existing materials or add new ones.
-
 ---
 
 ## Contents
-
-- [`templates/playbook.md`](templates/playbook.md) - reusable template for new security playbook documents
 
 ### Review and Governance
 - [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist

@@ -1,0 +1,22 @@
+{
+  "name": "product-security-playbook-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "python3 ../scripts/sync_starlight_content.py",
+    "check:sync": "python3 ../scripts/sync_starlight_content.py --check",
+    "dev": "npm run sync && astro dev",
+    "build": "npm run sync && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "latest",
+    "astro": "latest",
+    "hastscript": "latest",
+    "mermaid": "latest",
+    "unist-util-visit": "latest"
+  },
+  "devDependencies": {}
+}
+
