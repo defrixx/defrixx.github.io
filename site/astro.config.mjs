@@ -34,9 +34,13 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/defrixx/Product-security-playbook/edit/main/',
       },
-      social: {
-        github: 'https://github.com/defrixx/Product-security-playbook',
-      },
+      social: [
+        {
+          icon: 'github',
+          label: 'GitHub',
+          href: 'https://github.com/defrixx/Product-security-playbook',
+        },
+      ],
       customCss: ['./src/styles/custom.css'],
       sidebar: [
         {
