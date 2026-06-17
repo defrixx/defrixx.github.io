@@ -20,7 +20,7 @@ export default defineConfig({
       title: 'Product Security Playbook',
       description:
         'Practical product security playbooks for architecture review, AppSec, platform security, supply chain, and AI security.',
-      defaultLocale: 'ru',
+      defaultLocale: 'en',
       locales: {
         ru: {
           label: 'Русский',

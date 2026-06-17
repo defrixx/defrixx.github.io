@@ -1,0 +1,20 @@
+---
+const target = `${import.meta.env.BASE_URL}en/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <title>Product Security Playbook</title>
+    <link rel="canonical" href={target} />
+  </head>
+  <body>
+    <p><a href={target}>Product Security Playbook</a></p>
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </body>
+</html>
