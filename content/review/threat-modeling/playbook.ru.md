@@ -333,7 +333,7 @@ LINDDUN - privacy threat modeling framework:
 
 #### NIST SP 800-154 для data-centric reviews
 
-NIST SP 800-154 описывает data-centric threat modeling как форму risk assessment, сфокусированную на защите конкретных данных в системе. На 10 июня 2026 года публикация все еще обозначена NIST как initial public draft, но NIST указывает план финализировать ее.
+NIST SP 800-154 описывает data-centric threat modeling как форму risk assessment, сфокусированную на защите конкретных данных в системе. На 17 июня 2026 года публикация все еще обозначена NIST как initial public draft, но NIST указывает план финализировать ее.
 
 Шаги:
 1. Identify and characterize the system and data of interest.

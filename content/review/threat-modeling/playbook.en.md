@@ -333,7 +333,7 @@ Example:
 
 #### NIST SP 800-154 for data-centric reviews
 
-NIST SP 800-154 describes data-centric threat modeling as a form of risk assessment focused on protecting specific data in a system. As of June 10, 2026, NIST still marks the publication as an initial public draft, while stating that it plans to finalize it.
+NIST SP 800-154 describes data-centric threat modeling as a form of risk assessment focused on protecting specific data in a system. As of June 17, 2026, NIST still marks the publication as an initial public draft, while stating that it plans to finalize it.
 
 Steps:
 1. Identify and characterize the system and data of interest.
