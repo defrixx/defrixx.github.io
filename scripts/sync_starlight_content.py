@@ -13,9 +13,6 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "content", ROOT / "reference")
 DOCS_ROOT = ROOT / "site" / "src" / "content" / "docs"
-REPO_EDIT_BASE = "https://github.com/defrixx/Product-security-playbook/edit/main/"
-
-
 def configured_site_base() -> str:
     explicit = os.environ.get("PUBLIC_SITE_BASE")
     if explicit is not None:
@@ -187,14 +184,12 @@ def generated_content(source: Path) -> str:
     body = rewrite_markdown_links(source, body)
     lang, logical_key, _ = source_info(source)
     order = PAGE_ORDER.get(logical_key, TOP_LEVEL_ORDER.get(logical_key.split("/", 1)[0], 100))
-    edit_url = f"{REPO_EDIT_BASE}{rel(source)}"
     description = description_from(body)
 
     frontmatter = [
         "---",
         f"title: {yaml_quote(title)}",
         f"description: {yaml_quote(description)}",
-        f"editUrl: {yaml_quote(edit_url)}",
         "sidebar:",
         f"  order: {order}",
         "---",
@@ -224,9 +219,12 @@ sidebar:
 - [AI Security]({base}/ru/ai-security/securing-ai/overview/)
 - [Справочник]({base}/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Редакционная модель
+## Об авторе
 
-Исходные документы находятся в `content/` и `reference/`. Эта Starlight-структура генерируется автоматически и не является основным местом редактирования.
+Меня зовут Олег. Я веду эту базу как рабочую коллекцию материалов по Продуктовой безопасности.
+В первую очередь, готовились английские версии документов, а русские создавались как переводы. Так что за их качество полностью отвечать не могу.
+
+Не каждый документ здесь написан полностью с нуля одним человеком. Часть материалов компилирует и адаптирует существующие практики, публичные знания и рабочие подходы, а также дополняет их анализом, редактурой и production-контекстом. Относитесь к репозиторию как к курируемой рабочей базе знаний, а не как к полностью оригинальному standalone-тексту.
 """.format(base=base)
 
     return """---
@@ -247,9 +245,11 @@ A practical knowledge base for architecture review, secure development, Kubernet
 - [AI Security]({base}/en/ai-security/securing-ai/overview/)
 - [Reference]({base}/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Editorial Model
+## About
 
-Source documents live in `content/` and `reference/`. This Starlight structure is generated automatically and is not the primary editing surface.
+My name is Oleg. I maintain this knowledge base as a working collection of Product Security materials.
+
+Not every document here was written entirely from scratch by one person. Some sections compile and adapt existing practices, public knowledge, and practical review patterns, with additional analysis, editing, and production context. Treat this repository as curated working material rather than purely original standalone writing.
 """.format(base=base)
 
 

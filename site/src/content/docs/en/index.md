@@ -16,6 +16,8 @@ A practical knowledge base for architecture review, secure development, Kubernet
 - [AI Security](/Product-security-playbook/en/ai-security/securing-ai/overview/)
 - [Reference](/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Editorial Model
+## About
 
-Source documents live in `content/` and `reference/`. This Starlight structure is generated automatically and is not the primary editing surface.
+My name is Oleg Valiukhov. I maintain this knowledge base as a working collection of Product Security, AppSec, DevSecOps, platform security, supply chain, and AI security materials.
+
+Not every document here was written entirely from scratch by one person. Some sections compile and adapt existing practices, public knowledge, and practical review patterns, with additional analysis, editing, and production context. Treat this repository as curated working material rather than purely original standalone writing.

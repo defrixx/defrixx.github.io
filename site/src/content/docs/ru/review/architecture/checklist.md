@@ -1,7 +1,6 @@
 ---
 title: "Чеклист ревью архитектуры безопасности"
 description: "Этот чеклист нужен для того, чтобы системно оценить, как архитектурные изменения влияют на риск безопасности до релиза."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/architecture/checklist.ru.md"
 sidebar:
   order: 10
 ---

@@ -1,7 +1,6 @@
 ---
 title: "Чеклист ревью seccomp в Kubernetes"
 description: "Используйте этот чеклист, чтобы проверить, применяется ли seccomp для Kubernetes workload'ов **корректно, реалистично и безопасно**."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/seccomp/checklist.ru.md"
 sidebar:
   order: 50
 ---

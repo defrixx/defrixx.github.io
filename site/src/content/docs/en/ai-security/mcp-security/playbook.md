@@ -1,7 +1,6 @@
 ---
 title: "MCP Security Playbook"
 description: "This playbook covers production use of Model Context Protocol (MCP) where AI applications discover or invoke tools, resources, or reusable prompts through local or remote MCP se..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/mcp-security/playbook.en.md"
 sidebar:
   order: 40
 ---

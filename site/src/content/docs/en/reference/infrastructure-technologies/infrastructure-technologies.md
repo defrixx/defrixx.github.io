@@ -1,7 +1,6 @@
 ---
 title: "Infrastructure Technologies"
 description: "This document explains how key technologies commonly seen in live infrastructure and security reviews work. It does not replace playbooks: the focus here is purpose, operating m..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/reference/infrastructure-technologies/infrastructure-technologies.en.md"
 sidebar:
   order: 10
 ---

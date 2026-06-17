@@ -1,7 +1,6 @@
 ---
 title: "Security Playbook for OIDC + OAuth 2.0"
 description: "This playbook describes secure OIDC (authentication) and OAuth 2.0 (authorization) integration with Keycloak."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/identity/oidc-oauth/playbook.en.md"
 sidebar:
   order: 60
 ---

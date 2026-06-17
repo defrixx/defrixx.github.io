@@ -16,6 +16,8 @@ sidebar:
 - [AI Security](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
 - [Справочник](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Редакционная модель
+## Об авторе
 
-Исходные документы находятся в `content/` и `reference/`. Эта Starlight-структура генерируется автоматически и не является основным местом редактирования.
+Меня зовут Oleg Valiukhov. Я веду эту базу как рабочую коллекцию материалов по Product Security, AppSec, DevSecOps, платформенной безопасности, supply chain и AI security.
+
+Не каждый документ здесь написан полностью с нуля одним человеком. Часть материалов компилирует и адаптирует существующие практики, публичные знания и рабочие подходы, а также дополняет их анализом, редактурой и production-контекстом. Относитесь к репозиторию как к курируемой рабочей базе знаний, а не как к полностью оригинальному standalone-тексту.

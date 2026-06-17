@@ -1,7 +1,6 @@
 ---
 title: "Kubernetes Adversarial Validation"
 description: "This playbook describes how to translate Kubernetes attack paths into safe live-environment validation. The focus is a verifiable cycle:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/adversarial-validation/playbook.en.md"
 sidebar:
   order: 20
 ---

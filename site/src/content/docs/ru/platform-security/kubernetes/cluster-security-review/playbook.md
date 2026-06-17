@@ -1,7 +1,6 @@
 ---
 title: "Плейбук ревью безопасности Kubernetes-кластера"
 description: "Этот плейбук описывает **практическое ревью безопасности Kubernetes-кластера** на уровне:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/cluster-security-review/playbook.ru.md"
 sidebar:
   order: 10
 ---

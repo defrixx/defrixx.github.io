@@ -1,7 +1,6 @@
 ---
 title: "Плейбук защиты Web Application по OWASP Top 10"
 description: "Документ сохраняет детальную структуру OWASP Top 10:2021 ради стабильных review links и добавляет явное соответствие OWASP Top 10:2025, актуальному релизу OWASP для web applicat..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/web/owasp-top-10/playbook.ru.md"
 sidebar:
   order: 10
 ---

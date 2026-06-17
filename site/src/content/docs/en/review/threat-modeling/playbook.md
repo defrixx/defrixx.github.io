@@ -1,7 +1,6 @@
 ---
 title: "Threat Modeling Playbook"
 description: "Threat modeling is needed to understand in advance how a system can be attacked, which assets and business operations would be affected, which controls already reduce risk, wher..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/threat-modeling/playbook.en.md"
 sidebar:
   order: 20
 ---

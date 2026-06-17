@@ -1,7 +1,6 @@
 ---
 title: "Vault Security Playbook"
 description: "This document is for platform engineers, security engineers, and service owners who run Vault in Kubernetes-based environments."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/secrets/vault/playbook.en.md"
 sidebar:
   order: 70
 ---

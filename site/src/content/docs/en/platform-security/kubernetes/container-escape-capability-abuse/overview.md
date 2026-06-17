@@ -1,7 +1,6 @@
 ---
 title: "Container Escape and Capability Abuse: Attack Vectors Overview"
 description: "This note explains two related but distinct risk areas in container security:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/container-escape-capability-abuse/overview.en.md"
 sidebar:
   order: 60
 ---

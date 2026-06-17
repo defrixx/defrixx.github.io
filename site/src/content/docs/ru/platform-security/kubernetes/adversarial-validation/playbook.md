@@ -1,7 +1,6 @@
 ---
 title: "Adversarial validation Kubernetes-кластера"
 description: "Этот плейбук описывает, как переводить Kubernetes attack paths в безопасные проверки для рабочих сред. Фокус на проверяемом цикле:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/adversarial-validation/playbook.ru.md"
 sidebar:
   order: 20
 ---

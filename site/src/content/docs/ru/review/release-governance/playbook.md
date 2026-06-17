@@ -1,7 +1,6 @@
 ---
 title: "Плейбук управления релизами и security quality gates"
 description: "Этот плейбук задает слой контроля релизов вокруг CI/CD: security quality gates, protected environments, deployment approvals, релизные подтверждения, обработку исключений и эска..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/release-governance/playbook.ru.md"
 sidebar:
   order: 30
 ---

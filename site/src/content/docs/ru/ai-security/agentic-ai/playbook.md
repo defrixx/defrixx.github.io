@@ -1,7 +1,6 @@
 ---
 title: "Плейбук безопасности Agentic AI"
 description: "Этот плейбук покрывает AI agents и multi-agent workflows, которые планируют действия, вызывают tools, используют memory, извлекают context, выполняют code, работают с web или ме..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/agentic-ai/playbook.ru.md"
 sidebar:
   order: 30
 ---

@@ -1,7 +1,6 @@
 ---
 title: "Kubernetes Secrets Security"
 description: "This playbook covers protection of native Kubernetes `Secret` objects and the path that delivers secrets into workload runtime."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/secrets/playbook.en.md"
 sidebar:
   order: 40
 ---

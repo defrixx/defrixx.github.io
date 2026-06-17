@@ -1,7 +1,6 @@
 ---
 title: "Agentic AI Security Playbook"
 description: "This playbook covers AI agents and multi-agent workflows that plan, call tools, use memory, retrieve context, execute code, browse the web, or change business state."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/agentic-ai/playbook.en.md"
 sidebar:
   order: 30
 ---

@@ -1,7 +1,6 @@
 ---
 title: "Выход из контейнера и злоупотребление capabilities: обзор векторов атак"
 description: "Эта заметка объясняет две связанные, но разные зоны риска в безопасности контейнеров:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md"
 sidebar:
   order: 60
 ---

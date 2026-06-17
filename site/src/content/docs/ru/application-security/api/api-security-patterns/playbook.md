@@ -1,7 +1,6 @@
 ---
 title: "Плейбук по безопасности API и типовым интеграциям"
 description: "Этот плейбук описывает основные виды API, применимые угрозы, базовые меры защиты и типовые схемы интеграций для REST, SOAP/XML, GraphQL, Webhook и gRPC."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/api/api-security-patterns/playbook.ru.md"
 sidebar:
   order: 30
 ---

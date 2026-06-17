@@ -1,7 +1,6 @@
 ---
 title: "Безопасность AI: обзор"
 description: "Этот обзор направлен на обеспечение безопасности систем в рабочих средах:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/securing-ai/overview.ru.md"
 sidebar:
   order: 10
 ---

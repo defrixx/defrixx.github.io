@@ -1,7 +1,6 @@
 ---
 title: "Security Architecture Review Checklist"
 description: "This checklist is used to systematically assess how architecture changes affect security risk before release."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/architecture/checklist.en.md"
 sidebar:
   order: 10
 ---

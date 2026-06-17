@@ -31,9 +31,6 @@ export default defineConfig({
           lang: 'en',
         },
       },
-      editLink: {
-        baseUrl: 'https://github.com/defrixx/Product-security-playbook/edit/main/',
-      },
       social: [
         {
           icon: 'github',

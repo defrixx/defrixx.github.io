@@ -1,7 +1,6 @@
 ---
 title: "Browser and Frontend Security Playbook"
 description: "This playbook defines a release review baseline for browser-facing applications: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content, and f..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/web/browser-security/playbook.en.md"
 sidebar:
   order: 20
 ---

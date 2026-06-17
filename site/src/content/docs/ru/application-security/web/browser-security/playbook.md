@@ -1,7 +1,6 @@
 ---
 title: "Плейбук безопасности браузера и frontend-части"
 description: "Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/web/browser-security/playbook.ru.md"
 sidebar:
   order: 20
 ---

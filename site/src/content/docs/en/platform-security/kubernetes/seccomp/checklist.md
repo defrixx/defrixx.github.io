@@ -1,7 +1,6 @@
 ---
 title: "Kubernetes Seccomp Review Checklist"
 description: "Use this checklist to verify whether seccomp is applied **correctly, realistically, and safely** for Kubernetes workloads."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/seccomp/checklist.en.md"
 sidebar:
   order: 50
 ---

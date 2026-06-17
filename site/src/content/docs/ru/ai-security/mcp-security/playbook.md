@@ -1,7 +1,6 @@
 ---
 title: "Плейбук безопасности MCP"
 description: "Этот плейбук покрывает использование Model Context Protocol (MCP) в рабочих средах, где AI-приложения обнаруживают или вызывают tools, resources и reusable prompts через локальн..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/mcp-security/playbook.ru.md"
 sidebar:
   order: 40
 ---

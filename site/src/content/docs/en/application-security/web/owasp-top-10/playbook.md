@@ -1,7 +1,6 @@
 ---
 title: "Web Application Defense Playbook for OWASP Top 10"
 description: "This document keeps the detailed OWASP Top 10:2021 structure for stable review links and adds an explicit mapping to OWASP Top 10:2025, which is the current OWASP web applicatio..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/web/owasp-top-10/playbook.en.md"
 sidebar:
   order: 10
 ---

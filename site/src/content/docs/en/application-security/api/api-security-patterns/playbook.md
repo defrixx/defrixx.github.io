@@ -1,7 +1,6 @@
 ---
 title: "API Security and Integration Patterns Playbook"
 description: "This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook and gRPC APIs."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/api/api-security-patterns/playbook.en.md"
 sidebar:
   order: 30
 ---

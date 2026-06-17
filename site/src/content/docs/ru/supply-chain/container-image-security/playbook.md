@@ -1,7 +1,6 @@
 ---
 title: "Плейбук безопасности container images и OCI registry"
 description: "Этот плейбук описывает ревью безопасности container images и OCI registries: структуру image, базовый профиль Dockerfile, утечки секретов, привязку к digest, multi-platform imag..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/supply-chain/container-image-security/playbook.ru.md"
 sidebar:
   order: 20
 ---

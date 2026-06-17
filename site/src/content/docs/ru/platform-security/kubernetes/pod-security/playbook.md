@@ -1,7 +1,6 @@
 ---
 title: "Усиление безопасности Pod в Kubernetes"
 description: "Фокус строго на **безопасности runtime Pod / Container**:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/pod-security/playbook.ru.md"
 sidebar:
   order: 30
 ---

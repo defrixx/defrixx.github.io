@@ -1,7 +1,6 @@
 ---
 title: "OWASP Top 10 for LLM Applications (2025)"
 description: "This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2025)."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/owasp-llm-top-10/overview.en.md"
 sidebar:
   order: 20
 ---

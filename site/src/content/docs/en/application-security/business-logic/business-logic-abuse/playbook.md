@@ -1,7 +1,6 @@
 ---
 title: "Business Logic Abuse Playbook"
 description: "This playbook covers abuse of valid product functionality: account takeover pressure, signup/trial/promo abuse, inventory and booking manipulation, tenant isolation abuse, workf..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/business-logic/business-logic-abuse/playbook.en.md"
 sidebar:
   order: 40
 ---

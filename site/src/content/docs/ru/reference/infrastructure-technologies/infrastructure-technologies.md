@@ -1,7 +1,6 @@
 ---
 title: "Infrastructure Technologies"
 description: "Этот документ описывает, как работают ключевые технологии, которые часто встречаются в рабочей инфраструктуре и security review. Он не заменяет плейбуки: здесь фокус на назначен..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/reference/infrastructure-technologies/infrastructure-technologies.ru.md"
 sidebar:
   order: 10
 ---

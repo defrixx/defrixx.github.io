@@ -1,7 +1,6 @@
 ---
 title: "Kubernetes Pod Security Hardening"
 description: "Focus strictly on **Pod / Container runtime security**:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/pod-security/playbook.en.md"
 sidebar:
   order: 30
 ---

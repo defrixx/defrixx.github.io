@@ -1,7 +1,6 @@
 ---
 title: "Руководство по безопасности Vault"
 description: "Этот документ предназначен для платформенных инженеров, инженеров безопасности и владельцев сервисов, которые запускают Vault в средах на базе Kubernetes."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/secrets/vault/playbook.ru.md"
 sidebar:
   order: 70
 ---

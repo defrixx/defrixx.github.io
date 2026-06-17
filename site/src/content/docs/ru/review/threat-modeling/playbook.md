@@ -1,7 +1,6 @@
 ---
 title: "Плейбук по моделированию угроз"
 description: "Моделирование угроз нужно, чтобы заранее понять, как система может быть атакована, какие активы и бизнес-операции пострадают, какие меры контроля уже снижают риск, где есть разр..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/threat-modeling/playbook.ru.md"
 sidebar:
   order: 20
 ---

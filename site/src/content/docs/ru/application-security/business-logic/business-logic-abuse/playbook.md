@@ -1,7 +1,6 @@
 ---
 title: "Плейбук abuse бизнес-логики"
 description: "Этот плейбук покрывает злоупотребление легитимной функциональностью продукта: давление на захват учетной записи, злоупотребление signup/trial/promo, манипуляции с inventory и bo..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/business-logic/business-logic-abuse/playbook.ru.md"
 sidebar:
   order: 40
 ---

@@ -1,7 +1,6 @@
 ---
 title: "SLSA Provenance (v1.2) для контейнерных образов: Обзор"
 description: "Этот обзор описывает, как применять Build track `SLSA v1.2` к CI/CD-пайплайну, который собирает и публикует контейнерные образы."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/supply-chain/slsa-provenance/overview.ru.md"
 sidebar:
   order: 10
 ---

@@ -1,7 +1,6 @@
 ---
 title: "Безопасность Kubernetes Secrets"
 description: "Этот плейбук описывает защиту встроенных Kubernetes-объектов `Secret` и путь доставки секретов в runtime для workload'ов."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/secrets/playbook.ru.md"
 sidebar:
   order: 40
 ---

@@ -1,7 +1,6 @@
 ---
 title: "SLSA Provenance (v1.2) for Container Images: Overview"
 description: "This overview describes how to apply the `SLSA v1.2` Build track to a CI/CD pipeline that builds and publishes container images."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/supply-chain/slsa-provenance/overview.en.md"
 sidebar:
   order: 10
 ---

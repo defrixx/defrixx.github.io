@@ -1,7 +1,6 @@
 ---
 title: "Kubernetes Cluster Security Review Playbook"
 description: "This playbook defines a **practical Kubernetes cluster security review** across:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/platform-security/kubernetes/cluster-security-review/playbook.en.md"
 sidebar:
   order: 10
 ---

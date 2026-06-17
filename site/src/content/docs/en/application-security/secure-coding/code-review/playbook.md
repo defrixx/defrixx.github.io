@@ -1,7 +1,6 @@
 ---
 title: "Secure Coding and Code Review Playbook"
 description: "This playbook covers code-level security review for application changes: input validation, output encoding, authentication/session implementation, access control, injection, fil..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/secure-coding/code-review/playbook.en.md"
 sidebar:
   order: 50
 ---

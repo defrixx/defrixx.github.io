@@ -1,7 +1,6 @@
 ---
 title: "Плейбук безопасной разработки и ревью кода"
 description: "Этот плейбук описывает ревью безопасности на уровне кода: валидацию входных данных, кодирование вывода, реализацию аутентификации и сессий, контроль доступа, защиту от инъекций,..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/secure-coding/code-review/playbook.ru.md"
 sidebar:
   order: 50
 ---

@@ -1,7 +1,6 @@
 ---
 title: "Container Image Security and OCI Registry Playbook"
 description: "This playbook covers the security review of container images and OCI registries: image structure, Dockerfile baseline, secrets leakage, digest pinning, multi-platform images, re..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/supply-chain/container-image-security/playbook.en.md"
 sidebar:
   order: 20
 ---

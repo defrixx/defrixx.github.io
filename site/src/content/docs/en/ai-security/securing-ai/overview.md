@@ -1,7 +1,6 @@
 ---
 title: "Securing AI: Overview"
 description: "This overview is aimed at securing live systems:"
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/ai-security/securing-ai/overview.en.md"
 sidebar:
   order: 10
 ---

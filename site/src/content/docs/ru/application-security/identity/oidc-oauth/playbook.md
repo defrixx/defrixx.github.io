@@ -1,7 +1,6 @@
 ---
 title: "Руководство по безопасности OIDC + OAuth 2.0"
 description: "Этот документ описывает безопасную интеграцию OIDC (аутентификация) и OAuth 2.0 (авторизация) с Keycloak."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/application-security/identity/oidc-oauth/playbook.ru.md"
 sidebar:
   order: 60
 ---

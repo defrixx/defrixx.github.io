@@ -1,7 +1,6 @@
 ---
 title: "Release Governance and Security Quality Gates Playbook"
 description: "This playbook defines the release-control layer around CI/CD: security quality gates, protected environments, deployment approvals, release evidence, exception handling, and esc..."
-editUrl: "https://github.com/defrixx/Product-security-playbook/edit/main/content/review/release-governance/playbook.en.md"
 sidebar:
   order: 30
 ---
