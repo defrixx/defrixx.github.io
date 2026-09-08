@@ -72,6 +72,8 @@ Where relevant, distinguish between:
 **Pod-level controls:**
 - `hostUsers: false`
 
+**Control boundaries:** `runAsNonRoot` prevents the container process from running with UID `0`; `hostUsers: false` assigns a separate user namespace to the Pod. Rootless node components limit the privileges of kubelet and the runtime themselves relative to the host and require separate configuration. Setting `hostUsers: false` does not prove that the node runs rootless. See [cluster security review, §3.8](../cluster-security-review/playbook.en.md#38-node-components-without-host-root-privileges-rootless) for verification.
+
 **User namespaces in Kubernetes `v1.36+`:**
 - User Namespaces are GA for Linux workloads; Pod-level enablement is done with `hostUsers: false`.
 - In live environments, use `hostUsers: false` as the default workload-isolation recommendation where it is compatible with the container runtime, kernel, and storage stack.

@@ -76,6 +76,8 @@ sidebar:
 **Меры уровня Pod:**
 - `hostUsers: false`
 
+**Область действия мер:** `runAsNonRoot` запрещает запуск процесса контейнера с UID `0`; `hostUsers: false` задаёт отдельное пользовательское пространство имён для Pod. Запуск компонентов узла в режиме rootless ограничивает привилегии самого kubelet и среды выполнения относительно хоста и требует отдельной настройки. Значение `hostUsers: false` не подтверждает, что узел работает в режиме rootless. Проверки этого режима описаны в [ревью безопасности кластера, §3.8](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/#38-компоненты-узла-без-root-привилегий-rootless).
+
 **User namespaces в Kubernetes `v1.36+`:**
 - User Namespaces переведены в GA для Linux рабочих нагрузок; включение на уровне Pod выполняется через `hostUsers: false`.
 - Для рабочих сред используйте `hostUsers: false` как стандартную рекомендацию изоляции рабочих нагрузок там, где это совместимо с container runtime, kernel и storage stack.

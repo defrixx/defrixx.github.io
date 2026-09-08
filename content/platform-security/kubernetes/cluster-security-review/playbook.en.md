@@ -261,6 +261,23 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 
 ---
 
+### 3.8 Node components without host root privileges (rootless)
+
+`KubeletInUserNamespace` allows kubelet and the container runtime to run in a Linux user namespace, limiting their privileges relative to the host. In Kubernetes `v1.37`, the feature graduated to beta and its feature gate is enabled by default. The gate does not convert existing nodes to rootless mode: component startup must be configured separately.
+
+**What to verify:**
+- the distribution or managed-service provider supports this mode for the exact Kubernetes, kernel, and runtime versions; cgroup v2, cgroup tree delegation, and UID/GID mappings are recorded;
+- `runningInUserNamespace` in `kubectl get nodes -o yaml`, together with kubelet and runtime startup configuration and their host UID/GID mappings, confirms the mode; the feature gate alone is insufficient;
+- CNI, CSI, and system DaemonSets work in the selected configuration; components requiring host root privileges are placed on compatible nodes using managed labels, taints, and scheduling rules.
+
+**Recommended control:**
+- treat rootless as an additional control for supported configurations, rather than a mandatory acceptance condition for every cluster; start with a separate node pool and record an owner, rollout acceptance criteria, and a rollback plan;
+- before expanding the rollout, test cross-node networking, DNS, Services, NetworkPolicy enforcement, mounting and remounting actual workload volumes, resource limits, log collection, and security tooling; repeat after node reboot and upgrade, and rehearse rollback;
+- assess limitations affecting AppArmor/SELinux and kernel observability, and verify how required host sysctl settings are applied: kubelet in this mode may ignore errors setting certain sysctls and accessing `/dev/kmsg`. Do not disable existing safeguards merely to make startup succeed without a separate assessment and documented exception;
+- retain RBAC, admission controls, and [Pod Security](../pod-security/playbook.en.md) requirements: rootless does not eliminate shared-kernel risks or access through the Kubernetes API.
+
+---
+
 ## 4. Minimum Policy Gates for Live Environments
 
 The minimum gatekeeping baseline should include:
