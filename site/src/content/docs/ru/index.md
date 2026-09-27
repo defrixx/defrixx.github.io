@@ -1,24 +1,34 @@
 ---
 title: "Product Security Playbook"
-description: "Практическая база знаний по AppSec, Platform Security, Supply Chain и AI Security."
+description: "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
 sidebar:
   order: 0
 ---
 
-Практическая база знаний по архитектурному ревью, безопасной разработке, Kubernetes, безопасности цепочки поставки ПО, AI Security и управлению контролями релиза.
+Практические плейбуки по безопасности для архитектурного ревью, моделирования угроз, безопасного жизненного цикла разработки, облачных систем, цепочки поставки ПО и ИИ.
+
+Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
+
+В центре внимания: [архитектурное ревью](/Product-security-playbook/ru/review/architecture/checklist/), [моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/).
+
+[Скиллы для ИИ-ассистентов](/Product-security-playbook/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
 
 ## Основные разделы
 
 - [Ревью и управление](/Product-security-playbook/ru/review/architecture/checklist/)
-- [Application Security](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
-- [Platform Security](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Supply Chain](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
-- [AI Security](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
+- [Безопасность приложений](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
+- [Безопасность платформы](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Цепочка поставки](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
+- [Безопасность ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
+- [ИИ и автоматизация](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
 - [Справочник](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Об авторе
+## О проекте
 
-Меня зовут Олег. Я веду эту базу как рабочую коллекцию материалов по безопасности продуктов.
-Сначала готовились английские версии документов, а русские создавались с помощью машинного перевода и затем редактировались вручную.
+Этот проект представляет собой курируемую и постоянно обновляемую базу знаний по безопасности продуктов с акцентом на практическую инженерную работу.
 
-Не каждый документ здесь написан полностью с нуля одним человеком. Часть материалов объединяет и адаптирует существующие практики, общедоступные знания и рабочие подходы, дополняя их анализом, редактурой и контекстом эксплуатации. Относитесь к репозиторию как к курируемой рабочей базе знаний, а не как к полностью оригинальному самостоятельному тексту.
+Материалы объединяют отраслевые стандарты, открытые исследования, подходы к обеспечению безопасности и инженерный опыт в плейбуки, чеклисты и методики ревью, которые можно применять повторно.
+
+Цель проекта состоит в том, чтобы переводить положения стандартов в рабочие процессы: архитектурное ревью, моделирование угроз, безопасную разработку, защиту платформ, оценку цепочки поставки ПО и проверку ИИ-систем.
+
+Материалы уточняются по мере развития технологий, техник атак и инженерных практик. Подробные ссылки и указания на источники приводятся там, где это необходимо.

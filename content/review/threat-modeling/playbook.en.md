@@ -218,6 +218,10 @@ Example:
 
 ### 4.2 STRIDE and STRIDE-LM
 
+This playbook extends traditional STRIDE with Lateral Movement (`STRIDE-LM`) to make post-compromise propagation explicit. It is a local extension, not the canonical STRIDE acronym.
+
+For each risk scenario, record evidence confidence (`Low`, `Medium`, or `High`), assumptions, missing evidence, and the event that would invalidate the assessment. Keep confidence separate from likelihood and impact.
+
 STRIDE is a threat taxonomy, not a full methodology.
 
 Categories:

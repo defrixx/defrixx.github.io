@@ -219,3 +219,5 @@ Escalation triggers:
 - [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
 - [Container image security playbook](/Product-security-playbook/en/supply-chain/container-image-security/playbook/)
 - [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Agent instruction and configuration review](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
+- [SLSA Source Track](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/#source-track-review)

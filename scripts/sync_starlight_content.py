@@ -37,6 +37,7 @@ TOP_LEVEL_ORDER = {
     "platform-security": 30,
     "supply-chain": 40,
     "ai-security": 50,
+    "ai-automation": 55,
     "reference": 60,
 }
 
@@ -60,6 +61,10 @@ PAGE_ORDER = {
     "platform-security/secrets/vault/playbook": 70,
     "supply-chain/slsa-provenance/overview": 10,
     "supply-chain/container-image-security/playbook": 20,
+    "ai-automation/security-skills/overview": 10,
+    "ai-automation/security-skills/secure-development/overview": 20,
+    "ai-automation/security-skills/security-review/overview": 30,
+    "ai-automation/security-skills/sensitive-data-cleanup/overview": 40,
     "ai-security/securing-ai/overview": 10,
     "ai-security/owasp-llm-top-10/overview": 20,
     "ai-security/agentic-ai/playbook": 30,
@@ -203,29 +208,40 @@ def index_content(lang: str) -> str:
     if lang == "ru":
         return """---
 title: "Product Security Playbook"
-description: "Практическая база знаний по AppSec, Platform Security, Supply Chain и AI Security."
+description: "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
 sidebar:
   order: 0
 ---
 
-Практическая база знаний по архитектурному ревью, безопасной разработке, Kubernetes, безопасности цепочки поставки ПО, AI Security и управлению контролями релиза.
+Практические плейбуки по безопасности для архитектурного ревью, моделирования угроз, безопасного жизненного цикла разработки, облачных систем, цепочки поставки ПО и ИИ.
+
+Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
+
+В центре внимания: [архитектурное ревью]({base}/ru/review/architecture/checklist/), [моделирование угроз]({base}/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов]({base}/ru/ai-security/agentic-ai/playbook/).
+
+[Скиллы для ИИ-ассистентов]({base}/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
 
 ## Основные разделы
 
 - [Ревью и управление]({base}/ru/review/architecture/checklist/)
-- [Application Security]({base}/ru/application-security/web/owasp-top-10/playbook/)
-- [Platform Security]({base}/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Supply Chain]({base}/ru/supply-chain/slsa-provenance/overview/)
-- [AI Security]({base}/ru/ai-security/securing-ai/overview/)
+- [Безопасность приложений]({base}/ru/application-security/web/owasp-top-10/playbook/)
+- [Безопасность платформы]({base}/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Цепочка поставки]({base}/ru/supply-chain/slsa-provenance/overview/)
+- [Безопасность ИИ]({base}/ru/ai-security/securing-ai/overview/)
+- [ИИ и автоматизация]({base}/ru/ai-automation/security-skills/overview/)
 - [Справочник]({base}/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
-## Об авторе
+## О проекте
 
-Меня зовут Олег. Я веду эту базу как рабочую коллекцию материалов по безопасности продуктов.
-Сначала готовились английские версии документов, а русские создавались с помощью машинного перевода и затем редактировались вручную.
+Этот проект представляет собой курируемую и постоянно обновляемую базу знаний по безопасности продуктов с акцентом на практическую инженерную работу.
 
-Не каждый документ здесь написан полностью с нуля одним человеком. Часть материалов объединяет и адаптирует существующие практики, общедоступные знания и рабочие подходы, дополняя их анализом, редактурой и контекстом эксплуатации. Относитесь к репозиторию как к курируемой рабочей базе знаний, а не как к полностью оригинальному самостоятельному тексту.
-""".format(base=base)
+Материалы объединяют отраслевые стандарты, открытые исследования, подходы к обеспечению безопасности и инженерный опыт в плейбуки, чеклисты и методики ревью, которые можно применять повторно.
+
+Цель проекта состоит в том, чтобы переводить положения стандартов в рабочие процессы: архитектурное ревью, моделирование угроз, безопасную разработку, защиту платформ, оценку цепочки поставки ПО и проверку ИИ-систем.
+
+Материалы уточняются по мере развития технологий, техник атак и инженерных практик. Подробные ссылки и указания на источники приводятся там, где это необходимо.
+
+""".format(base=base).rstrip() + "\n"
 
     return """---
 title: "Product Security Playbook"
@@ -234,7 +250,13 @@ sidebar:
   order: 0
 ---
 
-A practical knowledge base for architecture review, secure development, Kubernetes, supply chain, AI security, and security quality gates.
+Practical security engineering playbooks for architecture review, threat modeling, secure SDLC, cloud-native systems, software supply chain, and AI security.
+
+Built as a working knowledge base for designing security controls, reviewing architectures, making risk decisions, and integrating security into engineering workflows.
+
+Featured areas: [Architecture Review]({base}/en/review/architecture/checklist/), [Threat Modeling]({base}/en/review/threat-modeling/playbook/), [AI & Agentic Security]({base}/en/ai-security/agentic-ai/playbook/).
+
+[Security Skills for AI assistants]({base}/en/ai-automation/security-skills/overview/): secure development, code review, and sensitive data cleanup.
 
 ## Main Sections
 
@@ -243,14 +265,22 @@ A practical knowledge base for architecture review, secure development, Kubernet
 - [Platform Security]({base}/en/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Supply Chain]({base}/en/supply-chain/slsa-provenance/overview/)
 - [AI Security]({base}/en/ai-security/securing-ai/overview/)
+- [AI & Automation]({base}/en/ai-automation/security-skills/overview/)
 - [Reference]({base}/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## About
 
-My name is Oleg. I maintain this knowledge base as a working collection of Product Security materials.
+This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
 
-Not every document here was written entirely from scratch by one person. Some sections compile and adapt existing practices, public knowledge, and practical review patterns, with additional analysis, editing, and production context. Treat this repository as curated working material rather than purely original standalone writing.
-""".format(base=base)
+The content combines industry standards, public research, security frameworks, and hands-on engineering practices into reusable playbooks, checklists, and review approaches.
+
+Its goal is not to reproduce existing standards, but to translate them into practical workflows that can be applied during architecture reviews, threat modeling, secure development, platform security, software supply chain assessments, and AI security reviews.
+
+Materials are continuously refined as technologies, attack techniques, and engineering practices evolve.
+
+Detailed references and source attribution are provided where applicable.
+
+""".format(base=base).rstrip() + "\n"
 
 
 def validate_pairs(files: list[Path]) -> list[str]:

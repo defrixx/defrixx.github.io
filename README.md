@@ -32,7 +32,7 @@ Treat this repository as curated working material rather than purely original st
 - [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, exploitability, SLA, release blocking, exceptions, and closure evidence
 
 ### Application Security
-- [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - practical defense playbook for OWASP Top 10 (2025)
+- [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - web control catalogue with OWASP Top 10:2021 and 2025 mappings
 - [`content/application-security/web/browser-security/`](content/application-security/web/browser-security/) - browser and frontend controls for CSP, CORS, cookies, third-party scripts, embedded content, and frontend supply chain
 - [`content/application-security/api/api-security-patterns/`](content/application-security/api/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
 - [`content/application-security/business-logic/business-logic-abuse/`](content/application-security/business-logic/business-logic-abuse/) - business logic abuse playbook for ATO, signup/trial/promo abuse, tenant isolation, workflow abuse, and sensitive business flows
@@ -61,3 +61,9 @@ Treat this repository as curated working material rather than purely original st
 
 ### Reference
 - [`reference/infrastructure-technologies/`](reference/infrastructure-technologies/) - overview of infrastructure technologies and their production operating models
+
+### AI & Automation
+- [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - catalogue of the independently maintained Product Security Skills
+- [`content/ai-automation/security-skills/secure-development/`](content/ai-automation/security-skills/secure-development/) - secure development workflow
+- [`content/ai-automation/security-skills/security-review/`](content/ai-automation/security-skills/security-review/) - PR and repository assessment
+- [`content/ai-automation/security-skills/sensitive-data-cleanup/`](content/ai-automation/security-skills/sensitive-data-cleanup/) - preparation of separate cleaned copies

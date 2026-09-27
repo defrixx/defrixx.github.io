@@ -53,10 +53,12 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Application Security',
+          label: 'Безопасность приложений',
+          translations: { en: 'Application Security' },
           items: [
             {
-              label: 'Web',
+              label: 'Веб-безопасность',
+              translations: { en: 'Web' },
               items: [
                 { slug: 'application-security/web/owasp-top-10/playbook' },
                 { slug: 'application-security/web/browser-security/playbook' },
@@ -69,7 +71,8 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Platform Security',
+          label: 'Безопасность платформы',
+          translations: { en: 'Platform Security' },
           items: [
             {
               label: 'Kubernetes',
@@ -86,14 +89,16 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Supply Chain',
+          label: 'Цепочка поставки',
+          translations: { en: 'Supply Chain' },
           items: [
             { slug: 'supply-chain/slsa-provenance/overview' },
             { slug: 'supply-chain/container-image-security/playbook' },
           ],
         },
         {
-          label: 'AI Security',
+          label: 'Безопасность ИИ',
+          translations: { en: 'AI Security' },
           items: [
             { slug: 'ai-security/securing-ai/overview' },
             { slug: 'ai-security/owasp-llm-top-10/overview' },
@@ -103,9 +108,27 @@ export default defineConfig({
           ],
         },
         {
+          label: 'ИИ и автоматизация',
+          translations: { en: 'AI & Automation' },
+          items: [
+            {
+              label: 'Скиллы безопасности',
+              translations: { en: 'Security Skills' },
+              items: [
+                { slug: 'ai-automation/security-skills/overview' },
+                { slug: 'ai-automation/security-skills/secure-development/overview' },
+                { slug: 'ai-automation/security-skills/security-review/overview' },
+                { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Справочник',
           translations: { en: 'Reference' },
-          items: [{ slug: 'reference/infrastructure-technologies/infrastructure-technologies' }],
+          items: [
+            { slug: 'reference/infrastructure-technologies/infrastructure-technologies' },
+          ],
         },
       ],
     }),

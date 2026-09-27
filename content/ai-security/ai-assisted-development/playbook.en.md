@@ -144,7 +144,17 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 - Use a disposable environment per task and short-lived, task-specific credentials.
 - An agent-authored change must not modify or disable the controls that verify that same change.
 
-### 3.8 Release Evidence and Monitoring
+### 3.8 Skills and Agent Instructions
+
+Review `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, MCP configuration, referenced scripts, and templates together before enabling or updating them:
+- Record the source, owner, and approved version of the instruction bundle. Compare updates with the approved content, including referenced helpers.
+- List the tools, writable paths, network destinations, secret access, and external actions it requests. Enforce these permissions outside the model; instructions cannot grant access.
+- Require review for changes to execution commands, dependencies, approval rules, or data destinations. Protect these files with the same branch and ownership rules as security-sensitive code.
+- Test that instructions from a document or tool response cannot expand access, send data to an unapproved destination, or bypass confirmation. Check that disabling the bundle also stops queued and delegated actions that depend on it.
+
+Keep the reviewed changes, permission configuration, and test results with the release evidence. A successful packaging check does not establish safe agent behavior.
+
+### 3.9 Release Evidence and Monitoring
 
 `Baseline`:
 - Retain the task/issue, human owner, changed files, review approvals, CI results, security scan results, and dependency decisions. Do not retain raw sensitive prompts without a defined need.
@@ -217,3 +227,4 @@ A release is approved only when an accountable human understands the change, sco
 - [Threat Modeling playbook](../../review/threat-modeling/playbook.en.md)
 - [Release Governance playbook](../../review/release-governance/playbook.en.md)
 - [SLSA provenance overview](../../supply-chain/slsa-provenance/overview.en.md)
+- [Security Skills catalogue](../../ai-automation/security-skills/overview.en.md)

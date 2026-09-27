@@ -92,6 +92,22 @@ Starting defaults:
 - default state-changing execution flow: `preview -> explicit confirm -> execute`;
 - kill-switch SLO `<=60s` for state-changing or execution agents.
 
+#### Delegation, Approval Binding, and Budgets
+
+Carry the original subject, tenant, authorization and policy context, and delegation chain across agent calls. Reduce delegated permissions to the required subset; delegation cannot increase privilege. Enforce authorization at the tool/action boundary even when a parent agent has approved the plan.
+
+Bind approval to the exact operation, target, material parameters, and expected impact. Recheck that binding immediately before execution. Changed parameters require a new approval; high-risk approvals need a configured expiry and single-use or replay protection appropriate to the operation. Preview text alone is not a permission token.
+
+Set enforceable budgets for tool calls, external requests, spend, tokens/compute, elapsed time, destructive operations, and delegated agents. Children consume the parent's total budget rather than resetting it. Define cancellation and safe recovery when a limit is hit.
+
+Verification: attempt tenant substitution, child privilege expansion, replayed/expired approval, and destination or amount changes after preview. Exhaust the shared budget through parallel children. No unauthorized side effect may occur, and denial must appear in the action trace.
+
+#### Runtime Controls and ACS
+
+The OWASP Agent Control Standard (ACS), introduced in September 2026, provides an evolving model for middleware hooks and portable declarative policy. Record the adopted ACS revision and tested adapter capabilities; this playbook does not claim ACS conformance.
+
+As a playbook baseline, intercept tool invocation before effects occur, resolve agent and original-user identity, evaluate policy, enforce the decision, and trace the action with policy version and reason. A policy engine outage must block high-impact actions. Provide an emergency disable path outside the model and test it against queued work and delegated agents. Test equivalent policies across adapters before claiming portability; a hook that only observes completed effects is not preventive enforcement.
+
 ### 3.3 Memory, Retrieval, and State
 
 `Baseline`:
@@ -177,6 +193,25 @@ Operational signals:
 
 ---
 
+### OWASP Top 10 for Agentic Applications 2026 Crosswalk
+
+This mapping connects existing controls to the 2026 taxonomy; it does not replace the operational review.
+
+| Control section | OWASP risk | Verification |
+| --- | --- | --- |
+| 3.2 | ASI01 Agent Goal Hijack | Injected instructions cannot replace the authorized objective. |
+| 3.2, 3.4 | ASI02 Tool Misuse & Exploitation | An allowed tool rejects forbidden parameters and operations. |
+| 3.1, 3.2 | ASI03 Identity & Privilege Abuse | Child calls cannot gain privileges or switch tenant. |
+| 3.1, 3.4 | ASI04 Agentic Supply Chain Vulnerabilities | A modified instruction package requires review before use. |
+| 3.4 | ASI05 Unexpected Code Execution | Generated code cannot escape the runtime sandbox. |
+| 3.3 | ASI06 Memory & Context Poisoning | Poisoned memory cannot override policy or cross tenant boundaries. |
+| 3.2 | ASI07 Insecure Inter-Agent Communication | Forged delegation context is rejected at the receiving boundary. |
+| 3.2, 3.5 | ASI08 Cascading Failures | Retry and delegation loops stop within shared budgets. |
+| 3.2 | ASI09 Human-Agent Trust Exploitation | Changed targets invalidate approval despite a persuasive explanation. |
+| 3.1, 3.5 | ASI10 Rogue Agents | Unknown agents are isolated and emergency disable stops effects. |
+
+---
+
 ## 5. Review Decision
 
 The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](../../review/vulnerability-management/playbook.en.md) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
@@ -206,3 +241,4 @@ Release is approved only when the agent has bounded autonomy, explicit policy en
 - [Threat modeling playbook](../../review/threat-modeling/playbook.en.md)
 - [Browser security playbook](../../application-security/web/browser-security/playbook.en.md)
 - [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
+- [Agent instruction supply-chain controls](../ai-assisted-development/playbook.en.md#38-skills-and-agent-instructions)

@@ -1,5 +1,5 @@
 ---
-title: "Web Application Defense Playbook for OWASP Top 10"
+title: "Web Security Control Catalogue Playbook: OWASP Top 10:2021 and 2025 Mappings"
 description: "This document keeps the detailed OWASP Top 10:2021 structure for stable review links and adds an explicit mapping to OWASP Top 10:2025, which is the current OWASP web applicatio..."
 sidebar:
   order: 10
@@ -29,7 +29,7 @@ OWASP Top 10:2025 mapping:
 | A07 Authentication Failures | Section 8 | Identity and session details are cross-referenced to the OIDC/OAuth playbook where applicable. |
 | A08 Software or Data Integrity Failures | Section 9 | Includes tampered artifacts/configs, unsafe deserialization, and client-controlled object integrity. |
 | A09 Security Logging and Alerting Failures | Section 10 | Same operational detection and response control family. |
-| A10 Mishandling of Exceptional Conditions | Section 7 and Section 10 | Treat fail-open handling, partial transaction recovery, resource exhaustion, and sensitive error disclosure as release-review items even when no classic injection or auth bypass exists. |
+| A10 Mishandling of Exceptional Conditions | Section 7.5 | Treat fail-open handling, partial transaction recovery, resource exhaustion, and sensitive error disclosure as release-review items even when no classic injection or auth bypass exists. |
 
 ---
 
@@ -484,6 +484,16 @@ False positives / false negatives:
 - Generic STRIDE output can miss fraud and business-state abuse; test real workflows.
 - Unit tests for individual services may miss distributed races and retries.
 - Product-approved behavior can still be a security risk if abuse economics and monitoring are not assessed.
+
+---
+
+### 7.5 A10:2025 Exceptional Conditions
+
+For each critical operation, specify which failures deny the action and which permit a documented degraded mode. Preserve authorization and business invariants during timeout, cancellation, queue saturation, and dependency failure. Bound retries with backoff and a shared time budget; apply backpressure and per-tenant quotas before resource exhaustion propagates. Circuit breakers must not bypass mandatory security checks.
+
+Record commit/rollback boundaries and compensation for partially completed operations. Recovery must determine whether a side effect already occurred before retrying; idempotency records must survive the relevant interruption window. Return safe errors and retain enough internal correlation to investigate.
+
+Negative tests: interrupt the operation before and after commit, exhaust the queue, time out a dependency, open the circuit breaker, and send concurrent retries. Verify no duplicate payment or privilege grant, correct rollback or reconciliation, preserved tenant quotas, safe error messages, and successful recovery without unauthorized state transitions.
 
 ---
 

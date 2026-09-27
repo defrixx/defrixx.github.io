@@ -1,48 +1,48 @@
 ---
 title: "Плейбук безопасности браузера и клиентской части"
-description: "Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content..."
+description: "Этот плейбук задает требования к защите браузерных приложений в рабочих средах: CSP, CORS, cookie, браузерные хранилища, защита от CSRF, сторонние скрипты, встроенное содержимое..."
 sidebar:
   order: 20
 ---
 ## 1. Область и цель
 
-Этот плейбук задает базу для рабочих сред для ревью приложений, работающих в браузере: CSP, CORS, cookies, browser storage, CSRF defenses, third-party scripts, embedded content и мер контроля frontend supply chain.
+Этот плейбук задает требования к защите браузерных приложений в рабочих средах: CSP, CORS, cookie, браузерные хранилища, защита от CSRF, сторонние скрипты, встроенное содержимое и цепочка поставки клиентского кода.
 
 Используйте документ для:
-- SPA, server-rendered web applications, BFF-backed browser flows, административных панелей и встраиваемых виджетов;
-- релизного ревью security headers, browser session handling и third-party frontend dependencies;
-- abuse-case testing для сценариев, где XSS, cross-origin exposure, утечка сессии или компрометация third-party script могут затронуть пользователей.
+- SPA, веб-приложений с серверным формированием страниц, браузерных сценариев с BFF, административных панелей и встраиваемых виджетов;
+- предрелизной проверки заголовков безопасности, обработки браузерных сессий и сторонних зависимостей клиентского кода;
+- проверки сценариев злоупотребления, в которых XSS, раскрытие данных между источниками, утечка сессии или компрометация стороннего скрипта могут затронуть пользователей.
 
 Вне области:
-- дизайн OAuth/OIDC flows: используйте [плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
-- API authorization и меры контроля webhook: используйте [плейбук API security](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/);
-- общее покрытие OWASP Top 10: используйте [плейбук защиты web application](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/).
+- проектирование потоков OAuth/OIDC: используйте [плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
+- авторизация API и защита webhook: используйте [плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/);
+- общее покрытие OWASP Top 10: используйте [плейбук защиты веб-приложений](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/).
 
 Цель:
-- снизить риск кражи учетных записей и сессий, browser-side data exposure, межсайтовых утечек данных, CSRF, clickjacking и компрометации third-party scripts;
-- сделать браузерные меры контроля проверяемыми перед релизом, а не воспринимать headers как формальное усиление только для сканеров.
+- снизить риск кражи учетных записей и сессий, раскрытия данных в браузере и между сайтами, CSRF, подмены интерфейса для перехвата нажатий (clickjacking) и компрометации сторонних скриптов;
+- сделать браузерные меры защиты проверяемыми перед выпуском, а не рассматривать заголовки как формальность для сканеров.
 
 ---
 
 ## 2. Модель угроз
 
 Активы:
-- browser session cookies, CSRF tokens, OAuth/OIDC transient parameters, user profile data, admin UI actions, checkout/payment state и tenant-scoped data, отрисованные в DOM.
+- сессионные cookie, токены CSRF, временные параметры OAuth/OIDC, данные профиля, действия административного интерфейса, состояние заказа и оплаты, данные арендатора, отображаемые в DOM.
 
 Атакующие и точки входа:
-- внешний атакующий, внедряющий script через stored/reflected/DOM XSS;
-- вредоносный или скомпрометированный third-party script/CDN/tag manager;
-- hostile origin, пытающийся читать credentialed cross-origin responses;
-- атакующий, встраивающий sensitive pages во frames;
-- скомпрометированное расширение браузера или local malware; в таких случаях браузерные меры контроля только снижают, но не устраняют риск.
+- внешний атакующий, внедряющий скрипт через хранимый, отраженный или DOM XSS;
+- вредоносный или скомпрометированный сторонний скрипт, CDN или менеджер тегов;
+- враждебный источник, пытающийся читать ответы с учетными данными другого источника;
+- атакующий, встраивающий чувствительные страницы во фреймы;
+- скомпрометированное расширение браузера или локальное вредоносное ПО; в таких случаях браузерная защита снижает, но не устраняет риск.
 
-High-impact сценарии:
-- XSS крадет non-HttpOnly tokens из `localStorage`, вызывает privileged APIs через сессию жертвы или меняет checkout/admin actions.
-- CORS отражает произвольные origins и разрешает credentialed reads из browser session жертвы.
-- Cross-site request запускает state-changing action через cookie-authenticated session жертвы, потому что route полагается на cookies и `SameSite` без server-side request validation.
-- Скомпрометированный analytics или tag-manager script читает sensitive DOM content, session-adjacent data или payment fields.
-- Clickjacking встраивает admin или экран согласования и вынуждает пользователя выполнить destructive action.
-- Third-party CDN script меняется после релиза и выполняет неожиданный код, потому что нет integrity или ownership control.
+Сценарии с высоким воздействием:
+- XSS крадет доступные JavaScript токены из `localStorage`, вызывает привилегированные API в сессии жертвы или меняет действия оплаты и администрирования.
+- CORS отражает произвольные источники и разрешает чтение ответов с учетными данными браузерной сессии жертвы.
+- Межсайтовый запрос меняет состояние через сессию жертвы с аутентификацией по cookie, поскольку обработчик полагается на cookie и `SameSite` без серверной проверки запроса.
+- Скомпрометированный скрипт аналитики или менеджера тегов читает чувствительные данные DOM, сведения, связанные с сессией, или платежные поля.
+- При clickjacking атакующий встраивает административный экран или экран согласования и заставляет пользователя выполнить разрушительное действие.
+- Скрипт стороннего CDN меняется после выпуска и выполняет неожиданный код из-за отсутствия контроля целостности и ответственного за зависимость.
 
 ---
 
@@ -51,133 +51,139 @@ High-impact сценарии:
 ### 3.1 Content Security Policy
 
 Рабочие настройки:
-- Browser-facing applications должны задавать CSP через response header `Content-Security-Policy`, а не только через `<meta>` tag.
+- Задавайте CSP через заголовок ответа `Content-Security-Policy`, а не только через тег `<meta>`.
 - Для новых приложений начинайте с `default-src 'none'` и явно разрешайте нужные классы: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, `form-action` и `object-src`.
-- Используйте `frame-ancestors 'none'` по умолчанию для admin, account, checkout и internal tools. Явные origins допустимы только если embedding нужен по product requirement.
+- Используйте `frame-ancestors 'none'` по умолчанию для администрирования, учетных записей, оплаты и внутренних инструментов. Разрешайте конкретные источники только при явной продуктовой необходимости встраивания.
 - Устанавливайте `base-uri 'none'`, если приложение намеренно не использует `<base>`.
-- Устанавливайте `object-src 'none'`, если нет проверенного legacy plugin requirement; для новых приложений такие исключения должны блокировать релиз.
-- Устанавливайте `form-action 'self'` плюс явные payment/IdP endpoints, когда они нужны.
-- Избегайте `unsafe-inline` и `unsafe-eval` для нового кода. Если legacy code требует их, фиксируйте владелец, affected routes, expiry и компенсирующие меры.
-- Используйте nonce- или hash-based script execution для приложений, где все еще нужны inline bootstrap scripts.
-- Для современных приложений с DOM XSS exposure используйте `script-src-attr 'none'` и включайте Trusted Types там, где они поддерживаются; legacy rollout требует route владельцы, compatibility testing и migration plan для unsafe DOM sinks.
-- Существенные изменения CSP сначала внедряйте через `Content-Security-Policy-Report-Only`, затем включайте enforcement после разбора false positives.
+- Используйте `object-src 'none'`, если нет проверенного требования совместимости со старым плагином. Для новых приложений такое исключение должно блокировать выпуск.
+- Используйте `form-action 'self'`, добавляя конкретные адреса платежных систем и IdP только при необходимости.
+- Избегайте `unsafe-inline` и `unsafe-eval` в новом коде. Если они нужны старому коду, фиксируйте ответственного, затронутые маршруты, срок действия и компенсирующие меры.
+- Если приложению нужны встроенные скрипты начальной загрузки, разрешайте их выполнение по nonce или хешу.
+- Для современных приложений с риском DOM XSS используйте `script-src-attr 'none'` и Trusted Types, где они поддерживаются. При внедрении в старое приложение нужны ответственные за маршруты, тесты совместимости и план замены небезопасных операций DOM.
+- Существенные изменения CSP сначала внедряйте через `Content-Security-Policy-Report-Only`; включайте блокировку после разбора ложноположительных результатов.
 
-Верификация:
-- Проверьте effective header на всех browser entry points, включая error pages, login/callback pages, admin pages и static shell routes.
-- Пройдите representative user journey с включенным CSP reporting и разберите нарушения до enforcement.
-- Негативный тест: injected inline script, inline event handler, `<object>`/plugin load и unapproved external script не должны выполняться в enforced profile.
+Проверка:
+- Проверяйте фактический заголовок во всех браузерных точках входа, включая страницы ошибок, входа и обратного вызова, административные страницы и статическую оболочку приложения.
+- Пройдите типовые пользовательские сценарии с включенными отчетами CSP и разберите нарушения до включения блокировки.
+- Негативный тест: при действующей политике не выполняются внедренный встроенный скрипт, встроенный обработчик события, загрузка `<object>` или плагина и неразрешенный внешний скрипт.
 
-### 3.2 CORS и cross-origin data exposure
-
-Рабочие настройки:
-- Не включайте CORS глобально. Настраивайте его per route или для конкретной API surface, где browser cross-origin access действительно нужен.
-- Credentialed CORS должен использовать exact origin allowlists. Нельзя совмещать reflected arbitrary `Origin` с `Access-Control-Allow-Credentials: true`.
-- Не используйте `Access-Control-Allow-Origin: *` для responses с user, tenant, internal, payment или admin data.
-- Трактуйте `Origin` только как browser signal. Non-browser clients могут его подделать; server-side authentication и authorization остаются обязательными.
-- Ограничивайте allowed methods и headers до минимального operational set.
-- Кэшируйте preflight responses только после стабилизации политики; для sensitive APIs используйте conservative `Access-Control-Max-Age`.
-
-Верификация:
-- Протестируйте разрешенные и запрещенные origin с учетными данными и без них.
-- Проверьте `null` origin, sibling subdomains, attacker-controlled subdomains и HTTP origins против HTTPS APIs.
-- Убедитесь, что sensitive responses не содержат wildcard CORS headers.
-
-### 3.3 Cookies, browser storage и session data
+### 3.2 CORS и раскрытие данных между источниками
 
 Рабочие настройки:
-- Session cookies используют `HttpOnly`, `Secure` и явный `SameSite`.
-- Используйте `SameSite=Lax` для обычных браузерных сессий, если поток не требует cross-site POST или работы во фрейме.
-- Используйте `SameSite=Strict` для high-risk admin или step-up cookies, если UX это допускает.
-- Используйте `SameSite=None; Secure` только для документированных cross-site embed или federated flows.
-- Сужайте `Domain` и `Path`. Не делите session cookies между unrelated subdomains.
-- Используйте префикс cookie `__Host-` для host-only cookie сессии там, где фреймворк и режим развертывания это поддерживают: `Secure`, без `Domain` и с `Path=/`.
-- Не храните access tokens, refresh tokens, session IDs или long-lived secrets в `localStorage`.
-- Для browser apps с durable authentication предпочитайте BFF/session-cookie patterns. Если SPA вынуждена хранить tokens, оформляйте risk decision и держите token lifetime коротким согласно OIDC/OAuth playbook.
+- Не включайте CORS глобально. Настраивайте его для отдельных маршрутов или API, которым действительно нужен доступ из браузера с другого источника.
+- CORS с учетными данными требует списка точных разрешенных источников. Нельзя отражать произвольный `Origin` вместе с `Access-Control-Allow-Credentials: true`.
+- Не используйте `Access-Control-Allow-Origin: *` для ответов с данными пользователей и арендаторов, внутренними, платежными или административными данными.
+- Считайте `Origin` только сигналом браузера. Другие клиенты могут подделать его; серверные аутентификация и авторизация остаются обязательными.
+- Ограничивайте разрешенные методы и заголовки минимально необходимым набором.
+- Кешируйте ответы на предварительные запросы только после стабилизации политики; для чувствительных API задавайте осторожное значение `Access-Control-Max-Age`.
 
-Верификация:
-- Проверьте `Set-Cookie` на login, refresh, step-up, logout и error paths.
-- Подтвердите session ID rotation после login и изменения привилегий.
-- Негативный тест: JavaScript не может читать session cookies; украденное local browser state не содержит reusable refresh tokens.
+Проверка:
+- Проверьте разрешенные и запрещенные источники с учетными данными и без них.
+- Проверьте источник `null`, соседние и контролируемые атакующим поддомены, а также HTTP-источники при обращении к HTTPS API.
+- Убедитесь, что ответы с чувствительными данными не содержат заголовков CORS с широкими шаблонами.
+
+### 3.3 Cookie, браузерные хранилища и данные сессий
+
+Рабочие настройки:
+- Сессионные cookie используют `HttpOnly`, `Secure` и явно заданный `SameSite`.
+- Используйте `SameSite=Lax` для обычных браузерных сессий, если поток не требует межсайтовый POST или работы во фрейме.
+- Используйте `SameSite=Strict` для административных операций с высоким риском и cookie дополнительной аутентификации, если это совместимо с пользовательским сценарием.
+- Используйте `SameSite=None; Secure` только для документированных сценариев межсайтового встраивания или федерации.
+- Ограничивайте `Domain` и `Path`. Не разделяйте сессионные cookie между несвязанными поддоменами.
+- Используйте префикс `__Host-` для сессионных cookie одного хоста, если это поддерживают фреймворк и схема развертывания: `Secure`, без `Domain` и с `Path=/`.
+- Не храните токены доступа и обновления, идентификаторы сессий или долгоживущие секреты в `localStorage`.
+- Для браузерных приложений с длительной аутентификацией предпочитайте BFF и сессионные cookie. Если SPA вынуждена хранить токены, фиксируйте решение по риску и ограничивайте срок их действия по плейбуку OIDC/OAuth.
+
+Проверка:
+- Проверяйте `Set-Cookie` при входе, обновлении, дополнительной аутентификации, выходе и ошибках.
+- Подтвердите смену идентификатора сессии после входа и изменения привилегий.
+- Негативный тест: JavaScript не читает сессионные cookie, а похищенное локальное состояние браузера не содержит пригодных для повторного использования токенов обновления.
 
 ### 3.4 Запросы, изменяющие состояние, и CSRF
 
 Рабочие настройки:
-- Приложения с cookie-based authentication защищают каждый state-changing route через framework CSRF protection, synchronizer token, signed double-submit cookie или Fetch Metadata policy с проверенным fallback для неподдерживаемых clients.
-- Не полагайтесь только на `SameSite` для обычных web applications. Считайте его defense in depth рядом с server-side request validation.
-- State-changing operations не используют `GET`, включая login, logout, password reset consumption, email change, согласование, checkout и admin actions.
-- CSRF tokens уникальны для user session, непредсказуемы, проверяются server-side и никогда не попадают в URLs, logs, analytics events или links, передающие referrer.
-- API-style browser flows, где нельзя использовать form tokens, требуют custom request header и strict CORS policy. Server должен отклонять simple cross-site requests без ожидаемого header или при провале `Origin`/Fetch Metadata checks.
-- Валидируйте `Origin` на state-changing cookie-authenticated requests там, где browsers его отправляют; `Referer` используйте только как fallback поверх HTTPS. Отсутствие Fetch Metadata headers должно обрабатываться по явному compatibility rule, а не молча обходить CSRF enforcement.
-- High-impact actions требуют user interaction или step-up, если replay или clickjacking может привести к существенному ущербу, даже когда CSRF token валиден.
+- Приложения с аутентификацией по cookie защищают каждый маршрут изменения состояния средствами CSRF фреймворка, синхронизирующим токеном, подписанной схемой double-submit cookie или политикой Fetch Metadata с проверенным резервным поведением для неподдерживаемых клиентов.
+- Не полагайтесь только на `SameSite` в обычных веб-приложениях. Это дополнительная защита наряду с серверной проверкой запроса.
+- Операции изменения состояния не используют `GET`: это касается входа, выхода, применения сброса пароля, смены почты, согласования, оплаты и административных действий.
+- Токены CSRF уникальны для сессии пользователя, непредсказуемы и проверяются на сервере. Они не попадают в URL, журналы, события аналитики или ссылки, раскрывающие адрес перехода.
+- При браузерном взаимодействии через API без токенов форм нужны специальный заголовок запроса и строгая политика CORS. Сервер отклоняет простые межсайтовые запросы без ожидаемого заголовка или при неуспешной проверке `Origin` и Fetch Metadata.
+- Проверяйте `Origin` в запросах изменения состояния с аутентификацией по cookie, если браузер его передает. `Referer` используйте только как резервный вариант поверх HTTPS. Отсутствие Fetch Metadata обрабатывайте по явному правилу совместимости, не пропуская проверку CSRF молча.
+- Действия с высоким воздействием требуют участия пользователя или дополнительной аутентификации, если повторное воспроизведение или clickjacking может причинить существенный ущерб, даже при действительном токене CSRF.
 
-Верификация:
-- Negative test: cross-site form POST, image/script tag и simple `fetch` из attacker origin не могут выполнить state-changing action.
-- Подтвердите, что token failure логируется как security event без записи token values.
-- Отдельно протестируйте login, logout, account change, payment, согласование, admin mutation и API mutation routes; не считайте, что один middleware покрывает все route groups.
+Проверка:
+- Негативный тест: межсайтовый POST формы, тег изображения или скрипта и простой `fetch` с источника атакующего не меняют состояние.
+- Убедитесь, что ошибка токена записывается как событие безопасности без самого значения токена.
+- Отдельно проверяйте вход, выход, изменение учетной записи, платежи, согласования, административные изменения и изменения через API. Не предполагайте, что один промежуточный обработчик покрывает все группы маршрутов.
 
-### 3.5 Third-party scripts и frontend supply chain
-
-Рабочие настройки:
-- Ведите inventory third-party scripts: владелец, purpose, touched data и дата согласования.
-- Не загружайте tag-manager или analytics scripts на admin, checkout, identity или sensitive data-entry pages без явного согласования бизнес-владельцем и минимизации данных.
-- Для critical frontend dependencies предпочитайте self-hosting или pinned versions.
-- Используйте SRI для static third-party scripts/styles, если provider и update model это позволяют.
-- Указывайте `crossorigin="anonymous"` для cross-origin SRI resources, когда это требуется поведение браузера.
-- Проверяйте изменения lockfile для npm-пакетов, если они затрагивают frontend-сборку, плагины сборщика, минификаторы, пакеты аутентификации или сессий и платежный интерфейс.
-- Удаляйте unused scripts и stale feature flags; frontend supply-chain risk накапливается через забытые integrations.
-
-Верификация:
-- Сравните runtime-loaded scripts с approved inventory.
-- Проверьте SRI hashes для static CDN resources.
-- Убедитесь, что sensitive DOM fields не доступны scripts, которым они не нужны.
-
-### 3.6 Embedded content и browser APIs
+### 3.5 Сторонние скрипты и цепочка поставки клиентского кода
 
 Рабочие настройки:
-- Используйте `frame-ancestors` для anti-clickjacking. `X-Frame-Options` оставляйте только как compatibility defense, где это нужно.
-- Для untrusted iframes используйте sandbox; capabilities выдавайте явно.
-- Для `postMessage` всегда задавайте specific target origin и точно проверяйте `event.origin` на receive.
-- Считайте `postMessage` data недоверенным input; не выполняйте его как code и не записывайте в DOM через unsafe sinks.
-- Введите явную политику для clipboard, camera, microphone, geolocation, payment и file APIs.
-- Используйте `Permissions-Policy`, чтобы по умолчанию отключать powerful browser features на admin, account, checkout, support и internal-tool pages. Начинайте с deny-by-default и открывайте только features, которые нужны конкретному route:
+- Ведите реестр сторонних скриптов с ответственным, назначением, доступными данными и датой согласования.
+- Не загружайте скрипты менеджера тегов или аналитики на страницы администрирования, оплаты, идентификации или ввода чувствительных данных без явного согласования владельца бизнеса и минимизации данных.
+- Критичные зависимости клиентского кода предпочитайте размещать самостоятельно или закреплять по версии.
+- Используйте SRI для статических сторонних скриптов и стилей, если это позволяют поставщик и порядок обновления.
+- Задавайте `crossorigin="anonymous"` для ресурсов SRI с другого источника, когда этого требует поведение браузера.
+- Проверяйте изменения файла фиксации npm-зависимостей, если они затрагивают сборку клиентского кода, плагины сборщика, минификаторы, пакеты аутентификации и сессий или платежный интерфейс.
+- Удаляйте неиспользуемые скрипты и устаревшие флаги функций: забытые интеграции накапливают риск цепочки поставки.
+
+Проверка:
+- Сравните скрипты, загружаемые при выполнении, с утвержденным реестром.
+- Проверьте хеши SRI статических ресурсов CDN.
+- Убедитесь, что чувствительные поля DOM недоступны скриптам, которым они не нужны.
+
+### 3.6 Встроенное содержимое и API браузера
+
+Рабочие настройки:
+- Используйте `frame-ancestors` для защиты от clickjacking. `X-Frame-Options` оставляйте только для необходимой совместимости.
+- Ограничивайте недоверенные iframe атрибутом `sandbox`; разрешения выдавайте явно.
+- В `postMessage` всегда указывайте точный целевой источник и строго проверяйте `event.origin` при получении.
+- Считайте данные `postMessage` недоверенными. Не выполняйте их как код и не записывайте в DOM через небезопасные операции.
+- Задайте явную политику доступа к буферу обмена, камере, микрофону, геолокации, платежным и файловым API.
+- Используйте `Permissions-Policy`, чтобы по умолчанию отключать чувствительные возможности браузера на страницах администрирования, учетных записей, оплаты, поддержки и внутренних инструментов. Разрешайте только функции, нужные конкретному маршруту:
 
 ```http
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), clipboard-read=(), display-capture=(), fullscreen=(self)
 ```
 
-- Исключения для функций должны иметь владельца, перечень затронутых маршрутов и разрешенных origin, бизнес-обоснование, срок действия или дату пересмотра, а также негативный тест, подтверждающий, что неавторизованные origin не могут использовать функцию. Например, checkout может разрешать `payment=(self)` только на платежных маршрутах, а поток видеоверификации — `camera=(self)` только для origin проверки и только пока эта функция существует.
-- Не выдавайте browser capabilities через iframe `allow` attributes, если parent page `Permissions-Policy` также не разрешает эту feature для embedded origin.
+- Исключение для функции должно содержать ответственного, затронутые маршруты, разрешенные источники, бизнес-обоснование, срок действия или дату пересмотра и негативный тест запрета для остальных источников. Например, оплата может разрешать `payment=(self)` только на платежных маршрутах, а видеопроверка личности может разрешать `camera=(self)` только для своего источника и на срок существования функции.
+- Не выдавайте разрешение атрибутом `allow` у iframe, если `Permissions-Policy` родительской страницы не разрешает ту же функцию для встроенного источника.
 
-Верификация:
-- Попробуйте встроить sensitive pages с untrusted origin.
-- Протестируйте `postMessage` с attacker origins и malformed payloads.
-- Проверьте iframe `sandbox` и `allow` attributes на least privilege.
-- Проверьте effective `Permissions-Policy` response header на sensitive routes через browser DevTools или automated header check.
-- Negative test: unapproved origins и unrelated routes не могут получить доступ к camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth или clipboard-read capabilities.
+Проверка:
+- Попробуйте встроить чувствительные страницы с недоверенного источника.
+- Проверьте `postMessage` с источниками атакующего и некорректными данными.
+- Проверьте минимальность разрешений в атрибутах `sandbox` и `allow` у iframe.
+- Проверяйте фактический заголовок `Permissions-Policy` на чувствительных маршрутах средствами разработчика браузера или автоматической проверкой заголовков.
+- Негативный тест: неразрешенные источники и несвязанные маршруты не получают доступ к камере, микрофону, геолокации, платежам, захвату экрана, USB, последовательным портам, Bluetooth или чтению буфера обмена.
 
-### 3.7 Transport, referrer и browser isolation headers
+### 3.7 Заголовки защиты транспорта, адреса перехода и изоляции браузера
 
 Рабочие настройки:
-- Используйте `Strict-Transport-Security` для HTTPS-приложений после готовности certificate automation и rollback ownership. Production default: `max-age=31536000`; добавляйте `includeSubDomains` только когда все subdomains готовы к HTTPS, а `preload` — только после отдельного ревью владения domain.
-- Задавайте `X-Content-Type-Options: nosniff` для script, style, JSON, file download и API responses, чтобы снизить риск MIME confusion и небезопасной интерпретации content.
-- Задавайте `Referrer-Policy: strict-origin-when-cross-origin` как общий default. Используйте `no-referrer` или `same-origin` для admin, identity, payment, support и sensitive data-entry routes, где внешней analytics или partner redirects не нужен referrer context.
-- Используйте `Cache-Control: no-store` для authenticated pages и responses с user, tenant, payment, admin или regulated data. Static assets могут иметь долгий cache lifetime только при filename/content hashing.
+- Включайте `Strict-Transport-Security` для HTTPS-приложений после настройки автоматизации сертификатов и назначения ответственного за откат. Значение по умолчанию для рабочей среды: `max-age=31536000`. Добавляйте `includeSubDomains`, только когда все поддомены готовы к HTTPS, а `preload` только после отдельной проверки управления доменом.
+- Задавайте `X-Content-Type-Options: nosniff` для скриптов, стилей, JSON, загрузок файлов и ответов API, чтобы снизить риск подмены MIME-типа и небезопасной интерпретации содержимого.
+- По умолчанию задавайте `Referrer-Policy: strict-origin-when-cross-origin`. Для административных, идентификационных, платежных маршрутов, поддержки и ввода чувствительных данных используйте `no-referrer` или `same-origin`, если внешней аналитике и партнерским перенаправлениям не нужен адрес перехода.
+- Используйте `Cache-Control: no-store` для страниц с аутентификацией и ответов с пользовательскими, арендаторскими, платежными, административными или регулируемыми данными. Долгое кеширование статических ресурсов допустимо только при хешировании имени файла или содержимого.
 - Используйте `Cross-Origin-Opener-Policy: same-origin` для страниц администрирования, учетной записи, оформления заказа и внутренних инструментов, если всплывающие окна OAuth или платежного сценария не требуют `same-origin-allow-popups`.
-- Используйте `Cross-Origin-Resource-Policy` для sensitive JSON, media, documents и downloads, чтобы unrelated origins не могли их embedding/consume. Начинайте с `same-origin`; `same-site` используйте только когда sharing между sibling subdomains намеренный.
-- Требуйте `Cross-Origin-Embedder-Policy` только для приложений, которым intentionally нужна cross-origin isolation, например `SharedArrayBuffer` или high-resolution timing features. Не включайте его вслепую: каждый embedded script, worker, frame и media resource должен быть совместим через CORP или CORS.
-- Не полагайтесь на `X-XSS-Protection`; держите его disabled или absent. Современная XSS-защита строится на output encoding, safe DOM APIs, CSP, Trusted Types там, где они поддерживаются, и ревью dangerous sinks.
+- Используйте `Cross-Origin-Resource-Policy` для чувствительных JSON, медиаданных, документов и загрузок, чтобы посторонние источники не могли встраивать или использовать их. Начинайте с `same-origin`; применяйте `same-site` только при намеренном обмене между соседними поддоменами.
+- Требуйте `Cross-Origin-Embedder-Policy` только там, где действительно нужна изоляция между источниками, например для `SharedArrayBuffer` или таймеров высокого разрешения. Перед включением проверьте совместимость каждого встроенного скрипта, фонового обработчика, фрейма и медиаресурса через CORP или CORS.
+- Не полагайтесь на `X-XSS-Protection`: оставляйте его отключенным или отсутствующим. Современная защита от XSS основана на контекстном кодировании вывода, безопасных API DOM, CSP, Trusted Types, где они поддерживаются, и ревью опасных операций.
 
-Верификация:
-- Проверяйте headers на success, error, redirect, login/callback, logout, API, file download и static asset responses; edge/CDN и application responses не должны конфликтовать.
-- Валидируйте HSTS на staging domain перед включением `includeSubDomains` или `preload` на parent domain.
-- Negative test: authenticated sensitive responses не сохраняются browser cache, CDN или shared proxy; cross-origin pages не сохраняют opener access к sensitive routes; unrelated origins не могут embed protected resources.
+Проверка:
+- Проверяйте заголовки успешных ответов, ошибок, перенаправлений, входа и обратных вызовов, выхода, API, загрузок файлов и статических ресурсов. Ответы пограничного узла или CDN не должны конфликтовать с ответами приложения.
+- Проверяйте HSTS на тестовом домене перед включением `includeSubDomains` или `preload` на родительском.
+- Негативный тест: чувствительные ответы с аутентификацией не сохраняются в кеше браузера, CDN или общего прокси; страницы другого источника не сохраняют доступ через открывшее окно к чувствительным маршрутам; посторонние источники не могут встраивать защищенные ресурсы.
 
 ---
+
+### Выбранные проверки ASVS
+
+v5.0.0-3.3.1.
+
+Используйте эти требования ASVS 5.0.0 при оформлении результатов проверки соответствующих мер защиты. Список не заменяет полную оценку по ASVS.
 
 ## 4. Связанные материалы
 
 - [Плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
 - [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Плейбук защиты web application по OWASP Top 10](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
+- [Плейбук защиты веб-приложений по OWASP Top 10](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
 - [Плейбук безопасной разработки и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/)
-- [Плейбук безопасности Agentic AI](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)

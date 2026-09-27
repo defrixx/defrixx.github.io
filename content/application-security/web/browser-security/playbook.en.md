@@ -170,6 +170,12 @@ Verification:
 
 ---
 
+### Selected ASVS verification references
+
+v5.0.0-3.3.1.
+
+Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
+
 ## 4. Related Materials
 
 - [OIDC + OAuth 2.0 playbook](../../identity/oidc-oauth/playbook.en.md)

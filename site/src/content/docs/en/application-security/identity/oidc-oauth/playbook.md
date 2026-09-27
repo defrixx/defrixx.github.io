@@ -136,7 +136,7 @@ Reading rule for controls below:
 | Token TTL/rotation | Short TTLs, refresh token rotation, explicit numeric limits from section 5 | In addition to R: stricter TTLs and degraded windows for high-risk environments | Reduces exploitation window for compromised tokens |
 | Token validation | `iss/aud/exp/nbf/iat/signature`, `alg` allowlist, `nonce`, `azp`, policy checks | In addition to R: mandatory holder-of-key validation for sender-constrained tokens | Protects against forged/misissued tokens, mix-up, and key confusion |
 | Session/Cookies | HttpOnly/Secure/SameSite, narrow Domain/Path, session ID rotation, CSRF controls | In addition to R: no cross-origin on session-bound endpoints without approved exception | Protects against XSS cookie theft, CSRF, fixation, cookie scope abuse |
-| Logout/Revocation | RP-initiated logout + local logout + refresh revocation | In addition to R: mandatory introspection for sensitive APIs in post-logout/post-incident windows | Reduces replay after logout and accelerates revocation effect |
+| Logout/Revocation | RP-initiated logout + local logout + refresh revocation | In addition to R: enforced revocation-latency objective for sensitive APIs after logout or compromise | Reduces replay after logout and accelerates revocation effect |
 | Key management | Planned signing key rotation, trusted JWKS/issuer pinning | In addition to R: faster cadence and stricter emergency cutover SLA | Reduces blast radius in key compromise events |
 | Operations/Monitoring | Baseline rate limits, lockout signals, auth/token anomaly monitoring | In addition to R: stronger anti-automation controls, stricter alerting and SLOs | Reduces brute-force/abuse and improves incident MTTR |
 
@@ -218,7 +218,7 @@ Maximum profile hardening:
 - Rotate session ID after login callback and after privilege elevation
 - Cookie `HttpOnly`: blocks JS access and reduces XSS-driven cookie theft
 - Cookie `Secure`: sends cookie over HTTPS only, reducing in-transit interception risk
-- Cookie `SameSite=Lax` (or `None; Secure` for cross-site SSO): reduces CSRF/login CSRF risk
+- Use `SameSite=Lax` as the common cookie default. Use `SameSite=None; Secure` only when the actual cross-site flow requires it, such as an applicable cross-site POST or embedded flow. Ordinary redirect-based SSO does not inherently require `None`; test the response mode and keep CSRF controls.
 - Narrow `Domain`/`Path`: reduces cross-app leakage and cookie tossing/subdomain takeover impact
 - CSRF protection is mandatory for state-changing BFF endpoints (`POST/PUT/PATCH/DELETE`): use a synchronizer token or a signed double-submit cookie bound to the authenticated session with HMAC and a server-side secret; naive double-submit cookies are not acceptable
 - Validate `Origin` (primary) and `Referer` (fallback) for browser state-changing requests
@@ -235,11 +235,12 @@ Maximum profile hardening:
 - For multi-RP ecosystems, configure back-channel/front-channel logout with fallback behavior
 - For global incidents, use `Sign out all active sessions` + realm/client `Not Before`
 - Treat sign-out alone as insufficient for already issued access tokens until `exp` (see section 5)
-- For sensitive APIs, introspection is mandatory in `<=15m` window after logout/revocation/Not Before update
+- Define and enforce a maximum revocation latency for sensitive APIs. Use introspection/opaque tokens, event-driven invalidation, or access-token lifetimes short enough to meet that objective. Sender-constrained tokens reduce replay but do not themselves revoke a token. Introspection is one architecture choice, not a universal OAuth requirement.
+- Record access-token TTL, refresh-token behavior, compromise response, validation/cache behavior, and local versus IdP logout semantics. Invalidation must reach every serving instance; measure stale-cache behavior during outages.
 - Reject tokens that are inactive, issued before `Not Before`, or violate binding context
 
 Maximum profile hardening:
-- Expand mandatory introspection scope to additional endpoint classes
+- Tighten revocation latency and require an online or event-driven check where offline validation cannot meet it. Test logout and revocation with an already issued token on every API instance, including cache and IdP outage cases.
 
 ### 6.5 Key Management
 
@@ -248,7 +249,7 @@ Maximum profile hardening:
 - Planned realm signing key rotation is mandatory
 - Rotation model: introduce new key in advance (active/passive), retire old key only after compatibility window
 - Emergency compromise response: immediate new key issuance and session/token invalidation
-- Baseline cadence: signing key rotation every `90d`, overlap `24-72h`, emergency cutover `<=1h`
+- Local operational assumption, tune to issuer capability and threat model: signing key rotation every `90d`, overlap `24-72h`, emergency cutover `<=1h`
 - HTTPS only; mTLS for trusted internal channels where required by threat model
 - For confidential clients prefer `private_key_jwt` or mTLS; allow `client_secret` only with mandatory rotation
 
@@ -361,6 +362,12 @@ Maximum profile hardening:
 - Implement the metrics and alerts set from Operations/Monitoring domain
 - Maintain response runbook for replay/brute-force/token-abuse signals
 ---
+
+### Selected ASVS verification references
+
+v5.0.0-9.2.1, v5.0.0-10.3.1.
+
+Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 
 ## 10. Related Materials
 

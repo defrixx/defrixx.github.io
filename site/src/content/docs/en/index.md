@@ -5,7 +5,13 @@ sidebar:
   order: 0
 ---
 
-A practical knowledge base for architecture review, secure development, Kubernetes, supply chain, AI security, and security quality gates.
+Practical security engineering playbooks for architecture review, threat modeling, secure SDLC, cloud-native systems, software supply chain, and AI security.
+
+Built as a working knowledge base for designing security controls, reviewing architectures, making risk decisions, and integrating security into engineering workflows.
+
+Featured areas: [Architecture Review](/Product-security-playbook/en/review/architecture/checklist/), [Threat Modeling](/Product-security-playbook/en/review/threat-modeling/playbook/), [AI & Agentic Security](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
+
+[Security Skills for AI assistants](/Product-security-playbook/en/ai-automation/security-skills/overview/): secure development, code review, and sensitive data cleanup.
 
 ## Main Sections
 
@@ -14,10 +20,17 @@ A practical knowledge base for architecture review, secure development, Kubernet
 - [Platform Security](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Supply Chain](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
 - [AI Security](/Product-security-playbook/en/ai-security/securing-ai/overview/)
+- [AI & Automation](/Product-security-playbook/en/ai-automation/security-skills/overview/)
 - [Reference](/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## About
 
-My name is Oleg. I maintain this knowledge base as a working collection of Product Security materials.
+This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
 
-Not every document here was written entirely from scratch by one person. Some sections compile and adapt existing practices, public knowledge, and practical review patterns, with additional analysis, editing, and production context. Treat this repository as curated working material rather than purely original standalone writing.
+The content combines industry standards, public research, security frameworks, and hands-on engineering practices into reusable playbooks, checklists, and review approaches.
+
+Its goal is not to reproduce existing standards, but to translate them into practical workflows that can be applied during architecture reviews, threat modeling, secure development, platform security, software supply chain assessments, and AI security reviews.
+
+Materials are continuously refined as technologies, attack techniques, and engineering practices evolve.
+
+Detailed references and source attribution are provided where applicable.

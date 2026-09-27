@@ -174,6 +174,14 @@ The matrix covers the OWASP API Security Top 10 2023 categories: BOLA, Broken Au
 
 ---
 
+### Gateway and Backend Trust Boundary
+
+Accept `Forwarded` and `X-Forwarded-*` only from configured trusted proxies. Strip or overwrite externally supplied forwarding fields at the first trusted hop; validate Host/authority and permitted scheme before constructing redirects, callbacks, or security decisions. Define which hop supplies client identity and scheme.
+
+Align gateway/backend parsing and reject ambiguous message framing, conflicting Content-Length/Transfer-Encoding, and duplicate security-sensitive headers. Test HTTP/2-to-HTTP/1 translation and malformed requests on the real deployed chain to detect request smuggling or routing disagreements. An untrusted forwarded header must not change tenant, client IP policy, origin checks, or redirect targets.
+
+---
+
 ## 6. Threats and Controls by API Style
 
 ### 6.1 REST
@@ -192,7 +200,7 @@ Release-ready defaults:
 - request body max size: `1-10 MB` for normal JSON endpoints; larger values require separate design review;
 - default page size: `50-100`, hard max: `500-1000`;
 - gateway timeout: `<=30s`, internal service timeout usually `<=3-5s`;
-- all write endpoints should have an idempotency key when clients can safely retry after network failure.
+- State-changing operations that may be retried and duplicate side effects need an appropriate idempotency mechanism, for example payment/order creation or asynchronous command submission. Do not require a separate key mechanically for every PUT or DELETE; verify the operation's semantics and side effects.
 
 Verification:
 - OpenAPI linting and contract tests run in CI for changed endpoints.
@@ -223,6 +231,7 @@ Mandatory measures:
 - authorization in resolvers at object, field and mutation level;
 - query depth, query complexity and operation count limits;
 - disabled or strictly authorized introspection and GraphiQL in live environments;
+- Introspection restrictions reduce schema exposure; they are defense in depth, never an authorization boundary. Every resolver still enforces object, field, tenant, and action permissions.
 - persisted queries or allowlisted operations for high-impact, public abuse-prone GraphQL APIs when compatible with the product;
 - batching limits and separate protection against brute force inside one request;
 - timeout and cancellation propagation into downstream calls;
@@ -646,6 +655,12 @@ Required review output:
 - negative test or runtime evidence that proves closure;
 - owner, due date, and residual risk decision.
 ---
+
+### Selected ASVS verification references
+
+v5.0.0-4.1.1, v5.0.0-8.2.1, v5.0.0-1.3.6.
+
+Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 
 ## 11. Related Materials
 

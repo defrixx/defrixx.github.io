@@ -226,3 +226,4 @@ Required review output:
 - [Vulnerability management playbook](../../review/vulnerability-management/playbook.en.md)
 - [Kubernetes Pod Security playbook](../../platform-security/kubernetes/pod-security/playbook.en.md)
 - [Container escape and capability abuse overview](../../platform-security/kubernetes/container-escape-capability-abuse/overview.en.md)
+- [Agent instruction supply-chain controls](../../ai-security/ai-assisted-development/playbook.en.md#38-skills-and-agent-instructions)

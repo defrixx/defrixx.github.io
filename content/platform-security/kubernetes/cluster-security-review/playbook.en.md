@@ -343,3 +343,4 @@ A review is complete only when it provides:
 - Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](../secrets/playbook.en.md)
 - Vault and secrets: [secrets/vault/playbook.en.md](../../secrets/vault/playbook.en.md)
 - OIDC/OAuth for machine/human access patterns: [identity/oidc-oauth/playbook.en.md](../../../application-security/identity/oidc-oauth/playbook.en.md)
+- [Secure-development skill with Kubernetes requirements](../../../ai-automation/security-skills/secure-development/overview.en.md)

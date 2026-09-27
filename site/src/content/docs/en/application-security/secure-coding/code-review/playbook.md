@@ -66,15 +66,19 @@ Verification:
 
 ### 3.2 Output Encoding and Interpreter Boundaries
 
-Release-ready defaults:
-- Encode output for the exact target context: HTML body, HTML attribute, JavaScript, CSS, URL, SQL, LDAP, XML, shell, template, log, or CSV.
-- Treat output encoding as context-specific; do not use one generic escaping helper for all interpreters.
-- Prefer safe APIs: parameterized queries, prepared statements, structured logging, shell-free process invocation, safe templating, and framework-native encoders.
-- Disable dangerous sinks such as `eval`, dynamic template evaluation, unsafe deserialization, and shell concatenation unless a narrow, reviewed exception exists.
+Choose a defense for the interpreter that consumes the value:
+
+- Browser: use context-specific encoding for HTML text and attributes, JavaScript, CSS, and URL components; use reviewed sanitization when accepting HTML. Avoid inserting untrusted data into executable contexts even when an encoder exists.
+- SQL: use parameterized queries, prepared statements, or structured ORM APIs. Allowlist identifiers that cannot be parameters; generic escaping is not the primary defense.
+- OS commands: avoid the shell. Execute a fixed binary with an argument array, constrain supported options and values, and use least privilege. Argument arrays alone do not prevent option injection.
+- LDAP: prefer structured query APIs; distinguish filter escaping from distinguished-name escaping.
+- XML: use safe serialization and hardened parsers; disable external entities and external resolution unless a reviewed use case requires them.
+- Logs: use structured events, prevent newline/delimiter injection, and exclude secrets instead of concatenating sensitive strings.
 
 Verification:
-- Tests prove that untrusted strings render as data, not executable code or query syntax.
-- Code review traces user-controlled values from source to sink and identifies the encoding or safe API at the boundary.
+- Trace untrusted values to each interpreter and identify its specific safe API or encoding boundary.
+- Test HTML/attribute breakouts, SQL syntax, shell options and metacharacters, LDAP filter/DN payloads, XML external entities, and forged log records for the interpreters in scope.
+- Keep dynamic evaluation, unsafe deserialization, and shell concatenation disabled unless a narrow exception has independent review and negative tests.
 
 ### 3.3 Authentication, Sessions, and Access Control
 
@@ -196,6 +200,12 @@ Required review output:
 
 ---
 
+### Selected ASVS verification references
+
+v5.0.0-1.2.1, v5.0.0-1.2.4, v5.0.0-7.2.1, v5.0.0-5.2.1, v5.0.0-5.3.1, v5.0.0-11.4.1, v5.0.0-16.2.1.
+
+Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
+
 ## 6. Related Materials
 
 - [Business Logic Abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/)
@@ -206,3 +216,5 @@ Required review output:
 - [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
 - [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
 - [Secure AI-Assisted Development playbook](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
+- [Use the secure-development skill](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
+- [Use the security-review skill](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/)

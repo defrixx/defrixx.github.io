@@ -401,6 +401,12 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 ---
 
+### Recovery Keys and Restore Verification
+
+With auto-unseal, recovery keys authorize recovery operations; they cannot replace the configured KMS/HSM seal mechanism or decrypt the root key when that mechanism is unavailable. Include seal-provider availability, permissions, and key deletion protection in the recovery design.
+
+Treat Raft snapshots as sensitive encrypted backups. Restrict snapshot creation and retrieval, protect storage and retention, and retain the seal dependencies needed to restore. Periodically restore to an isolated environment and verify authentication, policies, secret access, and audit output; record the restore time and any data-loss window. A successful snapshot command alone is not a recovery test.
+
 ## 7. Related Materials
 
 - [OIDC + OAuth 2.0 playbook](../../../application-security/identity/oidc-oauth/playbook.en.md)

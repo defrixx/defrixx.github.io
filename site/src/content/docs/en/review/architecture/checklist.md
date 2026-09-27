@@ -118,6 +118,26 @@ For each row, validate linkage to a threat scenario, abuse case, or explicitly r
 
 ---
 
+### 4.5 Availability and Security Failure Modes
+
+Review resource exhaustion and DoS, per-user/tenant quotas, timeout propagation, bounded retries, circuit breakers, queue capacity and backpressure. Record fail-closed versus approved degraded behavior for each dependency. Model rollback and recovery of partially completed security-sensitive operations.
+
+Evidence: failure-injection and overload tests must preserve authorization and business invariants, prevent a retry storm, and demonstrate reconciliation after interruption. Apply the [exceptional-condition controls](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/#75-a102025-exceptional-conditions).
+
+### 4.6 Multi-Tenancy
+
+Trace authoritative tenant identity through databases, caches, search indexes, object storage, background jobs, and messaging topics/queues. Include support access, impersonation, administrative overrides, exports, and tenant-aware telemetry. Tenant filtering only at the HTTP edge is insufficient.
+
+Evidence: run two-tenant tests with colliding object/cache keys, delayed jobs, search queries, and support sessions. Prove that a client-supplied tenant identifier cannot change the authorization context or expose another tenant's data.
+
+### 4.7 Software Supply-Chain Trust
+
+Identify source-repository and CI/CD trust boundaries, dependency sources, artifact repositories, SBOMs, provenance, signing identities, and deployment verification. Trace a released digest back to its source revision and approved workflow. Test an untrusted PR, replaced artifact, and wrong signer at the appropriate boundary.
+
+Use the [SLSA source](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/#source-track-review), [build provenance](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/), and [release governance](/Product-security-playbook/en/review/release-governance/playbook/) controls rather than defining a second pipeline policy.
+
+---
+
 ## 5. Decision Log, Findings, and Recommendations
 
 ### 5.1 Decision Log and Architecture Notes

@@ -87,22 +87,19 @@ These controls are Build-track expectations about what the builder is allowed to
 - registry copy or promotion must not silently change the reviewed artifact reference. If an index or manifest is copied between registries, record the source digest, destination digest, media type, platform set, and the signature/provenance subject that policy verifies
 - tag mutation must never bypass release approval. Tags may help humans find an artifact, but approval, provenance, vulnerability decisions, and deploy admission must bind to immutable digests
 
-### 3.4 Source track and source-governance assumptions
+### 3.4 Source Governance
 
-Build provenance can prove where and how an artifact was built; it does not prove that the source change itself was authorized, reviewed, or safe.
+Build provenance establishes where and how an artifact was built; it does not establish that the source change was authorized, reviewed, or safe. Protect release branches and tags, assign reviewers for application code, build definitions, deployment manifests, and signing configuration, and record emergency bypasses with an owner, justification, expiry, and post-change review.
 
-Minimum source-governance assumptions before treating Build L2/L3 as ready for live use:
-- protected branches and release tags are enforced for release sources;
-- code owners or equivalent review rules cover application code, build definitions, deployment manifests, and signing/provenance configuration;
-- changes to CI workflow files, build scripts, dependency manifests, and release configuration require security-relevant review;
-- repository, owner, branch/tag, and commit identity are verified against immutable or tightly scoped identifiers where the platform supports them;
-- emergency changes and bypasses have owner, justification, expiry, and post-change review.
+#### Source Track review
 
-Required evidence:
-- branch/tag protection and review policy;
-- change history for workflow/build/signing configuration;
-- provenance samples showing source repository, revision, trigger, `buildType`, and `externalParameters`;
-- exception log for source-control or review bypasses.
+For the selected SLSA Source level, collect evidence from the source platform and verify it against the exact release input:
+- Match the repository, commit, and branch or tag in source evidence with the source consumed by the build. A protected branch name alone does not identify the reviewed commit.
+- Check that source provenance describes the applicable controls and change history. For levels that require review, verify the required independent approvals and the absence of an unrecorded bypass.
+- If consuming a Source VSA, validate its issuer, subject, policy, and time against the release policy. Do not infer a Source level from a Build level or from the mere presence of an attestation.
+- Test direct pushes, tag replacement, a different commit under an expected branch name, and disabling the source verification step. Each case that violates release policy must block promotion and leave a recorded reason.
+
+Keep the platform protection settings, review history, source evidence, verification result, and exceptions with the release record.
 
 ---
 
@@ -317,3 +314,4 @@ If the reference model cannot be reached in one step, adopt in phases:
 - [Release governance playbook](/Product-security-playbook/en/review/release-governance/playbook/)
 - [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
 - [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Agent instructions as supply-chain artifacts](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)

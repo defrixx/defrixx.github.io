@@ -39,7 +39,8 @@ MCP primitives are security surfaces:
 - tools are callable operations and must be treated as APIs;
 - resources are data access paths and inherit the classification of the underlying data;
 - prompts are content supply-chain inputs and must not be trusted as policy or secrets;
-- sampling lets a server request model completions through a client and should be disabled unless there is a reviewed use case.
+- elicitation requests user input and introduces consent and identity-binding boundaries;
+- Roots and Sampling are deprecated in `2026-07-28`; do not adopt them in new implementations. Roots are informational, never filesystem authorization.
 
 High-impact scenarios:
 - a local `stdio` server installed by a developer exposes file or shell access to a production-capable agent;
@@ -66,9 +67,9 @@ High-impact scenarios:
 - Set review expiry no longer than `90 days` for servers that can modify data, execute code, access sensitive resources, or use third-party infrastructure.
 
 Verification:
-- compare runtime capability negotiation against the registry baseline;
+- compare per-request client capabilities and discovered server capabilities against the registry baseline;
 - alert on `listChanged` events, unknown servers, unknown tools, schema drift, and resource pattern expansion;
-- sample production sessions and confirm every tool call maps to an approved registry entry.
+- sample production requests and confirm every tool call maps to an approved registry entry.
 
 ### 3.2 Deployment Patterns
 
@@ -78,18 +79,19 @@ Preferred production pattern:
 Local `stdio` servers:
 - Allow only approved server binaries/scripts through endpoint management or application allowlisting.
 - Run with the least privileged OS identity available for the workflow.
-- Restrict filesystem roots explicitly; do not grant home-directory or repository-wide access by default.
+- Restrict filesystem access with OS permissions, a runtime sandbox, and explicit path allowlists. MCP Roots do not enforce access. Do not grant home-directory or repository-wide access by default.
 - Maintain an allowlist of environment variables exposed to each server and block credential-bearing variables unless explicitly approved.
 - Block outbound network access from local servers unless the server requires it and the destination is approved.
 
 Remote Streamable HTTP servers:
+- Validate `Origin` to prevent DNS rebinding; a present invalid origin requires HTTP `403`. Local HTTP servers should bind to loopback, not `0.0.0.0`.
 - Require TLS for all traffic.
 - Use enterprise-managed authorization aligned with the current MCP authorization profile: OAuth 2.1 draft behavior plus the MCP-required metadata, `resource` parameter, and token audience checks.
 - Require PKCE with `S256` for public clients.
 - Publish OAuth Protected Resource Metadata and return `WWW-Authenticate` on `401` so clients discover the correct authorization server from the MCP server, not from user-supplied configuration.
-- If Dynamic Client Registration is supported, constrain it with a registration policy: approved redirect URI patterns, client type, grant types, scopes, token lifetimes, and owner. For high-impact or regulated MCP clients, prefer pre-registered enterprise clients; do not allow self-service registration to issue broad scopes or refresh tokens without review.
+- Prefer OAuth Client ID Metadata Documents; use pre-registration for managed clients where appropriate. Dynamic Client Registration is deprecated and retained only for compatibility. Constrain legacy registration by redirect URI, client type, grant, scope, lifetime, and owner; it must not grant broad access without review.
 - Require MCP clients to send the OAuth `resource` parameter in both authorization and token requests, using the canonical MCP server URI.
-- Require MCP clients or the gateway to validate `iss` in authorization responses when the authorization server publishes `authorization_response_iss_parameter_supported=true`; if `iss` is present without metadata advertisement, reject it unless local policy explicitly accepts that issuer, and still compare it with the issuer from the validated authorization server metadata document.
+- Validate every present authorization-response `iss` against the recorded authorization-server issuer before redeeming a code, whether or not metadata advertised support. Reject a missing `iss` when `authorization_response_iss_parameter_supported=true`; use exact string comparison after decoding, without URI normalization.
 - Validate token issuer, expiry, audience/resource binding, resource indicator, and scope on every request.
 - Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners.
 - Do not make `offline_access` or refresh-token issuance part of the MCP resource-server baseline. If an approved client receives a refresh token, it must be sender-constrained or rotated with reuse detection; storage and revocation are separate identity controls. The MCP server must not request or advertise `offline_access` through `WWW-Authenticate` challenges or Protected Resource Metadata `scopes_supported` without an explicitly approved use case.
@@ -116,8 +118,8 @@ Prompts:
 - Do not store secrets, credentials, hidden policy assumptions, customer data, or proprietary implementation details in prompt declarations.
 - Log prompt identifier and version, not raw prompt text by default.
 
-Sampling:
-- Keep sampling disabled by default.
+Legacy Sampling compatibility:
+- Sampling is deprecated; keep it disabled by default and do not add it to new implementations.
 - If enabled, restrict it to approved servers, approved model endpoints, maximum prompt size, and redacted/minimized logs.
 - Alert on repeated near-duplicate sampling requests, unusual prompt size, or sensitive data classes in sampling payloads.
 
@@ -128,7 +130,7 @@ Log at minimum:
 - host, client, server, gateway, transport, and environment;
 - tool/resource/prompt identifier and version;
 - scopes and policy decision;
-- request ID/session ID/correlation ID;
+- request ID and correlation ID; application-level state handles where used, without treating them as identity;
 - downstream destination and result class;
 - redaction status and denial reason where applicable.
 
@@ -148,18 +150,45 @@ Incident response must support:
 
 ---
 
+### 3.5 Stateless Requests and Transport Validation
+
+MCP `2026-07-28` removes the initialization handshake and protocol sessions. Use `server/discover` for supported versions and capabilities; carry protocol version and client capabilities in request metadata. Do not apply an older session's identity or capability decision to a new request. Re-authorize application state handles and retries for the calling subject.
+
+For Streamable HTTP, validate `MCP-Protocol-Version` against `_meta.io.modelcontextprotocol/protocolVersion`, `Mcp-Method` against `method`, and `Mcp-Name` against the relevant `params.name` or `params.uri`. Reject missing required headers and header/body disagreements before dispatch. Decode permitted Base64 sentinel values before comparing `Mcp-Name` and `Mcp-Param-*`. Mirror only valid `x-mcp-header` declarations; reject invalid declarations and prevent header injection. Unsupported versions must follow the supported-version error/selection path, not silently downgrade.
+
+Broken streams require a new request ID on retry. Use business-level idempotency for state-changing operations; a new JSON-RPC ID alone does not prevent duplicate effects. Keep legacy session/initialization behavior confined to an explicitly versioned compatibility adapter.
+
+### 3.6 Elicitation
+
+Form-mode elicitation must not ask for passwords, API keys, access tokens, or payment credentials. Use URL mode for those interactions, keeping third-party credentials out of the MCP client and LLM context. Do not confuse this flow with authorization of the MCP client to the MCP server.
+
+Before navigation, show the complete URL and obtain explicit consent. Do not pre-fetch the URL or its metadata. Open the interaction outside client/model inspection. A URL must not contain sensitive user information or provide pre-authenticated access to a protected resource.
+
+Bind each request and any stored or returned state to the verified user and client. Confirm that the user completing the external flow is the user who initiated it; a copied URL or client-supplied identity is insufficient. Handle decline, cancellation, and failed processing without performing the dependent action. In this revision, elicitation uses `InputRequiredResult` and retry `inputResponses`; protect `requestState` from substitution, and do not treat acceptance as proof that external authorization completed.
+
+---
+
 ## 4. Verification
 
 Required evidence:
 - MCP registry entry for every production server and capability;
-- capability baseline diff from deployment or session initialization;
+- capability baseline diff from deployment and `server/discover`, plus per-request metadata checks;
 - OAuth Protected Resource Metadata, authorization server metadata, `WWW-Authenticate` behavior, `resource` parameter handling, and token validation tests for remote servers;
-- Dynamic Client Registration policy or evidence that production MCP clients are pre-registered and self-service registration is disabled/constrained;
+- Client ID Metadata Document validation or managed pre-registration evidence; policy for DCR only where compatibility requires it;
 - endpoint/application allowlisting evidence for local `stdio` servers;
 - gateway policy, redaction, and logging configuration;
 - provider onboarding record for third-party servers.
 
 Negative tests:
+- Invalid `Origin` receives `403`; a DNS-rebinding test cannot reach the local HTTP server through an unapproved origin.
+- Missing version/method/name headers, mismatched `_meta`, decoded name mismatch, and malformed `Mcp-Param-*` are rejected before tool dispatch; unsupported versions do not silently downgrade.
+- A disconnected stream followed by retry cannot duplicate a committed side effect.
+- Form requests for each of passwords, API keys, access tokens, and payment credentials are rejected.
+- Elicitation URL and metadata receive no request before consent; the full destination remains visible. Sensitive or pre-authenticated URLs are rejected.
+- A substituted user/client, copied elicitation URL, or modified `requestState` cannot bind another person's third-party credentials. Credentials never enter client/model traces.
+- Decline, cancel, and an unfinished external flow cannot trigger the dependent action.
+- Forged Roots cannot widen OS/sandbox access; legacy Sampling remains disabled unless explicitly approved, and unapproved requests are denied.
+- DCR cannot activate outside the compatibility policy or obtain wider scopes through self-registration.
 - unregistered server is blocked;
 - registered server with a new tool or wider resource URI pattern is blocked until approved;
 - model-supplied parameter outside schema or business constraints is rejected server-side;
@@ -170,7 +199,7 @@ Negative tests:
 - token in query string, log field, tool output, or prompt payload is detected and blocked/redacted;
 - write tool cannot execute without required confirmation or approval;
 - malformed JSON-RPC messages fail closed and produce safe errors;
-- local `stdio` server cannot read outside declared roots or inherit unapproved environment variables.
+- local `stdio` server cannot read outside runtime path allowlists or inherit unapproved environment variables.
 
 Operational signals:
 - percentage of MCP servers covered by registry baseline;

@@ -125,6 +125,12 @@ Verification:
 - Duplicate payment/webhook/booking messages do not duplicate external effects.
 - Replay after the configured time window fails and creates an investigation signal.
 
+#### Concurrent Operations and Privileged Recovery
+
+Model double spending, repeated withdrawal/transfer, duplicate redemption or promotion use, inventory overselling, parallel account changes, check-then-act/TOCTOU, and replay by asynchronous workers. Enforce the business invariant atomically at the durable state boundary using appropriate transactions, uniqueness constraints, locking, or compare-and-set; a pre-check and a later write are not atomic protection.
+
+Test actual simultaneous requests synchronized at the vulnerable boundary, not only sequential retries. Inspect committed state and downstream side effects after success, timeout, worker redelivery, and restart. Include account recovery, support overrides, administrator impersonation, and manual balance/status corrections; these paths must enforce the same invariant, scoped authorization, and audit trail as normal operations.
+
 ### 4.5 Abuse Monitoring and Response
 
 Release-ready defaults:
