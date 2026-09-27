@@ -112,10 +112,20 @@ export default defineConfig({
           label: 'Скиллы для задач безопасности',
           translations: { en: 'Security Skills' },
           items: [
-            { slug: 'ai-automation/security-skills/overview' },
-            { slug: 'ai-automation/security-skills/secure-development/overview' },
-            { slug: 'ai-automation/security-skills/security-review/overview' },
-            { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
+            {
+              slug: 'ai-automation/security-skills/overview',
+              label: 'Обзор и установка',
+              translations: { en: 'Overview & installation' },
+            },
+            {
+              label: 'По задачам',
+              translations: { en: 'By task' },
+              items: [
+                { slug: 'ai-automation/security-skills/secure-development/overview' },
+                { slug: 'ai-automation/security-skills/security-review/overview' },
+                { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
+              ],
+            },
           ],
         },
         {
