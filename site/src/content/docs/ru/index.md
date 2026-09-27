@@ -9,7 +9,7 @@ sidebar:
 
 Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
 
-В центре внимания: [архитектурное ревью](/Product-security-playbook/ru/review/architecture/checklist/), [моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/).
+В центре внимания: [архитектурное ревью](/Product-security-playbook/ru/review/architecture/checklist/), [моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов](/Product-security-playbook/ru/ai-security/overview/).
 
 [Скиллы для ИИ-ассистентов](/Product-security-playbook/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
 
@@ -19,8 +19,8 @@ sidebar:
 - [Безопасность приложений](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
 - [Безопасность платформы](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Цепочка поставки](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
-- [Безопасность ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [ИИ и автоматизация](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+- [Безопасность ИИ](/Product-security-playbook/ru/ai-security/overview/)
+- [Скиллы для задач безопасности](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
 - [Справочник](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## О проекте

@@ -100,6 +100,7 @@ export default defineConfig({
           label: 'Безопасность ИИ',
           translations: { en: 'AI Security' },
           items: [
+            { slug: 'ai-security/overview' },
             { slug: 'ai-security/securing-ai/overview' },
             { slug: 'ai-security/owasp-llm-top-10/overview' },
             { slug: 'ai-security/agentic-ai/playbook' },
@@ -108,19 +109,13 @@ export default defineConfig({
           ],
         },
         {
-          label: 'ИИ и автоматизация',
-          translations: { en: 'AI & Automation' },
+          label: 'Скиллы для задач безопасности',
+          translations: { en: 'Security Skills' },
           items: [
-            {
-              label: 'Скиллы безопасности',
-              translations: { en: 'Security Skills' },
-              items: [
-                { slug: 'ai-automation/security-skills/overview' },
-                { slug: 'ai-automation/security-skills/secure-development/overview' },
-                { slug: 'ai-automation/security-skills/security-review/overview' },
-                { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
-              ],
-            },
+            { slug: 'ai-automation/security-skills/overview' },
+            { slug: 'ai-automation/security-skills/secure-development/overview' },
+            { slug: 'ai-automation/security-skills/security-review/overview' },
+            { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
           ],
         },
         {

@@ -9,7 +9,7 @@ Practical security engineering playbooks for architecture review, threat modelin
 
 Built as a working knowledge base for designing security controls, reviewing architectures, making risk decisions, and integrating security into engineering workflows.
 
-Featured areas: [Architecture Review](/Product-security-playbook/en/review/architecture/checklist/), [Threat Modeling](/Product-security-playbook/en/review/threat-modeling/playbook/), [AI & Agentic Security](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
+Featured areas: [Architecture Review](/Product-security-playbook/en/review/architecture/checklist/), [Threat Modeling](/Product-security-playbook/en/review/threat-modeling/playbook/), [AI & Agentic Security](/Product-security-playbook/en/ai-security/overview/).
 
 [Security Skills for AI assistants](/Product-security-playbook/en/ai-automation/security-skills/overview/): secure development, code review, and sensitive data cleanup.
 
@@ -19,8 +19,8 @@ Featured areas: [Architecture Review](/Product-security-playbook/en/review/archi
 - [Application Security](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/)
 - [Platform Security](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Supply Chain](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
-- [AI Security](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [AI & Automation](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+- [AI Security](/Product-security-playbook/en/ai-security/overview/)
+- [Security Skills](/Product-security-playbook/en/ai-automation/security-skills/overview/)
 - [Reference](/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## About

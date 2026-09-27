@@ -65,6 +65,7 @@ PAGE_ORDER = {
     "ai-automation/security-skills/secure-development/overview": 20,
     "ai-automation/security-skills/security-review/overview": 30,
     "ai-automation/security-skills/sensitive-data-cleanup/overview": 40,
+    "ai-security/overview": 5,
     "ai-security/securing-ai/overview": 10,
     "ai-security/owasp-llm-top-10/overview": 20,
     "ai-security/agentic-ai/playbook": 30,
@@ -217,7 +218,7 @@ sidebar:
 
 Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
 
-В центре внимания: [архитектурное ревью]({base}/ru/review/architecture/checklist/), [моделирование угроз]({base}/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов]({base}/ru/ai-security/agentic-ai/playbook/).
+В центре внимания: [архитектурное ревью]({base}/ru/review/architecture/checklist/), [моделирование угроз]({base}/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов]({base}/ru/ai-security/overview/).
 
 [Скиллы для ИИ-ассистентов]({base}/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
 
@@ -227,8 +228,8 @@ sidebar:
 - [Безопасность приложений]({base}/ru/application-security/web/owasp-top-10/playbook/)
 - [Безопасность платформы]({base}/ru/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Цепочка поставки]({base}/ru/supply-chain/slsa-provenance/overview/)
-- [Безопасность ИИ]({base}/ru/ai-security/securing-ai/overview/)
-- [ИИ и автоматизация]({base}/ru/ai-automation/security-skills/overview/)
+- [Безопасность ИИ]({base}/ru/ai-security/overview/)
+- [Скиллы для задач безопасности]({base}/ru/ai-automation/security-skills/overview/)
 - [Справочник]({base}/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## О проекте
@@ -254,7 +255,7 @@ Practical security engineering playbooks for architecture review, threat modelin
 
 Built as a working knowledge base for designing security controls, reviewing architectures, making risk decisions, and integrating security into engineering workflows.
 
-Featured areas: [Architecture Review]({base}/en/review/architecture/checklist/), [Threat Modeling]({base}/en/review/threat-modeling/playbook/), [AI & Agentic Security]({base}/en/ai-security/agentic-ai/playbook/).
+Featured areas: [Architecture Review]({base}/en/review/architecture/checklist/), [Threat Modeling]({base}/en/review/threat-modeling/playbook/), [AI & Agentic Security]({base}/en/ai-security/overview/).
 
 [Security Skills for AI assistants]({base}/en/ai-automation/security-skills/overview/): secure development, code review, and sensitive data cleanup.
 
@@ -264,8 +265,8 @@ Featured areas: [Architecture Review]({base}/en/review/architecture/checklist/),
 - [Application Security]({base}/en/application-security/web/owasp-top-10/playbook/)
 - [Platform Security]({base}/en/platform-security/kubernetes/cluster-security-review/playbook/)
 - [Supply Chain]({base}/en/supply-chain/slsa-provenance/overview/)
-- [AI Security]({base}/en/ai-security/securing-ai/overview/)
-- [AI & Automation]({base}/en/ai-automation/security-skills/overview/)
+- [AI Security]({base}/en/ai-security/overview/)
+- [Security Skills]({base}/en/ai-automation/security-skills/overview/)
 - [Reference]({base}/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## About

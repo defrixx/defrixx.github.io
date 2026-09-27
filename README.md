@@ -53,8 +53,9 @@ Treat this repository as curated working material rather than purely original st
 - [`content/supply-chain/container-image-security/`](content/supply-chain/container-image-security/) - container image and OCI registry security playbook for Dockerfile baselines, digest pinning, multi-arch images, registry promotion, scanning, signing, and deploy-time verification
 
 ### AI Security
+- [`content/ai-security/`](content/ai-security/) - [choose an AI security document](content/ai-security/overview.en.md) by task and document scope
 - [`content/ai-security/securing-ai/`](content/ai-security/securing-ai/) - Securing AI overview
-- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2026)
+- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2025)
 - [`content/ai-security/agentic-ai/`](content/ai-security/agentic-ai/) - Agentic AI security playbook for autonomy, tools, memory, action traces, sandboxing, and kill-switch controls
 - [`content/ai-security/ai-assisted-development/`](content/ai-security/ai-assisted-development/) - secure AI-assisted development playbook for coding assistants, generated code review, dependency verification, SDLC gates, and coding-agent environments
 - [`content/ai-security/mcp-security/`](content/ai-security/mcp-security/) - MCP security playbook for server/tool registry, deployment patterns, OAuth, capability drift, and protocol-layer logging
@@ -62,7 +63,7 @@ Treat this repository as curated working material rather than purely original st
 ### Reference
 - [`reference/infrastructure-technologies/`](reference/infrastructure-technologies/) - overview of infrastructure technologies and their production operating models
 
-### AI & Automation
+### Security Skills
 - [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - catalogue of the independently maintained Product Security Skills
 - [`content/ai-automation/security-skills/secure-development/`](content/ai-automation/security-skills/secure-development/) - secure development workflow
 - [`content/ai-automation/security-skills/security-review/`](content/ai-automation/security-skills/security-review/) - PR and repository assessment
