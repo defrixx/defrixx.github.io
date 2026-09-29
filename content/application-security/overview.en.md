@@ -11,6 +11,12 @@ Choose a playbook for the part of the application under review: code, APIs, busi
 | Review browser security | [Browser security](./web/browser-security/playbook.en.md) | Browser security mechanisms for web applications |
 | Check coverage of web risks | [OWASP Top 10](./web/owasp-top-10/playbook.en.md) | OWASP Top 10 categories and corresponding checks |
 
+## How to combine documents
+
+- For a PR review, start with code review, then select documents for the mechanisms affected: APIs, business logic, OIDC/OAuth, or browser security.
+- For an API assessment, combine the API playbook with business logic review when the task involves action sequences or product rules.
+- For a web application, add browser security to the relevant reviews. Use OWASP Top 10 to check which risk categories the assessment covers.
+
 ## When to use other sections
 
 For a system-wide assessment, start with [architecture review and threat modeling](../review/overview.en.md).
