@@ -47,7 +47,7 @@ export default defineConfig({
           label: 'Ревью и управление',
           translations: { en: 'Review and Governance' },
           items: [
-            { slug: 'review/overview', label: 'Как выбрать вид проверки', translations: { en: 'Choose a review workflow' }, attrs: { class: 'section-guide' } },
+            { slug: 'review/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             { slug: 'review/architecture/checklist', label: 'Архитектурное ревью', translations: { en: 'Architecture review' } },
             { slug: 'review/threat-modeling/playbook', label: 'Моделирование угроз', translations: { en: 'Threat modeling' } },
             { slug: 'review/release-governance/playbook', label: 'Управление выпуском', translations: { en: 'Release governance' } },
@@ -58,7 +58,7 @@ export default defineConfig({
           label: 'Безопасность приложений',
           translations: { en: 'Application Security' },
           items: [
-            { slug: 'application-security/overview', label: 'Как выбрать проверку приложения', translations: { en: 'Choose an application review' }, attrs: { class: 'section-guide' } },
+            { slug: 'application-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             { slug: 'application-security/secure-coding/code-review/playbook', label: 'Ревью кода', translations: { en: 'Code review' } },
             { slug: 'application-security/api/api-security-patterns/playbook', label: 'Безопасность API', translations: { en: 'API security' } },
             { slug: 'application-security/business-logic/business-logic-abuse/playbook', label: 'Бизнес-логика', translations: { en: 'Business logic' } },
@@ -71,7 +71,7 @@ export default defineConfig({
           label: 'Безопасность платформы',
           translations: { en: 'Platform Security' },
           items: [
-            { slug: 'platform-security/overview', label: 'Как выбрать проверку платформы', translations: { en: 'Choose a platform review' }, attrs: { class: 'section-guide' } },
+            { slug: 'platform-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             {
               label: 'Kubernetes',
               items: [
@@ -90,7 +90,7 @@ export default defineConfig({
           label: 'Цепочка поставки',
           translations: { en: 'Supply Chain' },
           items: [
-            { slug: 'supply-chain/overview', label: 'Как выбрать проверку поставки', translations: { en: 'Choose a supply chain review' }, attrs: { class: 'section-guide' } },
+            { slug: 'supply-chain/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             { slug: 'supply-chain/slsa-provenance/overview', label: 'SLSA и происхождение сборок', translations: { en: 'SLSA and build provenance' } },
             { slug: 'supply-chain/container-image-security/playbook', label: 'Контейнерные образы', translations: { en: 'Container images' } },
           ],
@@ -99,7 +99,7 @@ export default defineConfig({
           label: 'Безопасность ИИ',
           translations: { en: 'AI Security' },
           items: [
-            { slug: 'ai-security/overview', label: 'Как выбрать проверку ИИ', translations: { en: 'Choose an AI security review' }, attrs: { class: 'section-guide' } },
+            { slug: 'ai-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             { slug: 'ai-security/securing-ai/overview', label: 'Защита функций ИИ', translations: { en: 'Securing AI features' } },
             { slug: 'ai-security/owasp-llm-top-10/overview', label: 'OWASP LLM Top 10', translations: { en: 'OWASP LLM Top 10' } },
             { slug: 'ai-security/agentic-ai/playbook', label: 'Безопасность агентов', translations: { en: 'Agent security' } },
