@@ -7,8 +7,6 @@ sidebar:
 
 A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
 
-## About
-
 This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
 
 The content combines industry standards, public research, security frameworks, and hands-on engineering practices into reusable playbooks, checklists, and review approaches.

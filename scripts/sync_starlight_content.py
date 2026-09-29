@@ -220,8 +220,6 @@ sidebar:
 
 Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
 
-## О проекте
-
 Этот проект представляет собой курируемую и постоянно обновляемую базу знаний по безопасности продуктов с акцентом на практическую инженерную работу.
 
 Материалы объединяют отраслевые стандарты, открытые исследования, подходы к обеспечению безопасности и инженерный опыт в плейбуки, чеклисты и методики ревью, которые можно применять повторно.
@@ -240,8 +238,6 @@ sidebar:
 ---
 
 A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
-
-## About
 
 This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
 
