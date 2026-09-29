@@ -14,7 +14,9 @@ sidebar:
 
 ## Охват и зависимости
 
-Аутентификация и авторизация, обработка входных данных и файлов, секреты, криптография, API, зависимости, развертывание, CI/CD и Kubernetes. Есть отдельные профили для Python/FastAPI, TypeScript/Next.js и Docker Compose/BuildKit.
+Аутентификация и авторизация, обработка входных данных и файлов, секреты, криптография, API, зависимости, развертывание, CI/CD и Kubernetes. Каталог также охватывает исходящие запросы и SSRF, бизнес-логику, webhook и события, жизненный цикл ключей и OAuth/OIDC/JWT. Есть отдельные профили для Python/FastAPI, TypeScript/Next.js и Docker Compose/BuildKit.
+
+Начните с [выбора требований по типу изменения](https://github.com/defrixx/Product-security-skills/blob/main/skills/secure-development/references/requirements-index.md#select-by-change): загрузка файлов, новый API, изменение авторизации, обработка внешнего URL или кеширование защищенного ответа. Выбирайте требования с учетом фактических потоков данных и границ доверия; одна задача может затрагивать несколько тем. Отдельно указывайте непроверенные условия: успешная проверка одного пункта не подтверждает выполнение всех требований по теме.
 
 ## Пример запроса
 
@@ -27,6 +29,8 @@ sidebar:
 ## Файлы и проверки
 
 Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/Product-security-skills/blob/main/skills/secure-development/assets/development-report.md). [Тесты](https://github.com/defrixx/Product-security-skills/tree/main/tests) находятся в исходном репозитории.
+
+[Матрица покрытия требований](https://github.com/defrixx/Product-security-skills/blob/main/tests/requirement_coverage.json) и [описание интеграционных проверок](https://github.com/defrixx/Product-security-skills/blob/main/tests/integration/README.md) показывают, какие условия проверяются и что остается вне охвата. Результаты проверок на тестовых приложениях относятся только к отдельным условиям и не гарантируют безопасность проекта, в котором применяется скилл. Интеграционные проверки запускаются отдельно; для них нужны Docker и зависимости тестовых приложений.
 
 ## Связанные плейбуки
 

@@ -20,6 +20,8 @@ Threat modeling, vulnerability discovery, reachability and prerequisite checks, 
 
 Findings include prerequisites, impact, confidence, remediation, and fix-verification criteria. Scanner output stays a hypothesis until validated. Review alone does not authorize code fixes, external attacks, PR comments, or publication.
 
+The report includes a flow coverage table: entry point, sensitive operation, protections checked and their observed outcomes, evidence, and untested conditions. Static analysis, executed checks, and checks using mocked components are labeled separately. Keep the table even when no vulnerabilities are confirmed: it records assessed scope and remaining gaps, not a security guarantee.
+
 ## Files and verification
 
 Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-review/assets/review-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in the source repository.

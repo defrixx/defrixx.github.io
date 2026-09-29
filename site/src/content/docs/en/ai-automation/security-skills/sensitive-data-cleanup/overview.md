@@ -24,6 +24,8 @@ UTF-8 text, JSON, JSONL, and CSV cleanup; a separate mode removes JPEG/PNG metad
 
 A separate cleaned copy when requested, a redacted inventory, and coverage limits. Unsupported or failed files are omitted and reported. Image content is not redacted; removing metadata can change displayed orientation or color. Cleanup does not revoke leaked credentials or remove Git history and backups, and does not guarantee exhaustive personal-data discovery or a runnable copy.
 
+A detector match does not by itself confirm sensitive data: classify the value using context and the selected policy. An omitted or unsupported file remains a coverage gap even when no matches are found in processed files.
+
 ## Files and verification
 
 Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/sensitive-data-cleanup/assets/cleanup-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in the source repository.
