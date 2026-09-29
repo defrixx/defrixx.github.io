@@ -4,11 +4,11 @@ Start with the question you need to answer. These documents distinguish AI featu
 
 | Document | Main question | Coverage |
 | --- | --- | --- |
-| [Securing AI](securing-ai/overview.en.md) | How do I secure an AI feature within a product? | The overall security program: data, models, infrastructure, lifecycle, and control verification |
-| [Agentic AI](agentic-ai/playbook.en.md) | How do I control an agent's actions, memory, and permissions? | Action authorization, tools, memory, isolation, approvals, rollback, and emergency shutdown |
-| [MCP Security](mcp-security/playbook.en.md) | How do I review tool connections through MCP? | Server registry, protocol capabilities, deployment patterns, authorization, and logging |
-| [AI-assisted development](ai-assisted-development/playbook.en.md) | How do I use AI securely during development? | Assistant context, generated changes, dependencies, and checks before merge and release |
-| [Security Skills](../ai-automation/security-skills/overview.en.md) | How do I run a specific supporting workflow? | Assistant instructions for development, security review, or preparing a cleaned copy of materials |
+| [Securing AI](securing-ai/overview.en.md) | How do I secure an AI feature within a product? | Data, models, infrastructure, and the AI feature lifecycle, from defining trust boundaries to verifying controls. Helps organize the overall security program and assign implementation responsibilities. |
+| [Agentic AI](agentic-ai/playbook.en.md) | How do I control an agent's actions, memory, and permissions? | Action authorization, tools, memory, and agent runtime isolation. Covers approval of sensitive operations, rollback, emergency shutdown, and evidence for reviewing agent behavior. |
+| [MCP Security](mcp-security/playbook.en.md) | How do I review tool connections through MCP? | MCP server inventory, deployment patterns, authorization, and trust boundaries for tools, resources, and prompts. Includes transport validation, server capability changes, logging, and requests for additional user input. |
+| [AI-assisted development](ai-assisted-development/playbook.en.md) | How do I use AI securely during development? | Assistant context, sensitive data, generated code, dependencies, and coding-agent permissions. Covers independent change verification, skill use, and evidence before merge and release. |
+| [Security Skills](../ai-automation/security-skills/overview.en.md) | How do I run a specific supporting workflow? | Selection and installation of instructions for development, security review, or preparing a cleaned copy of materials. Each task describes inputs, the expected report, supporting tools, and result limitations. |
 
 ## When a task spans several documents
 

@@ -4,8 +4,8 @@ Choose a document based on the task: reviewing build provenance or container ima
 
 | Task | Document | Review scope |
 | --- | --- | --- |
-| Review build provenance | [SLSA and build provenance](./slsa-provenance/overview.en.md) | SLSA and artifact provenance |
-| Review container images | [Container images](./container-image-security/playbook.en.md) | Image security throughout build and delivery |
+| Review build provenance | [SLSA and build provenance](./slsa-provenance/overview.en.md) | SLSA Build levels, CI/CD trust boundaries, and the relationship between an artifact and its build provenance. Covers attestation distribution, trusted builder identities, and provenance verification before deployment. |
+| Review container images | [Container images](./container-image-security/playbook.en.md) | Dockerfiles, base images, dependencies, build secrets, digests, and multi-architecture images. Covers scanning, signatures, promotion through registries, and image checks before deployment. |
 
 ## When to use both documents
 

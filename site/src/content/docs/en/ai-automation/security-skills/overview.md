@@ -8,9 +8,9 @@ Instructions for an AI assistant: workflows, reference material, and report temp
 
 | Task | Skill | Result |
 | --- | --- | --- |
-| Write or change code | [Secure development](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/) | Implementation against applicable requirements and verification results |
-| Assess a PR or repository | [Security review](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/) | Confirmed findings, hypotheses, and remediation guidance |
-| Prepare a folder for sharing | [Sensitive data cleanup](/Product-security-playbook/en/ai-automation/security-skills/sensitive-data-cleanup/overview/) | A separate cleaned copy and processing report |
+| Write or change code | [Secure development](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/) | Changed code or an explicitly labeled candidate implementation, applied requirement IDs, and verification evidence. The report separately records exceptions, assumptions, and conditions that could not be verified. |
+| Assess a PR or repository | [Security review](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/) | Findings with exploitation prerequisites, impact, confidence, and fix-verification criteria. A coverage table separates confirmed results from hypotheses and untested areas, even when no vulnerabilities are found. |
+| Prepare a folder for sharing | [Sensitive data cleanup](/Product-security-playbook/en/ai-automation/security-skills/sensitive-data-cleanup/overview/) | An inventory of findings without exposing original sensitive values; a separate processed copy when cleanup is requested. Records replacements, omitted files, errors, and coverage limits; cleanup does not revoke exposed credentials. |
 
 ## How to use
 

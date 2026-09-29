@@ -8,13 +8,13 @@ sidebar:
 
 | Задача | Документ | Охват проверки |
 | --- | --- | --- |
-| Проверить кластер Kubernetes | [Ревью кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/) | Общая проверка кластера |
-| Проверить настройки Pod | [Безопасность Pod](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/) | Параметры безопасности рабочих нагрузок |
-| Проверить секреты Kubernetes | [Секреты Kubernetes](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/) | Работа с секретами в кластере |
-| Проверить seccomp | [Проверка seccomp](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/) | Профили системных вызовов |
-| Разобрать выход из контейнера | [Выход из контейнера и capabilities](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/) | Сценарии выхода из контейнера и злоупотребления привилегиями Linux (capabilities) |
-| Проверить защиту от атак | [Проверка защиты от атак](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/) | Практическая проверка мер защиты Kubernetes |
-| Проверить Vault | [Секреты в Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/) | Управление секретами через Vault |
+| Проверить кластер Kubernetes | [Ревью кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/) | Плоскость управления, доступ к API, RBAC, сетевые границы, рабочие нагрузки и политики допуска. Включает проверку действующих ограничений, сбор подтверждающих материалов и оформление итоговых замечаний по кластеру. |
+| Проверить настройки Pod | [Безопасность Pod](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/) | Учетная запись процесса, привилегии Linux (capabilities), файловая система, тома и доступ к ресурсам узла. Дополнительно рассматривает ServiceAccount, ограничения ресурсов, средства отладки и применение Pod Security Standards. |
+| Проверить секреты Kubernetes | [Секреты Kubernetes](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/) | Доступ к Secret через RBAC и создание Pod, передача секретов приложениям, хранение в etcd и на узлах. Охватывает внешние хранилища, учетные данные реестров, проверки запрещенных действий и аудит доступа. |
+| Проверить seccomp | [Проверка seccomp](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/) | Происхождение профиля, полнота набора разрешенных системных вызовов и фактическое применение к контейнерам. Учитывает capabilities, среду выполнения, архитектуру процессора, совместимость приложения и отклонения конфигурации. |
+| Разобрать выход из контейнера | [Выход из контейнера и capabilities](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/) | Сценарии выхода из контейнера через избыточные привилегии, доступ к узлу и опасные сочетания capabilities. Помогает связать предпосылки атаки с настройками изоляции и ограничениями отдельных механизмов защиты. |
+| Проверить защиту от атак | [Проверка защиты от атак](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/) | Практические сценарии для сетевых границ, RBAC, доступа к узлам, секретов и средств отладки. Для каждого сценария сопоставляет условия проведения проверки, ожидаемое действие защиты, наблюдаемый результат и подтверждение того, что атака была обнаружена. |
+| Проверить Vault | [Секреты в Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/) | Защита самого Vault, способы аутентификации, политики доступа, аудит и восстановление. Также охватывает выдачу, ротацию и отзыв секретов и токенов, интеграцию приложений, PKI и действия при компрометации. |
 
 ## Как выбрать глубину проверки
 

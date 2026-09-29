@@ -8,13 +8,13 @@ For an overall Kubernetes assessment, start with the cluster review, then examin
 
 | Task | Document | Review scope |
 | --- | --- | --- |
-| Review a Kubernetes cluster | [Cluster review](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/) | An overall cluster review workflow |
-| Review Pod configuration | [Pod security](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/) | Workload security settings |
-| Review Kubernetes secrets | [Kubernetes secrets](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/) | Secret handling in the cluster |
-| Review seccomp | [Seccomp checklist](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/) | System call profiles |
-| Explore container escape | [Container escape and capabilities](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/) | Escape scenarios and capability abuse |
-| Validate controls through attack scenarios | [Adversarial validation](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/) | Practical validation of Kubernetes controls |
-| Review Vault | [Secrets in Vault](/Product-security-playbook/en/platform-security/secrets/vault/playbook/) | Secret management with Vault |
+| Review a Kubernetes cluster | [Cluster review](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/) | Control plane, API access, RBAC, network boundaries, workloads, and admission policies. Includes verifying effective restrictions and recording evidence and cluster review findings. |
+| Review Pod configuration | [Pod security](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/) | Process identity, privileges, capabilities, filesystems, volumes, and host access. Also covers ServiceAccounts, resource constraints, debugging surfaces, and Pod Security Standards enforcement. |
+| Review Kubernetes secrets | [Kubernetes secrets](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/) | Secret access through RBAC and Pod creation, delivery to applications, and storage in etcd and on nodes. Covers external secret stores, registry credentials, negative tests, and access auditing. |
+| Review seccomp | [Seccomp checklist](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/) | Profile provenance, completeness of allowed system calls, and effective attachment to containers. Accounts for capabilities, runtime behavior, CPU architecture, application compatibility, and configuration drift. |
+| Explore container escape | [Container escape and capabilities](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/) | Container escape scenarios involving excessive privileges, host access, and dangerous capability combinations. Connects attack prerequisites to isolation settings and the limits of individual controls. |
+| Validate controls through attack scenarios | [Adversarial validation](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/) | Practical scenarios for network boundaries, RBAC, host access, secrets, and debugging surfaces. Connects execution conditions, expected controls, observed outcomes, and detection evidence for each scenario. |
+| Review Vault | [Secrets in Vault](/Product-security-playbook/en/platform-security/secrets/vault/playbook/) | Vault hardening, authentication methods, access policies, auditing, and recovery. Also covers secret and token issuance, rotation and revocation, application integration, PKI, and compromise response. |
 
 ## How to choose the review depth
 

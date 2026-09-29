@@ -4,10 +4,10 @@ Start with an architecture review or threat model. Use the relevant playbooks fo
 
 | Task | Document | Review scope |
 | --- | --- | --- |
-| Review an architecture | [Architecture review](./architecture/checklist.en.md) | System boundaries, data flows, and architectural decisions |
-| Build a threat model | [Threat modeling](./threat-modeling/playbook.en.md) | Threat scenarios for a system or change |
-| Prepare a release | [Release governance](./release-governance/playbook.en.md) | Release criteria and residual risk decisions |
-| Manage vulnerabilities | [Vulnerability management](./vulnerability-management/playbook.en.md) | Triage, prioritization, and remediation tracking |
+| Review an architecture | [Architecture review](./architecture/checklist.en.md) | Trust boundaries, data flows, critical components, and control applicability. Includes recording findings, residual risk decisions, and the final architecture review verdict. |
+| Build a threat model | [Threat modeling](./threat-modeling/playbook.en.md) | Assets, actors, entry points, and abuse scenarios for a system or change. Connects threats to controls, verification, owners, and unresolved questions. |
+| Prepare a release | [Release governance](./release-governance/playbook.en.md) | Protected branches and environments, CI/CD checks, deployment approvals, and release evidence. Covers blocking conditions, exceptions, risk acceptance, and escalation. |
+| Manage vulnerabilities | [Vulnerability management](./vulnerability-management/playbook.en.md) | Validation of vulnerability applicability, exploitability, and product impact; remediation priority and deadlines. Also covers release blocking, exceptions, reassessment, and closure evidence. |
 
 ## How to plan the review
 

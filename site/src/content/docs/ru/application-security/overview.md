@@ -8,12 +8,12 @@ sidebar:
 
 | Задача | Документ | Охват проверки |
 | --- | --- | --- |
-| Проверить код | [Ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/) | Проверка изменений и подтверждение замечаний |
-| Проверить API | [Безопасность API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/) | Меры защиты на границах API |
-| Проверить бизнес-логику | [Безопасность бизнес-логики](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/) | Злоупотребления функциями приложения |
-| Проверить вход и делегирование доступа | [OIDC и OAuth](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/) | Интеграции OIDC и OAuth |
-| Проверить защиту в браузере | [Защита в браузере](/Product-security-playbook/ru/application-security/web/browser-security/playbook/) | Браузерные механизмы защиты веб-приложения |
-| Проверить охват рисков веб-приложения | [OWASP Top 10](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/) | Категории OWASP Top 10 и соответствующие проверки |
+| Проверить код | [Ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/) | Обработка входных данных, передача данных интерпретаторам, авторизация, сессии, файлы, секреты и зависимости в изменяемом коде. Включает проверку достижимости опасных операций и сбор подтверждающих материалов для замечаний по результатам ревью. |
+| Проверить API | [Безопасность API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/) | REST, SOAP/XML, GraphQL, вебхуки и gRPC: аутентификация, доступ к объектам, проверка схем, ограничения запросов и журналирование. Рассматривает границы доверия между клиентом, шлюзом и внутренними сервисами. |
+| Проверить бизнес-логику | [Безопасность бизнес-логики](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/) | Захват учетных записей, злоупотребления регистрацией и промоакциями, изоляция арендаторов и права на бизнес-операции. Разбирает переходы состояний, повторное выполнение запросов, идемпотентность и обнаружение злоупотреблений. |
+| Проверить вход и делегирование доступа | [OIDC и OAuth](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/) | Сценарии входа и делегирования доступа, перенаправления, PKCE, проверка токенов, областей доступа и получателей. Охватывает жизненный цикл токенов и границы доверия между клиентом, сервером авторизации и API. |
+| Проверить защиту в браузере | [Защита в браузере](/Product-security-playbook/ru/application-security/web/browser-security/playbook/) | CSP, CORS, cookies, встраивание страниц и сторонние скрипты. Рассматривает браузерные границы доверия, зависимости клиентской части и проверку фактически применяемых заголовков и политик. |
+| Проверить охват рисков веб-приложения | [OWASP Top 10](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/) | Контроль доступа, инъекции, криптография, конфигурация, компоненты, целостность, журналирование и SSRF. Связывает категории OWASP Top 10 с проверками и признаками проблем, чтобы оценить охват ревью. |
 
 ## Как сочетать документы
 

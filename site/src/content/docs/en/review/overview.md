@@ -8,10 +8,10 @@ Start with an architecture review or threat model. Use the relevant playbooks fo
 
 | Task | Document | Review scope |
 | --- | --- | --- |
-| Review an architecture | [Architecture review](/Product-security-playbook/en/review/architecture/checklist/) | System boundaries, data flows, and architectural decisions |
-| Build a threat model | [Threat modeling](/Product-security-playbook/en/review/threat-modeling/playbook/) | Threat scenarios for a system or change |
-| Prepare a release | [Release governance](/Product-security-playbook/en/review/release-governance/playbook/) | Release criteria and residual risk decisions |
-| Manage vulnerabilities | [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/) | Triage, prioritization, and remediation tracking |
+| Review an architecture | [Architecture review](/Product-security-playbook/en/review/architecture/checklist/) | Trust boundaries, data flows, critical components, and control applicability. Includes recording findings, residual risk decisions, and the final architecture review verdict. |
+| Build a threat model | [Threat modeling](/Product-security-playbook/en/review/threat-modeling/playbook/) | Assets, actors, entry points, and abuse scenarios for a system or change. Connects threats to controls, verification, owners, and unresolved questions. |
+| Prepare a release | [Release governance](/Product-security-playbook/en/review/release-governance/playbook/) | Protected branches and environments, CI/CD checks, deployment approvals, and release evidence. Covers blocking conditions, exceptions, risk acceptance, and escalation. |
+| Manage vulnerabilities | [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/) | Validation of vulnerability applicability, exploitability, and product impact; remediation priority and deadlines. Also covers release blocking, exceptions, reassessment, and closure evidence. |
 
 ## How to plan the review
 
