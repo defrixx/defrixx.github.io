@@ -218,3 +218,7 @@ v5.0.0-1.2.1, v5.0.0-1.2.4, v5.0.0-7.2.1, v5.0.0-5.2.1, v5.0.0-5.3.1, v5.0.0-11.
 - [Плейбук безопасной разработки с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
 - [Применить скилл безопасной разработки](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/)
 - [Применить скилл ревью безопасности](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/)
+
+## Скилл для этой задачи
+
+[Для проверки PR или репозитория с помощью ассистента используйте скилл «Ревью безопасности».](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/)

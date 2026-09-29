@@ -228,3 +228,7 @@
 - [Плейбук управления выпуском](../../review/release-governance/playbook.ru.md)
 - [Обзор SLSA provenance](../../supply-chain/slsa-provenance/overview.ru.md)
 - [Каталог скиллов безопасности](../../ai-automation/security-skills/overview.ru.md)
+
+## Скилл для этой задачи
+
+[Для реализации изменений с помощью ассистента используйте скилл «Безопасная разработка».](../../ai-automation/security-skills/secure-development/overview.ru.md)

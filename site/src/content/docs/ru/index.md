@@ -5,20 +5,25 @@ sidebar:
   order: 0
 ---
 
-Практические плейбуки по безопасности для архитектурного ревью, моделирования угроз, безопасного жизненного цикла разработки, облачных систем, цепочки поставки ПО и ИИ.
+Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
 
-Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
+## Что нужно сделать
 
-В центре внимания: [архитектурное ревью](/Product-security-playbook/ru/review/architecture/checklist/), [моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов](/Product-security-playbook/ru/ai-security/overview/).
+| Задача | С чего начать |
+| --- | --- |
+| Проверить архитектуру | [Архитектурное ревью](/Product-security-playbook/ru/review/architecture/checklist/); [Моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/) |
+| Проверить код или API | [Ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/); [Безопасность API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/); [Бизнес-логика](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/) |
+| Подготовить выпуск | [Условия выпуска](/Product-security-playbook/ru/review/release-governance/playbook/); [Цепочка поставки](/Product-security-playbook/ru/supply-chain/overview/) |
+| Проверить Kubernetes | [Ревью кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/); [Все проверки платформы](/Product-security-playbook/ru/platform-security/overview/) |
+| Проверить функцию ИИ или агента | [Выбор документа по безопасности ИИ](/Product-security-playbook/ru/ai-security/overview/) |
+| Использовать скилл для задачи безопасности | [Каталог скиллов и установка](/Product-security-playbook/ru/ai-automation/security-skills/overview/) |
 
-[Скиллы для ИИ-ассистентов](/Product-security-playbook/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
+## Разделы по темам
 
-## Основные разделы
-
-- [Ревью и управление](/Product-security-playbook/ru/review/architecture/checklist/)
-- [Безопасность приложений](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
-- [Безопасность платформы](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Цепочка поставки](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
+- [Ревью и управление](/Product-security-playbook/ru/review/overview/)
+- [Безопасность приложений](/Product-security-playbook/ru/application-security/overview/)
+- [Безопасность платформы](/Product-security-playbook/ru/platform-security/overview/)
+- [Цепочка поставки](/Product-security-playbook/ru/supply-chain/overview/)
 - [Безопасность ИИ](/Product-security-playbook/ru/ai-security/overview/)
 - [Скиллы для задач безопасности](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
 - [Справочник](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)

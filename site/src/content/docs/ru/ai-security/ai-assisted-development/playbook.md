@@ -232,3 +232,7 @@ sidebar:
 - [Плейбук управления выпуском](/Product-security-playbook/ru/review/release-governance/playbook/)
 - [Обзор SLSA provenance](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
 - [Каталог скиллов безопасности](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+
+## Скилл для этой задачи
+
+[Для реализации изменений с помощью ассистента используйте скилл «Безопасная разработка».](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/)

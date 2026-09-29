@@ -214,3 +214,7 @@ Use these ASVS 5.0.0 requirements when recording verification results for the re
 - [Secure AI-Assisted Development playbook](../../../ai-security/ai-assisted-development/playbook.en.md)
 - [Use the secure-development skill](../../../ai-automation/security-skills/secure-development/overview.en.md)
 - [Use the security-review skill](../../../ai-automation/security-skills/security-review/overview.en.md)
+
+## Skill for this task
+
+[Use the Security Review skill to review a PR or repository with an assistant.](../../../ai-automation/security-skills/security-review/overview.en.md)

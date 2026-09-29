@@ -228,3 +228,7 @@ A release is approved only when an accountable human understands the change, sco
 - [Release Governance playbook](../../review/release-governance/playbook.en.md)
 - [SLSA provenance overview](../../supply-chain/slsa-provenance/overview.en.md)
 - [Security Skills catalogue](../../ai-automation/security-skills/overview.en.md)
+
+## Skill for this task
+
+[Use the Secure Development skill to implement changes with an assistant.](../../ai-automation/security-skills/secure-development/overview.en.md)

@@ -42,6 +42,10 @@ TOP_LEVEL_ORDER = {
 }
 
 PAGE_ORDER = {
+    "supply-chain/overview": 5,
+    "platform-security/overview": 5,
+    "application-security/overview": 5,
+    "review/overview": 5,
     "review/architecture/checklist": 10,
     "review/threat-modeling/playbook": 20,
     "review/release-governance/playbook": 30,
@@ -214,20 +218,25 @@ sidebar:
   order: 0
 ---
 
-Практические плейбуки по безопасности для архитектурного ревью, моделирования угроз, безопасного жизненного цикла разработки, облачных систем, цепочки поставки ПО и ИИ.
+Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
 
-Рабочая база знаний для проектирования мер защиты, проверки архитектуры, принятия решений о рисках и включения безопасности в инженерные процессы.
+## Что нужно сделать
 
-В центре внимания: [архитектурное ревью]({base}/ru/review/architecture/checklist/), [моделирование угроз]({base}/ru/review/threat-modeling/playbook/), [безопасность ИИ и агентов]({base}/ru/ai-security/overview/).
+| Задача | С чего начать |
+| --- | --- |
+| Проверить архитектуру | [Архитектурное ревью]({base}/ru/review/architecture/checklist/); [Моделирование угроз]({base}/ru/review/threat-modeling/playbook/) |
+| Проверить код или API | [Ревью кода]({base}/ru/application-security/secure-coding/code-review/playbook/); [Безопасность API]({base}/ru/application-security/api/api-security-patterns/playbook/); [Бизнес-логика]({base}/ru/application-security/business-logic/business-logic-abuse/playbook/) |
+| Подготовить выпуск | [Условия выпуска]({base}/ru/review/release-governance/playbook/); [Цепочка поставки]({base}/ru/supply-chain/overview/) |
+| Проверить Kubernetes | [Ревью кластера]({base}/ru/platform-security/kubernetes/cluster-security-review/playbook/); [Все проверки платформы]({base}/ru/platform-security/overview/) |
+| Проверить функцию ИИ или агента | [Выбор документа по безопасности ИИ]({base}/ru/ai-security/overview/) |
+| Использовать скилл для задачи безопасности | [Каталог скиллов и установка]({base}/ru/ai-automation/security-skills/overview/) |
 
-[Скиллы для ИИ-ассистентов]({base}/ru/ai-automation/security-skills/overview/): безопасная разработка, ревью кода и очистка чувствительных данных.
+## Разделы по темам
 
-## Основные разделы
-
-- [Ревью и управление]({base}/ru/review/architecture/checklist/)
-- [Безопасность приложений]({base}/ru/application-security/web/owasp-top-10/playbook/)
-- [Безопасность платформы]({base}/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Цепочка поставки]({base}/ru/supply-chain/slsa-provenance/overview/)
+- [Ревью и управление]({base}/ru/review/overview/)
+- [Безопасность приложений]({base}/ru/application-security/overview/)
+- [Безопасность платформы]({base}/ru/platform-security/overview/)
+- [Цепочка поставки]({base}/ru/supply-chain/overview/)
 - [Безопасность ИИ]({base}/ru/ai-security/overview/)
 - [Скиллы для задач безопасности]({base}/ru/ai-automation/security-skills/overview/)
 - [Справочник]({base}/ru/reference/infrastructure-technologies/infrastructure-technologies/)
@@ -251,20 +260,25 @@ sidebar:
   order: 0
 ---
 
-Practical security engineering playbooks for architecture review, threat modeling, secure SDLC, cloud-native systems, software supply chain, and AI security.
+A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
 
-Built as a working knowledge base for designing security controls, reviewing architectures, making risk decisions, and integrating security into engineering workflows.
+## What do you need to do?
 
-Featured areas: [Architecture Review]({base}/en/review/architecture/checklist/), [Threat Modeling]({base}/en/review/threat-modeling/playbook/), [AI & Agentic Security]({base}/en/ai-security/overview/).
+| Task | Where to start |
+| --- | --- |
+| Review an architecture | [Architecture review]({base}/en/review/architecture/checklist/); [Threat modeling]({base}/en/review/threat-modeling/playbook/) |
+| Review code or an API | [Code review]({base}/en/application-security/secure-coding/code-review/playbook/); [API security]({base}/en/application-security/api/api-security-patterns/playbook/); [Business logic]({base}/en/application-security/business-logic/business-logic-abuse/playbook/) |
+| Prepare a release | [Release criteria]({base}/en/review/release-governance/playbook/); [Supply chain]({base}/en/supply-chain/overview/) |
+| Review Kubernetes | [Cluster review]({base}/en/platform-security/kubernetes/cluster-security-review/playbook/); [All platform reviews]({base}/en/platform-security/overview/) |
+| Review an AI feature or agent | [Choose an AI security document]({base}/en/ai-security/overview/) |
+| Use a security skill | [Skill catalog and installation]({base}/en/ai-automation/security-skills/overview/) |
 
-[Security Skills for AI assistants]({base}/en/ai-automation/security-skills/overview/): secure development, code review, and sensitive data cleanup.
+## Browse by topic
 
-## Main Sections
-
-- [Review and Governance]({base}/en/review/architecture/checklist/)
-- [Application Security]({base}/en/application-security/web/owasp-top-10/playbook/)
-- [Platform Security]({base}/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Supply Chain]({base}/en/supply-chain/slsa-provenance/overview/)
+- [Review and Governance]({base}/en/review/overview/)
+- [Application Security]({base}/en/application-security/overview/)
+- [Platform Security]({base}/en/platform-security/overview/)
+- [Supply Chain]({base}/en/supply-chain/overview/)
 - [AI Security]({base}/en/ai-security/overview/)
 - [Security Skills]({base}/en/ai-automation/security-skills/overview/)
 - [Reference]({base}/en/reference/infrastructure-technologies/infrastructure-technologies/)

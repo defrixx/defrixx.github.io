@@ -26,12 +26,14 @@ Treat this repository as curated working material rather than purely original st
 ## Contents
 
 ### Review and Governance
+- [`content/review/`](content/review/) - [choose a document by task](content/review/overview.en.md)
 - [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist
 - [`content/review/threat-modeling/`](content/review/threat-modeling/) - threat modeling methodology review and practical playbook
 - [`content/review/release-governance/`](content/review/release-governance/) - release governance and security quality gates for protected environments, deployment approvals, release evidence, exceptions, and escalation
 - [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, exploitability, SLA, release blocking, exceptions, and closure evidence
 
 ### Application Security
+- [`content/application-security/`](content/application-security/) - [choose a document by task](content/application-security/overview.en.md)
 - [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - web control catalogue with OWASP Top 10:2021 and 2025 mappings
 - [`content/application-security/web/browser-security/`](content/application-security/web/browser-security/) - browser and frontend controls for CSP, CORS, cookies, third-party scripts, embedded content, and frontend supply chain
 - [`content/application-security/api/api-security-patterns/`](content/application-security/api/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
@@ -39,7 +41,8 @@ Treat this repository as curated working material rather than purely original st
 - [`content/application-security/secure-coding/code-review/`](content/application-security/secure-coding/code-review/) - secure coding and code review playbook for validation, encoding, auth/session, access control, injection, file handling, logging, crypto misuse, and review evidence
 - [`content/application-security/identity/oidc-oauth/`](content/application-security/identity/oidc-oauth/) - OIDC + OAuth 2.0 security playbook
 
-### DevSecOps
+### Platform Security
+- [`content/platform-security/`](content/platform-security/) - [choose a document by task](content/platform-security/overview.en.md)
 - [`content/platform-security/kubernetes/cluster-security-review/`](content/platform-security/kubernetes/cluster-security-review/) - Kubernetes cluster security review playbook
 - [`content/platform-security/kubernetes/adversarial-validation/`](content/platform-security/kubernetes/adversarial-validation/) - Kubernetes adversarial validation and attack-path review playbook
 - [`content/platform-security/kubernetes/pod-security/`](content/platform-security/kubernetes/pod-security/) - Kubernetes pod security hardening playbook
@@ -49,6 +52,7 @@ Treat this repository as curated working material rather than purely original st
 - [`content/platform-security/secrets/vault/`](content/platform-security/secrets/vault/) - Vault security playbook
 
 ### Supply Chain
+- [`content/supply-chain/`](content/supply-chain/) - [choose a document by task](content/supply-chain/overview.en.md)
 - [`content/supply-chain/slsa-provenance/`](content/supply-chain/slsa-provenance/) - SLSA v1.2 provenance overview for container image CI/CD pipelines
 - [`content/supply-chain/container-image-security/`](content/supply-chain/container-image-security/) - container image and OCI registry security playbook for Dockerfile baselines, digest pinning, multi-arch images, registry promotion, scanning, signing, and deploy-time verification
 

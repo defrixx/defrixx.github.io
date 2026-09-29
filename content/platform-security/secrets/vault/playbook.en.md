@@ -414,3 +414,7 @@ Treat Raft snapshots as sensitive encrypted backups. Restrict snapshot creation 
 - [Kubernetes Secrets playbook](../../kubernetes/secrets/playbook.en.md)
 - [SLSA provenance overview](../../../supply-chain/slsa-provenance/overview.en.md)
 - [Infrastructure technologies reference](../../../../reference/infrastructure-technologies/infrastructure-technologies.en.md)
+
+## Preparing materials for sharing
+
+To prepare a separate copy of materials for sharing, use the [Sensitive Data Cleanup skill](../../../ai-automation/security-skills/sensitive-data-cleanup/overview.en.md). See the skill page for processing scope and limitations.

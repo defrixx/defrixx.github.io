@@ -418,3 +418,7 @@ spec:
 - [Плейбук Kubernetes Secrets](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
 - [Обзор SLSA provenance](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
 - [Справочник инфраструктурных технологий](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
+
+## Подготовка материалов к передаче
+
+Для подготовки отдельной копии материалов к передаче используйте [скилл очистки чувствительных данных](/Product-security-playbook/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/). Охват и ограничения обработки описаны на странице скилла.
