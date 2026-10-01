@@ -69,6 +69,10 @@ PAGE_ORDER = {
     "ai-automation/security-skills/secure-development/overview": 20,
     "ai-automation/security-skills/security-review/overview": 30,
     "ai-automation/security-skills/sensitive-data-cleanup/overview": 40,
+    "ai-automation/security-skills/security-report-triage/overview": 50,
+    "ai-automation/security-skills/security-fix-verification/overview": 60,
+    "ai-automation/security-skills/workflow/overview": 70,
+    "ai-automation/prompt-integrity/overview": 80,
     "ai-security/overview": 5,
     "ai-security/securing-ai/overview": 10,
     "ai-security/owasp-llm-top-10/overview": 20,
@@ -208,6 +212,97 @@ def generated_content(source: Path) -> str:
     return "\n".join(frontmatter) + body.rstrip() + "\n"
 
 
+# Short navigation labels; new documents fall back to their translated H1.
+SITE_MAP_LABELS = {'review/overview': ('Обзор', 'Overview'),
+ 'review/architecture/checklist': ('Архитектурное ревью', 'Architecture review'),
+ 'review/threat-modeling/playbook': ('Моделирование угроз', 'Threat modeling'),
+ 'review/release-governance/playbook': ('Управление выпуском', 'Release governance'),
+ 'review/vulnerability-management/playbook': ('Управление уязвимостями', 'Vulnerability management'),
+ 'application-security/overview': ('Обзор', 'Overview'),
+ 'application-security/secure-coding/code-review/playbook': ('Ревью кода', 'Code review'),
+ 'application-security/api/api-security-patterns/playbook': ('Безопасность API', 'API security'),
+ 'application-security/business-logic/business-logic-abuse/playbook': ('Бизнес-логика', 'Business logic'),
+ 'application-security/identity/oidc-oauth/playbook': ('OIDC и OAuth', 'OIDC and OAuth'),
+ 'application-security/web/browser-security/playbook': ('Защита в браузере', 'Browser security'),
+ 'application-security/web/owasp-top-10/playbook': ('OWASP Top 10', 'OWASP Top 10'),
+ 'platform-security/overview': ('Обзор', 'Overview'),
+ 'platform-security/kubernetes/cluster-security-review/playbook': ('Ревью кластера', 'Cluster review'),
+ 'platform-security/kubernetes/pod-security/playbook': ('Безопасность Pod', 'Pod security'),
+ 'platform-security/kubernetes/secrets/playbook': ('Секреты Kubernetes', 'Kubernetes secrets'),
+ 'platform-security/kubernetes/seccomp/checklist': ('Проверка seccomp', 'Seccomp checklist'),
+ 'platform-security/kubernetes/container-escape-capability-abuse/overview': ('Выход из контейнера и '
+                                                                             'capabilities',
+                                                                             'Container escape and '
+                                                                             'capabilities'),
+ 'platform-security/kubernetes/adversarial-validation/playbook': ('Проверка защиты от атак',
+                                                                  'Adversarial validation'),
+ 'platform-security/secrets/vault/playbook': ('Секреты в Vault', 'Secrets in Vault'),
+ 'supply-chain/overview': ('Обзор', 'Overview'),
+ 'supply-chain/slsa-provenance/overview': ('SLSA и происхождение сборок', 'SLSA and build provenance'),
+ 'supply-chain/container-image-security/playbook': ('Контейнерные образы', 'Container images'),
+ 'ai-security/overview': ('Обзор', 'Overview'),
+ 'ai-security/securing-ai/overview': ('Защита функций ИИ', 'Securing AI features'),
+ 'ai-security/owasp-llm-top-10/overview': ('OWASP LLM Top 10', 'OWASP LLM Top 10'),
+ 'ai-security/agentic-ai/playbook': ('Безопасность агентов', 'Agent security'),
+ 'ai-security/ai-assisted-development/playbook': ('Разработка с ИИ', 'AI-assisted development'),
+ 'ai-security/mcp-security/playbook': ('Безопасность MCP', 'MCP security'),
+ 'reference/infrastructure-technologies/infrastructure-technologies': ('Инфраструктурные технологии',
+                                                                       'Infrastructure technologies'),
+ 'ai-automation/security-skills/secure-development/overview': ('Безопасная разработка', 'Secure development'),
+ 'ai-automation/security-skills/security-review/overview': ('Ревью безопасности', 'Security review'),
+ 'ai-automation/security-skills/sensitive-data-cleanup/overview': ('Очистка чувствительных данных',
+                                                                   'Sensitive data cleanup'),
+ 'ai-automation/security-skills/security-report-triage/overview': ('Разбор отчетов безопасности',
+                                                                   'Security report triage'),
+ 'ai-automation/security-skills/security-fix-verification/overview': ('Проверка исправлений',
+                                                                      'Fix verification'),
+ 'ai-automation/security-skills/workflow/overview': ('Совместная работа скиллов', 'Combined skill workflow'),
+ 'ai-automation/prompt-integrity/overview': ('prompt-integrity', 'prompt-integrity')}
+
+SITE_MAP_SECTIONS = (
+    ("review", "Ревью и управление", "Review and Governance", "review/overview"),
+    ("application-security", "Безопасность приложений", "Application Security", "application-security/overview"),
+    ("platform-security", "Безопасность платформы", "Platform Security", "platform-security/overview"),
+    ("supply-chain", "Цепочка поставки", "Supply Chain", "supply-chain/overview"),
+    ("ai-security", "Безопасность ИИ", "AI Security", "ai-security/overview"),
+    ("ai-automation", "Скиллы и инструменты", "Skills and Tools", "ai-automation/security-skills/overview"),
+    ("reference", "Справочник", "Reference", None),
+)
+
+
+def site_map_content(lang: str) -> str:
+    from html import escape
+
+    language_index = 0 if lang == "ru" else 1
+    title = "Карта сайта" if lang == "ru" else "Site map"
+    documents = {}
+    for path in source_files():
+        source_lang, key, _ = source_info(path)
+        if source_lang == lang:
+            documents[key] = path
+    lines = [f"\n## {title}\n", '<div class="site-map-grid">']
+    for prefix, ru_label, en_label, overview in SITE_MAP_SECTIONS:
+        label = ru_label if lang == "ru" else en_label
+        heading = escape(label)
+        if overview in documents:
+            heading = f'<a href="{escape(source_route(documents[overview]), quote=True)}">{heading}</a>'
+        lines.extend(['<section class="site-map-card">', f'<h3>{heading}</h3>', '<ul>'])
+        keys = sorted(
+            (key for key in documents if key.startswith(prefix + "/") and key != overview),
+            key=lambda key: (PAGE_ORDER.get(key, 100), key),
+        )
+        for key in keys:
+            path = documents[key]
+            label = SITE_MAP_LABELS.get(key, (None, None))[language_index]
+            if label is None:
+                label, _ = extract_title_and_body(path, path.read_text(encoding="utf-8"))
+            route = escape(source_route(path), quote=True)
+            lines.append(f'<li><a href="{route}">{escape(label)}</a></li>')
+        lines.extend(['</ul>', '</section>'])
+    lines.append('</div>')
+    return "\n".join(lines) + "\n"
+
+
 def index_content(lang: str) -> str:
     base = SITE_BASE
     if lang == "ru":
@@ -228,7 +323,7 @@ sidebar:
 
 Материалы уточняются по мере развития технологий, техник атак и инженерных практик. Подробные ссылки и указания на источники приводятся там, где это необходимо.
 
-""".format(base=base).rstrip() + "\n"
+""".format(base=base).rstrip() + "\n" + site_map_content(lang)
 
     return """---
 title: "Product Security Playbook"
@@ -249,7 +344,7 @@ Materials are continuously refined as technologies, attack techniques, and engin
 
 Detailed references and source attribution are provided where applicable.
 
-""".format(base=base).rstrip() + "\n"
+""".format(base=base).rstrip() + "\n" + site_map_content(lang)
 
 
 def validate_pairs(files: list[Path]) -> list[str]:

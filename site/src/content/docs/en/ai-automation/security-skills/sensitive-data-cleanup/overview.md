@@ -34,3 +34,7 @@ Instructions and references are bundled with the skill. Use the [report template
 
 - [Secrets management with Vault](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
 - [Secure AI-assisted development](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
+
+## Standalone and combined use
+
+The skill works without sibling packages. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.

@@ -16,3 +16,75 @@ Its goal is not to reproduce existing standards, but to translate them into prac
 Materials are continuously refined as technologies, attack techniques, and engineering practices evolve.
 
 Detailed references and source attribution are provided where applicable.
+
+## Site map
+
+<div class="site-map-grid">
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/review/overview/">Review and Governance</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/review/architecture/checklist/">Architecture review</a></li>
+<li><a href="/Product-security-playbook/en/review/threat-modeling/playbook/">Threat modeling</a></li>
+<li><a href="/Product-security-playbook/en/review/release-governance/playbook/">Release governance</a></li>
+<li><a href="/Product-security-playbook/en/review/vulnerability-management/playbook/">Vulnerability management</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/application-security/overview/">Application Security</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/">OWASP Top 10</a></li>
+<li><a href="/Product-security-playbook/en/application-security/web/browser-security/playbook/">Browser security</a></li>
+<li><a href="/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/">API security</a></li>
+<li><a href="/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/">Business logic</a></li>
+<li><a href="/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/">Code review</a></li>
+<li><a href="/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/">OIDC and OAuth</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/platform-security/overview/">Platform Security</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/">Cluster review</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/">Adversarial validation</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/">Pod security</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/">Kubernetes secrets</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/">Seccomp checklist</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/">Container escape and capabilities</a></li>
+<li><a href="/Product-security-playbook/en/platform-security/secrets/vault/playbook/">Secrets in Vault</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/supply-chain/overview/">Supply Chain</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/supply-chain/slsa-provenance/overview/">SLSA and build provenance</a></li>
+<li><a href="/Product-security-playbook/en/supply-chain/container-image-security/playbook/">Container images</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/ai-security/overview/">AI Security</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/ai-security/securing-ai/overview/">Securing AI features</a></li>
+<li><a href="/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10</a></li>
+<li><a href="/Product-security-playbook/en/ai-security/agentic-ai/playbook/">Agent security</a></li>
+<li><a href="/Product-security-playbook/en/ai-security/mcp-security/playbook/">MCP security</a></li>
+<li><a href="/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/">AI-assisted development</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3><a href="/Product-security-playbook/en/ai-automation/security-skills/overview/">Skills and Tools</a></h3>
+<ul>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/">Secure development</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/">Security review</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/sensitive-data-cleanup/overview/">Sensitive data cleanup</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/security-report-triage/overview/">Security report triage</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/security-fix-verification/overview/">Fix verification</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/">Combined skill workflow</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/prompt-integrity/overview/">prompt-integrity</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Reference</h3>
+<ul>
+<li><a href="/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/">Infrastructure technologies</a></li>
+</ul>
+</section>
+</div>

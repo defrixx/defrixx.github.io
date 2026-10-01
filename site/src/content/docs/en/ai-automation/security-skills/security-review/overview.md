@@ -35,3 +35,7 @@ Instructions and references are bundled with the skill. Use the [report template
 - [Secure coding and code review](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
 - [Threat modeling](/Product-security-playbook/en/review/threat-modeling/playbook/)
 - [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+
+## Standalone and combined use
+
+The skill works without sibling packages. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.

@@ -33,3 +33,7 @@
 - [Безопасное программирование и ревью кода](../../../application-security/secure-coding/code-review/playbook.ru.md)
 - [Безопасная разработка с ИИ](../../../ai-security/ai-assisted-development/playbook.ru.md)
 - [Ревью кластера Kubernetes](../../../platform-security/kubernetes/cluster-security-review/playbook.ru.md)
+
+## Самостоятельно и в общем процессе
+
+Скилл работает без соседних пакетов. В [общем рабочем процессе](../workflow/overview.ru.md) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.

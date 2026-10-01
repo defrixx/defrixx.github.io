@@ -34,3 +34,7 @@ sidebar:
 
 - [Управление секретами в Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
 - [Безопасная разработка с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
+
+## Самостоятельно и в общем процессе
+
+Скилл работает без соседних пакетов. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.

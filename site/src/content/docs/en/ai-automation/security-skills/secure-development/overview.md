@@ -37,3 +37,7 @@ The [requirement coverage manifest](https://github.com/defrixx/Product-security-
 - [Secure coding and code review](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
 - [Secure AI-assisted development](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
 - [Kubernetes cluster review](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
+
+## Standalone and combined use
+
+The skill works without sibling packages. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.

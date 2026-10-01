@@ -108,8 +108,8 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Скиллы для задач безопасности',
-          translations: { en: 'Security Skills' },
+          label: 'Скиллы и инструменты безопасности',
+          translations: { en: 'Security Skills and Tools' },
           items: [
             {
               slug: 'ai-automation/security-skills/overview',
@@ -120,6 +120,10 @@ export default defineConfig({
             { slug: 'ai-automation/security-skills/secure-development/overview' },
             { slug: 'ai-automation/security-skills/security-review/overview' },
             { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
+            { slug: 'ai-automation/security-skills/security-report-triage/overview' },
+            { slug: 'ai-automation/security-skills/security-fix-verification/overview' },
+            { slug: 'ai-automation/security-skills/workflow/overview' },
+            { slug: 'ai-automation/prompt-integrity/overview' },
           ],
         },
         {

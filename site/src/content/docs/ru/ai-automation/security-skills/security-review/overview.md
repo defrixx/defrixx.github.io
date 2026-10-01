@@ -35,3 +35,7 @@ sidebar:
 - [Безопасное программирование и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/)
 - [Моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
 - [Управление уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
+
+## Самостоятельно и в общем процессе
+
+Скилл работает без соседних пакетов. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.
