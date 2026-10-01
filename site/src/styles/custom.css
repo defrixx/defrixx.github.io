@@ -104,3 +104,19 @@ a.section-guide:focus-visible {
   outline: 2px solid var(--sl-color-text-accent);
   outline-offset: 3px;
 }
+
+.sl-markdown-content .site-map-group {
+  margin-block-start: 1rem;
+  padding-block-start: 0.85rem;
+  border-block-start: 1px solid var(--sl-color-gray-5);
+}
+
+.sl-markdown-content .site-map-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.sl-markdown-content .site-map-group ul {
+  margin-block-start: 0.45rem;
+}

@@ -270,6 +270,36 @@ SITE_MAP_SECTIONS = (
 )
 
 
+# First matching path prefix wins; unmatched pages remain visible below the groups.
+SITE_MAP_GROUPS = {
+    "application-security": (
+        ("Код, API и доступ", "Code and application interfaces",
+         ("application-security/secure-coding/", "application-security/api/",
+          "application-security/business-logic/", "application-security/identity/")),
+        ("Веб и браузер", "Web and browser", ("application-security/web/",)),
+    ),
+    "platform-security": (
+        ("Kubernetes", "Kubernetes", ("platform-security/kubernetes/",)),
+        ("Управление секретами", "Secrets management", ("platform-security/secrets/",)),
+    ),
+    "ai-security": (
+        ("Защита ИИ и типовые угрозы", "AI features and threats",
+         ("ai-security/securing-ai/", "ai-security/owasp-llm-top-10/")),
+        ("Агенты и интеграции", "Agents and integrations",
+         ("ai-security/agentic-ai/", "ai-security/mcp-security/")),
+        ("Разработка с ИИ", "AI-assisted development", ("ai-security/ai-assisted-development/",)),
+    ),
+    "ai-automation": (
+        ("Скиллы", "Skills",
+         tuple("ai-automation/security-skills/" + name + "/" for name in (
+             "secure-development", "security-review", "security-report-triage",
+             "security-fix-verification", "sensitive-data-cleanup"))),
+        ("Совместная работа скиллов", "Combined workflow", ("ai-automation/security-skills/workflow/",)),
+        ("Инструменты", "Tools", ("ai-automation/prompt-integrity/",)),
+    ),
+}
+
+
 def site_map_content(lang: str) -> str:
     from html import escape
 
@@ -286,19 +316,40 @@ def site_map_content(lang: str) -> str:
         heading = escape(label)
         if overview in documents:
             heading = f'<a href="{escape(source_route(documents[overview]), quote=True)}">{heading}</a>'
-        lines.extend(['<section class="site-map-card">', f'<h3>{heading}</h3>', '<ul>'])
+        lines.extend(['<section class="site-map-card">', f'<h3>{heading}</h3>'])
         keys = sorted(
             (key for key in documents if key.startswith(prefix + "/") and key != overview),
             key=lambda key: (PAGE_ORDER.get(key, 100), key),
         )
-        for key in keys:
-            path = documents[key]
-            label = SITE_MAP_LABELS.get(key, (None, None))[language_index]
-            if label is None:
-                label, _ = extract_title_and_body(path, path.read_text(encoding="utf-8"))
-            route = escape(source_route(path), quote=True)
-            lines.append(f'<li><a href="{route}">{escape(label)}</a></li>')
-        lines.extend(['</ul>', '</section>'])
+        def append_links(group_keys: list[str]) -> None:
+            lines.append('<ul>')
+            for key in group_keys:
+                path = documents[key]
+                label = SITE_MAP_LABELS.get(key, (None, None))[language_index]
+                if label is None:
+                    label, _ = extract_title_and_body(path, path.read_text(encoding="utf-8"))
+                route = escape(source_route(path), quote=True)
+                lines.append(f'<li><a href="{route}">{escape(label)}</a></li>')
+            lines.append('</ul>')
+
+        remaining = keys[:]
+        groups = SITE_MAP_GROUPS.get(prefix, ())
+        for group_ru, group_en, path_prefixes in groups:
+            group_keys = [key for key in remaining if key.startswith(path_prefixes)]
+            if not group_keys:
+                continue
+            group_label = group_ru if lang == "ru" else group_en
+            lines.append('<div class="site-map-group">')
+            lines.append(f'<h4>{escape(group_label)}</h4>')
+            append_links(group_keys)
+            lines.append('</div>')
+            remaining = [key for key in remaining if key not in group_keys]
+        if remaining:
+            if groups:
+                label = "Другие материалы" if lang == "ru" else "Other material"
+                lines.append(f'<h4>{label}</h4>')
+            append_links(remaining)
+        lines.append('</section>')
     lines.append('</div>')
     return "\n".join(lines) + "\n"
 
