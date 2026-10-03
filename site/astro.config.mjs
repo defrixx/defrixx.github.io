@@ -186,6 +186,7 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { slug: 'ai-automation/prompt-integrity/overview', attrs: { class: 'sidebar-topic' } },
+                { slug: 'ai-automation/model-security-eval/overview', attrs: { class: 'sidebar-topic' } },
               ],
             },
           ],

@@ -72,6 +72,7 @@ PAGE_ORDER = {
     "ai-automation/security-skills/security-fix-verification/overview": 60,
     "ai-automation/security-skills/workflow/overview": 70,
     "ai-automation/prompt-integrity/overview": 80,
+    "ai-automation/model-security-eval/overview": 90,
     "ai-security/overview": 5,
     "ai-security/securing-ai/overview": 10,
     "ai-security/owasp-llm-top-10/overview": 20,
@@ -256,7 +257,8 @@ SITE_MAP_LABELS = {'review/overview': ('Обзор', 'Overview'),
  'ai-automation/security-skills/security-fix-verification/overview': ('Проверка исправлений',
                                                                       'Fix verification'),
  'ai-automation/security-skills/workflow/overview': ('Совместная работа скиллов', 'Combined skill workflow'),
- 'ai-automation/prompt-integrity/overview': ('prompt-integrity', 'prompt-integrity')}
+ 'ai-automation/prompt-integrity/overview': ('prompt-integrity', 'prompt-integrity'),
+ 'ai-automation/model-security-eval/overview': ('model-security-eval', 'model-security-eval')}
 
 SITE_MAP_SECTIONS = (
     ("review", "Ревью и управление", "Review and Governance", "review/overview"),
@@ -294,7 +296,7 @@ SITE_MAP_GROUPS = {
              "secure-development", "security-review", "security-report-triage",
              "security-fix-verification", "sensitive-data-cleanup"))),
         ("Совместная работа скиллов", "Combined workflow", ("ai-automation/security-skills/workflow/",)),
-        ("Инструменты", "Tools", ("ai-automation/prompt-integrity/",)),
+        ("Инструменты", "Tools", ("ai-automation/prompt-integrity/", "ai-automation/model-security-eval/")),
     ),
 }
 

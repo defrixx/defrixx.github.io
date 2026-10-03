@@ -6,7 +6,7 @@ sidebar:
 ---
 Инструкции для ИИ-ассистента: порядок работы, справочные материалы и шаблоны отчетов. Для отдельных операций предусмотрены локальные скрипты на Python.
 
-Пять самостоятельных скиллов можно использовать по отдельности или объединять в [общий рабочий процесс](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/). Отдельный инструмент [prompt-integrity](/Product-security-playbook/ru/ai-automation/prompt-integrity/overview/) подключается к приложению и проверяет целостность статических инструкций перед обращением к модели.
+Пять самостоятельных скиллов можно использовать по отдельности или объединять в [общий рабочий процесс](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/). Отдельный инструмент [prompt-integrity](/Product-security-playbook/ru/ai-automation/prompt-integrity/overview/) подключается к приложению и проверяет целостность статических инструкций перед обращением к модели. [model-security-eval](/Product-security-playbook/ru/ai-automation/model-security-eval/overview/) проверяет поведение локальных моделей после обновлений; результат проверки позволяет блокировать выпуск в CI.
 
 | Задача | Скилл | Результат |
 | --- | --- | --- |

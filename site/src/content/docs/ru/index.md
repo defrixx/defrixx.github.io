@@ -153,6 +153,7 @@ sidebar:
 <h4>Инструменты</h4>
 <ul>
 <li><a href="/Product-security-playbook/ru/ai-automation/prompt-integrity/overview/">prompt-integrity</a></li>
+<li><a href="/Product-security-playbook/ru/ai-automation/model-security-eval/overview/">model-security-eval</a></li>
 </ul>
 </div>
 </section>

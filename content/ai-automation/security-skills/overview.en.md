@@ -2,7 +2,7 @@
 
 Instructions for an AI assistant: workflows, reference material, and report templates. Local Python helpers support selected operations.
 
-Five standalone skills can be used individually or combined in a [shared workflow](workflow/overview.en.md). The separate [prompt-integrity tool](../prompt-integrity/overview.en.md) integrates with an application to check static instruction integrity before model dispatch.
+Five standalone skills can be used individually or combined in a [shared workflow](workflow/overview.en.md). The separate [prompt-integrity tool](../prompt-integrity/overview.en.md) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](../model-security-eval/overview.en.md) checks local model behavior after updates and provides a blocking CI verdict.
 
 | Task | Skill | Result |
 | --- | --- | --- |

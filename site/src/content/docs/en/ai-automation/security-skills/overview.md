@@ -6,7 +6,7 @@ sidebar:
 ---
 Instructions for an AI assistant: workflows, reference material, and report templates. Local Python helpers support selected operations.
 
-Five standalone skills can be used individually or combined in a [shared workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/). The separate [prompt-integrity tool](/Product-security-playbook/en/ai-automation/prompt-integrity/overview/) integrates with an application to check static instruction integrity before model dispatch.
+Five standalone skills can be used individually or combined in a [shared workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/). The separate [prompt-integrity tool](/Product-security-playbook/en/ai-automation/prompt-integrity/overview/) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](/Product-security-playbook/en/ai-automation/model-security-eval/overview/) checks local model behavior after updates and provides a blocking CI verdict.
 
 | Task | Skill | Result |
 | --- | --- | --- |
