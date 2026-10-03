@@ -309,7 +309,7 @@ def site_map_content(lang: str) -> str:
         source_lang, key, _ = source_info(path)
         if source_lang == lang:
             documents[key] = path
-    lines = [f"\n## {title}\n", '<div class="site-map-grid">']
+    lines = ['<section class="home-site-map" aria-labelledby="home-site-map-title">', f'<h2 id="home-site-map-title">{title}</h2>', '<div class="site-map-grid">']
     for prefix, ru_label, en_label, overview in SITE_MAP_SECTIONS:
         label = ru_label if lang == "ru" else en_label
         heading = escape(label)
@@ -349,52 +349,77 @@ def site_map_content(lang: str) -> str:
                 lines.append(f'<h4>{label}</h4>')
             append_links(remaining)
         lines.append('</section>')
-    lines.append('</div>')
+    lines.extend(['</div>', '</section>'])
+    return "\n".join(lines) + "\n"
+
+
+def getting_started_content(lang: str) -> str:
+    from html import escape
+
+    ru = lang == "ru"
+    title = "С чего начать" if ru else "Where to start"
+    tasks = (
+        ("Проверить архитектуру", "Review an architecture",
+         "Определите границы доверия и сценарии атак, затем проверьте проектные решения.",
+         "Identify trust boundaries and attack scenarios, then review design decisions.",
+         (("review/threat-modeling/playbook", "Моделирование угроз", "Threat modeling"),
+          ("review/architecture/checklist", "Архитектурное ревью", "Architecture review"))),
+        ("Разработать или проверить код", "Develop or review code",
+         "Выберите применимые требования, проверьте защитные меры и зафиксируйте результаты.",
+         "Select applicable requirements, verify controls, and record the results.",
+         (("application-security/secure-coding/code-review/playbook", "Ревью кода", "Code review"),
+          ("ai-automation/security-skills/secure-development/overview", "Скилл безопасной разработки", "Secure development skill"))),
+        ("Подготовить выпуск в рабочую среду", "Prepare a production release",
+         "Проверьте платформу, права развертывания и условия допуска релиза.",
+         "Review the platform, deployment permissions, and release acceptance criteria.",
+         (("platform-security/kubernetes/cluster-security-review/playbook", "Ревью Kubernetes-кластера", "Kubernetes cluster review"),
+          ("review/release-governance/playbook", "Управление выпуском", "Release governance"))),
+        ("Защитить ИИ-систему", "Secure an AI system",
+         "Начните с общих мер защиты, затем выберите проверки для агентов и интеграций.",
+         "Start with the common controls, then select checks for agents and integrations.",
+         (("ai-security/securing-ai/overview", "Защита функций ИИ", "Securing AI features"),
+          ("ai-security/overview", "Выбор плейбука по задаче", "Choose a playbook by task"))),
+    )
+    lines = ['<section class="home-getting-started" aria-labelledby="home-start-title">',
+             f'<h2 id="home-start-title">{title}</h2>', '<div class="site-map-grid">']
+    for ru_title, en_title, ru_description, en_description, links in tasks:
+        lines.extend(['<section class="site-map-card">',
+                      f'<h3>{escape(ru_title if ru else en_title)}</h3>',
+                      f'<p>{escape(ru_description if ru else en_description)}</p>', '<ul>'])
+        for key, ru_label, en_label in links:
+            route = f"{SITE_BASE}/{lang}/{key}/"
+            lines.append(f'<li><a href="{escape(route, quote=True)}">{escape(ru_label if ru else en_label)}</a></li>')
+        lines.extend(['</ul>', '</section>'])
+    lines.extend(['</div>', '</section>'])
     return "\n".join(lines) + "\n"
 
 
 def index_content(lang: str) -> str:
-    base = SITE_BASE
     if lang == "ru":
-        return """---
+        introduction = """Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
+
+Здесь собраны плейбуки, чеклисты и методики ревью, которые помогают применять отраслевые стандарты и инженерные практики к конкретным задачам безопасности продукта.
+
+Материалы обновляются по мере развития технологий и способов атак. При работе с ними учитывайте архитектуру, версии компонентов и модель угроз своего проекта.
+"""
+        description = "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
+    else:
+        introduction = """A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
+
+The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
+
+Materials evolve with technologies and attack techniques. Apply them in the context of your project's architecture, component versions, and threat model.
+"""
+        description = "A practical knowledge base for AppSec, platform security, supply chain, and AI security."
+    frontmatter = f'''---
 title: "Product Security Playbook"
-description: "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
+description: "{description}"
+tableOfContents: false
 sidebar:
   order: 0
 ---
-
-Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
-
-Этот проект представляет собой курируемую и постоянно обновляемую базу знаний по безопасности продуктов с акцентом на практическую инженерную работу.
-
-Материалы объединяют отраслевые стандарты, открытые исследования, подходы к обеспечению безопасности и инженерный опыт в плейбуки, чеклисты и методики ревью, которые можно применять повторно.
-
-Цель проекта состоит в том, чтобы переводить положения стандартов в рабочие процессы: архитектурное ревью, моделирование угроз, безопасную разработку, защиту платформ, оценку цепочки поставки ПО и проверку ИИ-систем.
-
-Материалы уточняются по мере развития технологий, техник атак и инженерных практик. Подробные ссылки и указания на источники приводятся там, где это необходимо.
-
-""".format(base=base).rstrip() + "\n" + site_map_content(lang)
-
-    return """---
-title: "Product Security Playbook"
-description: "A practical knowledge base for AppSec, platform security, supply chain, and AI security."
-sidebar:
-  order: 0
----
-
-A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
-
-This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
-
-The content combines industry standards, public research, security frameworks, and hands-on engineering practices into reusable playbooks, checklists, and review approaches.
-
-Its goal is not to reproduce existing standards, but to translate them into practical workflows that can be applied during architecture reviews, threat modeling, secure development, platform security, software supply chain assessments, and AI security reviews.
-
-Materials are continuously refined as technologies, attack techniques, and engineering practices evolve.
-
-Detailed references and source attribution are provided where applicable.
-
-""".format(base=base).rstrip() + "\n" + site_map_content(lang)
+'''
+    return frontmatter + "\n" + introduction + "\n" + getting_started_content(lang) + "\n" + site_map_content(lang)
 
 
 def validate_pairs(files: list[Path]) -> list[str]:

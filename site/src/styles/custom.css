@@ -79,7 +79,22 @@ a.section-guide:focus-visible {
   font-size: var(--sl-text-sm);
 }
 
-/* Home page directory: one column on small screens, two when space permits. */
+/* Switch home navigation at the same breakpoint as Starlight's sidebar. */
+.home-getting-started {
+  display: none;
+}
+
+@media (min-width: 50rem) {
+  .home-site-map {
+    display: none;
+  }
+
+  .home-getting-started {
+    display: block;
+  }
+}
+
+/* Home page cards: one column on small screens, two when space permits. */
 .sl-markdown-content .site-map-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));

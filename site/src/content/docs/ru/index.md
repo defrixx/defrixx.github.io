@@ -1,22 +1,57 @@
 ---
 title: "Product Security Playbook"
 description: "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
+tableOfContents: false
 sidebar:
   order: 0
 ---
 
 Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
 
-Этот проект представляет собой курируемую и постоянно обновляемую базу знаний по безопасности продуктов с акцентом на практическую инженерную работу.
+Здесь собраны плейбуки, чеклисты и методики ревью, которые помогают применять отраслевые стандарты и инженерные практики к конкретным задачам безопасности продукта.
 
-Материалы объединяют отраслевые стандарты, открытые исследования, подходы к обеспечению безопасности и инженерный опыт в плейбуки, чеклисты и методики ревью, которые можно применять повторно.
+Материалы обновляются по мере развития технологий и способов атак. При работе с ними учитывайте архитектуру, версии компонентов и модель угроз своего проекта.
 
-Цель проекта состоит в том, чтобы переводить положения стандартов в рабочие процессы: архитектурное ревью, моделирование угроз, безопасную разработку, защиту платформ, оценку цепочки поставки ПО и проверку ИИ-систем.
+<section class="home-getting-started" aria-labelledby="home-start-title">
+<h2 id="home-start-title">С чего начать</h2>
+<div class="site-map-grid">
+<section class="site-map-card">
+<h3>Проверить архитектуру</h3>
+<p>Определите границы доверия и сценарии атак, затем проверьте проектные решения.</p>
+<ul>
+<li><a href="/Product-security-playbook/ru/review/threat-modeling/playbook/">Моделирование угроз</a></li>
+<li><a href="/Product-security-playbook/ru/review/architecture/checklist/">Архитектурное ревью</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Разработать или проверить код</h3>
+<p>Выберите применимые требования, проверьте защитные меры и зафиксируйте результаты.</p>
+<ul>
+<li><a href="/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/">Ревью кода</a></li>
+<li><a href="/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/">Скилл безопасной разработки</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Подготовить выпуск в рабочую среду</h3>
+<p>Проверьте платформу, права развертывания и условия допуска релиза.</p>
+<ul>
+<li><a href="/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/">Ревью Kubernetes-кластера</a></li>
+<li><a href="/Product-security-playbook/ru/review/release-governance/playbook/">Управление выпуском</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Защитить ИИ-систему</h3>
+<p>Начните с общих мер защиты, затем выберите проверки для агентов и интеграций.</p>
+<ul>
+<li><a href="/Product-security-playbook/ru/ai-security/securing-ai/overview/">Защита функций ИИ</a></li>
+<li><a href="/Product-security-playbook/ru/ai-security/overview/">Выбор плейбука по задаче</a></li>
+</ul>
+</section>
+</div>
+</section>
 
-Материалы уточняются по мере развития технологий, техник атак и инженерных практик. Подробные ссылки и указания на источники приводятся там, где это необходимо.
-
-## Карта сайта
-
+<section class="home-site-map" aria-labelledby="home-site-map-title">
+<h2 id="home-site-map-title">Карта сайта</h2>
 <div class="site-map-grid">
 <section class="site-map-card">
 <h3><a href="/Product-security-playbook/ru/review/overview/">Ревью и управление</a></h3>
@@ -128,3 +163,4 @@ sidebar:
 </ul>
 </section>
 </div>
+</section>

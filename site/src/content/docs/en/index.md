@@ -1,24 +1,57 @@
 ---
 title: "Product Security Playbook"
 description: "A practical knowledge base for AppSec, platform security, supply chain, and AI security."
+tableOfContents: false
 sidebar:
   order: 0
 ---
 
 A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
 
-This project is a curated and continuously maintained Product Security knowledge base focused on practical security engineering.
+The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
 
-The content combines industry standards, public research, security frameworks, and hands-on engineering practices into reusable playbooks, checklists, and review approaches.
+Materials evolve with technologies and attack techniques. Apply them in the context of your project's architecture, component versions, and threat model.
 
-Its goal is not to reproduce existing standards, but to translate them into practical workflows that can be applied during architecture reviews, threat modeling, secure development, platform security, software supply chain assessments, and AI security reviews.
+<section class="home-getting-started" aria-labelledby="home-start-title">
+<h2 id="home-start-title">Where to start</h2>
+<div class="site-map-grid">
+<section class="site-map-card">
+<h3>Review an architecture</h3>
+<p>Identify trust boundaries and attack scenarios, then review design decisions.</p>
+<ul>
+<li><a href="/Product-security-playbook/en/review/threat-modeling/playbook/">Threat modeling</a></li>
+<li><a href="/Product-security-playbook/en/review/architecture/checklist/">Architecture review</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Develop or review code</h3>
+<p>Select applicable requirements, verify controls, and record the results.</p>
+<ul>
+<li><a href="/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/">Code review</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/">Secure development skill</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Prepare a production release</h3>
+<p>Review the platform, deployment permissions, and release acceptance criteria.</p>
+<ul>
+<li><a href="/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/">Kubernetes cluster review</a></li>
+<li><a href="/Product-security-playbook/en/review/release-governance/playbook/">Release governance</a></li>
+</ul>
+</section>
+<section class="site-map-card">
+<h3>Secure an AI system</h3>
+<p>Start with the common controls, then select checks for agents and integrations.</p>
+<ul>
+<li><a href="/Product-security-playbook/en/ai-security/securing-ai/overview/">Securing AI features</a></li>
+<li><a href="/Product-security-playbook/en/ai-security/overview/">Choose a playbook by task</a></li>
+</ul>
+</section>
+</div>
+</section>
 
-Materials are continuously refined as technologies, attack techniques, and engineering practices evolve.
-
-Detailed references and source attribution are provided where applicable.
-
-## Site map
-
+<section class="home-site-map" aria-labelledby="home-site-map-title">
+<h2 id="home-site-map-title">Site map</h2>
 <div class="site-map-grid">
 <section class="site-map-card">
 <h3><a href="/Product-security-playbook/en/review/overview/">Review and Governance</a></h3>
@@ -130,3 +163,4 @@ Detailed references and source attribution are provided where applicable.
 </ul>
 </section>
 </div>
+</section>
