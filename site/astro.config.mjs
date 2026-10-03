@@ -100,11 +100,32 @@ export default defineConfig({
           translations: { en: 'AI Security' },
           items: [
             { slug: 'ai-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
-            { slug: 'ai-security/securing-ai/overview', label: 'Защита функций ИИ', translations: { en: 'Securing AI features' } },
-            { slug: 'ai-security/owasp-llm-top-10/overview', label: 'OWASP LLM Top 10', translations: { en: 'OWASP LLM Top 10' } },
-            { slug: 'ai-security/agentic-ai/playbook', label: 'Безопасность агентов', translations: { en: 'Agent security' } },
-            { slug: 'ai-security/ai-assisted-development/playbook', label: 'Разработка с ИИ', translations: { en: 'AI-assisted development' } },
-            { slug: 'ai-security/mcp-security/playbook', label: 'Безопасность MCP', translations: { en: 'MCP security' } },
+            {
+              label: 'Защита ИИ и типовые угрозы',
+              translations: { en: 'AI features and threats' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-security/securing-ai/overview', label: 'Защита функций ИИ', translations: { en: 'Securing AI features' }, attrs: { class: 'sidebar-topic' } },
+                { slug: 'ai-security/owasp-llm-top-10/overview', label: 'OWASP LLM Top 10', translations: { en: 'OWASP LLM Top 10' } },
+              ],
+            },
+            {
+              label: 'Агенты и интеграции',
+              translations: { en: 'Agents and integrations' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-security/agentic-ai/playbook', label: 'Безопасность агентов', translations: { en: 'Agent security' }, attrs: { class: 'sidebar-topic' } },
+                { slug: 'ai-security/mcp-security/playbook', label: 'Безопасность MCP', translations: { en: 'MCP security' } },
+              ],
+            },
+            {
+              label: 'Разработка с ИИ',
+              translations: { en: 'AI-assisted development' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-security/ai-assisted-development/playbook', label: 'Разработка с ИИ', translations: { en: 'AI-assisted development' }, attrs: { class: 'sidebar-topic' } },
+              ],
+            },
           ],
         },
         {
@@ -117,13 +138,34 @@ export default defineConfig({
               translations: { en: 'Overview & installation' },
               attrs: { class: 'section-guide' },
             },
-            { slug: 'ai-automation/security-skills/secure-development/overview' },
-            { slug: 'ai-automation/security-skills/security-review/overview' },
-            { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
-            { slug: 'ai-automation/security-skills/security-report-triage/overview' },
-            { slug: 'ai-automation/security-skills/security-fix-verification/overview' },
-            { slug: 'ai-automation/security-skills/workflow/overview' },
-            { slug: 'ai-automation/prompt-integrity/overview' },
+            {
+              label: 'Скиллы',
+              translations: { en: 'Skills' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-automation/security-skills/secure-development/overview', attrs: { class: 'sidebar-topic' } },
+                { slug: 'ai-automation/security-skills/security-review/overview' },
+                { slug: 'ai-automation/security-skills/sensitive-data-cleanup/overview' },
+                { slug: 'ai-automation/security-skills/security-report-triage/overview' },
+                { slug: 'ai-automation/security-skills/security-fix-verification/overview' },
+              ],
+            },
+            {
+              label: 'Совместная работа скиллов',
+              translations: { en: 'Combined workflow' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-automation/security-skills/workflow/overview', attrs: { class: 'sidebar-topic' } },
+              ],
+            },
+            {
+              label: 'Инструменты',
+              translations: { en: 'Tools' },
+              collapsed: false,
+              items: [
+                { slug: 'ai-automation/prompt-integrity/overview', attrs: { class: 'sidebar-topic' } },
+              ],
+            },
           ],
         },
         {

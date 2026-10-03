@@ -68,6 +68,17 @@ a.section-guide:focus-visible {
   outline-offset: 2px;
 }
 
+/* Match the topic groups in the home page directory. */
+.sidebar-content li:has(> details > ul > li > a.sidebar-topic) {
+  margin-block-start: 0.65rem;
+  padding-block-start: 0.65rem;
+  border-block-start: 1px solid var(--sl-color-gray-5);
+}
+
+.sidebar-content details:has(> ul > li > a.sidebar-topic) > summary .large {
+  font-size: var(--sl-text-sm);
+}
+
 /* Home page directory: one column on small screens, two when space permits. */
 .sl-markdown-content .site-map-grid {
   display: grid;
