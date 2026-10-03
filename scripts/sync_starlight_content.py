@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import os
 import re
-import shutil
 import sys
 from pathlib import Path
 from urllib.parse import unquote
@@ -442,13 +441,22 @@ def write_all(rendered: dict[Path, str], check: bool) -> int:
         print("Starlight generated content is up to date.")
         return 0
 
-    if DOCS_ROOT.exists():
-        shutil.rmtree(DOCS_ROOT)
     DOCS_ROOT.mkdir(parents=True, exist_ok=True)
 
     for path, content in sorted(rendered.items()):
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
+        if not path.exists() or path.read_text(encoding="utf-8") != content:
+            path.write_text(content, encoding="utf-8")
+
+    # Keep existing directories and unchanged files in place. Recreating the
+    # entire tree causes unnecessary filesystem watcher and sync activity.
+    for path in DOCS_ROOT.rglob("*.md"):
+        if path not in rendered:
+            path.unlink()
+    for directory, _, _ in os.walk(DOCS_ROOT, topdown=False):
+        path = Path(directory)
+        if path != DOCS_ROOT and not any(path.iterdir()):
+            path.rmdir()
 
     print(f"Generated {len(rendered)} Starlight document(s).")
     return 0

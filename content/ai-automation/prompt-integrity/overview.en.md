@@ -1,6 +1,6 @@
 # Static instruction integrity: prompt-integrity
 
-`prompt-integrity` is a standalone Python library and CLI that checks application-controlled static instructions immediately before model dispatch. Version 0.1.0 supports a bounded text-only subset of Ollama `/api/chat`.
+`prompt-integrity` is a standalone Python library and CLI that checks application-controlled static instructions immediately before model dispatch. Version 0.1.0 supports bounded subsets of Ollama `/api/chat` and LM Studio `/v1/chat/completions`, including pinned tool definitions in the LM Studio adapter.
 
 [Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity) | [Skills and combined workflow](../security-skills/overview.en.md)
 
@@ -16,7 +16,11 @@ The application loads an approved baseline with an expected profile ID and versi
 
 Adapter `ollama-chat-text-v1`, version `1`, accepts only `model`, `messages`, and `stream: false`. Each message contains only `role` and string `content`. One or more exact `system` messages precede the `user` and `assistant` messages allowed by the baseline.
 
-Extra fields, tools, images, arbitrary options, and other API formats are unsupported. User text attempting to override instructions remains permitted data when its role is allowed: the tool does not classify such attacks.
+This Ollama adapter rejects tools, images, options, and extra fields.
+
+The separate `lmstudio-chat-tools-v1` adapter, version `1`, pins exact JSON values for `stream: false`, `temperature`, `max_tokens`, and `tools` in `allowed_request_fields`. Tool descriptions and parameter schemas are part of the trusted baseline. Assistant calls must use pinned tool names and unique call IDs, with matching tool results before the next ordinary message. Unknown fields, extra system/developer instructions, multimodal content, and incomplete tool histories are rejected. Set `HTTPTransport(..., path="/v1/chat/completions")` and matching endpoint paths; the default transport path remains `/api/chat`.
+
+Pinned parameter schemas do not validate call arguments or authorize execution: the application must perform both checks independently. Tool results and user text attempting to override instructions remain untrusted data; the tool does not classify prompt injection. Responses API, streaming, and arbitrary OpenAI-compatible fields are outside these adapters' coverage.
 
 ## Installation and CLI
 
@@ -57,6 +61,10 @@ Route every model call, background job, retry, and fallback through the wrapper.
 
 The built-in `HTTPTransport` performs no redirects, proxy use, or automatic retries. HTTPS uses platform certificate verification; cleartext HTTP is restricted to loopback addresses. Response size is bounded. `IntegrityError` occurs before dispatch; `TransportError` means transport failed after a successful check and does not guarantee the server never received the request. Neither error authorizes bypassing verification.
 
+For exact release pinning, supply `expected_sha256` to `load_policy`, or `--expected-sha256` to CLI `baseline validate` and `request check`. The value covers the approved file bytes, including whitespace, and must come from separately protected release configuration. Computing it from the candidate at startup defeats pinning. A mismatch stops loading without unpinned fallback. Profile, version, and digest selection must be promoted or rolled back together; this is neither signature verification nor protection against changes to the trusted release selection. Transport endpoints are configured separately and are outside the digest.
+
+Use the bounded `TransportError.code` diagnostic to distinguish timeout, connection failure, HTTP rejection, redirect rejection, oversized response, invalid transport configuration, and other transport failures. Raw exceptions, response bodies, and URLs are excluded. Application retry policy must account for possible duplicate work after a timeout.
+
 ## Protection boundaries and validation
 
 The tool checks the observable request. It does not guarantee model obedience, prompt-injection resistance, output safety, or action authorization. Wrapper bypass, a compromised process, and control over both the baseline and checker are outside its protection.
@@ -64,3 +72,5 @@ The tool checks the observable request. It does not guarantee model obedience, p
 Filesystem operations require an explicit root and refuse symlink path components, nonregular input files, and input hardlinks. Hostile concurrent directory replacement is outside the guarantee. An interrupted candidate write can leave a partial file: validate before approval and use a fresh path for a retry.
 
 [Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity/tests) exercise instruction changes, request shape, snapshots, retries, CLI behavior, filesystem restrictions, and local HTTP. They use synthetic data and need no model. Before use in your application, inspect every dispatch call site and transport interceptor; package tests do not establish the absence of bypass in your integration.
+
+Record primary calls, background jobs, tool rounds, retries, and fallbacks in the [integration report](https://github.com/defrixx/Product-security-skills/blob/main/tools/prompt-integrity/examples/integration-report.md), with request-to-wire evidence and untested routes. The [model pilot](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) checks each outbound Chat Completions request only when `--integrity` is selected; its experiment baseline is not an approved deployment release. Unguarded Chat and Responses runs remain separate evaluation modes.

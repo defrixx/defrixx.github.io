@@ -10,6 +10,10 @@ This playbook defines a **practical Kubernetes cluster security review** across:
 - Admission / RBAC / ServiceAccount boundaries;
 - secrets flow from source to runtime.
 
+Record the deployed Kubernetes minor/patch versions, distribution, support provider, and support end dates before reviewing version-dependent controls. Use a supported release and current security patches; an older version satisfying a feature minimum such as `v1.30+` is not evidence of current support. Verify managed-provider support separately from upstream release status.
+
+Review intervals and operational response targets below assume production workloads with dedicated platform and security ownership. They are local planning defaults, not Kubernetes requirements; record approved values, accountable owners, and evidence that the team can meet them.
+
 **Objective:**
 - reduce unauthorized deployment and hidden privilege-escalation risk;
 - reduce blast radius after workload or CI/CD compromise;
@@ -116,7 +120,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 
 **Risk signals:**
 - unknown public endpoints;
-- new production exposure built on the community `ingress-nginx` controller without controller inventory, ownership, patch tracking, and a migration plan for any announced EOL/retirement;
+- production exposure built on the retired community `ingress-nginx` controller, especially without an approved exception and a migration deadline;
 - use of `Service.spec.externalIPs` in live or multi-tenant clusters;
 - no default-deny network model;
 - unrestricted egress for critical workloads;
@@ -127,7 +131,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 - protected namespaces use default deny + explicit allow rules;
 - every public endpoint has owner, data classification, and vulnerability SLA;
 - do not treat the Ingress API itself as deprecated: the Ingress resource remains supported, but its feature set is frozen. For new complex L7/L4 edge scenarios and long-term platform development, prefer Gateway API with an explicitly chosen implementation and security review.
-- separate the `Ingress` resource from the concrete controller. CVEs and security fixes usually apply to the controller implementation, webhook, data plane, or admission path, not to the `Ingress` API object itself. For the community Kubernetes `ingress-nginx` controller, maintain an explicit lifecycle decision: inventory IngressClass/controller deployments, owned public endpoints, critical annotations, custom snippets, auth/TLS behavior, upstream support status, patch cadence, and replacement target. If EOL/retirement is announced or patch cadence no longer meets production SLA, remaining on it becomes an accepted exposure that needs owner, expiry, compensating controls, and a migration deadline. New production deployments on this controller are allowed only as an exception with owner, expiry, and patch/rollback plan.
+- separate the `Ingress` resource from the concrete controller. CVEs and security fixes usually apply to the controller implementation, webhook, data plane, or admission path, not to the `Ingress` API object itself. For the community Kubernetes `ingress-nginx` controller, maintain an explicit lifecycle decision: inventory IngressClass/controller deployments, owned public endpoints, critical annotations, custom snippets, auth/TLS behavior, upstream support status, patch cadence, and replacement target. Upstream maintenance ended in March 2026: the community controller no longer receives releases, bug fixes, or security updates. Migrate to a maintained Gateway API implementation or Ingress controller. Any continued use requires an exception with owner, expiry, compensating controls, and a migration deadline; a patch plan cannot restore upstream support. Do not select this controller for new production deployments.
 - use the Gateway API security baseline below. A namespace must not be able to attach a route to a shared/public Gateway or reference another namespace's backend/TLS secret without explicit permission from the owner of the referenced resource.
 - deny new `Service.spec.externalIPs` through admission policy: `DenyServiceExternalIPs`, `ValidatingAdmissionPolicy`, or a tested policy engine. In Kubernetes `v1.36+`, this field is deprecated; historically it has been insecure by default because a user who can create or modify a Service can intercept traffic to a chosen IP when the CVE-2020-8554 conditions are present.
 - create a migration plan with owner and deadline for existing `externalIPs`. Preferred targets are managed `type: LoadBalancer`, Ingress/Gateway API for HTTP(S)/L4 entry, or `NodePort` only behind an external load balancer/firewall with explicit IP ownership and network ACLs.
@@ -286,7 +290,7 @@ The minimum gatekeeping baseline should include:
 - block high-risk RBAC verbs outside explicit allowlist;
 - require protected namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
 - block new Service objects with `spec.externalIPs`; existing use is allowed only as a migration exception with `owner`, `expiry`, verified external IP ownership, and a transition plan to `LoadBalancer`, Gateway API/Ingress, or controlled `NodePort`;
-- maintain ingress controller and Gateway API implementation inventory; for the community `ingress-nginx` controller, require a migration plan or exception with owner/expiry; for Gateway API, enforce policy gates for `allowedRoutes`, cross-namespace `ReferenceGrant`, TLS secret ownership, and route attachment to shared Gateways;
+- maintain ingress controller and Gateway API implementation inventory; any remaining community `ingress-nginx` deployment requires an approved exception with owner/expiry and a migration deadline; block new deployments on it. For Gateway API, enforce policy gates for `allowedRoutes`, cross-namespace `ReferenceGrant`, TLS secret ownership, and route attachment to shared Gateways;
 - require Kubernetes audit logging with policy coverage for RBAC changes, admission/webhook changes, namespace security label changes, Secret reads, `exec`, attach/port-forward, and ephemeral-container updates;
 - restrict and periodically recertify `get/list/watch` access to Secrets in live environments;
 - require `automountServiceAccountToken: false` by default unless the workload has a documented Kubernetes API access need;
@@ -327,7 +331,7 @@ A review is complete only when it provides:
 - Admission controls without RBAC protection for sensitive reads.
 - RBAC least privilege without protection of admission/webhook configs.
 - `Service.spec.externalIPs` as the standard way to publish a service externally.
-- the community `ingress-nginx` controller as the new production default without migration plan and ownership.
+- new production deployments on the retired community `ingress-nginx` controller.
 - One shared ServiceAccount for all namespace applications.
 - Secrets in Git (including base64 YAML) as normal process.
 - No reconstructable incident timeline from audit/logging data.

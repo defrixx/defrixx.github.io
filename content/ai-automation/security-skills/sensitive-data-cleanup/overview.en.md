@@ -22,6 +22,8 @@ A separate cleaned copy when requested, a redacted inventory, and coverage limit
 
 A detector match does not by itself confirm sensitive data: classify the value using context and the selected policy. An omitted or unsupported file remains a coverage gap even when no matches are found in processed files.
 
+Reconcile replacement and rescan claims with actual tool results and the exact delivered copy. A proposed output does not prove helper execution; syntax validation is not a sensitive-data rescan. Name each check, observed outcome, and coverage limit separately, including skipped or unavailable execution.
+
 ## Files and verification
 
 Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/sensitive-data-cleanup/assets/cleanup-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in the source repository.

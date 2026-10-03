@@ -26,6 +26,8 @@ Start with [requirement selection by change](https://github.com/defrixx/Product-
 
 Changed code or an explicitly labeled candidate implementation, applied requirement IDs, verification evidence, exceptions, and unresolved conditions. Align the requirements with the project's policies.
 
+Before delivery, match each verified condition to evidence for that exact property at the reported revision. A scoped database lookup does not establish input validation or tenant membership. Tests on a candidate patch establish candidate behavior; label it applied only after observing the change in the named target, and record deployment separately.
+
 ## Files and verification
 
 Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/secure-development/assets/development-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in the source repository.

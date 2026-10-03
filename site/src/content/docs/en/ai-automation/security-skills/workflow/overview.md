@@ -35,6 +35,8 @@ Stages preserve the origin assessment ID together with the finding ID, evidence 
 
 An applied change does not automatically become `fixed`. A confirmed vulnerability at the old revision remains in history after successful remediation. Missing information means unknown, not passed.
 
+The standalone report templates share an action ledger. Carry it forward with the original finding IDs, historical assessments, evidence, implementation state, verification verdict, and remaining work. Lead the final report with unresolved actions; producing a patch does not close a finding. Record self-verification only when the same assistant actually implemented and checked the change.
+
 ## Example combined task
 
 > Use security-report-triage on the attached SARIF and current revision. Use secure-development to repair confirmed findings in the agreed components, then verify them with security-fix-verification. Preserve IDs, original evidence, and separate assessment, implementation, and verification statuses. Perform changes and checks locally; record untested conditions in the final report.
@@ -49,4 +51,4 @@ On resumption, compare input fingerprints, revisions, working snapshot, scope, a
 
 ## Validation in the source project
 
-The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. These do not establish the reliability of assistant decisions on arbitrary projects. Coverage and limits are described in the [test guide](https://github.com/defrixx/Product-security-skills/blob/main/tests/README.md); application integration checks run separately.
+The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. The regression runner also discovers the separate `evals/tests/` suite without a model server. Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare selected synthetic scenarios with and without skill instructions. Harness success does not establish model compliance or the reliability of assistant decisions on arbitrary projects. Coverage and limits are described in the [test guide](https://github.com/defrixx/Product-security-skills/blob/main/tests/README.md); application integration checks run separately. Evaluation tools and local artifacts are not part of copied skills.

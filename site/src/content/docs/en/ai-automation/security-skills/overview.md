@@ -29,3 +29,9 @@ Each skill directory contains its required instructions, references, and templat
 ## Connection to the playbooks
 
 Playbooks define review criteria; skills help apply them to a specific task. Source and [tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) live in the separate repository. Review proposed changes and finding evidence before accepting the result.
+
+## Evidence and evaluations
+
+Each skill requires an evidence check before delivery. Claims must match the exact property, revision, and output actually checked. The report templates include a common action ledger that preserves finding IDs, historical assessments, separate implementation and verification states, and unresolved work. See the [shared workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/) for handoff rules.
+
+Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare synthetic tasks with and without skill instructions. Their runner and tests live in `evals/`, outside the copied skill packages. Completed model responses and passing harness tests do not establish accurate security conclusions. Evaluation artifacts remain local and are not included in a fresh clone.

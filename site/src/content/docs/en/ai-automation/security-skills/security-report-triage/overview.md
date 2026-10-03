@@ -42,6 +42,8 @@ The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills
 
 Triage alone does not include scanner execution, running report-suggested commands, changing code, or creating external tickets. Continue through implementation and verification using the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/).
 
+Before delivery, distinguish content identity from historical provenance: matching hashes do not establish report authorship or when a defect arose. Keep absent history unknown and retain unresolved signals in the action queue. A proposed repair, an observed applied change, and a verified fix remain separate states.
+
 ## Related material
 
 - [Security review](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/)

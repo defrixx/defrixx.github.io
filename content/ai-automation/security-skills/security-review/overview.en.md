@@ -22,6 +22,8 @@ Findings include prerequisites, impact, confidence, remediation, and fix-verific
 
 The report includes a flow coverage table: entry point, sensitive operation, protections checked and their observed outcomes, evidence, and untested conditions. Static analysis, executed checks, and checks using mocked components are labeled separately. Keep the table even when no vulnerabilities are confirmed: it records assessed scope and remaining gaps, not a security guarantee.
 
+Classify a finding as introduced or pre-existing only after comparing the same issue at recorded revisions. With a single snapshot, historical provenance remains unknown; a content hash does not establish age. Remediation must preserve the stated security invariant. Keep suggestions, candidate patches, and changes observed in the target distinct.
+
 ## Files and verification
 
 Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-review/assets/review-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in the source repository.

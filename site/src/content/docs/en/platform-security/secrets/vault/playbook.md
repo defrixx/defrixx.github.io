@@ -8,6 +8,8 @@ sidebar:
 
 This document is for platform engineers, security engineers, and service owners who run Vault in Kubernetes-based environments.
 
+The TTLs, rotation intervals, and response targets below are local operational defaults for production services with automated renewal or re-authentication and dedicated secret owners. They are not HashiCorp defaults or universal security limits. Confirm each value against backend lease limits, job duration, rollout and outage behavior, and the ability to revoke or rotate credentials within the stated target. Record approved deviations and test renewal failure and recovery before adoption.
+
 ## 2. Security of Vault Itself
 
 ### 2.1 Cluster and network hardening

@@ -43,6 +43,8 @@ The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills
 
 The skill needs no sibling skills and does not itself authorize code changes or production access. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Implementation and verification by the same assistant are labeled self-verification.
 
+Before delivery, reconcile verdicts with recorded cases and counts at the checked revision. Keep `partially_fixed` when a relevant bypass remains alongside an established portion of the repair. Candidate state changes only after application to the named target is observed. Label self-verification only when the checking assistant actually implemented the assessed change; a supplied patch or fixture does not establish authorship.
+
 ## Related material
 
 - [Secure development](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
