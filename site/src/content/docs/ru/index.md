@@ -154,6 +154,7 @@ sidebar:
 <ul>
 <li><a href="/Product-security-playbook/ru/ai-automation/prompt-integrity/overview/">prompt-integrity</a></li>
 <li><a href="/Product-security-playbook/ru/ai-automation/model-security-eval/overview/">model-security-eval</a></li>
+<li><a href="/Product-security-playbook/ru/ai-automation/prompt-guard/overview/">prompt-guard</a></li>
 </ul>
 </div>
 </section>

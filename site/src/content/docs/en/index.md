@@ -154,6 +154,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 <ul>
 <li><a href="/Product-security-playbook/en/ai-automation/prompt-integrity/overview/">prompt-integrity</a></li>
 <li><a href="/Product-security-playbook/en/ai-automation/model-security-eval/overview/">model-security-eval</a></li>
+<li><a href="/Product-security-playbook/en/ai-automation/prompt-guard/overview/">prompt-guard</a></li>
 </ul>
 </div>
 </section>
