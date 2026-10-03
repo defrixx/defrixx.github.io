@@ -59,12 +59,26 @@ export default defineConfig({
           translations: { en: 'Application Security' },
           items: [
             { slug: 'application-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
-            { slug: 'application-security/secure-coding/code-review/playbook', label: 'Ревью кода', translations: { en: 'Code review' } },
-            { slug: 'application-security/api/api-security-patterns/playbook', label: 'Безопасность API', translations: { en: 'API security' } },
-            { slug: 'application-security/business-logic/business-logic-abuse/playbook', label: 'Бизнес-логика', translations: { en: 'Business logic' } },
-            { slug: 'application-security/identity/oidc-oauth/playbook', label: 'OIDC и OAuth', translations: { en: 'OIDC and OAuth' } },
-            { slug: 'application-security/web/browser-security/playbook', label: 'Защита в браузере', translations: { en: 'Browser security' } },
-            { slug: 'application-security/web/owasp-top-10/playbook', label: 'OWASP Top 10', translations: { en: 'OWASP Top 10' } },
+            {
+              label: 'Код, API и доступ',
+              translations: { en: 'Code, APIs, and access control' },
+              collapsed: false,
+              items: [
+                { slug: 'application-security/secure-coding/code-review/playbook', label: 'Ревью кода', translations: { en: 'Code review' }, attrs: { class: 'sidebar-topic' } },
+                { slug: 'application-security/api/api-security-patterns/playbook', label: 'Безопасность API', translations: { en: 'API security' } },
+                { slug: 'application-security/business-logic/business-logic-abuse/playbook', label: 'Бизнес-логика', translations: { en: 'Business logic' } },
+                { slug: 'application-security/identity/oidc-oauth/playbook', label: 'OIDC и OAuth', translations: { en: 'OIDC and OAuth' } },
+              ],
+            },
+            {
+              label: 'Веб и браузер',
+              translations: { en: 'Web and browser' },
+              collapsed: false,
+              items: [
+                { slug: 'application-security/web/browser-security/playbook', label: 'Защита в браузере', translations: { en: 'Browser security' }, attrs: { class: 'sidebar-topic' } },
+                { slug: 'application-security/web/owasp-top-10/playbook', label: 'OWASP Top 10', translations: { en: 'OWASP Top 10' } },
+              ],
+            },
           ],
         },
         {
@@ -74,8 +88,9 @@ export default defineConfig({
             { slug: 'platform-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
             {
               label: 'Kubernetes',
+              collapsed: false,
               items: [
-                { slug: 'platform-security/kubernetes/cluster-security-review/playbook', label: 'Ревью кластера', translations: { en: 'Cluster review' } },
+                { slug: 'platform-security/kubernetes/cluster-security-review/playbook', label: 'Ревью кластера', translations: { en: 'Cluster review' }, attrs: { class: 'sidebar-topic' } },
                 { slug: 'platform-security/kubernetes/pod-security/playbook', label: 'Безопасность Pod', translations: { en: 'Pod security' } },
                 { slug: 'platform-security/kubernetes/secrets/playbook', label: 'Секреты Kubernetes', translations: { en: 'Kubernetes secrets' } },
                 { slug: 'platform-security/kubernetes/seccomp/checklist', label: 'Проверка seccomp', translations: { en: 'Seccomp checklist' } },
@@ -83,7 +98,14 @@ export default defineConfig({
                 { slug: 'platform-security/kubernetes/adversarial-validation/playbook', label: 'Проверка защиты от атак', translations: { en: 'Adversarial validation' } },
               ],
             },
-            { slug: 'platform-security/secrets/vault/playbook', label: 'Секреты в Vault', translations: { en: 'Secrets in Vault' } },
+            {
+              label: 'Управление секретами',
+              translations: { en: 'Secrets management' },
+              collapsed: false,
+              items: [
+                { slug: 'platform-security/secrets/vault/playbook', label: 'Секреты в Vault', translations: { en: 'Secrets in Vault' }, attrs: { class: 'sidebar-topic' } },
+              ],
+            },
           ],
         },
         {
@@ -129,8 +151,8 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Скиллы и инструменты безопасности',
-          translations: { en: 'Security Skills and Tools' },
+          label: 'Скиллы и инструменты',
+          translations: { en: 'Skills and Tools' },
           items: [
             {
               slug: 'ai-automation/security-skills/overview',

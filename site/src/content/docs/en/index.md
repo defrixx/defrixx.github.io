@@ -32,7 +32,7 @@ Detailed references and source attribution are provided where applicable.
 <section class="site-map-card">
 <h3><a href="/Product-security-playbook/en/application-security/overview/">Application Security</a></h3>
 <div class="site-map-group">
-<h4>Code and application interfaces</h4>
+<h4>Code, APIs, and access control</h4>
 <ul>
 <li><a href="/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/">API security</a></li>
 <li><a href="/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/">Business logic</a></li>

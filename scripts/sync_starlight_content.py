@@ -272,7 +272,7 @@ SITE_MAP_SECTIONS = (
 # First matching path prefix wins; unmatched pages remain visible below the groups.
 SITE_MAP_GROUPS = {
     "application-security": (
-        ("Код, API и доступ", "Code and application interfaces",
+        ("Код, API и доступ", "Code, APIs, and access control",
          ("application-security/secure-coding/", "application-security/api/",
           "application-security/business-logic/", "application-security/identity/")),
         ("Веб и браузер", "Web and browser", ("application-security/web/",)),
