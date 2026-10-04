@@ -77,4 +77,4 @@ Treat this repository as curated working material rather than purely original st
 - [`content/ai-automation/security-skills/workflow/`](content/ai-automation/security-skills/workflow/) - independent use and combined assessment, implementation, verification, and optional cleanup
 - [`content/ai-automation/prompt-integrity/`](content/ai-automation/prompt-integrity/) - standalone static instruction integrity library and CLI
 - [`content/ai-automation/model-security-eval/`](content/ai-automation/model-security-eval/) - local model security scenarios and blocking CI verdicts
-- [`content/ai-automation/prompt-guard/`](content/ai-automation/prompt-guard/) - source-aware input validation and policy-authorized sanitization
+- [`content/ai-automation/prompt-guard/`](content/ai-automation/prompt-guard/) - source-aware input/output validation, policy-authorized sanitization and tool contracts
