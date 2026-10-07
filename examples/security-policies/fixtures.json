@@ -1,0 +1,1988 @@
+{
+  "fixtures": {
+    "cases": [
+      {
+        "name": "pod/allowed-stateless",
+        "policy": "pod",
+        "allowed": true,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-host-network",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "hostNetwork": true
+          }
+        }
+      },
+      {
+        "name": "pod/deny-host-pid",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "hostPID": true
+          }
+        }
+      },
+      {
+        "name": "pod/deny-host-ipc",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "hostIPC": true
+          }
+        }
+      },
+      {
+        "name": "pod/deny-host-path",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "host",
+                "hostPath": {
+                  "path": "/"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-wrong-identity",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "administrator",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-wrong-namespace",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "other"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-token-mount",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": true,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-empty-containers",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": []
+          }
+        }
+      },
+      {
+        "name": "pod/deny-mutable-image",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments:latest",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-bad-digest",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:short",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-privileged",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "privileged": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-escalation",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": true,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-writable-root",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-add-capability",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ],
+                    "add": [
+                      "SYS_ADMIN"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-no-drop",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": []
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-root-uid",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "runAsUser": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-root-override",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "runAsNonRoot": false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-seccomp-override",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "seccompProfile": {
+                    "type": "Unconfined"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-pod-seccomp",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "Unconfined"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-unexpected-spec",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "nodeName": "privileged-node"
+          }
+        }
+      },
+      {
+        "name": "pod/deny-windows",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "os": {
+              "name": "windows"
+            }
+          }
+        }
+      },
+      {
+        "name": "pod/deny-malformed-init",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "initContainers": {}
+          }
+        }
+      },
+      {
+        "name": "pod/allowed-initContainers",
+        "policy": "pod",
+        "allowed": true,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "helper",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-initContainers-privileged",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "helper",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "privileged": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-ephemeralContainers-create",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "ephemeralContainers": [
+              {
+                "name": "helper",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-ephemeralContainers-privileged",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "ephemeralContainers": [
+              {
+                "name": "helper",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "privileged": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-containers-missing-image",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-containers-missing-securityContext",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-initContainers-missing-image",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "app",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-initContainers-missing-securityContext",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-ephemeralContainers-missing-image",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "ephemeralContainers": [
+              {
+                "name": "app",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-ephemeralContainers-missing-securityContext",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "ephemeralContainers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "aws/allowed-branch",
+        "policy": "aws_trust",
+        "allowed": true,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-wildcard-sub",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/*"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-wrong-repo",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:attacker/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-wrong-branch",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/dev"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-environment-sub",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:environment:production"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-pull-request-sub",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:pull_request"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-wrong-audience",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "other",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-other-provider",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::999999999999:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-wildcard-principal",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-extra-action",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": [
+                "sts:AssumeRoleWithWebIdentity",
+                "sts:AssumeRole"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-extra-statement",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-string-like",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringLike": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-not-action",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              },
+              "NotAction": "sts:AssumeRoleWithWebIdentity"
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-not-principal",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              },
+              "NotPrincipal": {
+                "AWS": "*"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-empty-statements",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": []
+        }
+      },
+      {
+        "name": "aws/deny-statement-object",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "aws/deny-missing-Condition",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity"
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-missing-Principal",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/deny-missing-Action",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "pod/deny-null",
+        "policy": "pod",
+        "allowed": false,
+        "input": null
+      },
+      {
+        "name": "pod/deny-array",
+        "policy": "pod",
+        "allowed": false,
+        "input": []
+      },
+      {
+        "name": "pod/deny-empty-object",
+        "policy": "pod",
+        "allowed": false,
+        "input": {}
+      },
+      {
+        "name": "pod/deny-string",
+        "policy": "pod",
+        "allowed": false,
+        "input": "untrusted"
+      },
+      {
+        "name": "aws_trust/deny-null",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": null
+      },
+      {
+        "name": "aws_trust/deny-array",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": []
+      },
+      {
+        "name": "aws_trust/deny-empty-object",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {}
+      },
+      {
+        "name": "aws_trust/deny-string",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": "untrusted"
+      },
+      {
+        "name": "pod/deny-unexpected-top-level",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "unexpected": true
+        }
+      },
+      {
+        "name": "pod/deny-legacy-apparmor-annotation",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments",
+            "annotations": {
+              "container.apparmor.security.beta.kubernetes.io/app": "unconfined"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pod/deny-empty-ephemeralContainers-create",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                }
+              }
+            ],
+            "ephemeralContainers": []
+          }
+        }
+      },
+      {
+        "name": "pod/deny-debug-target-on-ordinary-container",
+        "policy": "pod",
+        "allowed": false,
+        "input": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "payments",
+            "namespace": "payments"
+          },
+          "spec": {
+            "serviceAccountName": "payments-app",
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "containers": [
+              {
+                "name": "app",
+                "image": "registry.example.com/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "targetContainerName": "other"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

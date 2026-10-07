@@ -17,13 +17,13 @@ sidebar:
 Разделение тем между документами:
 - Плейбук определяет схемы развертывания MCP, реестр серверов, инструментов, ресурсов и шаблонов, утвержденные возможности, выбор транспорта, применение OAuth, политику шлюза, журналирование протокола и контроль изменений возможностей.
 - Злоупотребление инструментами и утечки рассматриваются на границе MCP: согласование подключения сервера, определение возможностей, доступ к ресурсам, обработка токенов и контроль целевых систем.
-- Общий профиль защиты ИИ находится в [обзоре безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/), а автономия агентов, память, журнал действий, согласование, откат и аварийное отключение описаны в [плейбуке безопасности агентов](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/).
-- [Обзор OWASP LLM Top 10](/Product-security-playbook/ru/ai-security/owasp-llm-top-10/overview/) используется как классификация угроз, а не как чеклист развертывания.
+- Общий профиль защиты ИИ находится в [обзоре безопасности ИИ](/ru/ai-security/securing-ai/overview/), а автономия агентов, память, журнал действий, согласование, откат и аварийное отключение описаны в [плейбуке безопасности агентов](/ru/ai-security/agentic-ai/playbook/).
+- [Обзор OWASP LLM Top 10](/ru/ai-security/owasp-llm-top-10/overview/) используется как классификация угроз, а не как чеклист развертывания.
 
 За пределами этого документа:
-- общее поведение моделей, внедрение инструкций, RAG и управление выпуском ИИ-систем; используйте [обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/);
-- основы OAuth/OIDC вне применения MCP; используйте [плейбук OIDC и OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
-- общая защита API целевых бизнес-систем; используйте [плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/).
+- общее поведение моделей, внедрение инструкций, RAG и управление выпуском ИИ-систем; используйте [обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/);
+- основы OAuth/OIDC вне применения MCP; используйте [плейбук OIDC и OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/);
+- общая защита API целевых бизнес-систем; используйте [плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/).
 
 Цель:
 - явно определить каждую возможность MCP, проверять права на ее использование, отслеживать обращения и обеспечивать отзыв доступа до того, как ее использование затронет рабочие данные или состояние бизнес-объектов.
@@ -225,7 +225,7 @@ MCP `2026-07-28` убирает начальное согласование и �
 
 ## 5. Решение по результатам ревью
 
-Матрица определяет критичность замечания и решение о выпуске. Общие сроки устранения, исключения, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/); при пересечении применяется более строгое требование.
+Матрица определяет критичность замечания и решение о выпуске. Общие сроки устранения, исключения, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/); при пересечении применяется более строгое требование.
 
 | Критичность | Условие MCP | Действие |
 | --- | --- | --- |
@@ -243,8 +243,8 @@ MCP `2026-07-28` убирает начальное согласование и �
 
 ## 6. Связанные материалы
 
-- [Обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [Плейбук безопасности агентов](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
-- [Плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Плейбук OIDC и OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
+- [Обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/)
+- [Плейбук безопасности агентов](/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук моделирования угроз](/ru/review/threat-modeling/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Плейбук OIDC и OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/)

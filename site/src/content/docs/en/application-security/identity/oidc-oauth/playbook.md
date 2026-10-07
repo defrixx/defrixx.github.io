@@ -403,7 +403,7 @@ Use these ASVS 5.0.0 requirements when recording verification results for the re
 
 ## 10. Related Materials
 
-- [Browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Vault playbook](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
+- [Browser and frontend security playbook](/en/application-security/web/browser-security/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Vault playbook](/en/platform-security/secrets/vault/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)

@@ -16,7 +16,7 @@ sidebar:
 Назначение документа:
 - Этот документ отвечает за таксономию угроз и общий словарь рисков для ревью LLM-приложений.
 - Он объясняет внедрение инструкций, утечки данных, злоупотребление инструментами, избыточную автономность и смежные риски как категории и механизмы атак.
-- Он не задает базовый профиль мер контроля для рабочих сред; меры защиты, приоритеты внедрения и способы проверки описаны в [обзоре безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/).
+- Он не задает базовый профиль мер контроля для рабочих сред; меры защиты, приоритеты внедрения и способы проверки описаны в [обзоре безопасности ИИ](/ru/ai-security/securing-ai/overview/).
 - Он не заменяет специализированные плейбуки по автономии агентов и управлению безопасностью протокола MCP.
 
 Классификация 2025 года описывает модель как компонент приложения. Если модель вызывает инструменты, сохраняет память, координируется с другими агентами или самостоятельно выполняет действия в зависимых системах, используйте ее вместе с OWASP Top 10 for Agentic Applications.
@@ -43,7 +43,7 @@ sidebar:
 ## 3. Разбор угроз OWASP LLM Top 10
 
 Документ описывает угрозы, механизмы атак и их последствия.
-За практическими мерами контроля, приоритетами внедрения и показателями для проверки переходите в [обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/). Для проверки автономности агентов, памяти, вызовов инструментов и журналов действий используйте [плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/). Для реестра серверов MCP, схем развертывания MCP, применения OAuth и контроля изменения возможностей используйте [плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/).
+За практическими мерами контроля, приоритетами внедрения и показателями для проверки переходите в [обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/). Для проверки автономности агентов, памяти, вызовов инструментов и журналов действий используйте [плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/). Для реестра серверов MCP, схем развертывания MCP, применения OAuth и контроля изменения возможностей используйте [плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/).
 
 ## 3.1 LLM01: Prompt Injection
 
@@ -236,8 +236,8 @@ sidebar:
 
 ## 5. Связанные материалы
 
-- [Обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
-- [Плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
+- [Обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)
+- [Плейбук моделирования угроз](/ru/review/threat-modeling/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)

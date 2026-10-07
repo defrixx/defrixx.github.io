@@ -6,17 +6,17 @@ sidebar:
 ---
 Each of the five skills works independently. For an end-to-end task, combine report triage or code review, implementation, fix verification, and optional cleanup of selected delivery material.
 
-This is an assistant workflow with compatible stage outputs. There is no separate automation engine or requirement to run every skill. [prompt-integrity](/Product-security-playbook/en/ai-automation/prompt-integrity/overview/) integrates separately with an application and does not orchestrate this workflow.
+This is an assistant workflow with compatible stage outputs. There is no separate automation engine or requirement to run every skill. [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) integrates separately with an application and does not orchestrate this workflow.
 
 ## Choose the stages
 
 | Stage task | Skill | Output passed forward |
 | --- | --- | --- |
-| Interpret an existing scanner report | [security-report-triage](/Product-security-playbook/en/ai-automation/security-skills/security-report-triage/overview/) | Accounted raw signals, findings, evidence, and an action queue. |
-| Assess a PR or repository | [security-review](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/) | Confirmed findings, hypotheses, and repair criteria. |
-| Implement selected repairs | [secure-development](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/) | Candidate or applied changes, the resulting revision, and check results. |
-| Verify specified repairs | [security-fix-verification](/Product-security-playbook/en/ai-automation/security-skills/security-fix-verification/overview/) | Per-finding verdicts covering original, bypass, and allowed cases. |
-| Prepare selected material for sharing | [sensitive-data-cleanup](/Product-security-playbook/en/ai-automation/security-skills/sensitive-data-cleanup/overview/) | A separate processed copy and a report of replacements, omissions, and limits. |
+| Interpret an existing scanner report | [security-report-triage](/en/ai-automation/security-skills/security-report-triage/overview/) | Accounted raw signals, findings, evidence, and an action queue. |
+| Assess a PR or repository | [security-review](/en/ai-automation/security-skills/security-review/overview/) | Confirmed findings, hypotheses, and repair criteria. |
+| Implement selected repairs | [secure-development](/en/ai-automation/security-skills/secure-development/overview/) | Candidate or applied changes, the resulting revision, and check results. |
+| Verify specified repairs | [security-fix-verification](/en/ai-automation/security-skills/security-fix-verification/overview/) | Per-finding verdicts covering original, bypass, and allowed cases. |
+| Prepare selected material for sharing | [sensitive-data-cleanup](/en/ai-automation/security-skills/sensitive-data-cleanup/overview/) | A separate processed copy and a report of replacements, omissions, and limits. |
 
 Report triage and code review are alternative entry points. You can start directly with implementation of a known finding or verification of an existing repair. Delivery cleanup is optional and does not change the original report's evidence.
 

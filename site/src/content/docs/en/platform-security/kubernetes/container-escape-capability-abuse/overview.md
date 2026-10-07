@@ -363,7 +363,7 @@ In Kubernetes, container escape or capability abuse often becomes more than a no
 - the obtained credentials are used against the Kubernetes API;
 - impact expands to Secret reads, workload creation, lateral movement, or persistence through RBAC/admission drift.
 
-During review, record not only host access but also the next reachable control-plane step: which kubeconfig/token/material is available, which API actions it enables, and which audit/runtime events should fire. Use the dedicated playbook for safe attack-path validation: [kubernetes/adversarial-validation/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/).
+During review, record not only host access but also the next reachable control-plane step: which kubeconfig/token/material is available, which API actions it enables, and which audit/runtime events should fire. Use the dedicated playbook for safe attack-path validation: [kubernetes/adversarial-validation/playbook.en.md](/en/platform-security/kubernetes/adversarial-validation/playbook/).
 
 ---
 
@@ -400,8 +400,8 @@ When reviewing a workload, ask:
 
 ## 12. Related Materials
 
-- [Pod Security playbook](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- [Seccomp checklist](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Kubernetes adversarial validation playbook](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/)
-- [Kubernetes Secrets playbook](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/)
+- [Pod Security playbook](/en/platform-security/kubernetes/pod-security/playbook/)
+- [Seccomp checklist](/en/platform-security/kubernetes/seccomp/checklist/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Kubernetes adversarial validation playbook](/en/platform-security/kubernetes/adversarial-validation/playbook/)
+- [Kubernetes Secrets playbook](/en/platform-security/kubernetes/secrets/playbook/)

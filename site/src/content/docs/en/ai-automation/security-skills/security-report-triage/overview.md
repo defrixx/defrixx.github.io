@@ -6,7 +6,7 @@ sidebar:
 ---
 The `security-report-triage` skill interprets an existing scanner report: account for signals, check applicability, and prepare an action queue. It works independently, including without source code; unsupported assumptions then remain hypotheses.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-report-triage) | [Installation instructions](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-report-triage) | [Installation instructions](/en/ai-automation/security-skills/overview/)
 
 ## Inputs
 
@@ -44,12 +44,12 @@ Opaque labels are per-input identifiers, not stable cross-run identities or cont
 
 The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/assets/triage-report.md) includes an action queue, raw-signal and unique-finding counts, evidence, errors, and coverage gaps. Normalization does not replace vulnerability validation. Ordinary prose reports can use manual signal mapping with an explicit coverage statement.
 
-Triage alone does not include scanner execution, running report-suggested commands, changing code, or creating external tickets. Continue through implementation and verification using the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/).
+Triage alone does not include scanner execution, running report-suggested commands, changing code, or creating external tickets. Continue through implementation and verification using the [combined workflow](/en/ai-automation/security-skills/workflow/overview/).
 
 Before delivery, distinguish content identity from historical provenance: matching hashes do not establish report authorship or when a defect arose. Keep absent history unknown and retain unresolved signals in the action queue. A proposed repair, an observed applied change, and a verified fix remain separate states.
 
 ## Related material
 
-- [Security review](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/)
-- [Fix verification](/Product-security-playbook/en/ai-automation/security-skills/security-fix-verification/overview/)
-- [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+- [Security review](/en/ai-automation/security-skills/security-review/overview/)
+- [Fix verification](/en/ai-automation/security-skills/security-fix-verification/overview/)
+- [Vulnerability management](/en/review/vulnerability-management/playbook/)

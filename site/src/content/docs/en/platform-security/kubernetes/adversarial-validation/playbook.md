@@ -383,10 +383,10 @@ Adversarial validation is complete only when it provides:
 
 ## 5. Related Repository Materials
 
-- Kubernetes cluster security review: [kubernetes/cluster-security-review/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- Pod runtime hardening: [kubernetes/pod-security/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/)
-- SLSA provenance for container images: [supply-chain/slsa-provenance/overview.en.md](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
-- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/)
-- Vault and secrets: [secrets/vault/playbook.en.md](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
+- Kubernetes cluster security review: [kubernetes/cluster-security-review/playbook.en.md](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- Pod runtime hardening: [kubernetes/pod-security/playbook.en.md](/en/platform-security/kubernetes/pod-security/playbook/)
+- Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](/en/platform-security/kubernetes/seccomp/checklist/)
+- SLSA provenance for container images: [supply-chain/slsa-provenance/overview.en.md](/en/supply-chain/slsa-provenance/overview/)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](/en/platform-security/kubernetes/secrets/playbook/)
+- Vault and secrets: [secrets/vault/playbook.en.md](/en/platform-security/secrets/vault/playbook/)

@@ -247,7 +247,7 @@ vault token revoke -accessor <accessor>
 
 Используйте одну утвержденную схему для каждой рабочей нагрузки и документируйте причину выбора.
 
-Этот раздел сравнивает способы доставки секретов из Vault. Он не означает, что Vault обязателен для каждого секрета Kubernetes; выбор между встроенным Kubernetes Secret, синхронизацией и доставкой только файлами из внешнего менеджера секретов описан в [плейбуке Kubernetes Secrets](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/).
+Этот раздел сравнивает способы доставки секретов из Vault. Он не означает, что Vault обязателен для каждого секрета Kubernetes; выбор между встроенным Kubernetes Secret, синхронизацией и доставкой только файлами из внешнего менеджера секретов описан в [плейбуке Kubernetes Secrets](/ru/platform-security/kubernetes/secrets/playbook/).
 
 Вариант A (предпочтительный): Vault Agent Injector
 - Секреты записываются в файлы по шаблонам во время выполнения.
@@ -429,12 +429,12 @@ spec:
 
 ## 7. Связанные материалы
 
-- [Плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
-- [Плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Плейбук Kubernetes Secrets](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
-- [Обзор SLSA provenance](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
-- [Справочник инфраструктурных технологий](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
+- [Плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/)
+- [Плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Плейбук Kubernetes Secrets](/ru/platform-security/kubernetes/secrets/playbook/)
+- [Обзор SLSA provenance](/ru/supply-chain/slsa-provenance/overview/)
+- [Справочник инфраструктурных технологий](/ru/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## Подготовка материалов к передаче
 
-Для подготовки отдельной копии материалов к передаче используйте [скилл очистки чувствительных данных](/Product-security-playbook/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/). Охват и ограничения обработки описаны на странице скилла.
+Для подготовки отдельной копии материалов к передаче используйте [скилл очистки чувствительных данных](/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/). Охват и ограничения обработки описаны на странице скилла.

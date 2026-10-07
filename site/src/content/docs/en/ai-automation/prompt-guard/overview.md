@@ -6,7 +6,7 @@ sidebar:
 ---
 `prompt-guard` is an independent Python library and CLI for checking untrusted input context and model outputs against independent policies. It inspects UTF-8 text and JSON messages with source-scoped literal and regex rules. Version 0.3.0 requires Python 3.11+ on Linux or macOS and uses only the standard library at runtime. CLI inspection runs offline.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard) | [Skills and tools](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard) | [Skills and tools](/en/ai-automation/security-skills/overview/)
 
 ## Modes and admission decisions
 
@@ -71,7 +71,7 @@ Schema v2 adds `normalized` detection views and `assembled` rules. Normalized vi
 ## Application integration and policy protection
 
 1. Inspect incoming data and every new retrieval/tool round with trusted provenance. Check assembled context where fragments can combine into a prohibited expression.
-2. Assemble the request from accepted payloads. Keep static instructions and tool definitions under [prompt-integrity](/Product-security-playbook/en/ai-automation/prompt-integrity/overview/) at final dispatch.
+2. Assemble the request from accepted payloads. Keep static instructions and tool definitions under [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) at final dispatch.
 3. Inspect model responses with a separate output policy before user delivery or execution of proposed tool calls.
 4. Validate arguments, resource scope and permissions for every proposed tool action before execution.
 
@@ -148,6 +148,6 @@ Diagnostics include decisions, codes, policy/rule IDs and counts, excluding inpu
 
 [Package tests and synthetic corpus](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard/tests) cover attacks, benign controls and intentional topic blocks. Before deployment, verify final-payload dispatch, all model-call routes, false blocks, withheld rejected outputs, contract revalidation after sanitization, truncated streams, resource exhaustion and policy mismatch handling in your integration.
 
-[model-security-eval](/Product-security-playbook/en/ai-automation/model-security-eval/overview/) supports `--guard-profile`, `--guard-mode` and `--compare-guard` when the package is installed. Paired trials retain guard decisions, model violations and fixture actions separately, including blocked benign controls. A blocked input is `not_assessed_for_blocked_input`, not evidence that the model resisted the attack. Synthetic results do not establish detection coverage for arbitrary production inputs.
+[model-security-eval](/en/ai-automation/model-security-eval/overview/) supports `--guard-profile`, `--guard-mode` and `--compare-guard` when the package is installed. Paired trials retain guard decisions, model violations and fixture actions separately, including blocked benign controls. A blocked input is `not_assessed_for_blocked_input`, not evidence that the model resisted the attack. Synthetic results do not establish detection coverage for arbitrary production inputs.
 
 For paired output evaluation, use `--output-guard-profile output-security-and-topics --compare-guard`, optionally with an input profile. Reports separately retain raw-generation violations as redacted evidence, released responses, output guard decisions and fixture actions. Blocking a violation can pass the application control while the model violation remains recorded. Blocked benign controls fail; output inspection execution errors are inconclusive.

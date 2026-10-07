@@ -15,10 +15,10 @@ sidebar:
 - проверок перед выпуском, где требуется подтвердить идентичность образа, подпись, SBOM или provenance.
 
 За пределами этого документа:
-- общая база SAST, SCA и поиска секретов для исходного кода и зависимостей: используйте [плейбук безопасной разработки и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/); этот документ определяет только специфику сканирования собранных образов, их слоев и OCI-артефактов;
-- защита рабочих нагрузок Kubernetes при выполнении: используйте [плейбук Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/);
-- выход из контейнера и злоупотребление Linux capabilities: используйте [обзор выхода из контейнера](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/);
-- подробная политика SLSA Build provenance: используйте [обзор SLSA](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/).
+- общая база SAST, SCA и поиска секретов для исходного кода и зависимостей: используйте [плейбук безопасной разработки и ревью кода](/ru/application-security/secure-coding/code-review/playbook/); этот документ определяет только специфику сканирования собранных образов, их слоев и OCI-артефактов;
+- защита рабочих нагрузок Kubernetes при выполнении: используйте [плейбук Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/);
+- выход из контейнера и злоупотребление Linux capabilities: используйте [обзор выхода из контейнера](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/);
+- подробная политика SLSA Build provenance: используйте [обзор SLSA](/ru/supply-chain/slsa-provenance/overview/).
 
 Цель:
 - обеспечить развертывание именно того образа, который прошел проверку и согласование;
@@ -212,7 +212,7 @@ admission_failure_mode: fail-closed
 
 ## 9. Решения по результатам ревью
 
-Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
+Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
 
 | Критичность | Когда использовать | Обязательное действие |
 |---|---|---|
@@ -232,9 +232,9 @@ admission_failure_mode: fail-closed
 
 ## 10. Связанные материалы
 
-- [Обзор SLSA provenance](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
-- [Справочник инфраструктурных технологий](/Product-security-playbook/ru/reference/infrastructure-technologies/infrastructure-technologies/)
-- [Плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
-- [Плейбук Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- [Выход из контейнера и злоупотребление capabilities](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- [Защита цепочки поставки инструкций агентов](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)
+- [Обзор SLSA provenance](/ru/supply-chain/slsa-provenance/overview/)
+- [Справочник инфраструктурных технологий](/ru/reference/infrastructure-technologies/infrastructure-technologies/)
+- [Плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/)
+- [Плейбук Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/)
+- [Выход из контейнера и злоупотребление capabilities](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [Защита цепочки поставки инструкций агентов](/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)

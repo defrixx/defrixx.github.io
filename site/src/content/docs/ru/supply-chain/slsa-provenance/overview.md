@@ -314,8 +314,8 @@ trusted_builders:
 
 ## 9. Связанные материалы
 
-- [Плейбук безопасности образов контейнеров](/Product-security-playbook/ru/supply-chain/container-image-security/playbook/)
-- [Плейбук управления выпуском](/Product-security-playbook/ru/review/release-governance/playbook/)
-- [Плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
-- [Плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Инструкции агентов как артефакты цепочки поставки](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)
+- [Плейбук безопасности образов контейнеров](/ru/supply-chain/container-image-security/playbook/)
+- [Плейбук управления выпуском](/ru/review/release-governance/playbook/)
+- [Плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/)
+- [Плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Инструкции агентов как артефакты цепочки поставки](/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)

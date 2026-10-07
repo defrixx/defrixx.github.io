@@ -6,7 +6,7 @@ sidebar:
 ---
 Используйте для проверки папки или подготовки отдельной копии к передаче. Ассистент классифицирует потенциально чувствительные значения и при необходимости применяет локальный скрипт с ограниченной областью обработки.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/sensitive-data-cleanup) | [Как установить](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/sensitive-data-cleanup) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -38,9 +38,9 @@ sidebar:
 
 ## Связанные плейбуки
 
-- [Управление секретами в Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
-- [Безопасная разработка с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
+- [Управление секретами в Vault](/ru/platform-security/secrets/vault/playbook/)
+- [Безопасная разработка с ИИ](/ru/ai-security/ai-assisted-development/playbook/)
 
 ## Самостоятельно и в общем процессе
 
-Скилл работает без соседних пакетов. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.
+Скилл работает без соседних пакетов. В [общем рабочем процессе](/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.

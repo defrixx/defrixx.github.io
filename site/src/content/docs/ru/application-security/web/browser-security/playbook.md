@@ -14,9 +14,9 @@ sidebar:
 - проверки сценариев злоупотребления, в которых XSS, раскрытие данных между источниками, утечка сессии или компрометация стороннего скрипта могут затронуть пользователей.
 
 За пределами этого документа:
-- проектирование потоков OAuth/OIDC: используйте [плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
-- авторизация API и защита webhook: используйте [плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/);
-- общее покрытие OWASP Top 10: используйте [плейбук защиты веб-приложений](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/).
+- проектирование потоков OAuth/OIDC: используйте [плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/);
+- авторизация API и защита webhook: используйте [плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/);
+- общее покрытие OWASP Top 10: используйте [плейбук защиты веб-приложений](/ru/application-security/web/owasp-top-10/playbook/).
 
 Цель:
 - снизить риск кражи учетных записей и сессий, раскрытия данных в браузере и между сайтами, CSRF, подмены интерфейса для перехвата нажатий (clickjacking) и компрометации сторонних скриптов;
@@ -198,8 +198,8 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 
 ## 4. Связанные материалы
 
-- [Плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Плейбук защиты веб-приложений по OWASP Top 10](/Product-security-playbook/ru/application-security/web/owasp-top-10/playbook/)
-- [Плейбук безопасной разработки и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Плейбук защиты веб-приложений по OWASP Top 10](/ru/application-security/web/owasp-top-10/playbook/)
+- [Плейбук безопасной разработки и ревью кода](/ru/application-security/secure-coding/code-review/playbook/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)

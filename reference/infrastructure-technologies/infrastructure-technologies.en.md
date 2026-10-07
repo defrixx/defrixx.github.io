@@ -104,7 +104,8 @@ For GitHub Actions, review privileged triggers such as `pull_request_target` and
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trusted builders, provenance, and verification policy.
 - `content/review/release-governance/playbook.ru.md` / `playbook.en.md` — protected environments, release evidence, and approvals.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — short-lived secrets and credentials issued to pipelines.
-- There is no dedicated CI/CD security playbook yet.
+- [CI/CD security](../../content/supply-chain/ci-cd-security/playbook.en.md): executor isolation, artifact trust, and deployment acceptance.
+- [Executable policy examples](../security-policy-examples/overview.en.md): configuration checks and allowed/denied CI scenarios.
 
 ### Docker
 
@@ -852,7 +853,8 @@ Test approved and rejected federation subjects, verify the resulting cloud princ
 - `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC concepts, token validation, and trust boundaries.
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Kubernetes-to-cloud attack paths and cluster identity.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — dynamic credentials and secrets delivery.
-- There is no dedicated Cloud IAM / workload identity playbook yet.
+- [Cloud IAM and workload identity](../../content/platform-security/cloud-iam-workload-identity/playbook.en.md): federation, effective permissions, and containment of active sessions.
+- [Executable policy examples](../security-policy-examples/overview.en.md): strict GitHub-to-AWS trust policy checks.
 
 ### Vault
 

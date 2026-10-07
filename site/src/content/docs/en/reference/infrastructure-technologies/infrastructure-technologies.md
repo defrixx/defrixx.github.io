@@ -108,7 +108,8 @@ For GitHub Actions, review privileged triggers such as `pull_request_target` and
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trusted builders, provenance, and verification policy.
 - `content/review/release-governance/playbook.ru.md` / `playbook.en.md` — protected environments, release evidence, and approvals.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — short-lived secrets and credentials issued to pipelines.
-- There is no dedicated CI/CD security playbook yet.
+- [CI/CD security](/en/supply-chain/ci-cd-security/playbook/): executor isolation, artifact trust, and deployment acceptance.
+- [Executable policy examples](/en/reference/security-policy-examples/overview/): configuration checks and allowed/denied CI scenarios.
 
 ### Docker
 
@@ -856,7 +857,8 @@ Test approved and rejected federation subjects, verify the resulting cloud princ
 - `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC concepts, token validation, and trust boundaries.
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Kubernetes-to-cloud attack paths and cluster identity.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — dynamic credentials and secrets delivery.
-- There is no dedicated Cloud IAM / workload identity playbook yet.
+- [Cloud IAM and workload identity](/en/platform-security/cloud-iam-workload-identity/playbook/): federation, effective permissions, and containment of active sessions.
+- [Executable policy examples](/en/reference/security-policy-examples/overview/): strict GitHub-to-AWS trust policy checks.
 
 ### Vault
 
@@ -1482,7 +1484,7 @@ For this mode, set `dead-letter-strategy=at-least-once`, `overflow=reject-publis
 
 ## Related Materials
 
-- [Container image security playbook](/Product-security-playbook/en/supply-chain/container-image-security/playbook/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Vault playbook](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
+- [Container image security playbook](/en/supply-chain/container-image-security/playbook/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Vault playbook](/en/platform-security/secrets/vault/playbook/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)

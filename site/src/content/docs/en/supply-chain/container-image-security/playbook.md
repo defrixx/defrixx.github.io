@@ -15,10 +15,10 @@ Use it for:
 - release reviews where image identity, signature, SBOM, or provenance is part of the evidence.
 
 Out of scope:
-- the generic SAST, SCA, and secret-scanning baseline for source code and dependencies: use the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/); this document owns only scanning specifics for built images, their layers, and OCI artifacts;
-- Kubernetes workload runtime hardening: use the [Pod Security playbook](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/);
-- container escape and Linux capability abuse: use the [container escape overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/);
-- SLSA Build provenance policy details: use the [SLSA provenance overview](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/).
+- the generic SAST, SCA, and secret-scanning baseline for source code and dependencies: use the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/); this document owns only scanning specifics for built images, their layers, and OCI artifacts;
+- Kubernetes workload runtime hardening: use the [Pod Security playbook](/en/platform-security/kubernetes/pod-security/playbook/);
+- container escape and Linux capability abuse: use the [container escape overview](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/);
+- SLSA Build provenance policy details: use the [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/).
 
 Objective:
 - ensure live deployments reference the exact image that was reviewed and approved;
@@ -212,7 +212,7 @@ Verification:
 
 ## 9. Review Decision Matrix
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Use when | Required action |
 |---|---|---|
@@ -232,9 +232,9 @@ Required review output:
 
 ## 10. Related Materials
 
-- [SLSA provenance overview](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
-- [Infrastructure technologies reference](/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/)
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
-- [Kubernetes Pod Security playbook](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- [Container escape and capability abuse overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- [Agent instruction supply-chain controls](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
+- [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/)
+- [Infrastructure technologies reference](/en/reference/infrastructure-technologies/infrastructure-technologies/)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)
+- [Kubernetes Pod Security playbook](/en/platform-security/kubernetes/pod-security/playbook/)
+- [Container escape and capability abuse overview](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [Agent instruction supply-chain controls](/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)

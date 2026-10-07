@@ -6,7 +6,7 @@ sidebar:
 ---
 Используйте при изменении кода, конфигурации или инфраструктуры. Ассистент выбирает требования с учетом стека и модели доверия, выполняет согласованные изменения и проверяет результат.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/secure-development) | [Как установить](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/secure-development) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -38,10 +38,10 @@ sidebar:
 
 ## Связанные плейбуки
 
-- [Безопасное программирование и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/)
-- [Безопасная разработка с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
-- [Ревью кластера Kubernetes](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Безопасное программирование и ревью кода](/ru/application-security/secure-coding/code-review/playbook/)
+- [Безопасная разработка с ИИ](/ru/ai-security/ai-assisted-development/playbook/)
+- [Ревью кластера Kubernetes](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
 
 ## Самостоятельно и в общем процессе
 
-Скилл работает без соседних пакетов. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.
+Скилл работает без соседних пакетов. В [общем рабочем процессе](/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.

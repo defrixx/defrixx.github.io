@@ -76,7 +76,7 @@ sidebar:
 **Меры уровня pod:**
 - `hostUsers: false`
 
-**Область действия мер:** `runAsNonRoot` запрещает запуск процесса контейнера с UID `0`; `hostUsers: false` задает отдельное пользовательское пространство имен для Pod. Запуск компонентов узла в режиме rootless ограничивает привилегии самого kubelet и среды выполнения относительно хоста и требует отдельной настройки. Значение `hostUsers: false` не подтверждает, что узел работает в режиме rootless. Проверки этого режима описаны в [ревью безопасности кластера, §3.8](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/#38-компоненты-узла-без-привилегий-root-rootless).
+**Область действия мер:** `runAsNonRoot` запрещает запуск процесса контейнера с UID `0`; `hostUsers: false` задает отдельное пользовательское пространство имен для Pod. Запуск компонентов узла в режиме rootless ограничивает привилегии самого kubelet и среды выполнения относительно хоста и требует отдельной настройки. Значение `hostUsers: false` не подтверждает, что узел работает в режиме rootless. Проверки этого режима описаны в [ревью безопасности кластера, §3.8](/ru/platform-security/kubernetes/cluster-security-review/playbook/#38-компоненты-узла-без-привилегий-root-rootless).
 
 **Пользовательские пространства имен в Kubernetes `v1.36+`:**
 - Пользовательские пространства имен доступны для общего применения (GA) для рабочих нагрузок Linux; включение на уровне pod выполняется через `hostUsers: false`.
@@ -123,7 +123,7 @@ sidebar:
 - Минимизировать доступные привилегированные операции ядра
 - Снизить возможности повышения привилегий и выхода из контейнера
 
-Для ревью не ограничивайтесь YAML. `capabilities.drop/add` управляет несколькими наборами Linux capabilities через CRI и среду выполнения, а итоговое состояние зависит от точки входа, `execve`, файловых capabilities и `allowPrivilegeEscalation`. Для спорных рабочих нагрузок проверяйте `CapEff`, `CapPrm`, `CapBnd`, `CapInh`, `CapAmb` и `NoNewPrivs` во время выполнения; подробная модель описана в [обзоре выхода из контейнера и злоупотребления capabilities](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/).
+Для ревью не ограничивайтесь YAML. `capabilities.drop/add` управляет несколькими наборами Linux capabilities через CRI и среду выполнения, а итоговое состояние зависит от точки входа, `execve`, файловых capabilities и `allowPrivilegeEscalation`. Для спорных рабочих нагрузок проверяйте `CapEff`, `CapPrm`, `CapBnd`, `CapInh`, `CapAmb` и `NoNewPrivs` во время выполнения; подробная модель описана в [обзоре выхода из контейнера и злоупотребления capabilities](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/).
 
 ---
 
@@ -194,7 +194,7 @@ sidebar:
 - По умолчанию запрещайте рабочим нагрузкам задавать `spec.securityContext.sysctls`, кроме явно разрешенного безопасного подмножества из Pod Security Standards для вашей минорной версии Kubernetes.
 - Небезопасные sysctl допускайте только для специальных сценариев с требованиями к производительности или работе в реальном времени: отдельный пул узлов, taints/tolerations, владелец, срок действия, нагрузочный тест и план отката. Не размещайте обычные рабочие нагрузки приложений на узлах с расширенным `allowed-unsafe-sysctls`.
 
-Подробное ревью seccomp (опасные системные вызовы, `io_uring`/`bpf`, проверки комбинаций и контроль в CI): [kubernetes/seccomp/checklist.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/)
+Подробное ревью seccomp (опасные системные вызовы, `io_uring`/`bpf`, проверки комбинаций и контроль в CI): [kubernetes/seccomp/checklist.ru.md](/ru/platform-security/kubernetes/seccomp/checklist/)
 
 ---
 
@@ -394,5 +394,5 @@ Pod Security Standards помогают обеспечивать безопас�
 
 ## 7. Связанные материалы
 
-- Проверка сценариев злоупотребления на уровне pod с помощью имитации действий атакующего: [kubernetes/adversarial-validation/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/)
-- Kubernetes Secrets: тома с секретами, доставка через переменные окружения и границы ServiceAccount/RBAC: [kubernetes/secrets/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
+- Проверка сценариев злоупотребления на уровне pod с помощью имитации действий атакующего: [kubernetes/adversarial-validation/playbook.ru.md](/ru/platform-security/kubernetes/adversarial-validation/playbook/)
+- Kubernetes Secrets: тома с секретами, доставка через переменные окружения и границы ServiceAccount/RBAC: [kubernetes/secrets/playbook.ru.md](/ru/platform-security/kubernetes/secrets/playbook/)

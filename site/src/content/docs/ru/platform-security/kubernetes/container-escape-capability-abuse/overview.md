@@ -363,7 +363,7 @@ kubectl exec -n <ns> <pod> -- sh -c "grep -E 'Cap(Inh|Prm|Eff|Bnd|Amb)|NoNewPriv
 - полученные учетные данные используются против Kubernetes API;
 - последствия расширяются до чтения Secret, создания рабочих нагрузок, продвижения атакующего внутри инфраструктуры или закрепления через дрейф конфигурации RBAC и контроля допуска.
 
-При ревью фиксируйте не только факт доступа к хосту, но и следующий доступный шаг атаки на плоскость управления: какие kubeconfig, токены и учетные данные доступны, какие действия через API они позволяют и какие события аудита или среды выполнения должны возникнуть. Для безопасной проверки пути атаки используйте отдельный плейбук: [kubernetes/adversarial-validation/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/).
+При ревью фиксируйте не только факт доступа к хосту, но и следующий доступный шаг атаки на плоскость управления: какие kubeconfig, токены и учетные данные доступны, какие действия через API они позволяют и какие события аудита или среды выполнения должны возникнуть. Для безопасной проверки пути атаки используйте отдельный плейбук: [kubernetes/adversarial-validation/playbook.ru.md](/ru/platform-security/kubernetes/adversarial-validation/playbook/).
 
 ---
 
@@ -400,8 +400,8 @@ kubectl exec -n <ns> <pod> -- sh -c "grep -E 'Cap(Inh|Prm|Eff|Bnd|Amb)|NoNewPriv
 
 ## 12. Связанные материалы
 
-- [Плейбук Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- [Чеклист seccomp](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/)
-- [Плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Плейбук проверки Kubernetes имитацией действий атакующего](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/)
-- [Плейбук Kubernetes Secrets](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
+- [Плейбук Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/)
+- [Чеклист seccomp](/ru/platform-security/kubernetes/seccomp/checklist/)
+- [Плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Плейбук проверки Kubernetes имитацией действий атакующего](/ru/platform-security/kubernetes/adversarial-validation/playbook/)
+- [Плейбук Kubernetes Secrets](/ru/platform-security/kubernetes/secrets/playbook/)

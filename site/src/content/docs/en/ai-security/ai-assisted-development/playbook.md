@@ -17,13 +17,13 @@ Use it for:
 
 Document ownership boundaries:
 - This playbook owns the secure use of AI when developing conventional software and the evidence required before merge or release.
-- General code quality and security requirements are in the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/).
-- Autonomy, tool authorization, memory, sandboxing, approval, rollback, and kill-switch controls are in the [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
-- MCP server registry and protocol controls are in the [MCP Security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/).
+- General code quality and security requirements are in the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/).
+- Autonomy, tool authorization, memory, sandboxing, approval, rollback, and kill-switch controls are in the [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/).
+- MCP server registry and protocol controls are in the [MCP Security playbook](/en/ai-security/mcp-security/playbook/).
 
 Out of scope:
 - developing or training foundation models;
-- selecting controls for AI features running inside a product; use the [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/);
+- selecting controls for AI features running inside a product; use the [Securing AI overview](/en/ai-security/securing-ai/overview/);
 - the general secure coding baseline independent of code origin.
 
 Objective:
@@ -103,7 +103,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 - Review generated diffs line by line. Do not merge large opaque changes when the reviewer cannot explain their purpose and consequences.
 - Review removed validation, guards, tests, logging, timeouts, and error handling as well as added code.
 - Compare implementation against security requirements independently of the model's explanation. Confident output or self-review is not evidence.
-- Use the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/) for language- and framework-specific review.
+- Use the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/) for language- and framework-specific review.
 
 `High-impact/regulated`:
 - Require a reviewer who was not the sole author of the prompt and does not rely only on the same model/session for verification.
@@ -115,7 +115,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 - Do not install a package solely because a model suggested it. Verify its exact name, namespace, registry, publisher/owner, release history, license, maintenance status, and an official link from a trusted project source.
 - Treat nonexistent or unexpectedly new package names as potential slopsquatting/typosquatting signals. Stop the workflow pending human verification.
 - Allow dependency changes only through manifests/lockfiles and approved registries; CI must detect unreviewed manifest, lockfile, registry, and install-script changes.
-- Apply the generic SCA and secret-scanning baseline from the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/). For AI-generated dependency changes, additionally verify package reputation, transitive dependencies, and lifecycle/install scripts for high-impact packages.
+- Apply the generic SCA and secret-scanning baseline from the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/). For AI-generated dependency changes, additionally verify package reputation, transitive dependencies, and lifecycle/install scripts for high-impact packages.
 - Do not accept a fabricated version. The resolver must confirm version and integrity; release builds use the reviewed lockfile and immutable integrity/digest where supported by the ecosystem.
 
 `High-impact/regulated`:
@@ -127,7 +127,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 `Baseline`:
 - Run existing unit, integration, and regression tests after an AI-generated change. Do not weaken assertions or gates to make the pipeline pass.
 - Derive tests from requirements and abuse cases, not only from the current implementation. Verify fail-closed behavior and unauthorized paths.
-- Run SAST, SCA, and secret scanning under the generic baseline in the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/). For AI-generated changes, this playbook adds independent verification of generated tests and applicable domain scanners and targeted security tests for IaC, containers, and exposed paths.
+- Run SAST, SCA, and secret scanning under the generic baseline in the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/). For AI-generated changes, this playbook adds independent verification of generated tests and applicable domain scanners and targeted security tests for IaC, containers, and exposed paths.
 - Review generated tests like production code. Confirm that they fail when the relevant defect is deliberately introduced.
 - A model may assist with triage and remediation, but closing a finding requires a scanner/test rerun and review of the actual diff.
 
@@ -138,7 +138,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 ### 3.7 Coding Agents and Development Environment
 
 `Baseline`:
-- Coding agents with shell, browser, file-write, or package-install capabilities also comply with the [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
+- Coding agents with shell, browser, file-write, or package-install capabilities also comply with the [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/).
 - Run the agent in an ephemeral sandbox with a scoped repository checkout, non-production credentials, and deny-by-default access to the host filesystem, internal network, and cloud metadata.
 - Separate reading untrusted external content from privileged execution. An issue, PR comment, README, web page, or package documentation cannot change tool authorization.
 - Bound egress allowlists, commands, writable paths, runtime, and resource budget. Blocked egress must fail closed and leave an audit signal.
@@ -208,7 +208,7 @@ Operational signals:
 
 ## 5. Review Decision
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Condition | Required action |
 |---|---|---|
@@ -227,15 +227,15 @@ A release is approved only when an accountable human understands the change, sco
 
 ## 6. Related Materials
 
-- [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [MCP Security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [Threat Modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [Release Governance playbook](/Product-security-playbook/en/review/release-governance/playbook/)
-- [SLSA provenance overview](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
-- [Security Skills catalogue](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+- [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/)
+- [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/)
+- [MCP Security playbook](/en/ai-security/mcp-security/playbook/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [Threat Modeling playbook](/en/review/threat-modeling/playbook/)
+- [Release Governance playbook](/en/review/release-governance/playbook/)
+- [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/)
+- [Security Skills catalogue](/en/ai-automation/security-skills/overview/)
 
 ## Skill for this task
 
-[Use the Secure Development skill to implement changes with an assistant.](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
+[Use the Secure Development skill to implement changes with an assistant.](/en/ai-automation/security-skills/secure-development/overview/)

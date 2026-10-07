@@ -76,7 +76,7 @@ Where relevant, distinguish between:
 **Pod-level controls:**
 - `hostUsers: false`
 
-**Control boundaries:** `runAsNonRoot` prevents the container process from running with UID `0`; `hostUsers: false` assigns a separate user namespace to the Pod. Rootless node components limit the privileges of kubelet and the runtime themselves relative to the host and require separate configuration. Setting `hostUsers: false` does not prove that the node runs rootless. See [cluster security review, §3.8](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/#38-node-components-without-host-root-privileges-rootless) for verification.
+**Control boundaries:** `runAsNonRoot` prevents the container process from running with UID `0`; `hostUsers: false` assigns a separate user namespace to the Pod. Rootless node components limit the privileges of kubelet and the runtime themselves relative to the host and require separate configuration. Setting `hostUsers: false` does not prove that the node runs rootless. See [cluster security review, §3.8](/en/platform-security/kubernetes/cluster-security-review/playbook/#38-node-components-without-host-root-privileges-rootless) for verification.
 
 **User namespaces in Kubernetes `v1.36+`:**
 - User Namespaces are GA for Linux workloads; Pod-level enablement is done with `hostUsers: false`.
@@ -123,7 +123,7 @@ Where relevant, distinguish between:
 - Minimize kernel-exposed privileged operations
 - Reduce privilege escalation and breakout opportunities
 
-For review, do not stop at YAML. `capabilities.drop/add` controls several Linux capability sets through the CRI/runtime, and the final state depends on the entrypoint, `execve`, file capabilities, and `allowPrivilegeEscalation`. For disputed workloads, verify `CapEff`, `CapPrm`, `CapBnd`, `CapInh`, `CapAmb`, and `NoNewPrivs` at runtime; the detailed model is covered in the [container escape and capability abuse overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/).
+For review, do not stop at YAML. `capabilities.drop/add` controls several Linux capability sets through the CRI/runtime, and the final state depends on the entrypoint, `execve`, file capabilities, and `allowPrivilegeEscalation`. For disputed workloads, verify `CapEff`, `CapPrm`, `CapBnd`, `CapInh`, `CapAmb`, and `NoNewPrivs` at runtime; the detailed model is covered in the [container escape and capability abuse overview](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/).
 
 ---
 
@@ -194,7 +194,7 @@ For review, do not stop at YAML. `capabilities.drop/add` controls several Linux 
 - By default, deny workloads that set `spec.securityContext.sysctls`, except for an explicitly allowed safe subset from Pod Security Standards for your Kubernetes minor version.
 - Allow unsafe sysctls only for special performance or real-time scenarios: dedicated node pool, taints/tolerations, owner, expiry, load test, and rollback plan. Do not run normal application workloads on nodes with expanded `allowed-unsafe-sysctls`.
 
-Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI governance): [kubernetes/seccomp/checklist.en.md](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/)
+Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI governance): [kubernetes/seccomp/checklist.en.md](/en/platform-security/kubernetes/seccomp/checklist/)
 
 ---
 
@@ -394,5 +394,5 @@ Each anti-pattern directly increases risk from the threat model:
 
 ## 7. Related Materials
 
-- Adversarial validation for pod-level abuse paths: [kubernetes/adversarial-validation/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/)
-- Kubernetes Secrets for Secret volumes, env delivery, and ServiceAccount/RBAC boundaries: [kubernetes/secrets/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/)
+- Adversarial validation for pod-level abuse paths: [kubernetes/adversarial-validation/playbook.en.md](/en/platform-security/kubernetes/adversarial-validation/playbook/)
+- Kubernetes Secrets for Secret volumes, env delivery, and ServiceAccount/RBAC boundaries: [kubernetes/secrets/playbook.en.md](/en/platform-security/kubernetes/secrets/playbook/)

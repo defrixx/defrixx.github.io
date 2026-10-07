@@ -210,7 +210,7 @@ Operational signals:
 
 ## 5. Review Decision
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Condition | Required action |
 |---|---|---|
@@ -229,7 +229,7 @@ The matrix below defines domain severity and the release decision. The [Vulnerab
 
 ## 6. Related Materials
 
-- [Kubernetes cluster security review](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Kubernetes pod security hardening](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- [Kubernetes adversarial validation](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/)
-- [Vault security playbook](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
+- [Kubernetes cluster security review](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Kubernetes pod security hardening](/en/platform-security/kubernetes/pod-security/playbook/)
+- [Kubernetes adversarial validation](/en/platform-security/kubernetes/adversarial-validation/playbook/)
+- [Vault security playbook](/en/platform-security/secrets/vault/playbook/)

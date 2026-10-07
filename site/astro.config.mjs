@@ -4,10 +4,7 @@ import starlight from '@astrojs/starlight';
 import rehypeMermaid from './plugins/rehype-mermaid.mjs';
 import mermaidIntegration from './plugins/mermaid-integration.mjs';
 
-const repository = process.env.GITHUB_REPOSITORY ?? '';
-const configuredBase =
-  process.env.PUBLIC_SITE_BASE ??
-  (repository.endsWith('/defrixx.github.io') ? '' : '/Product-security-playbook');
+const configuredBase = process.env.PUBLIC_SITE_BASE ?? '';
 
 export default defineConfig({
   site: 'https://defrixx.github.io',
@@ -86,6 +83,7 @@ export default defineConfig({
           translations: { en: 'Platform Security' },
           items: [
             { slug: 'platform-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
+            { slug: 'platform-security/cloud-iam-workload-identity/playbook', label: 'Cloud IAM и доступ рабочих нагрузок', translations: { en: 'Cloud IAM and workload access' } },
             {
               label: 'Kubernetes',
               collapsed: false,
@@ -113,6 +111,7 @@ export default defineConfig({
           translations: { en: 'Supply Chain' },
           items: [
             { slug: 'supply-chain/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
+            { slug: 'supply-chain/ci-cd-security/playbook', label: 'Безопасность CI/CD', translations: { en: 'CI/CD security' } },
             { slug: 'supply-chain/slsa-provenance/overview', label: 'SLSA и происхождение сборок', translations: { en: 'SLSA and build provenance' } },
             { slug: 'supply-chain/container-image-security/playbook', label: 'Контейнерные образы', translations: { en: 'Container images' } },
           ],
@@ -197,6 +196,7 @@ export default defineConfig({
           translations: { en: 'Reference' },
           items: [
             { slug: 'reference/infrastructure-technologies/infrastructure-technologies', label: 'Инфраструктурные технологии', translations: { en: 'Infrastructure technologies' } },
+            { slug: 'reference/security-policy-examples/overview', label: 'Примеры политик безопасности', translations: { en: 'Security policy examples' } },
           ],
         },
       ],

@@ -403,7 +403,7 @@ BFF и cookie с HttpOnly снижают риск кражи токенов, н�
 
 ## 10. Связанные материалы
 
-- [Плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Плейбук Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
-- [Плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
+- [Плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Плейбук Vault](/ru/platform-security/secrets/vault/playbook/)
+- [Плейбук моделирования угроз](/ru/review/threat-modeling/playbook/)

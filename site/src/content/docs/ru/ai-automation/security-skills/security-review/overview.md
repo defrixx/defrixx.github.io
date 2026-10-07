@@ -6,7 +6,7 @@ sidebar:
 ---
 Используйте для проверки безопасности PR или репозитория. Ассистент прослеживает движение данных через границы доверия, проверяет гипотезы, оценивает последствия и готовит рекомендации по исправлению.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Как установить](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -36,10 +36,10 @@ sidebar:
 
 ## Связанные плейбуки
 
-- [Безопасное программирование и ревью кода](/Product-security-playbook/ru/application-security/secure-coding/code-review/playbook/)
-- [Моделирование угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
-- [Управление уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
+- [Безопасное программирование и ревью кода](/ru/application-security/secure-coding/code-review/playbook/)
+- [Моделирование угроз](/ru/review/threat-modeling/playbook/)
+- [Управление уязвимостями](/ru/review/vulnerability-management/playbook/)
 
 ## Самостоятельно и в общем процессе
 
-Скилл работает без соседних пакетов. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.
+Скилл работает без соседних пакетов. В [общем рабочем процессе](/ru/ai-automation/security-skills/workflow/overview/) он выполняет выбранный этап с сохранением идентификаторов замечаний, ревизий и доказательств. Объем действий определяется задачей; результаты предыдущих этапов не расширяют его автоматически.

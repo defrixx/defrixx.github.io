@@ -314,8 +314,8 @@ If the reference model cannot be reached in one step, adopt in phases:
 
 ## 9. Related Materials
 
-- [Container image security playbook](/Product-security-playbook/en/supply-chain/container-image-security/playbook/)
-- [Release governance playbook](/Product-security-playbook/en/review/release-governance/playbook/)
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Agent instructions as supply-chain artifacts](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
+- [Container image security playbook](/en/supply-chain/container-image-security/playbook/)
+- [Release governance playbook](/en/review/release-governance/playbook/)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Agent instructions as supply-chain artifacts](/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)

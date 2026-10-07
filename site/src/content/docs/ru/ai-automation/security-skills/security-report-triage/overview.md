@@ -6,7 +6,7 @@ sidebar:
 ---
 Скилл `security-report-triage` помогает разобрать существующий отчет сканера: учесть сигналы, проверить их применимость и подготовить приоритетный список действий. Работает самостоятельно, в том числе без исходного кода; в этом случае неподтвержденные предположения остаются гипотезами.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-report-triage) | [Как установить](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-report-triage) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -44,12 +44,12 @@ python3 scripts/normalize_sarif.py --input /path/to/report.sarif --output /path/
 
 [Отчет](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/assets/triage-report.md) содержит приоритетный список действий, количество исходных сигналов и уникальных замечаний, доказательства, ошибки и непроверенные области. Нормализация не заменяет проверку уязвимости. Для обычного текстового отчета допускается ручное сопоставление сигналов с явным описанием охвата.
 
-Разбор отчета сам по себе не включает запуск сканера, выполнение предложенных им команд, изменение кода или создание задач во внешней системе. Чтобы перейти к исправлению и проверке результата, используйте [общий рабочий процесс](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/).
+Разбор отчета сам по себе не включает запуск сканера, выполнение предложенных им команд, изменение кода или создание задач во внешней системе. Чтобы перейти к исправлению и проверке результата, используйте [общий рабочий процесс](/ru/ai-automation/security-skills/workflow/overview/).
 
 Перед выдачей отчета различайте совпадение содержимого и сведения о его происхождении: одинаковые хеши не подтверждают авторство отчета или момент появления дефекта. Если история недоступна, укажите, что эти сведения неизвестны, и оставьте сигналы без окончательного заключения в списке дальнейших действий. Отдельно фиксируйте предложенное исправление, его подтвержденное применение в проекте и проверенное устранение дефекта.
 
 ## Связанные материалы
 
-- [Ревью безопасности](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/)
-- [Проверка исправлений](/Product-security-playbook/ru/ai-automation/security-skills/security-fix-verification/overview/)
-- [Управление уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
+- [Ревью безопасности](/ru/ai-automation/security-skills/security-review/overview/)
+- [Проверка исправлений](/ru/ai-automation/security-skills/security-fix-verification/overview/)
+- [Управление уязвимостями](/ru/review/vulnerability-management/playbook/)

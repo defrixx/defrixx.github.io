@@ -17,10 +17,10 @@ sidebar:
 - исправлений по результатам SAST, DAST, SCA, тестирования на проникновение, программы вознаграждения за уязвимости или инцидента.
 
 За пределами этого документа:
-- злоупотребление штатным поведением продукта: используйте [плейбук защиты от злоупотреблений бизнес-логикой](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/);
-- архитектура OAuth/OIDC, токенов и протокольных потоков: используйте [плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
-- браузерные меры защиты, включая CSP, CORS, cookie и цепочку поставки клиентского кода: используйте [плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/);
-- API-паттерны для REST, SOAP/XML, GraphQL, Webhooks и gRPC: используйте [плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/).
+- злоупотребление штатным поведением продукта: используйте [плейбук защиты от злоупотреблений бизнес-логикой](/ru/application-security/business-logic/business-logic-abuse/playbook/);
+- архитектура OAuth/OIDC, токенов и протокольных потоков: используйте [плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/);
+- браузерные меры защиты, включая CSP, CORS, cookie и цепочку поставки клиентского кода: используйте [плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/);
+- API-паттерны для REST, SOAP/XML, GraphQL, Webhooks и gRPC: используйте [плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/).
 
 Цель:
 - сделать решения по ревью кода конкретными и проверяемыми;
@@ -88,7 +88,7 @@ sidebar:
 - Применяйте авторизацию для каждого объекта и перехода состояния на уровне сервиса или предметной области, а не только в маршрутизации, интерфейсе или правилах шлюза.
 - При принятии решения учитывайте владельца ресурса, принадлежность пользователя к арендатору, роль, область разрешений и контекст политики. Действительный токен или сессия сами по себе не подтверждают право на действие.
 - Привилегированные действия с высоким воздействием требуют дополнительной аутентификации или явного согласования: административные изменения, выплаты и платежи, массовый экспорт, разрушительные действия, работа поддержки от имени пользователя и выдача разрешений.
-- Для аутентификации пользователей, проверки passkeys, смены факторов и восстановления применяйте раздел 6.7 [плейбука OIDC/OAuth](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/). Проверяйте серверные механизмы контроля контекста аутентификации и каждый резервный сценарий; одного запроса в интерфейсе недостаточно для обеспечения надежности аутентификации.
+- Для аутентификации пользователей, проверки passkeys, смены факторов и восстановления применяйте раздел 6.7 [плейбука OIDC/OAuth](/ru/application-security/identity/oidc-oauth/playbook/). Проверяйте серверные механизмы контроля контекста аутентификации и каждый резервный сценарий; одного запроса в интерфейсе недостаточно для обеспечения надежности аутентификации.
 
 Проверка:
 - Тесты покрывают горизонтальное и вертикальное повышение привилегий, доступ к данным другого арендатора, устаревшие сессии, поведение после выхода и отзыва доступа, а также прямые вызовы скрытых маршрутов.
@@ -127,7 +127,7 @@ sidebar:
 Проверка:
 - Тесты покрывают файлы, допустимые в нескольких форматах, безопасные образцы для проверки антивируса, обход каталогов, абсолютные пути, ссылки внутри архивов, выход за каталог распаковки, архивные бомбы, избыточное число файлов и размер данных, подмену типа содержимого, тайм-ауты сканирования и небезопасное встроенное отображение.
 - Тесты SSRF покрывают link-local-диапазоны и адреса сервисов облачных метаданных, localhost, частные диапазоны IPv4 и IPv6, IPv4-адреса в представлении IPv6, десятичную, шестнадцатеричную и восьмеричную запись IP-адресов там, где парсеры ее поддерживают, перенаправления в заблокированные диапазоны, DNS rebinding, медленные и чрезмерно большие ответы, а также журналы заблокированного исходящего трафика.
-- Подробные меры защиты webhook, GraphQL, SOAP/XML и gRPC описаны в [плейбуке безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/). Для отображения загруженного или сгенерированного содержимого в браузере используйте [плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/).
+- Подробные меры защиты webhook, GraphQL, SOAP/XML и gRPC описаны в [плейбуке безопасности API](/ru/application-security/api/api-security-patterns/playbook/). Для отображения загруженного или сгенерированного содержимого в браузере используйте [плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/).
 
 ### 3.6 Журналирование, ошибки и конфиденциальность
 
@@ -182,7 +182,7 @@ sidebar:
 
 ## 4. Дополнительные проверки бизнес-логики
 
-Даже безопасно написанный код может нарушать бизнес-инварианты. Для чувствительных операций применяйте дополнительные проверки ниже и [плейбук защиты от злоупотреблений бизнес-логикой](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/).
+Даже безопасно написанный код может нарушать бизнес-инварианты. Для чувствительных операций применяйте дополнительные проверки ниже и [плейбук защиты от злоупотреблений бизнес-логикой](/ru/application-security/business-logic/business-logic-abuse/playbook/).
 
 Вопросы для ревью:
 - Владение объектом: может ли пользователь действовать с чужим объектом, меняя ID, фильтр, задание экспорта, элемент пакета или ссылку на асинхронную задачу?
@@ -204,7 +204,7 @@ sidebar:
 
 ## 5. Решения по результатам ревью
 
-Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
+Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
 
 | Критичность | Когда использовать | Обязательное действие |
 |---|---|---|
@@ -236,17 +236,17 @@ sidebar:
 
 ## 6. Связанные материалы
 
-- [Плейбук защиты от злоупотреблений бизнес-логикой](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/)
-- [Плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
-- [Плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
-- [Плейбук безопасной разработки с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
-- [Применить скилл безопасной разработки](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/)
-- [Применить скилл ревью безопасности](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/)
+- [Плейбук защиты от злоупотреблений бизнес-логикой](/ru/application-security/business-logic/business-logic-abuse/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/)
+- [Плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/)
+- [Плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук безопасной разработки с ИИ](/ru/ai-security/ai-assisted-development/playbook/)
+- [Применить скилл безопасной разработки](/ru/ai-automation/security-skills/secure-development/overview/)
+- [Применить скилл ревью безопасности](/ru/ai-automation/security-skills/security-review/overview/)
 
 ## Скилл для этой задачи
 
-[Для проверки PR или репозитория с помощью ассистента используйте скилл «Ревью безопасности».](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/)
+[Для проверки PR или репозитория с помощью ассистента используйте скилл «Ревью безопасности».](/ru/ai-automation/security-skills/security-review/overview/)

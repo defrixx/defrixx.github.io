@@ -14,10 +14,10 @@ Use this document for:
 - pre-release review of signup, login, reset, checkout, referral, credits, admin/support, export, booking, and tenant-management flows.
 
 Out of scope:
-- low-level API authentication and authorization mechanics: use the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/);
-- OAuth/OIDC session and token controls: use the [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/);
-- browser-only controls: use the [browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/);
-- code-level review of validation, encoding, auth/session implementation, injection, file handling, logging, and crypto misuse: use the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/).
+- low-level API authentication and authorization mechanics: use the [API security playbook](/en/application-security/api/api-security-patterns/playbook/);
+- OAuth/OIDC session and token controls: use the [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/);
+- browser-only controls: use the [browser and frontend security playbook](/en/application-security/web/browser-security/playbook/);
+- code-level review of validation, encoding, auth/session implementation, injection, file handling, logging, and crypto misuse: use the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/).
 
 Objective:
 - identify sensitive business flows before launch;
@@ -77,7 +77,7 @@ Release-ready defaults:
 - Rate-limit by account, source network, device/session signal, and client/application where available. A single IP-only limit is not enough.
 - Do not reveal whether username, email, phone, or reset token exists.
 - Use MFA or step-up for risky login, password reset completion, new device, payment change, admin action, and bulk export.
-- Apply the authentication-strength and recovery profile in section 6.7 of the [OIDC/OAuth playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/). Exercise factor replacement and helpdesk recovery as takeover paths; high-impact operations must not become available through a weaker fallback.
+- Apply the authentication-strength and recovery profile in section 6.7 of the [OIDC/OAuth playbook](/en/application-security/identity/oidc-oauth/playbook/). Exercise factor replacement and helpdesk recovery as takeover paths; high-impact operations must not become available through a weaker fallback.
 - Notify users of password change, MFA change, new recovery method, and suspicious successful login.
 - Log failed and successful authentication events with correlation IDs and risk context.
 
@@ -171,7 +171,7 @@ Verification:
 
 ## 5. Review Decision
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Condition | Required action |
 |---|---|---|
@@ -187,13 +187,13 @@ A high-risk product flow is release-ready only when it has explicit flow classif
 
 ## 6. Related Review Overlay
 
-Use this playbook together with the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/). Secure coding review checks whether security primitives are implemented correctly; business-logic abuse review checks whether valid actions can still break product invariants. For high-risk product flows, both reviews are required before release.
+Use this playbook together with the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/). Secure coding review checks whether security primitives are implemented correctly; business-logic abuse review checks whether valid actions can still break product invariants. For high-risk product flows, both reviews are required before release.
 
 ---
 
 ## 7. Related Materials
 
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [Secure coding and code review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [Secure coding and code review playbook](/en/application-security/secure-coding/code-review/playbook/)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)

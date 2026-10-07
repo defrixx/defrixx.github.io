@@ -267,7 +267,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 **Рекомендация для рабочих сред:**
 - проводите проверки имитацией действий атакующего в окружениях, близких к рабочим, после крупных изменений RBAC, CNI, политик допуска, средств защиты среды выполнения и цепочки развертывания;
 - разрушительные проверки, проверки отказа в обслуживании и выхода из контейнера выполняйте только в одноразовом изолированном окружении с выделенными узлами, плоскостью управления, тестовыми учетными данными и заранее утвержденной областью. Пространство имен общего кластера не изолирует выход на хост или исчерпание ресурсов узла;
-- используйте отдельный плейбук для сопоставления сценариев и мер защиты: [kubernetes/adversarial-validation/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/).
+- используйте отдельный плейбук для сопоставления сценариев и мер защиты: [kubernetes/adversarial-validation/playbook.ru.md](/ru/platform-security/kubernetes/adversarial-validation/playbook/).
 
 ---
 
@@ -284,7 +284,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - рассматривайте rootless как дополнительную меру для поддерживаемых конфигураций, а не как обязательное условие допуска любого кластера; начните с отдельной группы узлов и назначьте ответственного, определите критерии успешного внедрения и план отката;
 - перед развертыванием на остальных узлах проверьте связь между узлами, DNS, работу сервисов (Service), применение политик NetworkPolicy, подключение и повторное подключение томов рабочих нагрузок, ограничения ресурсов, сбор журналов и работу средств защиты; повторите проверки после перезагрузки и обновления узла, отработайте откат;
 - проверьте, какие ограничения затрагивают AppArmor/SELinux и сбор диагностических данных ядра, а также как применяются необходимые параметры sysctl на хосте: kubelet в этом режиме может игнорировать ошибки настройки отдельных sysctl и доступа к `/dev/kmsg`. Если запуск требует отключения действующих мер защиты, сначала проведите отдельную оценку рисков и оформите исключение;
-- сохраняйте RBAC, контроль допуска и требования [Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/): rootless не устраняет риски, связанные с совместным использованием ядра и доступом через Kubernetes API.
+- сохраняйте RBAC, контроль допуска и требования [Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/): rootless не устраняет риски, связанные с совместным использованием ядра и доступом через Kubernetes API.
 
 ---
 
@@ -309,7 +309,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
 - требуйте подтверждения фактически применяемого профиля seccomp, а не только меток пространств имен: контроль допуска с принудительным применением `restricted` должен отклонять рабочие нагрузки без явного `RuntimeDefault` или утвержденного `Localhost`; пространства имен с `baseline`, собственной политикой или временными исключениями должны либо требовать явные поля seccomp, либо подтверждать настройку kubelet `--seccomp-default` / `seccompDefault`, чтобы неуказанные профили становились `RuntimeDefault`;
-- не считайте этот список полным набором базовых требований к `securityContext` рабочей нагрузки; детальные требования к capabilities, AppArmor/SELinux, sysctl, группам, томам и пользовательским пространствам имен ведите по [плейбуку Kubernetes Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/);
+- не считайте этот список полным набором базовых требований к `securityContext` рабочей нагрузки; детальные требования к capabilities, AppArmor/SELinux, sysctl, группам, томам и пользовательским пространствам имен ведите по [плейбуку Kubernetes Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/);
 - используйте `warn`/`audit=restricted` без `enforce=restricted` только во время документированного внедрения или периода миграции с владельцем, сроком действия исключения и датой включения блокировки нарушений;
 - отслеживайте дрейф меток Pod Security и блокируйте развертывание, если метки рабочей среды ослаблены, удалены или указывают на неутвержденную версию;
 - проверяйте тестами политики допуска, что рабочие нагрузки без дайджеста образа отклоняются, включая `:latest`, теги, похожие на версии, и имена образов без явного тега;
@@ -346,11 +346,11 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 
 ## 7. Связанные материалы в репозитории
 
-- Усиление защиты среды выполнения pod: [kubernetes/pod-security/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- Проверка Kubernetes имитацией действий атакующего: [kubernetes/adversarial-validation/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/)
-- Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/)
-- Выход из контейнера и capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
-- Vault и секреты: [secrets/vault/playbook.ru.md](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
-- OIDC/OAuth для машинного и пользовательского доступа: [identity/oidc-oauth/playbook.ru.md](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
-- [Скилл безопасной разработки с требованиями Kubernetes](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/)
+- Усиление защиты среды выполнения pod: [kubernetes/pod-security/playbook.ru.md](/ru/platform-security/kubernetes/pod-security/playbook/)
+- Проверка Kubernetes имитацией действий атакующего: [kubernetes/adversarial-validation/playbook.ru.md](/ru/platform-security/kubernetes/adversarial-validation/playbook/)
+- Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](/ru/platform-security/kubernetes/seccomp/checklist/)
+- Выход из контейнера и capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](/ru/platform-security/kubernetes/secrets/playbook/)
+- Vault и секреты: [secrets/vault/playbook.ru.md](/ru/platform-security/secrets/vault/playbook/)
+- OIDC/OAuth для машинного и пользовательского доступа: [identity/oidc-oauth/playbook.ru.md](/ru/application-security/identity/oidc-oauth/playbook/)
+- [Скилл безопасной разработки с требованиями Kubernetes](/ru/ai-automation/security-skills/secure-development/overview/)

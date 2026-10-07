@@ -17,12 +17,12 @@ sidebar:
 Разделение тем между документами:
 - Этот плейбук отвечает за автономию агентов, использование инструментов, обработку памяти, черновых записей и контрольных точек, трассировку действий, согласования, откат и аварийное отключение.
 - Внедрение инструкций, утечки данных и избыточная автономность рассматриваются здесь с учетом выполнения агентом действий и влияния на бизнес.
-- Общие требования безопасности ИИ описаны в [обзоре безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/), а классификация угроз описана в [обзоре OWASP LLM Top 10](/Product-security-playbook/ru/ai-security/owasp-llm-top-10/overview/).
-- Этот плейбук не задает требования к протоколу MCP, реестру серверов или управлению транспортом; для них используйте [плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/).
+- Общие требования безопасности ИИ описаны в [обзоре безопасности ИИ](/ru/ai-security/securing-ai/overview/), а классификация угроз описана в [обзоре OWASP LLM Top 10](/ru/ai-security/owasp-llm-top-10/overview/).
+- Этот плейбук не задает требования к протоколу MCP, реестру серверов или управлению транспортом; для них используйте [плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/).
 
 За пределами этого документа:
-- меры контроля, специфичные для протокола MCP; используйте [плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/);
-- общая классификация угроз LLM; используйте [обзор OWASP LLM Top 10](/Product-security-playbook/ru/ai-security/owasp-llm-top-10/overview/);
+- меры контроля, специфичные для протокола MCP; используйте [плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/);
+- общая классификация угроз LLM; используйте [обзор OWASP LLM Top 10](/ru/ai-security/owasp-llm-top-10/overview/);
 - общие меры контроля API, браузера, Kubernetes и цепочки поставки ПО, если они не являются частью среды выполнения агента.
 
 Цель:
@@ -230,7 +230,7 @@ OWASP Agent Control Standard (ACS), представленный в сентяб
 
 ## 5. Решение по результатам ревью
 
-Матрица ниже определяет критичность замечания для рассматриваемой области и решение о выпуске. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
+Матрица ниже определяет критичность замечания для рассматриваемой области и решение о выпуске. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
 
 | Критичность | Состояние агента | Обязательное действие |
 |---|---|---|
@@ -250,11 +250,11 @@ OWASP Agent Control Standard (ACS), представленный в сентяб
 
 ## 6. Связанные материалы
 
-- [Обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
-- [Плейбук безопасной разработки с ИИ](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/)
-- [Обзор OWASP LLM Top 10](/Product-security-playbook/ru/ai-security/owasp-llm-top-10/overview/)
-- [Плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
-- [Плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Защита цепочки поставки инструкций агентов](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)
+- [Обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)
+- [Плейбук безопасной разработки с ИИ](/ru/ai-security/ai-assisted-development/playbook/)
+- [Обзор OWASP LLM Top 10](/ru/ai-security/owasp-llm-top-10/overview/)
+- [Плейбук моделирования угроз](/ru/review/threat-modeling/playbook/)
+- [Плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Защита цепочки поставки инструкций агентов](/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)

@@ -33,9 +33,9 @@ Traceability is mandatory: each significant conclusion must reference a concrete
 
 ## 2. Threat Modeling and Abuse Cases
 
-For the full process, use the [Threat Modeling Playbook](/Product-security-playbook/en/review/threat-modeling/playbook/). It covers methodology selection, input and output artifacts, the recommended path, attack scenarios, risk analysis, control mapping, and the lite path.
+For the full process, use the [Threat Modeling Playbook](/en/review/threat-modeling/playbook/). It covers methodology selection, input and output artifacts, the recommended path, attack scenarios, risk analysis, control mapping, and the lite path.
 
-If the architecture change touches code-level security primitives, also consider the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/): input validation, output encoding, authentication, authorization, injection risks, file handling, logging, cryptography, and review evidence. If the change affects sensitive product flows or business invariants, use the [Business Logic Abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/) for abuse scenarios involving legitimate product behavior. If the decision depends on scanner findings, CVEs, SLAs, or exceptions, use the [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/).
+If the architecture change touches code-level security primitives, also consider the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/): input validation, output encoding, authentication, authorization, injection risks, file handling, logging, cryptography, and review evidence. If the change affects sensitive product flows or business invariants, use the [Business Logic Abuse playbook](/en/application-security/business-logic/business-logic-abuse/playbook/) for abuse scenarios involving legitimate product behavior. If the decision depends on scanner findings, CVEs, SLAs, or exceptions, use the [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/).
 
 For architecture review, the minimum requirement is to:
 - update the DFD/C4 or textual description of data flows and trust boundaries;
@@ -128,7 +128,7 @@ Runtime secret files are not inherently a violation: Kubernetes Secret volumes o
 
 Review resource exhaustion and DoS, per-user/tenant quotas, timeout propagation, bounded retries, circuit breakers, queue capacity and backpressure. Record fail-closed versus approved degraded behavior for each dependency. Model rollback and recovery of partially completed security-sensitive operations.
 
-Evidence: failure-injection and overload tests must preserve authorization and business invariants, prevent a retry storm, and demonstrate reconciliation after interruption. Apply the [exceptional-condition controls](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/#75-a102025-exceptional-conditions).
+Evidence: failure-injection and overload tests must preserve authorization and business invariants, prevent a retry storm, and demonstrate reconciliation after interruption. Apply the [exceptional-condition controls](/en/application-security/web/owasp-top-10/playbook/#75-a102025-exceptional-conditions).
 
 ### 4.6 Multi-Tenancy
 
@@ -140,7 +140,7 @@ Evidence: run two-tenant tests with colliding object/cache keys, delayed jobs, s
 
 Identify source-repository and CI/CD trust boundaries, dependency sources, artifact repositories, SBOMs, provenance, signing identities, and deployment verification. Trace a released digest back to its source revision and approved workflow. Test an untrusted PR, replaced artifact, and wrong signer at the appropriate boundary.
 
-Use the [SLSA source](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/#source-track-review), [build provenance](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/), and [release governance](/Product-security-playbook/en/review/release-governance/playbook/) controls rather than defining a second pipeline policy.
+Use the [SLSA source](/en/supply-chain/slsa-provenance/overview/#source-track-review), [build provenance](/en/supply-chain/slsa-provenance/overview/), and [release governance](/en/review/release-governance/playbook/) controls rather than defining a second pipeline policy.
 
 ---
 
@@ -184,7 +184,7 @@ Requirements:
 
 ## 6. Low-Risk Fast Path (Lite Path)
 
-Use the lite path from the [Threat Modeling Playbook](/Product-security-playbook/en/review/threat-modeling/playbook/#31-lite-path) as the baseline for minimum analysis.
+Use the lite path from the [Threat Modeling Playbook](/en/review/threat-modeling/playbook/#31-lite-path) as the baseline for minimum analysis.
 
 Use Lite Path only if all are true:
 - no new external integrations;
@@ -232,7 +232,7 @@ An unaccepted risk above the agreed threshold, a missing mandatory control, or i
 
 ## 8. Related Materials
 
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [Release governance playbook](/Product-security-playbook/en/review/release-governance/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [Release governance playbook](/en/review/release-governance/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)

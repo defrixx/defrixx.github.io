@@ -19,9 +19,9 @@ Use this document for:
 - selecting mandatory controls for API gateways, BFFs, service-to-service communication and webhook integrations.
 
 This document does not replace specialized materials:
-- for OIDC/OAuth, use the [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/);
-- for threat modeling, use the [threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/);
-- for architecture gate review, use the [security architecture review checklist](/Product-security-playbook/en/review/architecture/checklist/).
+- for OIDC/OAuth, use the [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/);
+- for threat modeling, use the [threat modeling playbook](/en/review/threat-modeling/playbook/);
+- for architecture gate review, use the [security architecture review checklist](/en/review/architecture/checklist/).
 
 ---
 
@@ -657,7 +657,7 @@ Verification:
 
 ## 10. Review Decision Matrix
 
-Use this matrix for API findings before release. It complements release governance: if a finding blocks release here, the exception must be handled through the release-governance process with owner, expiry, compensating controls, and verification evidence. For general SLA, exception lifecycle, and closure evidence across scanner findings, use the [vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/).
+Use this matrix for API findings before release. It complements release governance: if a finding blocks release here, the exception must be handled through the release-governance process with owner, expiry, compensating controls, and verification evidence. For general SLA, exception lifecycle, and closure evidence across scanner findings, use the [vulnerability management playbook](/en/review/vulnerability-management/playbook/).
 
 | Severity | Use when | Required action |
 |---|---|---|
@@ -684,9 +684,9 @@ Use these ASVS 5.0.0 requirements when recording verification results for the re
 
 ## 11. Related Materials
 
-- [OIDC + OAuth 2.0 playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
-- [Browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/)
-- [Business logic abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
+- [OIDC + OAuth 2.0 playbook](/en/application-security/identity/oidc-oauth/playbook/)
+- [Browser and frontend security playbook](/en/application-security/web/browser-security/playbook/)
+- [Business logic abuse playbook](/en/application-security/business-logic/business-logic-abuse/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)

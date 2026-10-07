@@ -16,7 +16,7 @@ This overview focuses on:
 Document ownership:
 - This document owns the threat taxonomy and risk vocabulary for LLM application reviews.
 - It explains prompt injection, data leakage, tool abuse, excessive agency, and related risks as categories and attack mechanics.
-- It does not define the production control baseline; use [Securing AI](/Product-security-playbook/en/ai-security/securing-ai/overview/) for controls, implementation priorities, and verification signals.
+- It does not define the production control baseline; use [Securing AI](/en/ai-security/securing-ai/overview/) for controls, implementation priorities, and verification signals.
 - It does not replace the specialized playbooks for agent autonomy or MCP protocol governance.
 
 The 2025 taxonomy covers a model used as an application component. When the model acts through tools, retains memory, coordinates with other agents, or autonomously causes downstream effects, pair this taxonomy with the OWASP Top 10 for Agentic Applications.
@@ -43,7 +43,7 @@ In real reviews, these areas are non-negotiable:
 ## 3. Threat-focused breakdown of OWASP LLM Top 10
 
 This document intentionally focuses on threats, attack mechanics, and risks.
-For practical controls, implementation priorities, and verification signals, see [Securing AI](/Product-security-playbook/en/ai-security/securing-ai/overview/). For agent autonomy, memory, tool execution, and action traces, use the [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/). For MCP server registry, protocol deployment, OAuth usage, and capability drift, use the [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/).
+For practical controls, implementation priorities, and verification signals, see [Securing AI](/en/ai-security/securing-ai/overview/). For agent autonomy, memory, tool execution, and action traces, use the [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/). For MCP server registry, protocol deployment, OAuth usage, and capability drift, use the [MCP security playbook](/en/ai-security/mcp-security/playbook/).
 
 ## 3.1 LLM01: Prompt Injection
 
@@ -236,8 +236,8 @@ Uncontrolled use of requests, context, tokens, inference, tools, or recursive wo
 
 ## 5. Related Materials
 
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)

@@ -20,8 +20,8 @@ Document ownership:
 - This document owns the cross-cutting production control baseline for AI systems.
 - It maps AI risks to practical controls, control levels, operational signals, and governance expectations.
 - It references the OWASP LLM Top 10 as a taxonomy, but does not re-own the threat catalogue.
-- It delegates deep agent autonomy, memory, tool execution, and action-trace requirements to the [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
-- It delegates MCP server registry, protocol deployment, OAuth usage, and capability drift controls to the [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/).
+- It delegates deep agent autonomy, memory, tool execution, and action-trace requirements to the [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/).
+- It delegates MCP server registry, protocol deployment, OAuth usage, and capability drift controls to the [MCP security playbook](/en/ai-security/mcp-security/playbook/).
 
 ---
 
@@ -177,10 +177,10 @@ Control labels in this document are requirement profiles, not finding severity:
 - `Baseline`: two-step execution for state-changing actions (`preview -> explicit confirm -> execute`)
 - `High-impact/regulated`: human-in-the-loop + four-eyes approval for high-impact/irreversible operations
 - `High-impact/regulated`: sandbox for code/command execution
-- `High-impact/regulated`: request-rate and cost limits for public and batch workloads; autonomous agents additionally use the step, tool-chain-depth, and kill-switch limits from the [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
+- `High-impact/regulated`: request-rate and cost limits for public and batch workloads; autonomous agents additionally use the step, tool-chain-depth, and kill-switch limits from the [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/)
 - `Recommended maturity`: transaction risk scoring before execution
 
-The [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/) owns numeric autonomy limits and the emergency-stop target. Set request, token, and cost limits from the load model, customer class, and tolerable impact, and record both the selected values and trigger signals in the release decision.
+The [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/) owns numeric autonomy limits and the emergency-stop target. Set request, token, and cost limits from the load model, customer class, and tolerable impact, and record both the selected values and trigger signals in the release decision.
 
 **Verification signals:**
 - number of blocked risky action attempts
@@ -201,10 +201,10 @@ The [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/age
 - `LLM03: Supply Chain`
 
 **Ownership boundaries:**
-- The [Agentic AI Security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/) owns agent-action authorization, authorization-context preservation, autonomy bounds, approval of dangerous actions, and emergency stop behavior.
-- The [MCP Security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/) owns MCP server and tool inventory and trust, transport, token forwarding, manifest/capability changes, gateway policy, and protocol logging.
+- The [Agentic AI Security playbook](/en/ai-security/agentic-ai/playbook/) owns agent-action authorization, authorization-context preservation, autonomy bounds, approval of dangerous actions, and emergency stop behavior.
+- The [MCP Security playbook](/en/ai-security/mcp-security/playbook/) owns MCP server and tool inventory and trust, transport, token forwarding, manifest/capability changes, gateway policy, and protocol logging.
 - At overview level, verify that both specialized playbooks apply and that their decisions feed the unified AI-system release decision.
-- Agent autonomy, memory, action traces, approvals, rollback, and kill-switch behavior are owned by the [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/).
+- Agent autonomy, memory, action traces, approvals, rollback, and kill-switch behavior are owned by the [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/).
 
 **Verification signals:**
 - inventory coverage for MCP servers and registered tools
@@ -420,10 +420,10 @@ The 30-day forensic retention ceiling is a local data-minimization assumption, n
 
 ## 5. Related Materials
 
-- [OWASP LLM Top 10 threat overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [Secure AI-Assisted Development playbook](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Secure coding and code review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
+- [OWASP LLM Top 10 threat overview](/en/ai-security/owasp-llm-top-10/overview/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [Secure AI-Assisted Development playbook](/en/ai-security/ai-assisted-development/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Secure coding and code review playbook](/en/application-security/secure-coding/code-review/playbook/)

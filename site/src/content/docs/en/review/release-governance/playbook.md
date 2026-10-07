@@ -14,10 +14,10 @@ Use this document for:
 - services, container images, infrastructure changes, Kubernetes manifests, and security-sensitive configuration.
 
 Out of scope:
-- detailed vulnerability triage, exploitability, SLA, and exception lifecycle: use the [vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/);
-- detailed SLSA provenance implementation: use the [SLSA provenance overview](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/);
-- Kubernetes cluster admission and RBAC review: use the [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/);
-- architecture threat modeling: use the [Threat Modeling Playbook](/Product-security-playbook/en/review/threat-modeling/playbook/).
+- detailed vulnerability triage, exploitability, SLA, and exception lifecycle: use the [vulnerability management playbook](/en/review/vulnerability-management/playbook/);
+- detailed SLSA provenance implementation: use the [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/);
+- Kubernetes cluster admission and RBAC review: use the [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/);
+- architecture threat modeling: use the [Threat Modeling Playbook](/en/review/threat-modeling/playbook/).
 
 Objective:
 - separate the right to merge code from the right to deploy risk;
@@ -215,12 +215,12 @@ Escalation triggers:
 
 ## 8. Related Materials
 
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
-- [Security architecture review checklist](/Product-security-playbook/en/review/architecture/checklist/)
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Container image security playbook](/Product-security-playbook/en/supply-chain/container-image-security/playbook/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Agent instruction and configuration review](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
-- [SLSA Source Track](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/#source-track-review)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)
+- [Security architecture review checklist](/en/review/architecture/checklist/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Container image security playbook](/en/supply-chain/container-image-security/playbook/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Agent instruction and configuration review](/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
+- [SLSA Source Track](/en/supply-chain/slsa-provenance/overview/#source-track-review)

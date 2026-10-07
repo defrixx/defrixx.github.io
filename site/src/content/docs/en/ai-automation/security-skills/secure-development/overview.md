@@ -6,7 +6,7 @@ sidebar:
 ---
 Use while implementing code, configuration, or infrastructure changes. The assistant selects requirements against the actual stack and trust model, implements within scope, and checks the result.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/secure-development) | [Installation instructions](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/secure-development) | [Installation instructions](/en/ai-automation/security-skills/overview/)
 
 ## Inputs
 
@@ -38,10 +38,10 @@ The [requirement coverage manifest](https://github.com/defrixx/Product-security-
 
 ## Related playbooks
 
-- [Secure coding and code review](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Secure AI-assisted development](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
-- [Kubernetes cluster review](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Secure coding and code review](/en/application-security/secure-coding/code-review/playbook/)
+- [Secure AI-assisted development](/en/ai-security/ai-assisted-development/playbook/)
+- [Kubernetes cluster review](/en/platform-security/kubernetes/cluster-security-review/playbook/)
 
 ## Standalone and combined use
 
-The skill works without sibling packages. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.
+The skill works without sibling packages. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.

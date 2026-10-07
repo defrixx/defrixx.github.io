@@ -6,7 +6,7 @@ sidebar:
 ---
 `prompt-integrity` is a standalone Python library and CLI that checks application-controlled static instructions immediately before model dispatch. Version 0.1.0 supports bounded subsets of Ollama `/api/chat` and LM Studio `/v1/chat/completions`, including pinned tool definitions in the LM Studio adapter.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity) | [Skills and combined workflow](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity) | [Skills and combined workflow](/en/ai-automation/security-skills/overview/)
 
 ## What the tool checks
 

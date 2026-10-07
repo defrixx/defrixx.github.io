@@ -1,25 +1,10 @@
 # Product Security Playbook
 
-This repository is a working collection of product security documents, including architecture review checklists, Kubernetes hardening playbooks, and security overviews.
+A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
 
-## Repository Status
+The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
 
-This repository is a working security knowledge base, not a finished reference.
-
-The content evolves over time based on practical work:
-- Existing documents are regularly reviewed and updated
-- New materials are added incrementally
-- Documents should be treated as work in progress
-
-The guidance reflects accumulated engineering experience, not immutable standards.
-
-## Authorship Note
-
-Not every document here was written from scratch by one person.
-
-Some sections compile and adapt existing practices, references, and public knowledge, with additional analysis, edits, and implementation context.
-
-Treat this repository as curated working material rather than purely original standalone writing.
+Materials evolve with technologies and attack techniques. Apply them in the context of your project's architecture, component versions, and threat model.
 
 ---
 
@@ -50,11 +35,13 @@ Treat this repository as curated working material rather than purely original st
 - [`content/platform-security/kubernetes/seccomp/`](content/platform-security/kubernetes/seccomp/) - Kubernetes seccomp review checklist
 - [`content/platform-security/kubernetes/container-escape-capability-abuse/`](content/platform-security/kubernetes/container-escape-capability-abuse/) - container escape and Linux capability abuse overview
 - [`content/platform-security/secrets/vault/`](content/platform-security/secrets/vault/) - Vault security playbook
+- [`content/platform-security/cloud-iam-workload-identity/`](content/platform-security/cloud-iam-workload-identity/) - cloud federation, workload permissions, metadata isolation, and active-session containment
 
 ### Supply Chain
 - [`content/supply-chain/`](content/supply-chain/) - [choose a document by task](content/supply-chain/overview.en.md)
 - [`content/supply-chain/slsa-provenance/`](content/supply-chain/slsa-provenance/) - SLSA v1.2 provenance overview for container image CI/CD pipelines
 - [`content/supply-chain/container-image-security/`](content/supply-chain/container-image-security/) - container image and OCI registry security playbook for Dockerfile baselines, digest pinning, multi-arch images, registry promotion, scanning, signing, and deploy-time verification
+- [`content/supply-chain/ci-cd-security/`](content/supply-chain/ci-cd-security/) - pipeline trust boundaries, executor isolation, artifact handoffs, federation, and deployment verification
 
 ### AI Security
 - [`content/ai-security/`](content/ai-security/) - [choose an AI security document](content/ai-security/overview.en.md) by task and document scope
@@ -66,6 +53,7 @@ Treat this repository as curated working material rather than purely original st
 
 ### Reference
 - [`reference/infrastructure-technologies/`](reference/infrastructure-technologies/) - overview of infrastructure technologies and their production operating models
+- [`reference/security-policy-examples/`](reference/security-policy-examples/) - executable OPA policies, configuration examples, and allowed/denied CI scenarios
 
 ### Security Skills and Tools
 - [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - catalogue of the independently maintained Product Security Skills

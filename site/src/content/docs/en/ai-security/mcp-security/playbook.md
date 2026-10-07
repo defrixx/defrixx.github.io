@@ -17,13 +17,13 @@ Use this document for:
 Document ownership:
 - This playbook owns MCP protocol deployment patterns, server/tool/resource/prompt registry, capability baselines, transport choices, MCP-specific OAuth usage, gateway policy, protocol logging, and capability drift controls.
 - It treats tool abuse and data leakage through the MCP boundary: server approval, capability negotiation, resource exposure, token handling, and downstream destination control.
-- It relies on [Securing AI](/Product-security-playbook/en/ai-security/securing-ai/overview/) for the general AI control baseline and on the [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/) for agent autonomy, memory, action traces, approvals, rollback, and kill switches.
-- It uses the [OWASP LLM Top 10 overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/) for threat taxonomy, not as a deployment checklist.
+- It relies on [Securing AI](/en/ai-security/securing-ai/overview/) for the general AI control baseline and on the [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/) for agent autonomy, memory, action traces, approvals, rollback, and kill switches.
+- It uses the [OWASP LLM Top 10 overview](/en/ai-security/owasp-llm-top-10/overview/) for threat taxonomy, not as a deployment checklist.
 
 Out of scope:
-- general model behavior, prompt injection, RAG, and AI release governance; use the [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/);
-- OAuth/OIDC fundamentals outside MCP-specific usage; use the [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/);
-- generic API hardening for downstream business APIs; use the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/).
+- general model behavior, prompt injection, RAG, and AI release governance; use the [Securing AI overview](/en/ai-security/securing-ai/overview/);
+- OAuth/OIDC fundamentals outside MCP-specific usage; use the [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/);
+- generic API hardening for downstream business APIs; use the [API security playbook](/en/application-security/api/api-security-patterns/playbook/).
 
 Objective:
 - make every MCP capability explicit, authorized, observable, and revocable before it can affect production data or business state.
@@ -225,7 +225,7 @@ Operational signals:
 
 ## 5. Review Decision
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | MCP condition | Required action |
 |---|---|---|
@@ -243,8 +243,8 @@ Release is approved only when every production MCP capability is registered, sco
 
 ## 6. Related Materials
 
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/)

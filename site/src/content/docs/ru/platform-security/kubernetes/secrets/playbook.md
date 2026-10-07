@@ -210,7 +210,7 @@ kubectl auth can-i update pods/ephemeralcontainers --as=<subject> -n <ns>
 
 ## 5. Решения по результатам ревью
 
-Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
+Матрица ниже определяет критичность замечания для рассматриваемой области и решение о релизе. Общие SLA устранения, жизненный цикл исключений, принятие риска и подтверждения закрытия определяет [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/); при пересечении требований применяется более строгое.
 
 | Критичность | Условие | Требуемое действие |
 |---|---|---|
@@ -229,7 +229,7 @@ kubectl auth can-i update pods/ephemeralcontainers --as=<subject> -n <ns>
 
 ## 6. Связанные материалы
 
-- [Ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Усиление защиты среды выполнения pod](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- [Проверка Kubernetes имитацией действий атакующего](/Product-security-playbook/ru/platform-security/kubernetes/adversarial-validation/playbook/)
-- [Плейбук безопасности Vault](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
+- [Ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Усиление защиты среды выполнения pod](/ru/platform-security/kubernetes/pod-security/playbook/)
+- [Проверка Kubernetes имитацией действий атакующего](/ru/platform-security/kubernetes/adversarial-validation/playbook/)
+- [Плейбук безопасности Vault](/ru/platform-security/secrets/vault/playbook/)

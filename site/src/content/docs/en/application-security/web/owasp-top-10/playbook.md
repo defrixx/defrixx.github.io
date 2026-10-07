@@ -10,9 +10,9 @@ This document keeps the detailed OWASP Top 10:2021 structure for stable review l
 
 Document boundaries:
 - This playbook defines web-level review decision, severity, and minimum negative tests for OWASP Top 10 categories.
-- Detailed requirements for API authorization, GraphQL, webhooks, and gRPC are owned by the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/).
-- Browser-specific controls for CSP, CORS, cookies, embedded content, and frontend supply chain are owned by the [browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/).
-- Secure coding details for validation, output encoding, injection, file handling, and crypto misuse are owned by the [Secure Coding and Code Review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/).
+- Detailed requirements for API authorization, GraphQL, webhooks, and gRPC are owned by the [API security playbook](/en/application-security/api/api-security-patterns/playbook/).
+- Browser-specific controls for CSP, CORS, cookies, embedded content, and frontend supply chain are owned by the [browser and frontend security playbook](/en/application-security/web/browser-security/playbook/).
+- Secure coding details for validation, output encoding, injection, file handling, and crypto misuse are owned by the [Secure Coding and Code Review playbook](/en/application-security/secure-coding/code-review/playbook/).
 - SAST, SCA, and secret scanning in the category sections below are applicability overlays for web risks. The Secure Coding and Code Review playbook owns their generic configuration, required execution, result handling, and closure evidence.
 - Supply-chain and container-image controls are owned by the dedicated supply-chain playbooks; this document uses them only as web release decision context.
 
@@ -549,7 +549,7 @@ Release-ready defaults:
 - Browser applications use server-side sessions or BFF-style token handling; refresh tokens are not stored in browser storage.
 - Session ID rotates after login, privilege elevation, and recovery completion.
 - User sessions have idle and absolute timeouts; high-risk actions require recent authentication.
-- Use the phishing-resistant authentication, passkey, and recovery profile in section 6.7 of the [OIDC/OAuth playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/); generic MFA coverage does not establish equivalent protection across authenticator types.
+- Use the phishing-resistant authentication, passkey, and recovery profile in section 6.7 of the [OIDC/OAuth playbook](/en/application-security/identity/oidc-oauth/playbook/); generic MFA coverage does not establish equivalent protection across authenticator types.
 - Credential stuffing controls include breached-password checks, per-account and per-source throttling, bot signals, and anomaly alerts.
 - Logout destroys local session and revokes or invalidates refresh/session material where the architecture supports it.
 
@@ -790,7 +790,7 @@ False positives / false negatives:
 
 ## 12. Related Materials
 
-- [Browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Secure coding and code review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
+- [Browser and frontend security playbook](/en/application-security/web/browser-security/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Secure coding and code review playbook](/en/application-security/secure-coding/code-review/playbook/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)

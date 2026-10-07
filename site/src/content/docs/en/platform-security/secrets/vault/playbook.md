@@ -247,7 +247,7 @@ vault token revoke -accessor <accessor>
 
 Use one approved pattern per workload and document why it was chosen.
 
-This section compares ways to deliver secrets from Vault. It does not mean Vault is mandatory for every Kubernetes secret; the decision between native Kubernetes Secret, sync-based delivery, and file-only external secret manager delivery is covered in the [Kubernetes Secrets playbook](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/).
+This section compares ways to deliver secrets from Vault. It does not mean Vault is mandatory for every Kubernetes secret; the decision between native Kubernetes Secret, sync-based delivery, and file-only external secret manager delivery is covered in the [Kubernetes Secrets playbook](/en/platform-security/kubernetes/secrets/playbook/).
 
 Pattern A (preferred): Vault Agent Injector
 - Secrets rendered into files at runtime.
@@ -429,12 +429,12 @@ Treat Raft snapshots as sensitive encrypted backups. Restrict snapshot creation 
 
 ## 7. Related Materials
 
-- [OIDC + OAuth 2.0 playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Kubernetes Secrets playbook](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/)
-- [SLSA provenance overview](/Product-security-playbook/en/supply-chain/slsa-provenance/overview/)
-- [Infrastructure technologies reference](/Product-security-playbook/en/reference/infrastructure-technologies/infrastructure-technologies/)
+- [OIDC + OAuth 2.0 playbook](/en/application-security/identity/oidc-oauth/playbook/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Kubernetes Secrets playbook](/en/platform-security/kubernetes/secrets/playbook/)
+- [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/)
+- [Infrastructure technologies reference](/en/reference/infrastructure-technologies/infrastructure-technologies/)
 
 ## Preparing materials for sharing
 
-To prepare a separate copy of materials for sharing, use the [Sensitive Data Cleanup skill](/Product-security-playbook/en/ai-automation/security-skills/sensitive-data-cleanup/overview/). See the skill page for processing scope and limitations.
+To prepare a separate copy of materials for sharing, use the [Sensitive Data Cleanup skill](/en/ai-automation/security-skills/sensitive-data-cleanup/overview/). See the skill page for processing scope and limitations.

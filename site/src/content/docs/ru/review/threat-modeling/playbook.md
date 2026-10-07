@@ -36,7 +36,7 @@ sidebar:
 - список точек входа и привилегированных операций;
 - модель аутентификации, авторизации и сессий;
 - действующие меры безопасности: WAF и шлюз API, mTLS, OAuth/OIDC, ограничение частоты запросов, управление секретами, запись событий аудита, обнаружение атак и политики защиты среды выполнения;
-- результаты SAST/DAST/SCA, сканирования IaC и контейнеров, тестирования на проникновение, история инцидентов и данные из [плейбука управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/);
+- результаты SAST/DAST/SCA, сканирования IaC и контейнеров, тестирования на проникновение, история инцидентов и данные из [плейбука управления уязвимостями](/ru/review/vulnerability-management/playbook/);
 - регуляторные ограничения и обязательства по соответствию, если они влияют на требования;
 - владельцы компонентов и допустимый уровень риска.
 
@@ -483,9 +483,9 @@ NIST SP 800-154 описывает моделирование угроз с ак
 
 ## 7. Связанные материалы
 
-- [Чеклист ревью архитектуры безопасности](/Product-security-playbook/ru/review/architecture/checklist/)
-- [Плейбук безопасности API](/Product-security-playbook/ru/application-security/api/api-security-patterns/playbook/)
-- [Обзор OWASP LLM Top 10](/Product-security-playbook/ru/ai-security/owasp-llm-top-10/overview/)
-- [Обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
+- [Чеклист ревью архитектуры безопасности](/ru/review/architecture/checklist/)
+- [Плейбук безопасности API](/ru/application-security/api/api-security-patterns/playbook/)
+- [Обзор OWASP LLM Top 10](/ru/ai-security/owasp-llm-top-10/overview/)
+- [Обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)

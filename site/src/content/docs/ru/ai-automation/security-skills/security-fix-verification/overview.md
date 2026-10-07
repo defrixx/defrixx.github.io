@@ -6,7 +6,7 @@ sidebar:
 ---
 Скилл `security-fix-verification` проверяет исправление конкретного замечания в заданной ревизии или предложенном варианте изменений. Его можно использовать самостоятельно: достаточно описания дефекта и доступных доказательств, отчет другого скилла не обязателен.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Как установить](/Product-security-playbook/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -43,12 +43,12 @@ sidebar:
 
 [Отчет](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) содержит заключение по каждому замечанию, ревизии, матрицу сценариев, наблюдения и оставшиеся проверки. Даже после успешной проверки изменение остается предложенным вариантом, пока оно не применено. Подтверждение уязвимости в старой ревизии остается в истории после исправления.
 
-Скилл не требует соседних скиллов и сам по себе не разрешает менять код или обращаться к промышленному окружению. В [общем рабочем процессе](/Product-security-playbook/ru/ai-automation/security-skills/workflow/overview/) он принимает результаты предыдущих этапов. Когда исправление и проверку выполняет один ассистент, результат обозначается как самопроверка.
+Скилл не требует соседних скиллов и сам по себе не разрешает менять код или обращаться к промышленному окружению. В [общем рабочем процессе](/ru/ai-automation/security-skills/workflow/overview/) он принимает результаты предыдущих этапов. Когда исправление и проверку выполняет один ассистент, результат обозначается как самопроверка.
 
 Перед выдачей отчета сверяйте заключения с перечнем и количеством проверенных сценариев в указанной ревизии. Сохраняйте `partially_fixed`, если часть исправления подтверждена, но остается применимый способ обхода защиты. Отмечайте предложенное изменение как примененное только после проверки его наличия в целевом проекте. Называйте проверку самопроверкой только тогда, когда изменение реализовал тот же ассистент, который его проверяет; наличие предоставленного патча или тестового примера не подтверждает авторство.
 
 ## Связанные материалы
 
-- [Безопасная разработка](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/)
-- [Разбор отчетов безопасности](/Product-security-playbook/ru/ai-automation/security-skills/security-report-triage/overview/)
-- [Управление уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
+- [Безопасная разработка](/ru/ai-automation/security-skills/secure-development/overview/)
+- [Разбор отчетов безопасности](/ru/ai-automation/security-skills/security-report-triage/overview/)
+- [Управление уязвимостями](/ru/review/vulnerability-management/playbook/)

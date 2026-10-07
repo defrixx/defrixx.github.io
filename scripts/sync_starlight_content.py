@@ -17,11 +17,9 @@ def configured_site_base() -> str:
     if explicit is not None:
         return explicit.rstrip("/")
 
-    repository = os.environ.get("GITHUB_REPOSITORY", "")
-    if repository.endswith("/defrixx.github.io"):
-        return ""
-
-    return "/Product-security-playbook"
+    # The published repository is defrixx.github.io. Keep generation identical
+    # locally and in CI rather than deriving links from the checkout context.
+    return ""
 
 
 SITE_BASE = configured_site_base()
@@ -41,6 +39,9 @@ TOP_LEVEL_ORDER = {
 }
 
 PAGE_ORDER = {
+    "supply-chain/ci-cd-security/playbook": 30,
+    "platform-security/cloud-iam-workload-identity/playbook": 80,
+    "reference/security-policy-examples/overview": 20,
     "supply-chain/overview": 5,
     "platform-security/overview": 5,
     "application-security/overview": 5,
@@ -214,7 +215,11 @@ def generated_content(source: Path) -> str:
 
 
 # Short navigation labels; new documents fall back to their translated H1.
-SITE_MAP_LABELS = {'review/overview': ('Обзор', 'Overview'),
+SITE_MAP_LABELS = {
+ 'supply-chain/ci-cd-security/playbook': ('Безопасность CI/CD', 'CI/CD security'),
+ 'platform-security/cloud-iam-workload-identity/playbook': ('Cloud IAM и доступ рабочих нагрузок', 'Cloud IAM and workload access'),
+ 'reference/security-policy-examples/overview': ('Примеры политик безопасности', 'Security policy examples'),
+ 'review/overview': ('Обзор', 'Overview'),
  'review/architecture/checklist': ('Архитектурное ревью', 'Architecture review'),
  'review/threat-modeling/playbook': ('Моделирование угроз', 'Threat modeling'),
  'review/release-governance/playbook': ('Управление выпуском', 'Release governance'),
@@ -282,6 +287,7 @@ SITE_MAP_GROUPS = {
         ("Веб и браузер", "Web and browser", ("application-security/web/",)),
     ),
     "platform-security": (
+        ("Доступ к облаку", "Cloud access", ("platform-security/cloud-iam-workload-identity/",)),
         ("Kubernetes", "Kubernetes", ("platform-security/kubernetes/",)),
         ("Управление секретами", "Secrets management", ("platform-security/secrets/",)),
     ),

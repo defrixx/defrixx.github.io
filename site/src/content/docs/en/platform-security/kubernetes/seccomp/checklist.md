@@ -24,8 +24,8 @@ Seccomp is **not**:
 - proof of security just because a profile exists in YAML.
 
 Note: seccomp is one layer. User namespaces do not replace seccomp; review syscall surface and capabilities independently. Validate other hardening layers using the dedicated pod security and container escape/capability abuse checklists:
-- [kubernetes/pod-security/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- [kubernetes/container-escape-capability-abuse/overview.en.md](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [kubernetes/pod-security/playbook.en.md](/en/platform-security/kubernetes/pod-security/playbook/)
+- [kubernetes/container-escape-capability-abuse/overview.en.md](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
 
 ---
 
@@ -310,6 +310,6 @@ A profile that is merely "strict" or present in YAML is not sufficient by itself
 
 ## 11. Related Materials
 
-- [Pod Security playbook](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- [Container escape and capability abuse overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- [Kubernetes cluster security review playbook](/Product-security-playbook/en/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Pod Security playbook](/en/platform-security/kubernetes/pod-security/playbook/)
+- [Container escape and capability abuse overview](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [Kubernetes cluster security review playbook](/en/platform-security/kubernetes/cluster-security-review/playbook/)

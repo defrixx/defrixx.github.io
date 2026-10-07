@@ -17,12 +17,12 @@ Use this document for:
 Document ownership:
 - This playbook owns agent autonomy, tool use by agents, memory/scratchpad/checkpoint handling, action traces, approvals, rollback, and kill-switch behavior.
 - It treats prompt injection, data leakage, and excessive agency through the lens of agent execution and business impact.
-- It relies on [Securing AI](/Product-security-playbook/en/ai-security/securing-ai/overview/) for the general AI control baseline and on the [OWASP LLM Top 10 overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/) for threat taxonomy.
-- It does not define MCP protocol, server registry, or transport governance controls; use the [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/).
+- It relies on [Securing AI](/en/ai-security/securing-ai/overview/) for the general AI control baseline and on the [OWASP LLM Top 10 overview](/en/ai-security/owasp-llm-top-10/overview/) for threat taxonomy.
+- It does not define MCP protocol, server registry, or transport governance controls; use the [MCP security playbook](/en/ai-security/mcp-security/playbook/).
 
 Out of scope:
-- MCP protocol-specific controls; use the [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/);
-- general LLM threat taxonomy; use the [OWASP LLM Top 10 overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/);
+- MCP protocol-specific controls; use the [MCP security playbook](/en/ai-security/mcp-security/playbook/);
+- general LLM threat taxonomy; use the [OWASP LLM Top 10 overview](/en/ai-security/owasp-llm-top-10/overview/);
 - generic API, browser, Kubernetes, and supply-chain controls unless they are part of the agent runtime.
 
 Objective:
@@ -230,7 +230,7 @@ This mapping connects existing controls to the 2026 taxonomy; it does not replac
 
 ## 5. Review Decision
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Agent condition | Required action |
 |---|---|---|
@@ -250,11 +250,11 @@ Release is approved only when the agent has bounded autonomy, explicit policy en
 
 ## 6. Related Materials
 
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Secure AI-Assisted Development playbook](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
-- [OWASP LLM Top 10 overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/)
-- [Threat modeling playbook](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [Browser security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Agent instruction supply-chain controls](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Secure AI-Assisted Development playbook](/en/ai-security/ai-assisted-development/playbook/)
+- [OWASP LLM Top 10 overview](/en/ai-security/owasp-llm-top-10/overview/)
+- [Threat modeling playbook](/en/review/threat-modeling/playbook/)
+- [Browser security playbook](/en/application-security/web/browser-security/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Agent instruction supply-chain controls](/en/ai-security/ai-assisted-development/playbook/#38-skills-and-agent-instructions)

@@ -383,10 +383,10 @@ kubectl exec -n <ns> <pod> -- stat -c '%u:%g %a %n' <mounted-path>
 
 ## 5. Связанные материалы в репозитории
 
-- Ревью безопасности Kubernetes-кластера: [kubernetes/cluster-security-review/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- Усиление защиты среды выполнения pod: [kubernetes/pod-security/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- Выход из контейнера и capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/seccomp/checklist/)
-- SLSA provenance для образов контейнеров: [supply-chain/slsa-provenance/overview.ru.md](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/)
-- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/secrets/playbook/)
-- Vault и секреты: [secrets/vault/playbook.ru.md](/Product-security-playbook/ru/platform-security/secrets/vault/playbook/)
+- Ревью безопасности Kubernetes-кластера: [kubernetes/cluster-security-review/playbook.ru.md](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- Усиление защиты среды выполнения pod: [kubernetes/pod-security/playbook.ru.md](/ru/platform-security/kubernetes/pod-security/playbook/)
+- Выход из контейнера и capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](/ru/platform-security/kubernetes/seccomp/checklist/)
+- SLSA provenance для образов контейнеров: [supply-chain/slsa-provenance/overview.ru.md](/ru/supply-chain/slsa-provenance/overview/)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.ru.md](/ru/platform-security/kubernetes/secrets/playbook/)
+- Vault и секреты: [secrets/vault/playbook.ru.md](/ru/platform-security/secrets/vault/playbook/)

@@ -6,7 +6,7 @@ sidebar:
 ---
 Use for a security assessment of a pull request or repository. The workflow traces data across trust boundaries, validates hypotheses, assesses impact, and prepares a remediation report.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Installation instructions](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Installation instructions](/en/ai-automation/security-skills/overview/)
 
 ## Inputs
 
@@ -36,10 +36,10 @@ Instructions and references are bundled with the skill. Use the [report template
 
 ## Related playbooks
 
-- [Secure coding and code review](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Threat modeling](/Product-security-playbook/en/review/threat-modeling/playbook/)
-- [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+- [Secure coding and code review](/en/application-security/secure-coding/code-review/playbook/)
+- [Threat modeling](/en/review/threat-modeling/playbook/)
+- [Vulnerability management](/en/review/vulnerability-management/playbook/)
 
 ## Standalone and combined use
 
-The skill works without sibling packages. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.
+The skill works without sibling packages. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it performs a selected stage while preserving finding IDs, revisions, and evidence. The task defines authorized actions; preceding outputs do not automatically expand that scope.

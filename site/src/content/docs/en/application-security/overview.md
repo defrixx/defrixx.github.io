@@ -8,12 +8,12 @@ Choose a playbook for the part of the application under review: code, APIs, busi
 
 | Task | Document | Review scope |
 | --- | --- | --- |
-| Review code | [Code review](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/) | Input handling, interpreter boundaries, authorization, sessions, files, secrets, and dependencies in changed code. Includes checking whether sensitive operations are reachable and collecting evidence for review findings. |
-| Review an API | [API security](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/) | REST, SOAP/XML, GraphQL, webhooks, and gRPC: authentication, object access, schema validation, request limits, and logging. Examines trust boundaries between clients, gateways, and internal services. |
-| Review business logic | [Business logic security](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/) | Account takeover, signup and promotion abuse, tenant isolation, and authorization for business operations. Examines state transitions, request replay, idempotency, and abuse detection. |
-| Review sign-in and delegated access | [OIDC and OAuth](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/) | Sign-in and delegated access flows, redirects, PKCE, and validation of tokens, scopes, and audiences. Covers issuer-scoped identities, passkeys, authentication strength, recovery, revocation objectives, and trust boundaries between clients, authorization servers, and APIs. |
-| Review browser security | [Browser security](/Product-security-playbook/en/application-security/web/browser-security/playbook/) | CSP, CORS, cookies, page embedding, and third-party scripts. Examines browser trust boundaries, frontend dependencies, and verification of effective headers and policies. |
-| Check coverage of web risks | [OWASP Top 10](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/) | Access control, injection, cryptography, configuration, components, integrity, logging, and SSRF. Connects OWASP Top 10 categories to checks and failure signals for assessing review coverage. |
+| Review code | [Code review](/en/application-security/secure-coding/code-review/playbook/) | Input handling, interpreter boundaries, authorization, sessions, files, secrets, and dependencies in changed code. Includes checking whether sensitive operations are reachable and collecting evidence for review findings. |
+| Review an API | [API security](/en/application-security/api/api-security-patterns/playbook/) | REST, SOAP/XML, GraphQL, webhooks, and gRPC: authentication, object access, schema validation, request limits, and logging. Examines trust boundaries between clients, gateways, and internal services. |
+| Review business logic | [Business logic security](/en/application-security/business-logic/business-logic-abuse/playbook/) | Account takeover, signup and promotion abuse, tenant isolation, and authorization for business operations. Examines state transitions, request replay, idempotency, and abuse detection. |
+| Review sign-in and delegated access | [OIDC and OAuth](/en/application-security/identity/oidc-oauth/playbook/) | Sign-in and delegated access flows, redirects, PKCE, and validation of tokens, scopes, and audiences. Covers issuer-scoped identities, passkeys, authentication strength, recovery, revocation objectives, and trust boundaries between clients, authorization servers, and APIs. |
+| Review browser security | [Browser security](/en/application-security/web/browser-security/playbook/) | CSP, CORS, cookies, page embedding, and third-party scripts. Examines browser trust boundaries, frontend dependencies, and verification of effective headers and policies. |
+| Check coverage of web risks | [OWASP Top 10](/en/application-security/web/owasp-top-10/playbook/) | Access control, injection, cryptography, configuration, components, integrity, logging, and SSRF. Connects OWASP Top 10 categories to checks and failure signals for assessing review coverage. |
 
 ## How to combine documents
 
@@ -23,4 +23,4 @@ Choose a playbook for the part of the application under review: code, APIs, busi
 
 ## When to use other sections
 
-For a system-wide assessment, start with [architecture review and threat modeling](/Product-security-playbook/en/review/overview/).
+For a system-wide assessment, start with [architecture review and threat modeling](/en/review/overview/).

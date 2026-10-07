@@ -14,10 +14,10 @@ sidebar:
 - сервисов, образов контейнеров, изменений инфраструктуры, манифестов Kubernetes и конфигурации, значимой для безопасности.
 
 За пределами этого документа:
-- подробный разбор уязвимостей, возможности эксплуатации, SLA и жизненного цикла исключений: используйте [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/);
-- подробная реализация подтверждения происхождения по SLSA: используйте [обзор SLSA](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/);
-- проверка допуска и RBAC в Kubernetes-кластере: используйте [плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/);
-- моделирование угроз архитектуры: используйте [плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/).
+- подробный разбор уязвимостей, возможности эксплуатации, SLA и жизненного цикла исключений: используйте [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/);
+- подробная реализация подтверждения происхождения по SLSA: используйте [обзор SLSA](/ru/supply-chain/slsa-provenance/overview/);
+- проверка допуска и RBAC в Kubernetes-кластере: используйте [плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/);
+- моделирование угроз архитектуры: используйте [плейбук моделирования угроз](/ru/review/threat-modeling/playbook/).
 
 Цель:
 - отделить право слияния кода от полномочий принимать риск при выпуске в рабочую среду;
@@ -215,12 +215,12 @@ sidebar:
 
 ## 8. Связанные материалы
 
-- [Плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/)
-- [Чеклист ревью архитектуры безопасности](/Product-security-playbook/ru/review/architecture/checklist/)
-- [Обзор безопасности ИИ](/Product-security-playbook/ru/ai-security/securing-ai/overview/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
-- [Плейбук безопасности образов контейнеров](/Product-security-playbook/ru/supply-chain/container-image-security/playbook/)
-- [Плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Проверка инструкций и конфигурации агентов](/Product-security-playbook/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)
-- [SLSA Source Track](/Product-security-playbook/ru/supply-chain/slsa-provenance/overview/#проверка-source-track)
+- [Плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/)
+- [Чеклист ревью архитектуры безопасности](/ru/review/architecture/checklist/)
+- [Обзор безопасности ИИ](/ru/ai-security/securing-ai/overview/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)
+- [Плейбук безопасности образов контейнеров](/ru/supply-chain/container-image-security/playbook/)
+- [Плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Проверка инструкций и конфигурации агентов](/ru/ai-security/ai-assisted-development/playbook/#38-скиллы-и-инструкции-агентов)
+- [SLSA Source Track](/ru/supply-chain/slsa-provenance/overview/#проверка-source-track)

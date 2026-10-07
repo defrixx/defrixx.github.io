@@ -6,7 +6,7 @@ sidebar:
 ---
 The `security-fix-verification` skill checks a specified repair in a selected revision or candidate patch. It works independently: a defect description and available evidence are sufficient inputs; a report from another skill is not required.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Installation instructions](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Installation instructions](/en/ai-automation/security-skills/overview/)
 
 ## Inputs
 
@@ -43,12 +43,12 @@ Unknown coverage alone means insufficient evidence, not partial repair. An absen
 
 The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. A successfully verified candidate remains a candidate; verification does not mean it was applied. Historical confirmation at the old revision remains in the record after remediation.
 
-The skill needs no sibling skills and does not itself authorize code changes or production access. In the [combined workflow](/Product-security-playbook/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Implementation and verification by the same assistant are labeled self-verification.
+The skill needs no sibling skills and does not itself authorize code changes or production access. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Implementation and verification by the same assistant are labeled self-verification.
 
 Before delivery, reconcile verdicts with recorded cases and counts at the checked revision. Keep `partially_fixed` when a relevant bypass remains alongside an established portion of the repair. Candidate state changes only after application to the named target is observed. Label self-verification only when the checking assistant actually implemented the assessed change; a supplied patch or fixture does not establish authorship.
 
 ## Related material
 
-- [Secure development](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
-- [Report triage](/Product-security-playbook/en/ai-automation/security-skills/security-report-triage/overview/)
-- [Vulnerability management](/Product-security-playbook/en/review/vulnerability-management/playbook/)
+- [Secure development](/en/ai-automation/security-skills/secure-development/overview/)
+- [Report triage](/en/ai-automation/security-skills/security-report-triage/overview/)
+- [Vulnerability management](/en/review/vulnerability-management/playbook/)

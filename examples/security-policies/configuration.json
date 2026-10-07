@@ -1,0 +1,8 @@
+{
+  "configuration": {
+    "namespace": "payments",
+    "service_account": "payments-app",
+    "aws_provider": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com",
+    "github_subject": "repo:example/payments:ref:refs/heads/main"
+  }
+}

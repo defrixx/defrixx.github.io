@@ -267,7 +267,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 **Recommended control:**
 - run adversarial validation for live-like environments after major RBAC, CNI, admission policy, runtime security tooling, and deployment-chain changes;
 - destructive, DoS, and escape checks run only in a disposable isolated environment with dedicated nodes, control plane, test credentials, and pre-approved scope. A namespace in a shared cluster does not contain host escape or node-level exhaustion;
-- use the dedicated playbook for scenario-to-control mapping: [kubernetes/adversarial-validation/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/).
+- use the dedicated playbook for scenario-to-control mapping: [kubernetes/adversarial-validation/playbook.en.md](/en/platform-security/kubernetes/adversarial-validation/playbook/).
 
 ---
 
@@ -284,7 +284,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - treat rootless as an additional control for supported configurations, rather than a mandatory acceptance condition for every cluster; start with a separate node pool and record an owner, rollout acceptance criteria, and a rollback plan;
 - before expanding the rollout, test cross-node networking, DNS, Services, NetworkPolicy enforcement, mounting and remounting actual workload volumes, resource limits, log collection, and security tooling; repeat after node reboot and upgrade, and rehearse rollback;
 - assess limitations affecting AppArmor/SELinux and kernel observability, and verify how required host sysctl settings are applied: kubelet in this mode may ignore errors setting certain sysctls and accessing `/dev/kmsg`. Do not disable existing safeguards merely to make startup succeed without a separate assessment and documented exception;
-- retain RBAC, admission controls, and [Pod Security](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/) requirements: rootless does not eliminate shared-kernel risks or access through the Kubernetes API.
+- retain RBAC, admission controls, and [Pod Security](/en/platform-security/kubernetes/pod-security/playbook/) requirements: rootless does not eliminate shared-kernel risks or access through the Kubernetes API.
 
 ---
 
@@ -309,7 +309,7 @@ The minimum gatekeeping baseline should include:
   - `pod-security.kubernetes.io/warn: restricted`
   - `pod-security.kubernetes.io/warn-version: <same pinned version>`;
 - require effective seccomp hardening evidence, not only namespace labels: enforced `restricted` admission must reject workloads without explicit `RuntimeDefault` or approved `Localhost`; namespaces using `baseline`, custom policy, or temporary exceptions must either require explicit seccomp fields or prove kubelet `--seccomp-default` / `seccompDefault` so unspecified profiles become `RuntimeDefault`;
-- do not treat this list as the complete workload `securityContext` baseline; maintain detailed requirements for capabilities, AppArmor/SELinux, sysctls, groups, volumes, and user namespaces in the [Kubernetes Pod Security playbook](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/);
+- do not treat this list as the complete workload `securityContext` baseline; maintain detailed requirements for capabilities, AppArmor/SELinux, sysctls, groups, volumes, and user namespaces in the [Kubernetes Pod Security playbook](/en/platform-security/kubernetes/pod-security/playbook/);
 - use `warn`/`audit=restricted` without `enforce=restricted` only during a documented rollout or migration window with owner, expiry, and a blocking date for enforcement;
 - monitor Pod Security label drift and block deployment if live-environment labels regress, are removed, or point to an unapproved version;
 - verify through admission policy tests that live workloads without an image digest are rejected, including `:latest`, version-like tags, and image names with no explicit tag;
@@ -346,11 +346,11 @@ A review is complete only when it provides:
 
 ## 7. Related Repository Materials
 
-- Pod runtime hardening: [kubernetes/pod-security/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/pod-security/playbook/)
-- Kubernetes adversarial validation: [kubernetes/adversarial-validation/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/)
-- Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](/Product-security-playbook/en/platform-security/kubernetes/seccomp/checklist/)
-- Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/secrets/playbook/)
-- Vault and secrets: [secrets/vault/playbook.en.md](/Product-security-playbook/en/platform-security/secrets/vault/playbook/)
-- OIDC/OAuth for machine/human access patterns: [identity/oidc-oauth/playbook.en.md](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
-- [Secure-development skill with Kubernetes requirements](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
+- Pod runtime hardening: [kubernetes/pod-security/playbook.en.md](/en/platform-security/kubernetes/pod-security/playbook/)
+- Kubernetes adversarial validation: [kubernetes/adversarial-validation/playbook.en.md](/en/platform-security/kubernetes/adversarial-validation/playbook/)
+- Seccomp review checklist: [kubernetes/seccomp/checklist.en.md](/en/platform-security/kubernetes/seccomp/checklist/)
+- Container escape / capabilities: [kubernetes/container-escape-capability-abuse/overview.en.md](/en/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- Kubernetes Secrets: [kubernetes/secrets/playbook.en.md](/en/platform-security/kubernetes/secrets/playbook/)
+- Vault and secrets: [secrets/vault/playbook.en.md](/en/platform-security/secrets/vault/playbook/)
+- OIDC/OAuth for machine/human access patterns: [identity/oidc-oauth/playbook.en.md](/en/application-security/identity/oidc-oauth/playbook/)
+- [Secure-development skill with Kubernetes requirements](/en/ai-automation/security-skills/secure-development/overview/)

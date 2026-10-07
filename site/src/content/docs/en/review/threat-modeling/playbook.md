@@ -36,7 +36,7 @@ Mandatory inputs:
 - entry points and privileged operations;
 - authentication/authorization/session model;
 - current security controls: WAF/API gateway, mTLS, OAuth/OIDC, rate limiting, secrets management, audit logging, detection, runtime policy;
-- SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and data from the [vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/);
+- SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and data from the [vulnerability management playbook](/en/review/vulnerability-management/playbook/);
 - regulatory/compliance constraints where they affect requirements;
 - component owners and acceptable risk appetite.
 
@@ -483,9 +483,9 @@ Example:
 
 ## 7. Related Materials
 
-- [Security architecture review checklist](/Product-security-playbook/en/review/architecture/checklist/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [OWASP LLM Top 10 overview](/Product-security-playbook/en/ai-security/owasp-llm-top-10/overview/)
-- [Securing AI overview](/Product-security-playbook/en/ai-security/securing-ai/overview/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
+- [Security architecture review checklist](/en/review/architecture/checklist/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [OWASP LLM Top 10 overview](/en/ai-security/owasp-llm-top-10/overview/)
+- [Securing AI overview](/en/ai-security/securing-ai/overview/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)

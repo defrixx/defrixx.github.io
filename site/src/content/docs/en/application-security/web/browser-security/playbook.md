@@ -14,9 +14,9 @@ Use this document for:
 - abuse-case testing where XSS, cross-origin exposure, session leakage, or third-party script compromise can affect users.
 
 Out of scope:
-- OAuth/OIDC flow design: use the [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/);
-- API authorization and webhook controls: use the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/);
-- general OWASP Top 10 coverage: use the [web application defense playbook](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/).
+- OAuth/OIDC flow design: use the [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/);
+- API authorization and webhook controls: use the [API security playbook](/en/application-security/api/api-security-patterns/playbook/);
+- general OWASP Top 10 coverage: use the [web application defense playbook](/en/application-security/web/owasp-top-10/playbook/).
 
 Objective:
 - reduce account/session theft, browser-side data exposure, cross-origin data leakage, CSRF, clickjacking, and third-party script compromise;
@@ -198,8 +198,8 @@ Use these ASVS 5.0.0 requirements when recording verification results for the re
 
 ## 4. Related Materials
 
-- [OIDC + OAuth 2.0 playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [OWASP Top 10 web application defense playbook](/Product-security-playbook/en/application-security/web/owasp-top-10/playbook/)
-- [Secure coding and code review playbook](/Product-security-playbook/en/application-security/secure-coding/code-review/playbook/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
+- [OIDC + OAuth 2.0 playbook](/en/application-security/identity/oidc-oauth/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [OWASP Top 10 web application defense playbook](/en/application-security/web/owasp-top-10/playbook/)
+- [Secure coding and code review playbook](/en/application-security/secure-coding/code-review/playbook/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)

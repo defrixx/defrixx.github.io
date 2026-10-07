@@ -19,9 +19,9 @@ sidebar:
 - выбора обязательных мер контроля для шлюза API, BFF, межсервисных интеграций и webhook.
 
 Документ не заменяет специализированные материалы:
-- для OIDC/OAuth используйте [руководство по безопасности OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/);
-- для моделирования угроз используйте [плейбук по моделированию угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/);
-- для архитектурной проверки допуска используйте [чеклист ревью архитектуры безопасности](/Product-security-playbook/ru/review/architecture/checklist/).
+- для OIDC/OAuth используйте [руководство по безопасности OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/);
+- для моделирования угроз используйте [плейбук по моделированию угроз](/ru/review/threat-modeling/playbook/);
+- для архитектурной проверки допуска используйте [чеклист ревью архитектуры безопасности](/ru/review/architecture/checklist/).
 
 ---
 
@@ -657,7 +657,7 @@ flowchart LR
 
 ## 10. Решения по результатам ревью
 
-Используйте эту матрицу для замечаний по API перед выпуском. Она дополняет управление выпуском: если замечание здесь блокирует выпуск, исключение должно проходить через процесс управления выпуском с владельцем, сроком действия, компенсирующими мерами и подтверждением проверки. Для общих SLA, жизненного цикла исключений и подтверждений закрытия замечаний сканера используйте [плейбук управления уязвимостями](/Product-security-playbook/ru/review/vulnerability-management/playbook/).
+Используйте эту матрицу для замечаний по API перед выпуском. Она дополняет управление выпуском: если замечание здесь блокирует выпуск, исключение должно проходить через процесс управления выпуском с владельцем, сроком действия, компенсирующими мерами и подтверждением проверки. Для общих SLA, жизненного цикла исключений и подтверждений закрытия замечаний сканера используйте [плейбук управления уязвимостями](/ru/review/vulnerability-management/playbook/).
 
 | Критичность | Когда использовать | Обязательное действие |
 |---|---|---|
@@ -684,9 +684,9 @@ flowchart LR
 
 ## 11. Связанные материалы
 
-- [Плейбук OIDC + OAuth 2.0](/Product-security-playbook/ru/application-security/identity/oidc-oauth/playbook/)
-- [Плейбук безопасности браузера и клиентской части](/Product-security-playbook/ru/application-security/web/browser-security/playbook/)
-- [Плейбук злоупотребления бизнес-логикой](/Product-security-playbook/ru/application-security/business-logic/business-logic-abuse/playbook/)
-- [Плейбук моделирования угроз](/Product-security-playbook/ru/review/threat-modeling/playbook/)
-- [Плейбук безопасности MCP](/Product-security-playbook/ru/ai-security/mcp-security/playbook/)
-- [Плейбук безопасности агентного ИИ](/Product-security-playbook/ru/ai-security/agentic-ai/playbook/)
+- [Плейбук OIDC + OAuth 2.0](/ru/application-security/identity/oidc-oauth/playbook/)
+- [Плейбук безопасности браузера и клиентской части](/ru/application-security/web/browser-security/playbook/)
+- [Плейбук злоупотребления бизнес-логикой](/ru/application-security/business-logic/business-logic-abuse/playbook/)
+- [Плейбук моделирования угроз](/ru/review/threat-modeling/playbook/)
+- [Плейбук безопасности MCP](/ru/ai-security/mcp-security/playbook/)
+- [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/)

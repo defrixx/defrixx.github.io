@@ -104,7 +104,8 @@ flowchart LR
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: доверенные системы сборки, происхождение и политика проверки.
 - `content/review/release-governance/playbook.ru.md` / `playbook.en.md`: защищенные среды, подтверждения готовности релиза и согласования.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: выдача краткоживущих секретов и учетных данных для конвейера.
-- Отдельного плейбука по безопасности CI/CD пока нет.
+- [Безопасность CI/CD](../../content/supply-chain/ci-cd-security/playbook.ru.md): изоляция исполнителей, доверие к артефактам и допуск к развертыванию.
+- [Исполняемые примеры политик](../security-policy-examples/overview.ru.md): проверка конфигураций и сценарии допуска и отказа в CI.
 
 ### Docker
 
@@ -852,7 +853,8 @@ flowchart LR
 - `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md`: понятия OIDC, проверка токенов и границы доверия.
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: пути атак из Kubernetes в облако и идентичность кластера.
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: динамические учетные данные и доставка секретов.
-- Отдельного плейбука по Cloud IAM и Workload Identity пока нет.
+- [Cloud IAM и доступ рабочих нагрузок](../../content/platform-security/cloud-iam-workload-identity/playbook.ru.md): федерация, эффективные разрешения и ограничение активных сессий.
+- [Исполняемые примеры политик](../security-policy-examples/overview.ru.md): строгая проверка политики доверия GitHub с AWS.
 
 ### Vault
 

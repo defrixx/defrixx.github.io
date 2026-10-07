@@ -24,8 +24,8 @@ Seccomp **не** является:
 - доказательством безопасности только из-за наличия профиля в YAML.
 
 Seccomp представляет собой один слой защиты. Пользовательские пространства имен не заменяют seccomp; набор доступных системных вызовов и capabilities нужно проверять независимо. Остальные меры защиты проверяйте по документам о безопасности Pod, выходе из контейнера и злоупотреблении capabilities:
-- [kubernetes/pod-security/playbook.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- [kubernetes/container-escape-capability-abuse/overview.ru.md](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [kubernetes/pod-security/playbook.ru.md](/ru/platform-security/kubernetes/pod-security/playbook/)
+- [kubernetes/container-escape-capability-abuse/overview.ru.md](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
 
 ---
 
@@ -310,7 +310,7 @@ Seccomp представляет собой один слой защиты. По
 
 ## 11. Связанные материалы
 
-- [Плейбук Pod Security](/Product-security-playbook/ru/platform-security/kubernetes/pod-security/playbook/)
-- [Обзор выхода из контейнера и злоупотребления capabilities](/Product-security-playbook/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
-- [Плейбук ревью безопасности Kubernetes-кластера](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
-- [Плейбук проверки безопасности кластера Kubernetes](/Product-security-playbook/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Плейбук Pod Security](/ru/platform-security/kubernetes/pod-security/playbook/)
+- [Обзор выхода из контейнера и злоупотребления capabilities](/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/)
+- [Плейбук ревью безопасности Kubernetes-кластера](/ru/platform-security/kubernetes/cluster-security-review/playbook/)
+- [Плейбук проверки безопасности кластера Kubernetes](/ru/platform-security/kubernetes/cluster-security-review/playbook/)

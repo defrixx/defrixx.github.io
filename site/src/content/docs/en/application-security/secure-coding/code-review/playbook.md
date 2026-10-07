@@ -17,10 +17,10 @@ Use it when reviewing:
 - fixes for SAST, DAST, SCA, pentest, bug bounty, or incident findings.
 
 Out of scope:
-- abuse of intended product behavior: use the [Business Logic Abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/);
-- OAuth/OIDC protocol and token architecture: use the [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/);
-- browser-only controls such as CSP, CORS, cookies, and frontend supply chain: use the [browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/);
-- API protocol patterns across REST, SOAP/XML, GraphQL, Webhooks, and gRPC: use the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/).
+- abuse of intended product behavior: use the [Business Logic Abuse playbook](/en/application-security/business-logic/business-logic-abuse/playbook/);
+- OAuth/OIDC protocol and token architecture: use the [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/);
+- browser-only controls such as CSP, CORS, cookies, and frontend supply chain: use the [browser and frontend security playbook](/en/application-security/web/browser-security/playbook/);
+- API protocol patterns across REST, SOAP/XML, GraphQL, Webhooks, and gRPC: use the [API security playbook](/en/application-security/api/api-security-patterns/playbook/).
 
 Objective:
 - make code review decisions concrete and testable;
@@ -88,7 +88,7 @@ Release-ready defaults:
 - Authorization is enforced in service/domain logic for every object and state transition, not only in routing, UI, or gateway rules.
 - Resource ownership, tenant membership, role, scope, and policy context are evaluated together. A valid token or session is not sufficient authorization.
 - Privileged actions require step-up or explicit approval where impact is high: admin changes, payout/payment changes, bulk export, destructive action, support impersonation, and permission grant.
-- For user authentication, passkey verification, factor changes, and recovery, apply section 6.7 of the [OIDC/OAuth playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/). Review server-side authentication-context checks and every fallback path; a UI prompt alone does not enforce authentication strength.
+- For user authentication, passkey verification, factor changes, and recovery, apply section 6.7 of the [OIDC/OAuth playbook](/en/application-security/identity/oidc-oauth/playbook/). Review server-side authentication-context checks and every fallback path; a UI prompt alone does not enforce authentication strength.
 
 Verification:
 - Tests cover horizontal access, vertical access, cross-tenant access, stale session, logout/revocation behavior, and direct calls to hidden routes.
@@ -127,7 +127,7 @@ Release-ready defaults:
 Verification:
 - Tests cover polyglot files, malware-test fixtures, path traversal, absolute paths, symlink archive entries, archive traversal, decompression bombs, excessive file count, oversized payloads, content-type confusion, scan timeout behavior, and unsafe inline rendering.
 - SSRF tests cover link-local and cloud metadata ranges, localhost, private IPv4 and IPv6 ranges, IPv4-mapped IPv6, decimal/hex/octal IP encodings where parsers support them, redirects to blocked ranges, DNS rebinding, slow responses, oversized responses, and blocked egress logs.
-- For deeper API-specific webhook, GraphQL, SOAP/XML, and gRPC controls, cross-check the [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/). For browser rendering of uploaded or generated content, cross-check the [browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/).
+- For deeper API-specific webhook, GraphQL, SOAP/XML, and gRPC controls, cross-check the [API security playbook](/en/application-security/api/api-security-patterns/playbook/). For browser rendering of uploaded or generated content, cross-check the [browser and frontend security playbook](/en/application-security/web/browser-security/playbook/).
 
 ### 3.6 Logging, Error Handling, and Privacy
 
@@ -182,7 +182,7 @@ Closure evidence:
 
 ## 4. Business Logic Review Overlay
 
-Secure code can still violate business invariants. For sensitive flows, add this overlay and cross-check the [Business Logic Abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/).
+Secure code can still violate business invariants. For sensitive flows, add this overlay and cross-check the [Business Logic Abuse playbook](/en/application-security/business-logic/business-logic-abuse/playbook/).
 
 Review questions:
 - Ownership checks: can a user act on an object they do not own by changing an ID, filter, export job, batch item, or async task reference?
@@ -204,7 +204,7 @@ Required evidence:
 
 ## 5. Review Decision Matrix
 
-The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
+The matrix below defines domain severity and the release decision. The [Vulnerability Management playbook](/en/review/vulnerability-management/playbook/) owns generic remediation SLAs, the exception lifecycle, risk acceptance, and closure evidence; where requirements overlap, apply the stricter one.
 
 | Severity | Use when | Required action |
 |---|---|---|
@@ -236,17 +236,17 @@ Use these ASVS 5.0.0 requirements when recording verification results for the re
 
 ## 6. Related Materials
 
-- [Business Logic Abuse playbook](/Product-security-playbook/en/application-security/business-logic/business-logic-abuse/playbook/)
-- [API security playbook](/Product-security-playbook/en/application-security/api/api-security-patterns/playbook/)
-- [Browser and frontend security playbook](/Product-security-playbook/en/application-security/web/browser-security/playbook/)
-- [OIDC + OAuth 2.0 security guide](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/)
-- [Vulnerability management playbook](/Product-security-playbook/en/review/vulnerability-management/playbook/)
-- [MCP security playbook](/Product-security-playbook/en/ai-security/mcp-security/playbook/)
-- [Agentic AI security playbook](/Product-security-playbook/en/ai-security/agentic-ai/playbook/)
-- [Secure AI-Assisted Development playbook](/Product-security-playbook/en/ai-security/ai-assisted-development/playbook/)
-- [Use the secure-development skill](/Product-security-playbook/en/ai-automation/security-skills/secure-development/overview/)
-- [Use the security-review skill](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/)
+- [Business Logic Abuse playbook](/en/application-security/business-logic/business-logic-abuse/playbook/)
+- [API security playbook](/en/application-security/api/api-security-patterns/playbook/)
+- [Browser and frontend security playbook](/en/application-security/web/browser-security/playbook/)
+- [OIDC + OAuth 2.0 security guide](/en/application-security/identity/oidc-oauth/playbook/)
+- [Vulnerability management playbook](/en/review/vulnerability-management/playbook/)
+- [MCP security playbook](/en/ai-security/mcp-security/playbook/)
+- [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/)
+- [Secure AI-Assisted Development playbook](/en/ai-security/ai-assisted-development/playbook/)
+- [Use the secure-development skill](/en/ai-automation/security-skills/secure-development/overview/)
+- [Use the security-review skill](/en/ai-automation/security-skills/security-review/overview/)
 
 ## Skill for this task
 
-[Use the Security Review skill to review a PR or repository with an assistant.](/Product-security-playbook/en/ai-automation/security-skills/security-review/overview/)
+[Use the Security Review skill to review a PR or repository with an assistant.](/en/ai-automation/security-skills/security-review/overview/)

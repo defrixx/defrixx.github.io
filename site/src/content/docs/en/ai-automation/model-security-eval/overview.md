@@ -6,7 +6,7 @@ sidebar:
 ---
 `model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.4.0 requires Python 3.11+ and uses only the standard library for its core runtime. It works independently of the skills; guarded comparisons additionally require `prompt-guard` 0.3.x.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval) | [Skills and tools](/Product-security-playbook/en/ai-automation/security-skills/overview/)
+[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval) | [Skills and tools](/en/ai-automation/security-skills/overview/)
 
 ## Capabilities and scenarios
 
@@ -74,4 +74,4 @@ Each run creates `report.md`, structured `report.json`, and an atomically update
 
 [Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval/tests) cover fixture actions, normalization, identity, comparison, redaction, checkpoints, CI statuses, and loopback HTTP. They do not require a real model. A passing model run establishes the observed result for the selected synthetic profile; verify application dispatch and action authorization separately.
 
-[prompt-integrity](/Product-security-playbook/en/ai-automation/prompt-integrity/overview/) checks approved static instructions at dispatch. `model-security-eval` evaluates model behavior and fixture action boundaries; it does not automatically install that wrapper or enforce production tool permissions. Keep independent argument validation, resource and recipient scope checks, and authorization before actual application effects.
+[prompt-integrity](/en/ai-automation/prompt-integrity/overview/) checks approved static instructions at dispatch. `model-security-eval` evaluates model behavior and fixture action boundaries; it does not automatically install that wrapper or enforce production tool permissions. Keep independent argument validation, resource and recipient scope checks, and authorization before actual application effects.

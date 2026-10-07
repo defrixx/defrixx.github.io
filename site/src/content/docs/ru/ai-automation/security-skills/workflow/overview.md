@@ -6,17 +6,17 @@ sidebar:
 ---
 Каждый из пяти скиллов работает самостоятельно. Для задачи с несколькими этапами их можно объединить: разбор отчета или ревью кода, реализация исправлений, проверка результата и при необходимости очистка материалов перед передачей.
 
-Это порядок работы ассистента с единым форматом передачи результатов между этапами. Отдельного движка автоматизации или обязательного запуска всех скиллов нет. [prompt-integrity](/Product-security-playbook/ru/ai-automation/prompt-integrity/overview/) подключается к приложению отдельно и не управляет этим процессом.
+Это порядок работы ассистента с единым форматом передачи результатов между этапами. Отдельного движка автоматизации или обязательного запуска всех скиллов нет. [prompt-integrity](/ru/ai-automation/prompt-integrity/overview/) подключается к приложению отдельно и не управляет этим процессом.
 
 ## Выбор этапов
 
 | Задача этапа | Скилл | Передаваемый результат |
 | --- | --- | --- |
-| Разобрать готовый отчет сканера | [security-report-triage](/Product-security-playbook/ru/ai-automation/security-skills/security-report-triage/overview/) | Учтенные исходные сигналы, замечания, доказательства и приоритетный список действий. |
-| Оценить код PR или репозитория | [security-review](/Product-security-playbook/ru/ai-automation/security-skills/security-review/overview/) | Подтвержденные замечания, гипотезы и критерии исправления. |
-| Реализовать выбранные исправления | [secure-development](/Product-security-playbook/ru/ai-automation/security-skills/secure-development/overview/) | Предложенные или примененные изменения, новая ревизия и результаты проверок. |
-| Проверить конкретные исправления | [security-fix-verification](/Product-security-playbook/ru/ai-automation/security-skills/security-fix-verification/overview/) | Заключение по каждому замечанию с проверкой исходной атаки, способов обхода защиты и допустимых операций. |
-| Подготовить выбранные материалы к передаче | [sensitive-data-cleanup](/Product-security-playbook/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/) | Отдельная обработанная копия и отчет о заменах, пропусках и ограничениях. |
+| Разобрать готовый отчет сканера | [security-report-triage](/ru/ai-automation/security-skills/security-report-triage/overview/) | Учтенные исходные сигналы, замечания, доказательства и приоритетный список действий. |
+| Оценить код PR или репозитория | [security-review](/ru/ai-automation/security-skills/security-review/overview/) | Подтвержденные замечания, гипотезы и критерии исправления. |
+| Реализовать выбранные исправления | [secure-development](/ru/ai-automation/security-skills/secure-development/overview/) | Предложенные или примененные изменения, новая ревизия и результаты проверок. |
+| Проверить конкретные исправления | [security-fix-verification](/ru/ai-automation/security-skills/security-fix-verification/overview/) | Заключение по каждому замечанию с проверкой исходной атаки, способов обхода защиты и допустимых операций. |
+| Подготовить выбранные материалы к передаче | [sensitive-data-cleanup](/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/) | Отдельная обработанная копия и отчет о заменах, пропусках и ограничениях. |
 
 Разбор отчета и ревью кода - альтернативные точки входа. Можно сразу начать с исправления известного замечания или проверки готового исправления. Очистка материалов необязательна и не меняет доказательства в исходном отчете.
 
