@@ -10,7 +10,7 @@ This note explains two related but distinct risk areas in container security:
 
 ## 2. Why Containers Are Exposed
 
-Containers are not separate kernels or full security boundaries. They are Linux processes isolated by kernel primitives such as:
+Ordinary Linux containers running through `runc` or a similar runtime share the node kernel. Their isolation depends on that kernel and the runtime configuration:
 - namespaces
 - cgroups
 - Linux capabilities
@@ -19,6 +19,8 @@ Containers are not separate kernels or full security boundaries. They are Linux 
 An attack succeeds when one or more of these controls are misconfigured, bypassed, over-permissive, or broken by a kernel/runtime flaw.
 
 ---
+
+Runtimes with additional isolation, such as Kata Containers using lightweight virtual machines, have a different trust boundary. During review, confirm the actual selected `RuntimeClass` handler and its node configuration; the class name alone does not prove a separate kernel or the required protection. Assess the hypervisor, guest kernel, and node communication channels separately for that runtime.
 
 ## 3. What Counts as a Container Escape
 
@@ -35,7 +37,7 @@ A container escape is any attacker action that crosses isolation boundaries and 
 
 ### 4.1 Namespace transition into host context
 
-An attacker can join host namespaces directly or indirectly, typically through `setns`, `unshare`, `clone`, or tools like `nsenter`.
+With the required privileges and access to namespace file descriptors, an attacker can use `setns` or `nsenter` to enter accessible host namespaces. Each namespace type has its own restrictions: for example, `setns` cannot move a process from a child PID namespace into its parent. Calls to `unshare` and `clone` with `CLONE_NEW*` flags create new namespaces rather than join existing host namespaces.
 
 ### Typical preconditions
 - privileged container
@@ -59,7 +61,7 @@ Important: this vector is specific to cgroup v1. In cgroup v1, a hierarchy can h
 
 cgroup v2 is a different API with a unified hierarchy and a safer delegation model; it does not expose a direct equivalent of the v1 `release_agent` path for this pattern. That does not make cgroup v2 a complete security boundary or remove all runtime bug classes, but this specific `release_agent` escape should be treated as a v1-specific risk.
 
-For Kubernetes in live environments, prefer cgroup v2 on a supported OS: Kubernetes treats cgroup v2 as stable since `v1.25`, and cgroup v1 is deprecated since `v1.35`. A practical baseline is Linux kernel `5.8+`, containerd `1.4+` or CRI-O `1.20+`, the systemd cgroup driver, and a distribution that enables cgroup v2 by default. On a node, check the version with `stat -fc %T /sys/fs/cgroup/`: `cgroup2fs` means v2, while `tmpfs` usually indicates v1.
+For Kubernetes in live environments, prefer cgroup v2 on a supported OS: Kubernetes treats cgroup v2 as stable since `v1.25`, and cgroup v1 is deprecated since `v1.35`. For cgroup v2, use a supported Linux kernel `5.8+`, a supported cgroup v2-capable runtime compatible with your Kubernetes version, the systemd cgroup driver, and a distribution that enables cgroup v2 by default. On a node, check the version with `stat -fc %T /sys/fs/cgroup/`: `cgroup2fs` means v2, while `tmpfs` usually indicates v1.
 
 ### Attack pattern
 The attacker mounts cgroup v1, creates a child cgroup, writes to control files such as:
@@ -147,9 +149,9 @@ In practice, this can give an attacker:
 
 ---
 
-### 4.5 Vulnerable kernel subsystem exploitation
+### 4.5 Kernel and runtime vulnerability exploitation
 
-An attacker may exploit kernel bugs reachable from a container, for example through:
+An attacker may exploit kernel or runtime bugs reachable from a container. Depending on the specific vulnerability, entry points can include:
 - `splice`
 - `fsopen` / `fsconfig`
 - netfilter / netlink paths
@@ -182,17 +184,15 @@ Linux capabilities are not a single flat list. A process has several capability 
 Simplified model:
 
 ```text
-Bounding
-└── Permitted
-    └── Effective
-
-Ambient ⊆ Permitted ∩ Inheritable
+Effective is a subset of Permitted
+Ambient is a subset of both Permitted and Inheritable
+Bounding limits the File Permitted contribution during execve
 ```
 
 Key sets:
 - `Effective` - capabilities currently used for kernel permission checks.
 - `Permitted` - upper bound for what the thread may make effective.
-- `Bounding` - ceiling for capabilities that can be acquired through `execve`, file capabilities, or the setuid-root path.
+- `Bounding` - limits the file `Permitted` contribution during `execve` and addition of new capabilities to `Inheritable`. It is not necessarily a superset of the current `Permitted` set: dropping a capability from `Bounding` does not remove it from other sets. A capability already retained in `Inheritable` can contribute to privileges through the file `Inheritable` set.
 - `Inheritable` - material for passing capabilities across `execve`; it does not grant permissions by itself.
 - `Ambient` - a way to preserve capabilities after `execve` for unprivileged files; it is cleared when executing a privileged file, such as a setuid binary or a file with file capabilities.
 
@@ -211,7 +211,7 @@ kubectl exec -n <ns> <pod> -- sh -c "grep -E 'Cap(Inh|Prm|Eff|Bnd|Amb)|NoNewPriv
 ```
 
 Evidence should include:
-- `CapEff`, `CapPrm`, `CapBnd`, and `CapAmb` for the main process;
+- `CapInh`, `CapEff`, `CapPrm`, `CapBnd`, and `CapAmb` for the main process;
 - `NoNewPrivs: 1` when policy requires `allowPrivilegeEscalation: false`;
 - file capabilities inside the image for executables that actually need them;
 - why the capability cannot be replaced by an unprivileged port, init-time preparation, Kubernetes volume/CSI, sidecar/agent, or a separate isolated workload.
@@ -343,7 +343,9 @@ User namespaces do not remove every escape vector and do not turn containers int
 
 This is especially relevant for workloads that historically required root or selected capabilities. In Kubernetes `v1.36+`, User Namespaces are GA for Linux workloads, so `hostUsers: false` becomes a practical live-environment control for reducing blast radius, not an experimental setting.
 
-Operational applicability improved because of ID-mapped mounts: the kubelet no longer needs to recursively `chown` volume data only to change UID/GID visibility inside the container. Kernel remapping at mount time makes this control more realistic for stateful and volume-heavy workloads, but production rollout still needs node/runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all workload filesystems, containerd `2.0+` or CRI-O `1.25+`, and an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`. Raw block `volumeDevices` and NFS volumes are incompatible unless the platform has verified support on the exact kernel and storage path; monitor kubelet user-namespace success/error metrics during rollout, not only admission acceptance.
+Operational applicability improved because of ID-mapped mounts: the kubelet no longer needs to recursively `chown` volume data only to change UID/GID visibility inside the container. Kernel remapping at mount time makes this control more realistic for stateful and volume-heavy workloads, but production rollout still needs node/runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all workload filesystems, containerd `2.0+` or CRI-O `1.25+`, and an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`. With `hostUsers: false`, Kubernetes prohibits `hostNetwork: true`, `hostIPC: true`, `hostPID: true`, and `volumeDevices` across all Pod container types. These are API restrictions, which storage compatibility validation cannot override. NFS volumes are also unsupported because the Linux NFS client does not yet support the required ID-mapped mounts. During rollout, monitor the kubelet counters `started_user_namespaced_pods_total` and `started_user_namespaced_pods_errors_total`: the former counts creation attempts, the latter errors. Admission acceptance alone does not establish that the Pod started.
+
+The minimum versions above describe feature support, not a safe production version choice. Use vendor-supported kernel and runtime versions with current security fixes that are compatible with your Kubernetes version.
 
 Even with user namespaces, continue to deny `privileged: true`, minimize capabilities, enforce seccomp/LSM controls, and control host namespaces, hostPath, and runtime sockets. This layer reduces consequences; it does not replace the rest of the runtime controls.
 

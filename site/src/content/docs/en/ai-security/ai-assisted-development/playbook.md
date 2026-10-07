@@ -158,6 +158,8 @@ Review `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, MCP configuration, referenced scrip
 
 Keep the reviewed changes, permission configuration, and test results with the release evidence. A successful packaging check does not establish safe agent behavior.
 
+For CI review and fix agents, treat PR content as untrusted regardless of its author. Do not execute PR-branch code, installation scripts, or modified checks in a job with secrets, write permissions, or deployment rights. Run these checks in an isolated unprivileged job and grant publication or release rights to a separate job after verification of the specific commit. Approval and CI results must cover the same commit that will be merged or released; a subsequent agent write invalidates that evidence.
+
 ### 3.9 Release Evidence and Monitoring
 
 `Baseline`:
@@ -192,6 +194,7 @@ Negative tests:
 - the test suite fails after deliberate removal of a security check;
 - the agent cannot modify branch protection, a CI security job, or scanner suppression without separate approval;
 - a high-impact diff cannot merge with model self-review as the only evidence.
+- a malicious PR cannot obtain secrets through an installation script, test, or modified CI workflow; a new commit after approval requires renewed checks and approval.
 
 Operational signals:
 - percentage of AI-assisted changes that pass required human review and security gates;

@@ -32,11 +32,13 @@ A successful validation outcome is not "something looks suspicious", but a concr
 ### 2.2 Safety constraints
 
 For live environments and shared staging:
-- run destructive, DoS, or runtime escape checks only in an isolated namespace or clone environment;
+- run destructive, DoS, and runtime escape checks in a disposable isolated environment with dedicated nodes, control plane, and test credentials. A namespace in a shared cluster does not contain host escape or node-level resource exhaustion;
 - define scope in advance: namespaces, workloads, identities, IP ranges, time window;
 - do not read real secret values without separate approval; proving `get/list/watch` or token exposure is usually enough;
 - do not run mass scanning across pod CIDRs without rate/concurrency limits;
 - prove remediation with the same minimal test case, not a stronger technique.
+
+A failed connection, missing tool, unsupported field, or failed scan is inconclusive, not evidence of enforcement. Use a positive control from the same source identity and network context, then correlate the negative attempt with the responsible policy or sensor. Test pods must reproduce workload labels, ServiceAccount, node placement, and network mode; an arbitrary helper pod may exercise a different policy. Pin approved test images by digest and record cleanup.
 
 Evidence commands are classified as:
 - `safe in live`: read-only metadata or policy checks that do not reveal secret values;
@@ -169,15 +171,17 @@ curl -m 2 http://<target-service>.<target-ns>.svc.cluster.local
 **Recommended control:**
 - one ServiceAccount per workload, with permissions granted by function rather than namespace convenience;
 - `get/list/watch secrets`, `pods/exec`, `pods/ephemeralcontainers`, `escalate`, `bind`, `impersonate`, and `serviceaccounts/token` require separate approval;
-- quarterly recertification for live-environment ServiceAccount permissions.
+- quarterly recertification for live-environment ServiceAccount permissions. The `30d` review/inventory intervals and quarterly recertification in this document are initial local policy assumptions, adjusted to risk and change frequency.
 
 **Evidence:**
 ```bash
 kubectl auth can-i list secrets --as=system:serviceaccount:<ns>:<sa> -n <ns>
-kubectl auth can-i create pods/exec --as=system:serviceaccount:<ns>:<sa> -n <ns>
-kubectl auth can-i update pods/ephemeralcontainers --as=system:serviceaccount:<ns>:<sa> -n <ns>
+kubectl auth can-i create pods --subresource=exec --as=system:serviceaccount:<ns>:<sa> -n <ns>
+kubectl auth can-i update pods --subresource=ephemeralcontainers --as=system:serviceaccount:<ns>:<sa> -n <ns>
 kubectl get rolebindings,clusterrolebindings -A
 ```
+
+Impersonation checks require reviewer impersonation permission and the actual subject groups. `--as` alone does not reproduce ServiceAccount group grants; use the applicable authenticated and ServiceAccount groups via `--as-group`, or verify with the workload identity in an approved test. Check both `update` and `patch` on ephemeral containers and the transport-dependent `get`/`create` permissions for exec, attach, and port-forward.
 
 ### 3.7 Resource exhaustion
 
@@ -221,7 +225,7 @@ kubectl top pods -A
 ```bash
 curl -I https://<registry>/v2/
 curl https://<registry>/v2/_catalog
-cosign verify <image>@sha256:<digest>
+cosign verify --certificate-identity <approved-signer-identity> --certificate-oidc-issuer <approved-issuer> <image>@sha256:<digest>
 docker history --no-trunc <image>
 kubectl get jobs -A -o wide
 ```
@@ -240,8 +244,8 @@ kubectl get jobs -A -o wide
 
 **Evidence:**
 ```bash
-kubectl auth can-i create pods/exec --as=<subject> -n <ns>
-kubectl auth can-i update pods/ephemeralcontainers --as=<subject> -n <ns>
+kubectl auth can-i create pods --subresource=exec --as=<subject> -n <ns>
+kubectl auth can-i update pods --subresource=ephemeralcontainers --as=<subject> -n <ns>
 # Kubernetes Events are not reliable evidence for exec. Check audit logs/SIEM:
 # verb=create resource=pods subresource=exec|attach|portforward
 # verb=update resource=pods subresource=ephemeralcontainers
@@ -286,19 +290,21 @@ Classification: `safe in live` for Kubernetes API metadata inventory; `staging o
 
 ```bash
 # Do not print environment variable values. Check only names/classes through an approved debug path.
-kubectl exec -n <ns> <pod> -- sh -c 'env | cut -d= -f1 | grep -Ei "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL|AWS_|GOOGLE_|AZURE_"'
+kubectl exec -n <ns> <pod> -- python3 -c 'import json, os, re; print(json.dumps([k for k in os.environ if re.search("TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL|AWS_|GOOGLE_|AZURE_", k, re.I)]))'
 # Staging/approved only: shell-based runtime inspection touches the workload.
 kubectl exec -n <ns> <pod> -- mount
 kubectl exec -n <ns> <pod> -- cat /proc/self/cgroup
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{" image="}{.spec.containers[*].image}{"\n"}{end}'
 ```
 
+The environment-name example requires an approved Python interpreter in the test image. Do not install tools in a live pod just to run it. Avoid `env | cut`: multiline values can leak subsequent lines into output. Shell/history/image metadata and full Pod API objects can also contain inline secrets; handle their output as sensitive until reviewed.
+
 ### 3.12 Benchmark and posture review
 
 **What to verify:**
 - Docker/container runtime, kubelet, API server, RBAC, audit, and node hardening are checked with benchmark tooling, not only manual YAML review;
 - the kube-bench/CIS profile matches the actual Kubernetes version and provider flavor; managed-service constraints are recorded as exceptions or not applicable;
-- kubeaudit/Popeye or equivalent scanners find privileged pods, missing limits, weak security context, stale references, and hygiene debt;
+- maintained posture scanners compatible with the deployed Kubernetes version find privileged pods, missing limits, weak security context, stale references, and hygiene debt. kubeaudit was archived in October 2024 and must not be the sole source of current assurance;
 - benchmark findings are translated into a remediation backlog with owner, severity, and re-test evidence.
 
 **Recommended control:**
@@ -309,7 +315,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 **Evidence:**
 ```bash
 kubectl logs -n <audit-ns> job/<kube-bench-job>
-kubeaudit all
+# Use an approved, maintained posture scanner for the deployed version.
 popeye
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" privileged="}{.spec.containers[*].securityContext.privileged}{" limits="}{.spec.containers[*].resources.limits}{"\n"}{end}'
 ```

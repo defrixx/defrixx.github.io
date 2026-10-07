@@ -77,6 +77,7 @@ Release-ready defaults:
 - Rate-limit by account, source network, device/session signal, and client/application where available. A single IP-only limit is not enough.
 - Do not reveal whether username, email, phone, or reset token exists.
 - Use MFA or step-up for risky login, password reset completion, new device, payment change, admin action, and bulk export.
+- Apply the authentication-strength and recovery profile in section 6.7 of the [OIDC/OAuth playbook](/Product-security-playbook/en/application-security/identity/oidc-oauth/playbook/). Exercise factor replacement and helpdesk recovery as takeover paths; high-impact operations must not become available through a weaker fallback.
 - Notify users of password change, MFA change, new recovery method, and suspicious successful login.
 - Log failed and successful authentication events with correlation IDs and risk context.
 
@@ -97,7 +98,7 @@ Release-ready defaults:
 Verification:
 - Automated creation of accounts cannot multiply credits, coupons, or trial capacity beyond the configured budget.
 - Self-referral and circular referral graphs are detected or blocked.
-- Coupon stacking and refund-after-reward scenarios fail safely.
+- Incompatible promotions and repeated redemption of a single-use coupon are rejected; allowed combinations are calculated according to product rules. A legitimate refund after reward issuance applies the required reward reversal or adjustment, without duplicate refunds or retaining an unearned bonus. Test concurrent requests and event redelivery.
 
 ### 4.3 Tenant Isolation and Object/Workflow Authorization
 
@@ -106,24 +107,33 @@ Release-ready defaults:
 - Tenant context is derived from authenticated membership and policy, not from user-controlled request fields alone.
 - Cross-tenant admin/support actions require explicit support context, reason, ticket, JIT/JEA access where applicable, and immutable audit.
 - Bulk operations and exports re-check authorization per object or use a verified tenant-scoped query path.
+- Where an operation requires separate confirmation or approval, bind it server-side to the actor, tenant, object, significant parameters, and expiry. Show the approver the amount, recipient, or export scope where applicable. Changing these parameters invalidates the previous approval; check validity and single use immediately before execution. Where independent approval is required, the initiator must not approve their own operation through another role or interface.
 
 Verification:
 - User from tenant A cannot read, update, export, invite into, approve, or infer objects from tenant B.
 - Support/admin impersonation cannot silently bypass tenant audit.
 - Batch, GraphQL, async job, and export paths enforce the same policy as single-object APIs.
+- Parameter changes after approval, another actor's or expired confirmation, repeated execution, and self-approval by the initiator are rejected, including through job queues and support interfaces.
 
 ### 4.4 State Machines, Idempotency, and Replay
 
 Release-ready defaults:
 - Critical workflows use explicit state machines with allowed transitions.
+- Calculate prices, discounts, totals, and available balances server-side from trusted data and current product rules. Clients submit a selected product, quantity, or promotion code, but do not determine the final price, discount eligibility, or payment state. Before charging, validate allowed ranges, currency, rounding rules, and promotion compatibility with the order; a stored quote must have an approved validity period and be bound to the order.
 - State-changing requests use idempotency keys where retries or duplicate events are expected.
-- Webhook, payment, refund, booking, and fulfillment flows reject stale, duplicate, out-of-order, and already-consumed events.
+- Scope each idempotency key to the tenant, actor, and operation, and bind it to validated request parameters. Reusing the key with a different amount, currency, recipient, or object must cause a conflict rather than a new action. The key does not replace authorization: check the current actor's entitlement before returning a stored result. Record retention must cover the approved retry period; after record deletion, enforce the business invariant wherever repeating the action remains prohibited.
+- In webhook, payment, refund, booking, and fulfillment flows, duplicate and already-consumed events do not repeat business effects. Reject events with invalid signatures or violations of delivery freshness rules. Delayed and out-of-order delivery can be normal provider behavior: reconcile current state through a trusted API or use an object version defined by the contract, defer processing when prerequisites are missing, and prevent forbidden state transitions. An event timestamp alone does not prove ordering or uniqueness.
 - Business state changes and external side effects are transactionally coupled or compensated through a tested recovery process.
+- A timeout during an external operation is not evidence that it failed. Persist the business operation ID and provider key before sending; retry with the same key and parameters only within the API guarantees. Do not move an indeterminate payment to a new key or another provider without reconciling its outcome. For errors that may have produced side effects, retain an indeterminate state until a trusted API, verified event, or designated investigation confirms the outcome; compensation also requires establishing the original operation outcome.
 
 Verification:
 - Direct calls to later workflow states are denied.
+- Tampered prices, discounts, currencies, balances, or payment states, negative values, overflow, and expired or unrelated quotes do not change the price or entitlement to order fulfillment. Test these conditions through direct API calls, including manual support operations.
 - Duplicate payment/webhook/booking messages do not duplicate external effects.
-- Replay after the configured time window fails and creates an investigation signal.
+- Concurrent requests with the same key perform the action only once. Changed parameters with the same key are rejected, and retries from another tenant or actor context do not disclose the stored result.
+- Events delivered in reverse order, with identical timestamps, or after a state change do not undo a completed operation or lose a valid payment or refund. If the reconciliation API is temporarily unavailable, retain the event for retry.
+- Delivery with an expired signed timestamp is rejected according to the provider rules. A legitimate redelivery of an old event with a fresh valid signature is handled using operation state and duplicate protection, rather than rejected solely because of the business event age.
+- Simulate a lost response after a successful charge and a worker restart before result persistence: retries, manual processing, and the fallback payment route must not create a second charge. Separately test a provider error with an indeterminate outcome and expiration of its key retention period.
 
 #### Concurrent Operations and Privileged Recovery
 
@@ -138,15 +148,17 @@ Release-ready defaults:
 - Dashboards track flow conversion, rejection, velocity, duplicate attempts, reward issuance/reversal, account creation bursts, login failure clusters, and export volume.
 - Abuse response has playbooks for throttling, temporary friction, account/tenant suspension, reward reversal, token/session revocation, and customer support communication.
 - High-risk flows have an emergency control that can disable, throttle, or add friction to the risky action without redeploying application code.
+- Define stopping new operations separately from handling already accepted obligations. Retain verified events and unfinished payment, refund, and reservation state for reconciliation and recovery. Worker restarts and manual recovery must use the same duplicate protection as normal delivery; emergency disablement must not erase accounting for accepted operations.
 
 Verification:
 - A tabletop or simulation proves that the team can identify affected accounts/tenants, stop the flow, reverse unsafe credits where possible, and preserve evidence.
+- Test disablement during an operation and recovery with an event backlog: new prohibited actions do not run, accepted obligations remain accounted for, and manual processing alongside automatic retries does not cause duplicate charges or refunds.
 
 ### 4.6 Abuse budgets and configuration governance
 
 Release-ready defaults:
 - Every sensitive flow has a versioned abuse budget: actor keys, counters, time windows, thresholds, friction path, owner, and expiry/review cadence.
-- Starting budgets are explicit even when the final values are product-specific: signup/trial by account, tenant, payment instrument, device/browser signal, source network, and `24h`/`7d` windows; reset and OTP by account plus delivery destination; booking/inventory by actor plus scarce resource; export by actor, tenant, object count, byte volume, and time window.
+- Starting budgets are explicit even when the final values are product-specific: signup/trial by account, tenant, payment instrument, device/browser signal, source network, and time window; reset and OTP by account plus delivery destination; booking/inventory by actor plus scarce resource; export by actor, tenant, object count, byte volume, and time window. Daily and weekly windows may suit trial-quota accumulation, but are not universal values. Justify windows using the business operation duration and acceptable loss; separately test short bursts and sustained accumulation of abuse.
 - Limit configuration changes are treated as production policy changes. High-risk limit increases require owner approval, reason, rollout time, rollback path, and monitoring confirmation.
 - Fail-open behavior is documented. If the limiter, risk engine, queue, or ledger is degraded, critical flows either fail closed or fall back to a bounded safe mode with an explicit maximum window.
 

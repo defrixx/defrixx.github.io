@@ -31,7 +31,7 @@ sequenceDiagram
     U->>I: Authorization request
     I->>U: Login + consent
     I->>B: Redirect callback with code + state
-    B->>B: Validate state + nonce binding
+    B->>B: Validate state and expected issuer transaction binding
     B->>I: POST /token (code + code_verifier)
     I-->>B: id_token + access_token + refresh_token
     B->>B: Validate id_token (iss, aud, exp, nonce, sig)
@@ -64,14 +64,16 @@ sequenceDiagram
 ### 2.3 Purpose of each token
 
 - `id_token`: user authentication result for client session context
-- `access_token`: bearer presented to resource server for authorization
+- `access_token`: token presented to the resource server for authorization; it may be bearer or sender-constrained
 - `refresh_token`: gets new access tokens without full re-login
 - `offline token`: gets new tokens without active browser session
 - `userinfo` response: optional source of additional profile claims, not a replacement for `id_token` validation
 
 Identity rule:
-- Use `sub` as primary stable user identifier in application
+- Bind an external identity to the validated `(iss, sub)` pair and map it to an internal application user ID. `sub` is unique only within its issuer; using it alone is acceptable only while the application enforces one immutable issuer.
+- Preserve issuer boundaries across realms, tenants, and IdP migrations. Pairwise `sub` values can differ between clients; linking identities requires an explicit, authenticated account-linking procedure.
 - Do not use `email` as primary identity key
+- Negative test: two trusted issuers with the same `sub` remain separate identities; matching email addresses do not silently link accounts or grant tenant membership.
 
 ### 2.4 Critical security rules
 
@@ -105,6 +107,10 @@ What PKCE is and why it is needed:
 - SPA talks to BFF through protected cookie-based session
 - BFF calls APIs on behalf of user
 
+Keep both access and refresh tokens on the BFF; exposing an access token to JavaScript creates a different client architecture. Restrict proxy destinations to explicitly approved hosts and paths, with allowed methods per route. Client input must not select an arbitrary upstream URL or cause credentials to be forwarded to an unintended destination. Test altered routes and redirects with synthetic tokens.
+
+BFF and HttpOnly cookies reduce token theft but do not stop malicious same-origin JavaScript from making requests through the user's session. Preserve server-side authorization, CSRF defenses, XSS prevention, and additional confirmation for sensitive operations. Apply quotas to the authenticated user or tenant where appropriate; the BFF's shared outbound IP is not an individual user identity.
+
 ### 3.3 Mobile
 
 - Public client
@@ -132,7 +138,7 @@ Reading rule for controls below:
 | Flow and base client model | Authorization Code + PKCE (`S256`), SPA+BFF/server-side web app, mobile public + system browser, service confidential + client_credentials | In addition to R: mandatory strict client policies at IdP level | Reduces code interception risk, token misuse, and misconfiguration drift |
 | Sender-constrained tokens | Bearer tokens are acceptable only after an explicit risk decision; public, partner, and high-value APIs must evaluate DPoP or mTLS and document any exception | In addition to R: require DPoP and/or mTLS; public clients must use sender-constrained refresh tokens or refresh token rotation with reuse detection | Reduces impact of bearer token theft and replay |
 | PAR/JAR | Not mandatory by default | In addition to R: PAR (RFC 9126) + JAR (RFC 9101) for critical clients | Protects authorization parameters from tampering/mix-up, reduces front-channel risks |
-| MFA/step-up | Risk-based according to business policy | In addition to R: mandatory MFA/step-up for critical operations | Protects against account takeover and unauthorized privilege escalation |
+| MFA/step-up | Offer phishing-resistant authentication; require it for privileged accounts and high-impact actions; verify authentication context per section 6.7 | In addition to R: hardware-backed, non-exportable authenticators where required by the assurance profile; reviewed recovery and emergency access | Protects against phishing, account takeover, and recovery bypass |
 | Token TTL/rotation | Short TTLs, refresh token rotation, explicit numeric limits from section 5 | In addition to R: stricter TTLs and degraded windows for high-risk environments | Reduces exploitation window for compromised tokens |
 | Token validation | `iss/aud/exp/nbf/iat/signature`, `alg` allowlist, `nonce`, `azp`, policy checks | In addition to R: mandatory holder-of-key validation for sender-constrained tokens | Protects against forged/misissued tokens, mix-up, and key confusion |
 | Session/Cookies | HttpOnly/Secure/SameSite, narrow Domain/Path, session ID rotation, CSRF controls | In addition to R: no cross-origin on session-bound endpoints without approved exception | Protects against XSS cookie theft, CSRF, fixation, cookie scope abuse |
@@ -154,7 +160,7 @@ These numbers are a local recommended baseline for live environments, not direct
 - ID token TTL: `<=5m`
 - Browser/BFF refresh token absolute max lifetime: `<=24h`
 - Mobile refresh token absolute max lifetime: `<=30d` only with secure enclave/keystore storage and device trust controls
-- Refresh token reuse grace window (retry races): `<=30s`
+- Refresh token reuse grace window (retry races): `<=30s`, only where the IdP explicitly supports a bounded window with the required replay detection. This is not a universal Keycloak setting. Serialize refreshes for one session across BFF instances and atomically persist the new token; test concurrent requests and use of an already replaced token
 - User session idle timeout (browser): `15m`
 - User session max age (browser): `8h`
 - Fresh auth (`max_age`) for high-risk operations: `<=15m`
@@ -203,13 +209,13 @@ Maximum profile hardening:
 - Never use `id_token` as API bearer
 - Use short TTL/rotation and explicit audience (see section 5)
 - Keep `Revoke Refresh Token` enabled (rotation)
-- Introspection is mandatory for high-risk operations, suspicious tokens, and post-incident windows
+- High-risk operations and post-incident restrictions must meet the revocation-latency objective in section 6.4. Require an online or event-driven status check when offline JWT validation cannot meet it; introspection is one supported mechanism. Reject invalid or suspicious tokens pending verification rather than treating introspection as a way to repair failed validation.
 - Bearer access tokens are acceptable only after a documented risk decision. For public, partner, high-value, or high-replay-impact APIs, evaluate sender-constrained tokens (`DPoP` and/or `mTLS`). If bearer-only is approved, document client support constraints, XSS/client-compromise caveats, compensating controls, and token TTL.
 
 Maximum profile hardening:
 - Require sender-constrained tokens (DPoP and/or mTLS)
 - For public clients: require sender-constrained refresh tokens or refresh token rotation with reuse detection; prefer sender-constrained access tokens for high-replay-impact APIs.
-- Verify holder-of-key validation support in adapters/runtime for DPoP/mTLS
+- Verify holder-of-key validation support in adapters/runtime for DPoP/mTLS. For DPoP, the resource server validates proof signature, `typ`, an allowed asymmetric `alg`, token key binding, `htm`, `htu` without query/fragment, `ath`, freshness, and replay protection; validate a server-issued `nonce` as well. Reject another key, an altered method or URL, missing proof, and proof reuse. Do not accept a DPoP token as ordinary Bearer
 
 ### 6.3 Session and Cookies
 
@@ -237,6 +243,7 @@ Maximum profile hardening:
 - Treat sign-out alone as insufficient for already issued access tokens until `exp` (see section 5)
 - Define and enforce a maximum revocation latency for sensitive APIs. Use introspection/opaque tokens, event-driven invalidation, or access-token lifetimes short enough to meet that objective. Sender-constrained tokens reduce replay but do not themselves revoke a token. Introspection is one architecture choice, not a universal OAuth requirement.
 - Record access-token TTL, refresh-token behavior, compromise response, validation/cache behavior, and local versus IdP logout semantics. Invalidation must reach every serving instance; measure stale-cache behavior during outages.
+- Set a numeric revocation-latency objective for each endpoint class before release. Measure from the accepted logout/revocation/incident decision to rejection on all API instances; include event propagation, positive-cache lifetime, clock tolerance, and in-flight work. A previous cached `active` result must not authorize a sensitive operation past that objective. If no objective or evidence exists, block high-risk launch.
 - Reject tokens that are inactive, issued before `Not Before`, or violate binding context
 
 Maximum profile hardening:
@@ -245,7 +252,7 @@ Maximum profile hardening:
 ### 6.5 Key Management
 
 - Validate JWT signatures only against trusted JWKS (`/protocol/openid-connect/certs`) from expected issuer
-- `kid` must resolve to active JWKS key; untrusted/user-controlled JWKS URLs are forbidden
+- `kid` must resolve to an approved verification key in the trusted JWKS. A passive Keycloak key can verify previously issued tokens during rotation overlap; disabled or compromised keys must not be accepted. Untrusted/user-controlled JWKS URLs are forbidden
 - Planned realm signing key rotation is mandatory
 - Rotation model: introduce new key in advance (active/passive), retire old key only after compatibility window
 - Emergency compromise response: immediate new key issuance and session/token invalidation
@@ -270,6 +277,30 @@ Maximum profile hardening:
 
 Maximum profile hardening:
 - Strengthen anti-automation controls and alerts (lower thresholds, faster response SLA)
+
+### 6.7 Authentication Strength, Passkeys, and Recovery
+
+Production profile:
+- Offer WebAuthn/FIDO2 passkeys for user accounts. Require phishing-resistant authentication for privileged accounts and high-impact operations; OTP, SMS, and ordinary push approval are not equivalent protection. Record any migration exception with owner, expiry, restricted operations, and compensating controls.
+- For passkeys used as MFA, require user verification and validate the `UV` flag server-side. A user-presence gesture alone does not establish a second factor. Synced passkeys may serve an AAL2-oriented profile; an AAL3 profile requires non-exportable keys and the other applicable assurance requirements. Do not claim an AAL merely from a product label.
+- Use a maintained WebAuthn verifier. Validate ceremony type, single-use challenge, exact allowed origin, RP ID hash, signature, credential ownership, and required presence/verification flags. Define challenge expiry server-side. Test the exact browser, authenticator, IdP, and proxy configuration before enabling new WebAuthn features.
+- Record whether credentials are synced or device-bound. Treat backup flags and signature-counter changes as risk signals; a zero or non-increasing counter alone is not proof of cloning for synced credentials. Require attestation only when device provenance is part of the threat model, with an approved trust store and privacy assessment.
+- For federated step-up, bind the request to the original session and verify the returned `auth_time`, approved `acr`, and provider-specific `amr` semantics. Sending `max_age` or requesting an assurance level alone does not prove it was achieved; enforce the section 5 freshness limit and deny the operation when evidence is insufficient.
+
+Where passwords remain:
+- Require at least `15` characters for password-only authentication; a minimum of `8` is acceptable only when every password login requires MFA. Allow at least `64` characters, password managers, and paste; do not silently truncate.
+- Block common and compromised passwords. Do not impose arbitrary character-composition rules or periodic password changes; force a change on evidence of compromise. Apply account-aware throttling and the password-hashing baseline in the secure coding playbook.
+
+Enrollment and recovery:
+- Adding, replacing, or removing an authenticator, changing a recovery channel, and linking an external identity require recent authentication at the applicable strength. An existing session cookie or knowledge of account details alone is insufficient.
+- Provide a separately registered backup authenticator or protected recovery codes. Store recovery-code verifiers, enforce single use and throttling, and notify the user through an existing trusted channel on factor and recovery changes.
+- Password reset links are short-lived, single-use, and bound to the account and purpose. Do not automatically sign in after reset or let password reset silently remove MFA. For suspected takeover, revoke affected sessions and refresh tokens through section 6.4.
+- Recovery of privileged access needs independent approval and recorded identity verification; email/SMS fallback must not restore unrestricted privileged access by itself. Emergency access is a separate, monitored, time-bounded procedure with post-use review.
+
+Verification:
+- Reject replayed challenges, wrong origin/RP ID, another user's credential, and missing required `UV`; test legitimate synced credentials separately from suspected cloning.
+- Reject stale or weaker step-up results, factor replacement from a stolen session, recovery-code reuse, account enumeration, and helpdesk attempts to bypass the privileged recovery procedure.
+- Keep the authenticator policy, enrollment/recovery audit events, redacted authentication-context samples, and negative-test results with release evidence. Review fallback use and authenticator removal as security signals.
 
 ---
 
@@ -322,7 +353,7 @@ Maximum profile hardening:
 
 ### Step 4. Enable secure capabilities
 
-- Standard Flow: ON
+- Standard Flow: ON for user-login clients; OFF for a separate `client_credentials`-only client. Enable Client authentication and Service accounts roles for that service client, leaving other unnecessary flows disabled
 - Implicit: OFF
 - Direct Access Grants: OFF. In Keycloak this corresponds to the password grant and must remain disabled for live clients; legacy use requires a migration plan, not a standing exception.
 - PKCE method: `S256`
@@ -365,7 +396,8 @@ Maximum profile hardening:
 
 ### Selected ASVS verification references
 
-v5.0.0-9.2.1, v5.0.0-10.3.1.
+- `v5.0.0-9.2.1`: validate the validity period specified in a token, including JWT `nbf` and `exp`; a valid signature does not replace this check.
+- `v5.0.0-10.3.1`: the resource server accepts only access tokens intended for it; validate the audience using token data or the introspection response.
 
 Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 

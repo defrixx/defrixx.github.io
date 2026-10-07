@@ -84,6 +84,7 @@ Release-ready defaults:
 - Authorization is enforced in service/domain logic for every object and state transition, not only in routing, UI, or gateway rules.
 - Resource ownership, tenant membership, role, scope, and policy context are evaluated together. A valid token or session is not sufficient authorization.
 - Privileged actions require step-up or explicit approval where impact is high: admin changes, payout/payment changes, bulk export, destructive action, support impersonation, and permission grant.
+- For user authentication, passkey verification, factor changes, and recovery, apply section 6.7 of the [OIDC/OAuth playbook](../../identity/oidc-oauth/playbook.en.md). Review server-side authentication-context checks and every fallback path; a UI prompt alone does not enforce authentication strength.
 
 Verification:
 - Tests cover horizontal access, vertical access, cross-tenant access, stale session, logout/revocation behavior, and direct calls to hidden routes.
@@ -115,6 +116,8 @@ Release-ready defaults:
 - Server-side URL fetches use allowlisted schemes and destinations, DNS resolution checks, IP range blocking, redirect limits, timeout limits, response size limits, and metadata-network blocking.
 - SSRF defenses validate the resolved target before connect and after redirects; block localhost, loopback, link-local, cloud metadata, private, multicast, and otherwise non-routable ranges unless the destination is an explicitly approved internal integration.
 - For DNS names, account for rebinding: resolve through trusted resolvers, enforce allowlists on the final resolved IPs, avoid using stale validation after connection target changes, and prefer an egress proxy or network policy for high-risk fetchers.
+- SSRF defenses validate the initial scheme, host, port, and every resolved A/AAAA address before each connection. Redirects are disabled by default; approved redirects repeat validation before connecting and do not forward credentials to another origin. Internal management endpoints also require explicit approval even on public IPs.
+- Bind the actual connection to a validated IP without an unchecked second DNS lookup, or enforce the equivalent guarantee through an egress proxy. Network restrictions provide an additional boundary.
 - Do not let fetched content drive a second-stage request, parser, archive extraction, or template rendering without repeating validation for that new sink. Webhook and import handlers should preserve raw bodies when signature verification depends on the exact bytes; parsing, decompression, charset conversion, or middleware mutation must happen only after signature verification.
 
 Verification:
@@ -139,7 +142,8 @@ Verification:
 Release-ready defaults:
 - Use vetted platform libraries and standard protocols. Do not implement custom encryption, signature, password hashing, random generation, or token formats without explicit cryptographic review.
 - Passwords use a current password hashing scheme with a per-password unique salt and stored algorithm/cost metadata. Default for new systems: Argon2id with at least `19 MiB` memory, `2` iterations, and parallelism `1`; raise memory/time cost when login latency and capacity allow it.
-- Use bcrypt only for compatibility or where Argon2id/scrypt is unavailable; configure cost `>=10`, benchmark toward the highest tolerable cost, and handle bcrypt's `72` byte input limit explicitly through library support or reviewed pre-hashing.
+- Use bcrypt only for legacy compatibility with a migration plan; configure cost `>=10`, benchmark toward the highest tolerable cost, and handle bcrypt's `72` byte input limit explicitly through library support or reviewed pre-hashing.
+- When Argon2id is unavailable, use scrypt with `N=2^17`, `r=8`, and `p=1`, or an approved equivalent cost profile. FIPS compliance requires a validated PBKDF2 implementation.
 - Use PBKDF2 only when platform or FIPS constraints require it; use PBKDF2-HMAC-SHA-256 with at least `600,000` iterations unless a newer approved local standard requires more.
 - Password verification must enforce an input length ceiling large enough for passphrases but bounded against hash-time DoS. Do not silently truncate passwords.
 - Rehash on successful login when the stored algorithm or cost is below the current baseline. Legacy hash migration must keep old verifiers isolated, observable, and time-boxed.
@@ -151,6 +155,24 @@ Verification:
 - Review confirms secure random generation, authenticated encryption where encryption is used for integrity-sensitive data, key separation, rotation path, no secret material in code or tests, and password hash parameters that match the approved baseline.
 - Tests cover password verification for long inputs, Unicode normalization policy, legacy hash upgrade, no truncation, wrong-password timing behavior, and rate limiting around expensive hash operations.
 - Secrets scanning covers repository history, CI variables where accessible, build logs, container layers, and deployment manifests.
+
+---
+
+### 3.8 Automated Analysis and Fix Verification
+
+Required execution:
+- Run applicable SAST, dependency analysis (SCA), and secret scanning on the exact reviewed revision. Record tool versions, rules, dependency database timestamp, scan scope, exclusions, and completion status; unsupported languages or unavailable analyzers require an explicit coverage decision.
+- SCA covers resolved direct and transitive dependencies, build tooling, and the shipped artifact where applicable. Distinguish a manifest declaration from the installed version and a package-name match from a verified vulnerability; evaluate affected versions, execution context, and exploit preconditions.
+- A skipped, failed, timed-out, or partial scan is missing evidence, not a clean result. Required checks block release until completed or covered by a time-limited, authorized exception. Do not give untrusted change code access to privileged scanning credentials.
+
+Result handling:
+- Review findings against the actual data flow and deployed configuration. Record verified false positives with rationale and affected revision; suppressions have an owner, bounded scope, expiry or review trigger, and are reassessed when code, rules, or dependencies change.
+- Apply the decision matrix and vulnerability-management process to confirmed findings; scanner severity alone does not establish business impact. Revoke exposed credentials through the issuer before removing copies, and investigate where they were used.
+- After a fix, rerun the relevant analyzer on the fixed revision and perform a targeted regression test of the original exploit path, including applicable authorization and failure paths. A disappearance caused by an exclusion or disabled rule does not prove remediation.
+
+Closure evidence:
+- Preserve the finding, affected and fixed revisions, completed scan results, regression outcome, release/artifact association, reviewer decision, and any residual-risk exception. Additional commits or changed dependencies invalidate evidence for affected scope and require renewed checks.
+- Clean automated results support review but do not replace manual analysis of business logic, trust boundaries, or unsupported code paths.
 
 ---
 
@@ -198,7 +220,13 @@ Required review output:
 
 ### Selected ASVS verification references
 
-v5.0.0-1.2.1, v5.0.0-1.2.4, v5.0.0-7.2.1, v5.0.0-5.2.1, v5.0.0-5.3.1, v5.0.0-11.4.1, v5.0.0-16.2.1.
+- `v5.0.0-1.2.1`: output encoding appropriate to the specific HTTP, HTML, or XML context.
+- `v5.0.0-1.2.4`: database query injection prevention, including stored procedures; using an ORM alone does not establish that an arbitrary query is safe.
+- `v5.0.0-7.2.1`: session token verification in a trusted backend service.
+- `v5.0.0-5.2.1`: accepted file size permits processing without denial of service.
+- `v5.0.0-5.3.1`: files from untrusted input in a public directory are not executed as server-side code when requested directly over HTTP.
+- `v5.0.0-11.4.1`: approved hash functions for cryptographic operations; MD5 is not used for cryptographic protection.
+- `v5.0.0-16.2.1`: log metadata supports reconstructing when and where an event occurred, who acted, and what happened.
 
 Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 

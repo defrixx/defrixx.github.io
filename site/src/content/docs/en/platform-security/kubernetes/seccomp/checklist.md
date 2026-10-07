@@ -42,6 +42,8 @@ Before reviewing a profile, confirm:
 
 The real security effect depends on runtime behavior, architecture coverage, and capabilities, not only static JSON/YAML.
 
+For ordinary Linux application containers, explicitly set `seccompProfile.type: RuntimeDefault` or an approved `Localhost` profile. If relying on an omitted field, verify `seccompDefault` on every eligible node. Runtime defaults vary by runtime and version. Privileged containers run unconfined even when a profile is declared and require a separate privileged-workload review.
+
 ---
 
 ## 3. Design Principles
@@ -94,6 +96,8 @@ Confirm where the profile is applied:
 - Pod security context;
 - Container security context.
 
+When both levels specify a profile, the container setting overrides the Pod setting; a container without its own profile inherits the Pod profile. Review the final object after admission mutations for `containers`, `initContainers`, and `ephemeralContainers`, including sidecars and temporary debug containers. Pod-level `RuntimeDefault` does not prove that an individual container has not overridden it with `Unconfined`.
+
 ### 5.2 Prefer container-specific profiles when behavior differs
 
 Pod-wide profiles are often over-broad when a Pod includes init/sidecar containers or mixed responsibilities.
@@ -136,6 +140,8 @@ Carefully justify:
 Do not treat ordinary `clone`/`clone3` use for process or thread creation as a finding by itself. Most real workloads need process/thread creation. The review concern is namespace creation or namespace transition: `clone`/`clone3` with `CLONE_NEW*` flags, `setns`, `unshare`, or combinations with powerful capabilities such as `CAP_SYS_ADMIN`. If the seccomp profile or review tooling cannot express or show argument filters, record that uncertainty and require manual review of the effective runtime profile instead of automatically classifying the workload as high-risk.
 
 ### 6.3 Canonical syscall policy
+
+Classic seccomp BPF cannot dereference pointers. `clone3` receives flags inside a pointed-to structure, so ordinary argument filters cannot enforce a `CLONE_NEW*` mask there as they can for the scalar flags of `clone`. Document the residual surface or test a runtime policy that denies `clone3` with an error allowing application fallback to `clone`; verify the actual libc and workload behavior.
 
 This table is the canonical policy for high-risk syscall review. The explanatory table below and the reviewer decision matrix in section 9 must stay aligned with it.
 
@@ -197,7 +203,7 @@ Check whether `bpf` was included accidentally via tracing/runtime/CNI/capability
 
 ### 6.7 Mandatory bypass combo checks
 
-Check combinations:
+Check combinations against operations supported by the actual kernel and drivers. `io_uring` does not provide a universal equivalent of every syscall: for example, `IORING_OP_URING_CMD` sends commands to supporting drivers rather than accepting arbitrary `ioctl` requests. For each restriction, verify whether an equivalent io_uring operation is available and record a harmless negative test result:
 - `io_uring_setup` + `io_uring_enter` while network syscalls are blocked;
 - `io_uring_setup` + `io_uring_enter` while file/filesystem-path syscalls are blocked;
 - `io_uring_setup` + `io_uring_enter` while `splice`/`tee`/`vmsplice` are blocked;
@@ -249,7 +255,7 @@ Minimum controls:
 
 ### 8.4 Drift and effective-profile verification on nodes
 
-Do not rely only on Git YAML. Store approved profile hash and compare it with runtime effective profile via runtime inspection (`crictl inspect` / runtime API) at least every `24h` and after kernel/runtime/capability changes.
+Record the approved custom-profile hash, runtime version, capabilities, and selected profile. Verify `Localhost` files on every eligible node and inspect container runtime configuration. `crictl inspect` is runtime-specific and does not necessarily expose the kernel-loaded filter hash. Check application process filter mode and run a harmless negative syscall test against the expected policy; filter mode alone does not prove policy contents. Use `24h` as an initial local drift-check interval, and recheck after kernel/runtime/capability/profile changes. Updating a profile file does not replace a running container's filter; replace affected containers and verify the new policy.
 
 ---
 

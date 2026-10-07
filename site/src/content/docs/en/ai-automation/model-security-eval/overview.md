@@ -1,10 +1,10 @@
 ---
 title: "Local model security checks: model-security-eval"
-description: "`model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.2.0 requires Python..."
+description: "`model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.4.0 requires Python..."
 sidebar:
   order: 90
 ---
-`model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.2.0 requires Python 3.11+ and uses only the standard library at runtime. It works independently of the skills.
+`model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.4.0 requires Python 3.11+ and uses only the standard library for its core runtime. It works independently of the skills; guarded comparisons additionally require `prompt-guard` 0.3.x.
 
 [Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval) | [Skills and tools](/Product-security-playbook/en/ai-automation/security-skills/overview/)
 
@@ -57,6 +57,8 @@ Before and after execution, the runner reads model metadata and binds inference 
 Add `--baseline artifacts/previous-run/report.json` to compare trial statuses. Comparable criteria require the same scenario suite, evaluator source bytes, capabilities, adapter, generation settings, repetitions, and budgets. Incompatible criteria block admission; model, revision, server, and endpoint changes are recorded separately. An improved result does not override a current failure.
 
 ## CI verdict and reports
+
+With `--compare-guard`, compare unguarded and guarded application behavior using `--guard-profile`, `--output-guard-profile`, or both. Each arm has its own equal request/time budget, so reserve resources for both. This mode cannot be combined with historical `--baseline` comparison. A blocked attack can pass the application control without proving model resistance; a blocked allowed task fails. Keep generated model violations separate from violations exposed by the guarded application, and treat review, errors, or incomplete execution as inconclusive.
 
 | Exit code | Verdict | Release action |
 | --- | --- | --- |

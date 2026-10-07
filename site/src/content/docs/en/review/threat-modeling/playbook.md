@@ -64,7 +64,9 @@ Example risk register row:
 
 | ID | Scenario | Asset | Existing controls | Residual risk | Decision | Verification |
 |---|---|---|---|---|---|---|
-| TM-001 | Attacker replays stolen refresh token against BFF token endpoint | User session, API access | HttpOnly cookie, refresh rotation | Medium | Add reuse detection + revoke token family | Integration test + audit event check |
+| TM-001 | Attacker replays a refresh token stolen from the BFF against the authorization server's token endpoint | User session, API access | Server-side token storage, refresh rotation; replay handling not yet verified | Unconfirmed; target Medium after verification | Verify reuse detection and revocation of the affected token family | Integration test + audit event check |
+
+Do not assign the target residual rating before the mitigation is implemented and verified. In a BFF design, the browser cookie carries a session identifier, not the OAuth refresh token. HttpOnly does not prevent replay of a token stolen from backend storage. Test reuse of an invalidated token and use of its successor after detection; assess already-issued access tokens separately because refresh-token revocation does not necessarily invalidate them.
 
 ---
 
@@ -85,7 +87,7 @@ Lite path is allowed only if all are true:
 Minimum lite process:
 1. Update DFD or textual data flow.
 2. Run STRIDE-LM over changed components/flows.
-3. Add at least one abuse case per new entry point.
+3. Describe abuse cases for each changed or new entry point and affected business operation. A new entry point needs at least one case; for an existing one, check that previous cases and controls remain applicable after the change.
 4. Verify controls using the relevant playbook, standard, or vendor guidance.
 5. Record residual risk and verification.
 
@@ -141,12 +143,12 @@ Recommended path steps:
 6. Risk analysis.
 - Calculate inherent and residual risk. For CVEs, add CVSS v4.0, EPSS, KEV, and SSVC decision.
 - Artifact: risk register.
-- Example: inherent `High`, residual `Medium` after timestamp window `<=5m`, idempotency, and state guard; release allowed only with detection and rollback runbook.
+- Example: inherent `High`; target residual `Medium` after provider-defined delivery freshness checks, idempotency, and state-transition controls. This illustrates a decision rather than an automatic severity reduction: confirm the residual rating through tests and analysis of remaining attack paths. Release requires residual-risk acceptance, working detection, and a tested rollback runbook.
 
 7. Verification and release gate.
 - Tie every mitigation to a test/evidence item.
 - Artifact: test plan, findings, release verdict.
-- Example: automated test rejects stale webhook, duplicate event, invalid signature, and out-of-order transition; audit event is visible in SIEM.
+- Example: automated tests reject expired signed delivery and invalid signatures, prevent duplicate business effects, and prohibit invalid transitions during out-of-order delivery; audit event is visible in SIEM.
 
 For agentic AI and MCP, the release gate must include negative tests for prompt injection into tool use, retrieval or memory poisoning, unauthorized tool invocation, capability drift, wrong-audience/wrong-scope tokens, sandbox egress, and kill-switch execution.
 
@@ -176,9 +178,9 @@ Risk analysis:
 - Residual target: `Low|Medium`, depending on fraud exposure.
 
 Recommended controls:
-- HMAC signature validation with exact canonicalization and key rotation.
-- Timestamp freshness window `<=5m`; reject future timestamps beyond clock skew `<=60s`.
-- Single-use event id scoped to PSP account + environment + event type.
+- Verify the provider's signature scheme over the exact bytes or canonical representation its contract specifies, using its supported verifier and key-rotation procedure.
+- This example assumes a signed delivery timestamp, an acceptance window of `<=5m`, and future clock skew of `<=60s`. These are example operational assumptions, not universal PSP requirements; validate them against the provider's signing, retry, and clock behavior.
+- Atomically deduplicate the authenticated event identifier in the provider-defined account and environment scope. Retain the record across the supported retry and replay period; an accepted duplicate must not repeat the business operation.
 - State machine guard: `capture` only from `authorized`, never from terminal states.
 - Store raw event hash and normalized event id for replay detection.
 - Audit event for accepted/rejected webhook with reason code and correlation_id.
@@ -187,7 +189,7 @@ Recommended controls:
 
 Release gate:
 - `Rejected` if duplicate capture is possible.
-- `Approved with risks` only if duplicate capture is blocked but alert/runbook is incomplete, with owner and due date.
+- `Approved with risks` only if duplicate capture is blocked and incomplete alert/runbook coverage has a valid, formally approved release-governance exception with owner, expiry, compensating controls, and verification.
 - `Approved` when controls and tests prove replay cannot cause financial state change and detection exists for attempted replay.
 
 ---
@@ -251,7 +253,7 @@ Example:
 
 ### 4.3 OWASP Threat Modeling Process
 
-OWASP TMP provides structured application threat modeling:
+The historical OWASP Threat Modeling Process describes four basic application-analysis steps. It remains a useful workflow outline, rather than a current standalone conformance standard; use it alongside this playbook's recommended process and control verification:
 - scope/decompose the application;
 - determine threats;
 - determine countermeasures and mitigation;
@@ -314,12 +316,12 @@ LINDDUN is a privacy threat modeling framework:
 - manage threats.
 
 Categories:
-- Linkability;
-- Identifiability;
-- Non-repudiation;
-- Detectability;
-- Disclosure of information;
-- Unawareness;
+- Linking data and actions;
+- Identifying individuals;
+- Non-repudiation where attributable evidence conflicts with privacy needs;
+- Detecting involvement or data existence;
+- Data disclosure through excessive collection, storage, processing, or sharing;
+- Unawareness & unintervenability: insufficient transparency and control over personal data;
 - Non-compliance.
 
 Use when:
@@ -341,7 +343,7 @@ Example:
 
 #### NIST SP 800-154 for data-centric reviews
 
-NIST SP 800-154 describes data-centric threat modeling as a form of risk assessment focused on protecting specific data in a system. As of October 3, 2026, NIST still marks the publication as an initial public draft, while stating that it plans to finalize it.
+NIST SP 800-154 describes data-centric threat modeling as a form of risk assessment focused on protecting specific data in a system. As of October 6, 2026, NIST still marks the publication as an initial public draft, while stating that it plans to finalize it.
 
 Steps:
 1. Identify and characterize the system and data of interest.
@@ -361,7 +363,7 @@ Strengths:
 
 Limitations:
 - does not cover every system-level attack;
-- final risk analysis is less practical than PASTA/FAIR/OWASP.
+- provides fundamental data-analysis principles rather than replacing the organization's agreed risk criteria and decision process.
 
 Example:
 - For a secrets scanning platform, model secret values as data of interest: source repositories, CI logs, alert DB, ticket exports. Attack vectors include unauthorized analyst access, log disclosure, webhook exfiltration. Controls include field-level encryption, token redaction, RBAC, and retention limits.
@@ -369,7 +371,7 @@ Example:
 ### 4.5 Domain-Specific and Emerging Approaches
 
 Additional approaches and libraries are useful as domain overlays:
-- MAESTRO: layer-based threat library for agentic AI; better treated as an attack/control library than a full methodology.
+- MAESTRO: CSA threat modeling framework for agentic AI across seven architectural layers and their interactions. Use it for system decomposition, threats within and across layers, risk assessment, and mitigation selection; its outputs must meet this playbook's evidence and release-gate requirements.
 - EMB3D: threat model for embedded devices.
 - MITRE medical device playbook: practical principles for safety-critical medical devices.
 
@@ -439,7 +441,7 @@ Practical set:
 - OWASP Risk Rating: simple application-level likelihood x impact matrix;
 - NIST SP 800-30: formal risk assessment context;
 - CVSS v4.0: technical vulnerability severity, not business risk;
-- EPSS: likelihood of CVE exploitation in the wild;
+- EPSS: estimated probability that a published CVE will be exploited in the wild in the next 30 days; it is not the probability that a specific deployment will be compromised;
 - CISA KEV: known exploitation signal;
 - SSVC: decision-oriented vulnerability prioritization;
 - FAIR: quantitative financial risk analysis for mature organizations;

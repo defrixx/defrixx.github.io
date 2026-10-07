@@ -22,6 +22,8 @@ The assistant examines the repair and surrounding data flow: attacker control, e
 
 A complete static trace can establish a code property with a stated rationale. Conclusions that depend on browser, deployment, network, or concurrency behavior need corresponding runtime checks. Component substitutions, skipped checks, and environment differences are explicit.
 
+For AI-related repairs, test the boundary where a tool performs the action, including a direct unauthorized tool proposal and an allowed operation. A model refusing the original prompt does not establish that tool authorization is repaired. For integrity repairs, inspect affected dispatch, retry, and fallback paths and verify that rejected bytes never reach the transport. Revalidate snapshot identity after working-tree drift and invalidate evidence affected by the change.
+
 ## Per-finding verdict
 
 | Status | Meaning |

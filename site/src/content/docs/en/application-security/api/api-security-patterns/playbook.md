@@ -10,6 +10,8 @@ This playbook describes common API styles, applicable threats, baseline security
 
 The baseline is aligned with OWASP API Security Top 10 2023. It is not a restatement of that list: the goal is to turn the categories into reviewable production controls, defaults and verification evidence.
 
+Numeric settings below are local starting assumptions for interactive JSON APIs, bounded GraphQL queries, and ordinary unary RPCs, not protocol limits or vendor defaults. Select a concrete value within each proposed range using endpoint SLOs, measured payload and query costs, concurrency, and load/abuse tests. Bulk transfers, long-running operations, and provider webhook contracts need separate budgets. Record the actual enforced values and owner-approved deviations before release.
+
 Use this document for:
 - designing public, partner, internal and frontend-facing APIs;
 - API architecture security review before release;
@@ -182,6 +184,12 @@ Align gateway/backend parsing and reject ambiguous message framing, conflicting 
 
 ---
 
+### 5.2 Response Caching and Access Boundaries
+
+For responses containing secrets or sensitive personal data, use `Cache-Control: no-store` and verify actual CDN and gateway behavior. `private` prohibits shared caching but allows a private cache; `no-cache` requires freshness validation rather than prohibiting storage. Do not treat an `Authorization` header or cookie as sufficient evidence that caching is disabled.
+
+Where personalized-data caching is necessary, explicitly partition keys by tenant and verified access context, define retention, and invalidate after access revocation. Do not return application-cached data before authorizing the current request. Verification: populate the cache as user A, repeat the same URL as B and anonymously, then revoke A's access; no CDN, gateway, or application path may return data without the required authorization.
+
 ## 6. Threats and Controls by API Style
 
 ### 6.1 REST
@@ -237,6 +245,7 @@ Mandatory measures:
 - timeout and cancellation propagation into downstream calls;
 - schema review for sensitive fields and deprecated fields;
 - persisted-query or operation allowlists are versioned with the schema and reviewed when auth-relevant fields, resolvers, or directives change.
+- For an operation allowlist, a trusted release process registers queries. Automatic persisted queries (APQ) that clients can register by sending query text reduce network payloads but do not restrict the allowed operation set. Reject arbitrary query registration and unregistered query text; do not silently fall back to dynamic queries when the list is unavailable. Variables of an allowed operation remain untrusted and require authorization, range, and cost checks.
 
 Release-ready defaults:
 - max query depth: `5-10` for public APIs, higher only with justification;
@@ -244,6 +253,9 @@ Release-ready defaults:
 - resolver timeout: `<=2-5s`, total request timeout: `<=10-15s`;
 - introspection disabled for anonymous/public clients; for internal clients, only with an authenticated developer role;
 - dynamic GraphQL queries are acceptable for public APIs only with a stricter cost budget, per-client abuse monitoring, and owner-approved exception; persisted queries do not replace resolver authorization and query cost controls.
+
+Verification:
+- An unregistered hash, arbitrary query registration attempt, and alternate-route bypass do not execute the operation. Test a cold cache and an unavailable list. An allowed operation with another actor's object ID or excessive variable values is rejected by the corresponding check.
 
 ### 6.4 Webhooks
 
@@ -254,21 +266,21 @@ Mandatory measures:
 - disallow webhook body compression/decompression unless the provider explicitly requires it in the contract;
 - if compression is required, set a decompression ratio limit and document what is signed: compressed bytes or decompressed payload;
 - document the provider-specific canonical string, signed fields, timestamp field, allowed algorithms, key identifier rules, and secret/certificate selection logic;
-- compare signatures in constant time and reject unsigned, duplicate-signature, unknown-algorithm, unknown-key, and malformed-signature cases;
-- timestamp freshness window and replay cache by event ID/signature nonce;
-- idempotent processing by provider event ID;
+- prefer the provider's maintained verification library. Compare MAC/signature bytes in constant time where applicable; reject unsigned or malformed requests and never authenticate through an unsupported algorithm or untrusted key. Handle multiple signatures exactly as the provider specifies: valid rollover schemes can include more than one signature; reject ambiguous fields outside that contract;
+- enforce freshness using the signed delivery timestamp or nonce when the provider supports it. An unsigned event ID or timestamp cannot independently prove freshness;
+- enforce atomic, durable idempotency by provider/account/endpoint and authenticated event ID. A provider can re-sign the same event with a new delivery timestamp, so deduplicating signatures alone does not prevent repeated business actions;
 - fast event acceptance and asynchronous processing through a queue;
 - payload schema validation and max size limit;
-- strict content type and rejection of unknown event types;
+- enforce strict content types. Never perform business actions for unsupported event types. For an authentic, well-formed event that the handler is not subscribed to or does not use, follow the provider's acknowledgement-and-ignore behavior to avoid pointless redelivery; malformed or incorrectly signed requests remain rejected;
 - webhook secrets are rotated and stored in a secrets manager;
 - outbound calls triggered by webhook payloads pass SSRF controls.
 
 Release-ready defaults:
 - timestamp freshness window: `<=5m` if the provider supports timestamps;
 - clock skew tolerance: `<=60s` unless the provider requires a narrower value;
-- replay cache retention: at least `24h` or longer than the provider's maximum retry window;
-- secret/key rotation uses an explicit overlap window that accepts old and new keys only for the provider retry period, then removes the old key;
-- HTTP response for an accepted event: `2xx` only after signature, freshness and schema validation;
+- idempotency retention covers the provider's automatic and manual redelivery windows plus the required business replay horizon; a short signature-freshness window is a different control;
+- secret/key rotation follows the provider's supported overlap mechanism with a bounded removal deadline. Delivery retries can use a new signature, so the retry period does not automatically define key overlap. Revoke a compromised key through the incident procedure instead of retaining it for routine overlap;
+- acknowledge a newly accepted event with `2xx` only after signature, supported freshness and schema checks, and durable inbox/queue acceptance. A validated duplicate already durably accepted can be acknowledged without reapplying the action. If persistence fails, return the provider-appropriate retryable error; do not acknowledge work held only in process memory;
 - processing retries: bounded exponential backoff + DLQ, no infinite retry loops.
 
 Verification:
@@ -281,7 +293,7 @@ Mandatory measures:
 - workload identity or OAuth token in metadata, not credentials inside message body;
 - method-level authorization through interceptor/policy layer;
 - max receive/send message size;
-- client-side and server-side deadline/timeout;
+- explicit client deadline and a server-enforced processing budget; propagate the remaining budget to downstream calls and stop spawned work on cancellation. gRPC does not set a client deadline by default, and a client-supplied deadline alone does not limit a malicious client;
 - server reflection disabled or available only to authenticated developer/admin clients;
 - protobuf schema compatibility checks in CI;
 - structured audit events for privileged methods.
@@ -300,7 +312,7 @@ Release-ready defaults:
 
 Recommendations:
 - Browser/frontend flows: prefer BFF + HttpOnly/Secure/SameSite cookie; do not store refresh tokens in browser storage.
-- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE for user-delegated access or HMAC/request signing with timestamp, nonce, canonical request, key ID, replay cache, rotation, and scoped access. A signed request without canonicalization and replay semantics is a bearer secret, not full replay/tamper protection.
+- Public/partner API: OAuth 2.0 client credentials, authorization code + PKCE for user-delegated access or HMAC/request signing with timestamp, nonce, canonical request, key ID, replay cache, rotation, and scoped access. Request signing does not provide replay resistance without freshness and duplicate handling; incomplete canonicalization or unsigned security-relevant fields can permit tampering.
 - Service-to-service: workload identity + mTLS; do not rely only on the internal network.
 - Webhooks: provider-specific signature scheme + timestamp/replay checks.
 
@@ -327,12 +339,14 @@ Verification:
 
 Recommendations:
 - validate request body, path, query, headers and metadata;
+- allow only media types supported by the operation, reject conflicting or malformed type declarations, and configure parsers consistently at the proxy and application. Responses with a body declare the actual media type and any required charset through `Content-Type`, including error and download responses;
 - reject unknown fields for write operations unless backward compatibility requires otherwise;
 - normalize input before authorization only when it does not change security meaning;
 - do not pass user-controlled values into SQL/NoSQL/LDAP/OS/XML/URL contexts without safe APIs and allowlists.
 
 Verification:
 - schema validation tests;
+- test unsupported and conflicting request media types and the actual response `Content-Type` on success, errors, and downloads;
 - fuzz/negative tests for boundary values;
 - injection tests for downstream interpreters.
 
@@ -356,6 +370,7 @@ Recommendations:
 - TLS 1.3 by default; TLS 1.2 only with a modern configuration;
 - HSTS for browser-facing HTTPS unless legacy constraints apply;
 - egress policy for APIs that make outbound calls based on inbound data.
+- for client-controlled URL fetching, validate scheme, destination, port, and every resolved IPv4/IPv6 address; enforce internal and service-address restrictions on the actual connection, not just the URL string. Disable redirects by default; if required, validate every hop and do not forward credentials to another destination. Bind DNS validation to connection establishment so a changed answer between them cannot bypass policy.
 
 Verification:
 - TLS scan;
@@ -529,16 +544,19 @@ Main threats:
 
 Required controls:
 - signature verification before business parsing;
-- timestamp window and replay cache;
-- idempotency by event ID;
-- async processing and DLQ;
+- provider-supported signed delivery freshness checks, separate from event deduplication;
+- atomic, durable idempotency scoped to provider/account/endpoint and authenticated event ID; protect the business operation against semantically duplicate events with different IDs where the provider permits them;
+- durable inbox/queue acceptance before acknowledging a new event, asynchronous processing, and a bounded retry/DLQ path;
+- explicit handling of out-of-order events: validate domain transitions or retrieve current authoritative state instead of applying arrival order blindly;
 - schema validation and event type allowlist;
 - outbound URL allowlist/egress controls for follow-up actions.
 
 Verification:
 - invalid signature test;
 - replay same event ID test;
-- duplicate delivery idempotency test;
+- concurrent duplicate deliveries and re-signed retries do not repeat the business action;
+- queue/inbox failure prevents successful acknowledgement of an unpersisted new event; restart after acceptance does not lose work;
+- out-of-order and semantically duplicate events do not regress domain state;
 - DLQ behavior for poison messages;
 - SSRF canary test.
 
@@ -596,7 +614,7 @@ Required controls:
 - match the exact `system:serviceaccount:<namespace>:<service-account>` principal against a deny-by-default allowlist; matching only the namespace or the `system:serviceaccounts` group is insufficient;
 - enforce method/action/resource/tenant authorization after authentication. The caller's Kubernetes RBAC does not automatically authorize an application operation;
 - grant the destination workload a custom ClusterRole containing only `create` on `tokenreviews.authentication.k8s.io`. Do not use `system:auth-delegator` unless the service also needs to create `subjectaccessreviews`;
-- reread the projected token after rotation or use a library that tracks file updates; do not retain one token value indefinitely in memory;
+- reread the projected token after rotation or use a library that tracks file updates; do not retain one token value indefinitely in memory. Do not mount the projection through `subPath`: such mounts do not receive updates;
 - restrict east-west reachability with NetworkPolicy or an equivalent CNI policy. An audience-bound bearer token does not replace mTLS and can be replayed against the same audience until expiry if stolen.
 
 Availability and performance:
@@ -610,7 +628,7 @@ Verification:
 - wrong audience, expired token, invalid signature, and a token from another cluster issuer are rejected;
 - a valid token from a disallowed ServiceAccount authenticates but receives an authorization deny;
 - a missing expected audience in `TokenReview.status.audiences` results in denial even when `status.authenticated: true`;
-- deleting the bound Pod or ServiceAccount causes TokenReview to fail; test the maximum delay introduced by any local cache separately;
+- deleting the bound Pod or ServiceAccount causes TokenReview to fail. For an object pending deletion, account for the Kubernetes rejection interval: 60 seconds after `metadata.deletionTimestamp`; a missing object or a UID mismatch also invalidates the token. Test any additional local-cache delay separately;
 - Kubernetes API failure, timeout, and throttling do not cause fail-open behavior;
 - projected-token rotation does not interrupt normal service calls, and redaction tests confirm that tokens do not appear in logs or traces.
 
@@ -658,7 +676,9 @@ Required review output:
 
 ### Selected ASVS verification references
 
-v5.0.0-4.1.1, v5.0.0-8.2.1, v5.0.0-1.3.6.
+- `v5.0.0-4.1.1`: response `Content-Type` matches the actual content, with appropriate character encoding where applicable.
+- `v5.0.0-8.2.1`: function access requires explicit permissions; assess it separately from object and field access.
+- `v5.0.0-1.3.6`: SSRF protection when untrusted data is used to call other services.
 
 Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 

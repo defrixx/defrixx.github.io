@@ -75,6 +75,10 @@ Validate controls through threat scenarios and abuse cases from section 2: which
 | Authentication events, authorization decisions, data access, and critical actions are logged | Logging architecture/config; sample events |
 | Tamper resistance; centralized collection; traceability with `correlation_id` | Retention/access validation; immutability/access settings |
 
+Define event fields and data-access coverage by sensitivity and investigation needs. Do not interpret this checklist as a requirement to log complete requests, responses, tokens, passwords, or every data value. Correlation identifiers must not be authentication credentials; validate externally supplied identifiers and encode untrusted fields safely for the log format.
+
+Verify with synthetic credentials and hostile input that logs, traces, and exception reports exclude secrets and cannot forge event boundaries. Test collector failure, storage exhaustion, and access restrictions. Record which critical operations must stop when their required audit record cannot be persisted and which may continue with bounded buffering and an alert.
+
 ---
 
 ## 4. Control Coverage
@@ -102,10 +106,12 @@ For each row, validate linkage to a threat scenario, abuse case, or explicitly r
 
 | What to verify | Evidence |
 |---|---|
-| Containers run as non-root | Cluster manifests/policies |
-| Unnecessary capabilities are dropped | Policy/manifest checks; scan outputs |
+| Containers run as non-root | Cluster manifests/policies; actual process UID in a running container |
+| Unnecessary capabilities are dropped | Policy/manifest checks; actual process capability sets |
 | Runtime controls are enabled (for example seccomp/AppArmor) | Runtime configuration; runtime inspection |
-| Secrets are not stored in plaintext env/files | Image/config scan outputs; secret scanning |
+| Secrets are absent from source, image layers, deployment values, logs, and persistent application files; approved runtime delivery limits access to required processes | Image/config scans; mount and process access checks; rotation and reload tests |
+
+Runtime secret files are not inherently a violation: Kubernetes Secret volumes or Vault Agent can deliver values that an application must read. Review access permissions, which containers receive the mount, memory-backed storage where applicable, accidental copying, and rotation behavior. Environment delivery requires a separate leakage and refresh assessment. Encryption at rest does not protect a value once an authorized process reads it.
 
 ### 4.4 Compliance
 
@@ -187,7 +193,7 @@ Use Lite Path only if all are true:
 - no new internet-facing entry points;
 - no privilege expansion or trust-boundary change.
 
-Minimum mandatory checks (6-8 items):
+Minimum mandatory checks:
 - verify authentication and authorization for changed components;
 - verify input/output validation at integration points;
 - verify secrets handling and TLS;
@@ -212,13 +218,15 @@ Statuses:
 
 Mandatory rules:
 - `Rejected` if at least one `Critical` exists without confirmed mitigation or a formally approved release-governance exception;
-- `Approved with risks` if accepted `High` risks exist with owner + due date + compensating controls;
+- `Approved with risks` if risks above the approval threshold have valid, explicitly approved exceptions, including any permitted `Critical` exception, with owner, expiry, and verified compensating controls;
 - `Approved` only if open risks are not above the agreed threshold (typically not above `Medium`) and a closure plan exists.
 
 Additionally:
 - `Critical` is rejected by default; an exception is allowed only through the release governance process with security leadership and business owner approval, TTL, compensating controls, and post-release review;
 - mandatory pre-release fixes must be tracked explicitly;
 - residual risks must be explicitly accepted by an authorized owner.
+
+An unaccepted risk above the agreed threshold, a missing mandatory control, or insufficient evidence for a required control prevents approval. An expired or out-of-scope exception does not satisfy the gate. Bind the verdict to the reviewed revision, deployment configuration, and target environment; repeat the affected review when these change. Architecture approval does not replace artifact and deployment checks in release governance.
 
 ---
 

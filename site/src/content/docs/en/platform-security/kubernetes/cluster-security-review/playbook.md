@@ -68,7 +68,7 @@ Review intervals and operational response targets below assume production worklo
 - enforce automatic policy fail for high-risk RBAC verbs outside an approved allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
 - for Kubernetes `v1.36+`: `KubeletFineGrainedAuthz` is GA and the feature gate is locked/enabled, so observability workloads should use minimal subresources (`nodes/metrics`, `nodes/stats`, `nodes/pods`, and other required endpoints) instead of broad `nodes/proxy`;
 - deny new RBAC bindings to `nodes/proxy` for observability workloads when their kubelet scraping/logging use case is covered by fine-grained permissions.
-- primary evidence for reducing `nodes/proxy`: `kubectl auth can-i get nodes/metrics|nodes/stats|nodes/pods --as=<subject>` and equivalent checks for the actual kubelet endpoints required;
+- primary evidence for reducing `nodes/proxy`: `kubectl auth can-i get nodes --subresource=<metrics|stats|pods> --as=<subject>` and equivalent checks for the actual kubelet endpoints required;
 - secondary evidence: Kubernetes version, managed-provider documentation, kubelet authorization configuration, and vendor release notes for the exact cluster minor version;
 - if fine-grained subresources are unavailable or blocked by the cluster distribution, `nodes/proxy` is allowed only as an exception with owner, expiry, minimal subject scope, and a separate blast-radius review.
 
@@ -78,16 +78,18 @@ kubectl get clusterrolebindings,rolebindings -A
 kubectl get clusterroles,roles -A -o yaml
 kubectl get validatingadmissionpolicy,validatingadmissionpolicybinding -o yaml
 kubectl auth can-i create deployments --as=<subject> -n <ns>
-kubectl auth can-i get nodes/proxy --as=<subject>
-kubectl auth can-i get nodes/metrics --as=<subject>
-kubectl auth can-i get nodes/stats --as=<subject>
-kubectl auth can-i get nodes/pods --as=<subject>
+kubectl auth can-i get nodes --subresource=proxy --as=<subject>
+kubectl auth can-i get nodes --subresource=metrics --as=<subject>
+kubectl auth can-i get nodes --subresource=stats --as=<subject>
+kubectl auth can-i get nodes --subresource=pods --as=<subject>
 kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 # Secondary evidence is provider- and deployment-specific:
 # collect Kubernetes minor version, kubelet authorization configuration, and managed-provider release notes
 ```
 
 ---
+
+Use `--subresource=<name>` for `kubectl auth can-i` subresource checks, and include the subject's actual groups when impersonating it. An affirmative RBAC result does not prove that the real kubelet endpoint uses webhook authorization or is reachable under the same identity; confirm configuration and an approved endpoint request. Do not send monitoring traffic through the API server node proxy after replacing its `nodes/proxy` grant with direct kubelet permissions.
 
 ### 3.2 Deployment chain
 
@@ -145,7 +147,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 - `GatewayClass` is a platform-owned object. Permission to create or change `GatewayClass` and controller parameters must be limited to platform/security owners because it selects the controller implementation and trust boundary.
 - A `Gateway` for shared/public edge should live in a platform-owned namespace. Application namespaces may attach `HTTPRoute`/`GRPCRoute`/`TCPRoute` only through explicitly configured `allowedRoutes` on the intended listener.
 - `allowedRoutes` should be as narrow as possible: `Same` for a single-tenant Gateway, `Selector` only with managed labels and admission protection against unauthorized label changes, and `All` is not acceptable for shared/public Gateways without separate risk acceptance.
-- Cross-namespace references require a `ReferenceGrant` in the namespace that owns the target resource. This applies to backend Services, TLS Secrets, and other referents; missing `ReferenceGrant` must produce an invalid route/reference, not silent fallback.
+- Cross-namespace backend and certificate references require a `ReferenceGrant` in the target namespace. Route attachment to a cross-namespace Gateway is the exception: it is authorized through the Gateway listener's `allowedRoutes`, not a ReferenceGrant. This applies to backend Services, TLS Secrets, and other referents; missing `ReferenceGrant` must produce an invalid route/reference, not silent fallback.
 - TLS termination policy records where TLS terminates, which certificate sources are allowed, who may reference TLS Secrets, which protocols/ciphers/min TLS version the controller implementation enforces, and how rotation is performed.
 - Hostname and listener scope must be constrained: a route from an application namespace must not capture a wildcard hostname, another domain, privileged path prefix, or another tenant's listener without Gateway owner approval.
 - Route status conditions must be monitored as security signals: `Accepted=False`, `ResolvedRefs=False`, unexpected parentRefs/backendRefs/hostname changes require review before production traffic.
@@ -155,7 +157,7 @@ kubectl get clusterroles -o yaml | grep -n 'nodes/proxy'
 **Minimum evidence commands:**
 ```bash
 kubectl get services -A -o jsonpath='{range .items[?(@.spec.externalIPs)]}{.metadata.namespace}{"/"}{.metadata.name}{" "}{.spec.externalIPs}{"\n"}{end}'
-kubectl auth can-i patch services/status --as=<subject> -n <ns>
+kubectl auth can-i patch services --subresource=status --as=<subject> -n <ns>
 kubectl get ingressclass,gatewayclass
 kubectl get ingress -A
 kubectl get gateway,httproute,tcproute,tlsroute,referencegrant -A
@@ -181,8 +183,8 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - retention shorter than typical incident lifecycle.
 
 **Recommended control:**
-- centralized immutable audit storage with at least `90d` retention (or stricter regulatory requirement);
-- for high-risk API operations, log at `Request`/`RequestResponse` where appropriate while preventing sensitive-data leakage;
+- centralized tamper-evident or append-only audit storage with approved retention and deletion rules, including backups. `90d` is an initial local investigation assumption, not a universal minimum; reconcile it with applicable legal, privacy, and contractual requirements;
+- log security-relevant operations at least at `Metadata`; use `Request`/`RequestResponse` only for explicitly reviewed resources whose bodies are needed and safe to retain. Place `Metadata` rules for Secrets, TokenRequest/TokenReview, and other credential-bearing operations before broader rules because the first match wins. Test with synthetic secret values that request/response bodies, patches, and inline Pod environment values do not leak into collected audit records;
 - alerting on RBAC changes, webhook config changes, namespace security label changes, and mass Secret reads;
 - complement API audit with runtime/network behavioral telemetry (for example, CNI observability and eBPF tooling) to detect not only deploy events but anomalous runtime behavior;
 - timeline reconstruction drill at least every `90d`.
@@ -264,7 +266,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 
 **Recommended control:**
 - run adversarial validation for live-like environments after major RBAC, CNI, admission policy, runtime security tooling, and deployment-chain changes;
-- destructive, DoS, and escape checks run only in an isolated environment or namespace with pre-approved scope;
+- destructive, DoS, and escape checks run only in a disposable isolated environment with dedicated nodes, control plane, test credentials, and pre-approved scope. A namespace in a shared cluster does not contain host escape or node-level exhaustion;
 - use the dedicated playbook for scenario-to-control mapping: [kubernetes/adversarial-validation/playbook.en.md](/Product-security-playbook/en/platform-security/kubernetes/adversarial-validation/playbook/).
 
 ---

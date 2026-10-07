@@ -70,6 +70,8 @@ High-impact scenarios:
 - Mirror approved third-party MCP artifacts into an internal registry or package mirror; production hosts should not install directly from community registries.
 - Set review expiry no longer than `90 days` for servers that can modify data, execute code, access sensitive resources, or use third-party infrastructure.
 
+The `90 days` ceiling is a local assumption for an inventory reconciled continuously and after capability changes, with a named owner able to suspend access. It bounds the age of a manual access/provider review; it does not authorize unchecked drift until the next review. Use a shorter interval for unstable providers or greater potential impact. Expired approval blocks high-impact use until renewed.
+
 Verification:
 - compare per-request client capabilities and discovered server capabilities against the registry baseline;
 - alert on `listChanged` events, unknown servers, unknown tools, schema drift, and resource pattern expansion;
@@ -96,7 +98,8 @@ Remote Streamable HTTP servers:
 - Prefer OAuth Client ID Metadata Documents; use pre-registration for managed clients where appropriate. Dynamic Client Registration is deprecated and retained only for compatibility. Constrain legacy registration by redirect URI, client type, grant, scope, lifetime, and owner; it must not grant broad access without review.
 - Require MCP clients to send the OAuth `resource` parameter in both authorization and token requests, using the canonical MCP server URI.
 - Validate every present authorization-response `iss` against the recorded authorization-server issuer before redeeming a code, whether or not metadata advertised support. Reject a missing `iss` when `authorization_response_iss_parameter_supported=true`; use exact string comparison after decoding, without URI normalization.
-- Validate token issuer, expiry, audience/resource binding, resource indicator, and scope on every request.
+- Validate token issuer, expiry, audience, and scopes on every request. Establish that the token was issued for this MCP server's resource; a `resource` parameter in a client request does not establish that binding by itself.
+- Send the access token only in the `Authorization: Bearer <access-token>` header of every protected HTTP request. Prohibit tokens in URL query strings, which can reach logs, browser history, and observability systems.
 - Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners.
 - Do not make `offline_access` or refresh-token issuance part of the MCP resource-server baseline. If an approved client receives a refresh token, it must be sender-constrained or rotated with reuse detection; storage and revocation are separate identity controls. The MCP server must not request or advertise `offline_access` through `WWW-Authenticate` challenges or Protected Resource Metadata `scopes_supported` without an explicitly approved use case.
 
@@ -145,6 +148,10 @@ Do not log by default:
 
 Raw payload capture is allowed only in scoped forensic mode with approval, case ID, encryption, restricted access, retention `<=30 days`, and deletion evidence.
 
+This retention ceiling is a local minimization default; choose a shorter period when sufficient. Any legal hold or longer retention requires separate approval, owner, restricted access, and a review date.
+
+The drill target in section 4 is a local assumption that every gateway and server worker supports out-of-band disablement. Measure from acceptance of the operator's command; downstream effects that can cause damage sooner require tighter limits or preventive authorization/transaction controls. Do not claim cancellation of already committed operations.
+
 Incident response must support:
 - disabling a server, gateway route, tool, resource, prompt, OAuth client, OAuth grant, and downstream credential independently;
 - freezing the MCP registry during active investigation;
@@ -158,9 +165,11 @@ Incident response must support:
 
 MCP `2026-07-28` removes the initialization handshake and protocol sessions. Use `server/discover` for supported versions and capabilities; carry protocol version and client capabilities in request metadata. Do not apply an older session's identity or capability decision to a new request. Re-authorize application state handles and retries for the calling subject.
 
-For Streamable HTTP, validate `MCP-Protocol-Version` against `_meta.io.modelcontextprotocol/protocolVersion`, `Mcp-Method` against `method`, and `Mcp-Name` against the relevant `params.name` or `params.uri`. Reject missing required headers and header/body disagreements before dispatch. Decode permitted Base64 sentinel values before comparing `Mcp-Name` and `Mcp-Param-*`. Mirror only valid `x-mcp-header` declarations; reject invalid declarations and prevent header injection. Unsupported versions must follow the supported-version error/selection path, not silently downgrade.
+For Streamable HTTP, validate `MCP-Protocol-Version` against `_meta.io.modelcontextprotocol/protocolVersion`, `Mcp-Method` against `method`, and `Mcp-Name` against the relevant `params.name` or `params.uri`. `Mcp-Method` is required for every request; `Mcp-Name` is required only for `tools/call`, `resources/read`, and `prompts/get`. Do not require a name for `server/discover` or list methods. Reject missing applicable required headers and header/body disagreements before dispatch. Decode permitted Base64 sentinel values before comparing `Mcp-Name` and `Mcp-Param-*`. Mirror only valid `x-mcp-header` declarations; reject invalid declarations and prevent header injection. Unsupported versions must follow the supported-version error/selection path, not silently downgrade.
 
 Broken streams require a new request ID on retry. Use business-level idempotency for state-changing operations; a new JSON-RPC ID alone does not prevent duplicate effects. Keep legacy session/initialization behavior confined to an explicitly versioned compatibility adapter.
+
+When caching capability lists and resources, honor `ttlMs` and `cacheScope`. Results marked `cacheScope: "private"` must not enter a shared intermediary cache. Partition client caches by server, subject, tenant, and effective access context; freshness does not replace authorization at resource read or tool invocation. After access revocation or approved capability changes, do not keep using a cached permission. Verify that a result obtained by user A cannot reach user B through the client or gateway cache.
 
 ### 3.6 Elicitation
 
@@ -185,7 +194,7 @@ Required evidence:
 
 Negative tests:
 - Invalid `Origin` receives `403`; a DNS-rebinding test cannot reach the local HTTP server through an unapproved origin.
-- Missing version/method/name headers, mismatched `_meta`, decoded name mismatch, and malformed `Mcp-Param-*` are rejected before tool dispatch; unsupported versions do not silently downgrade.
+- Missing version/method headers, a missing name where required, mismatched `_meta`, decoded name mismatch, and malformed `Mcp-Param-*` are rejected before tool dispatch; unsupported versions do not silently downgrade.
 - A disconnected stream followed by retry cannot duplicate a committed side effect.
 - Form requests for each of passwords, API keys, access tokens, and payment credentials are rejected.
 - Elicitation URL and metadata receive no request before consent; the full destination remains visible. Sensitive or pre-authenticated URLs are rejected.
@@ -209,7 +218,7 @@ Operational signals:
 - percentage of MCP servers covered by registry baseline;
 - percentage of tool calls evaluated by gateway or policy layer;
 - alerts for capability drift, unknown servers, abnormal tool sequences, and redaction failures;
-- mean time to disable a server/tool during drills, target `<=60s` for high-impact capabilities;
+- maximum observed time to deny new effects across gateway/server workers during drills, target `<=60s` for high-impact capabilities; record average latency and queued/in-flight cancellation separately;
 - provider log export latency and completeness for third-party servers.
 
 ---

@@ -83,7 +83,7 @@ Release-ready defaults:
 - Default workflow token permission is read-only; write permissions, `id-token: write`, package publish, signing, and deployment permissions are granted only to the jobs that need them.
 - OIDC federation for CI/CD binds trust policy to issuer, audience, repository or immutable repository ID where available, protected ref or environment, workflow identity, and expected trigger. Wildcard trust for an organization, project, or branch prefix is not acceptable for live deployment.
 - Untrusted forks, external pull requests, issues, comments, branch names, tag names, release notes, and commit messages are treated as attacker-controlled input. They must not be interpolated directly into shell, deployment manifests, prompts, or release commands.
-- Third-party actions, reusable workflows, plugins, and pipeline images are pinned to immutable versions or digests for release workflows; broad floating tags are acceptable only in non-release experimentation.
+- Third-party actions, reusable workflows, plugins, and pipeline images are pinned to immutable versions or digests for release workflows. In GitHub Actions, use a full commit SHA from the original action or workflow repository; a version tag remains mutable. Broad floating tags are acceptable only in non-release experimentation.
 - Self-hosted runners are separated by trust tier. Untrusted code must not run on persistent runners that have network access to live environments, artifact signing, production secrets, or deployment credentials.
 - Release runners are ephemeral or cleaned to a documented standard; caches are scoped by trust boundary and treated as untrusted build input.
 
@@ -121,11 +121,13 @@ Release-ready defaults:
 Release-ready defaults:
 - Release decision uses one aggregated status rather than multiple disconnected scanner dashboards.
 - Aggregated status records: gate name, tool/source, commit/artifact digest, result, finding IDs, exception IDs, approver, timestamp, and evidence link.
+- Bind gate results and deployment approval to the artifact digest, target environment, and reviewed deployment configuration. A rebuilt artifact or changed deployment configuration requires renewed checks and approval; approval of a branch or mutable tag alone is insufficient. Deploy the checked artifact without rebuilding it in the deployment job.
 - A failed non-security quality gate can block deployment, but security exceptions must remain visible and separately approved.
 
 Verification:
 - Rebuild the release decision from logs and artifacts after deployment.
 - Confirm the deployed artifact digest matches the gated artifact digest.
+- Replace the candidate artifact or deployment configuration after approval and confirm that the previous decision cannot authorize the changed release.
 
 ---
 
@@ -148,6 +150,7 @@ GitHub-specific notes:
 - Environments can require protection rules before a job proceeds or accesses environment secrets.
 - Required reviewers, branch restrictions, wait timers, and custom protection rules can express release policy.
 - Verify plan and repository visibility because feature availability differs.
+- Required reviewers do not automatically disable administrator bypass. Disable bypass for ordinary production deployment and verify the setting; any retained emergency path needs separate authorization and an audit trail.
 
 Verification:
 - Attempt deployment from an unauthorized user/branch and confirm it fails.
@@ -179,7 +182,7 @@ Additional evidence for high-risk live release:
 - explicit security owner approval.
 
 Retention:
-- Keep release evidence for at least `1 year` for live environments, or longer when regulatory, customer, audit, or incident-response requirements demand it.
+- As an initial local policy, keep release evidence for at least `1 year` for live environments. Set the actual period against incident-investigation needs and applicable regulatory, customer, and audit requirements; extend it where those requirements demand it.
 
 ---
 
@@ -195,7 +198,7 @@ Exception record must include:
 - verification condition for closure.
 
 Release-ready defaults:
-- Critical findings are rejected by default. A Critical exception is valid only with security leadership and business/product owner approval, explicit TTL, compensating controls, and mandatory post-release review.
+- Critical findings block release by default. A Critical exception is valid only with security leadership and business/product owner approval, explicit TTL, compensating controls, and mandatory post-release review.
 - High exceptions require service owner plus security owner approval.
 - Exceptions without expiry are invalid.
 - Expired exceptions automatically fail the next release gate unless renewed through review.

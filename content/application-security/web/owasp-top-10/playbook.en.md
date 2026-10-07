@@ -16,11 +16,11 @@ OWASP Top 10:2025 mapping:
 
 | OWASP Top 10:2025 category | Primary section in this playbook | Review note |
 |---|---|---|
-| A01 Broken Access Control | Section 2 | Same primary risk; API-specific BOLA/BFLA depth is in the API playbook. |
+| A01 Broken Access Control | Sections 2 and 11 | Includes SSRF (CWE-918), which moved into A01 in 2025; API-specific BOLA/BFLA depth is in the API playbook. |
 | A02 Security Misconfiguration | Section 3 | Includes headers, CORS, XML parser settings, cloud permissions, and environment separation. |
 | A03 Software Supply Chain Failures | Section 4 and supply-chain playbooks | 2025 broadens the old vulnerable-components category to build, developer, artifact, registry, and vendor paths. |
 | A04 Cryptographic Failures | Section 5 | Same control family; verify transport, key lifecycle, token validation, and storage. |
-| A05 Injection | Section 6 | Includes SQL, shell, template, XSS, XXE, SSRF-style URL interpretation, and parser-mediated injection. |
+| A05 Injection | Section 6 | Includes SQL, shell, template, XSS, XXE, and parser-mediated injection; report SSRF under A01:2025. |
 | A06 Insecure Design | Section 7 | Includes business logic, state machines, abuse economics, and exceptional-condition failure behavior. |
 | A07 Authentication Failures | Section 8 | Identity and session details are cross-referenced to the OIDC/OAuth playbook where applicable. |
 | A08 Software or Data Integrity Failures | Section 9 | Includes tampered artifacts/configs, unsafe deserialization, and client-controlled object integrity. |
@@ -65,7 +65,7 @@ Impact:
 
 - `deny-by-default` and per-request/per-object authorization
 - Centralized policy-engine (`RBAC`/`ABAC`/`ReBAC`)
-- Mandatory ownership checks (`resource.owner_id == caller.subject_id`)
+- Enforce object authorization from the approved policy: ownership, tenant membership, delegated grants, and support/admin scope as applicable; a simple `resource.owner_id == caller.subject_id` check covers only owner-exclusive resources
 - Strict internal/external API segmentation and mTLS
 - Strict `CORS` allowlists
 - Step-up authentication for high-risk actions
@@ -92,7 +92,7 @@ Required evidence:
 - Route/API inventory showing owner, exposure model, and data classification.
 
 Negative tests:
-- User A cannot read, update, delete, export, or infer existence of User B's object.
+- Without an authorized sharing or delegation grant, User A cannot read, update, delete, export, or infer existence of User B's object.
 - Low-privilege user cannot call admin endpoints directly.
 - Cross-tenant object IDs, nested GraphQL nodes, batch endpoints, and bulk exports are denied.
 - Untrusted origins cannot read credentialed responses.
@@ -156,7 +156,7 @@ Release-ready defaults:
 - Debug mode, verbose stack traces, sample apps, default credentials, public admin consoles, and directory listing are disabled in live environments.
 - Security headers are defined per application class; browser-facing apps at minimum decide on HSTS, CSP, frame protection, content-type sniffing, referrer policy, and cookie attributes.
 - XML parsers disable DTD, external entities, unsafe resolvers, and unbounded entity expansion unless a documented legacy exception exists.
-- Configuration drift is checked at deploy time and at least every `24h` for internet-facing and high-value services.
+- Configuration drift is checked at deploy time and at least every `24h` for internet-facing and high-value services; this interval is an initial local policy assumption to adjust to the threat model.
 
 Required evidence:
 - IaC and runtime configuration scan results for the deployed environment.
@@ -287,7 +287,7 @@ Impact:
 
 - Enforce TLS 1.2+ (preferably 1.3) and HSTS
 - Store keys in `HSM`/`KMS`
-- Use adaptive password hashing (Argon2id/scrypt/bcrypt/PBKDF2)
+- Use Argon2id for new password storage, scrypt when unavailable, and PBKDF2 with a validated implementation when FIPS requirements apply; retain bcrypt only for legacy compatibility with a migration plan
 - Use scheduled + emergency key rotation
 - Encrypt sensitive data at rest by classification
 - Verification:
@@ -303,7 +303,7 @@ Priority:
 Release-ready defaults:
 - TLS 1.3 is preferred; TLS 1.2 is allowed only with modern cipher suites and no legacy protocol fallback.
 - Browser-facing HTTPS uses HSTS after rollout safety is confirmed; preload is a separate risk decision.
-- Passwords use Argon2id, scrypt, bcrypt, or PBKDF2 with parameters reviewed for current platform cost; plaintext, reversible encryption, and fast hashes are rejected.
+- New password storage uses Argon2id, or scrypt when Argon2id is unavailable. FIPS requirements may require PBKDF2 in a validated implementation; bcrypt is reserved for legacy compatibility with a migration plan. Parameters meet the applicable security baseline and are benchmarked on the deployed platform; plaintext, reversible encryption, and fast hashes are rejected.
 - Keys live in KMS/HSM or an approved secret-management system; emergency revocation and rotation must be tested for high-value keys.
 - Sensitive data encryption is tied to data classification, access control, backup handling, and key separation.
 
@@ -338,7 +338,7 @@ Types:
 - `SQLi` (SQL Injection): user input changes SQL query logic. Example: `id=1 OR 1=1` returns all records; blind/time-based variant uses `SLEEP(5)` for confirmation.
 - Command Injection: user input is executed by shell command. Example: `filename=report.txt; cat /etc/passwd`.
 - `SSTI` (Server-Side Template Injection): input is interpreted as template expression. Example: `{{7*7}}` returns `49`, proving template code execution.
-- `XSS` (Cross-Site Scripting): malicious JavaScript executes in victim browser. Example: payload `<script>fetch('/api/me')</script>` in comment steals session data.
+- `XSS` (Cross-Site Scripting): malicious JavaScript executes in victim browser. Example: payload `<script>fetch('/api/me')</script>` in a comment reads data using the victim's session.
 - `XXE` (XML External Entity): XML entity resolves local file or triggers SSRF. Example: entity referencing `file:///etc/hosts` returns local file content.
 
 Typical flow:
@@ -358,7 +358,7 @@ Impact:
 
 ### 6.3 Practical defense
 
-- Parameterized queries and ORM for SQL
+- Use parameterized queries, including ORM APIs; constructing raw SQL or ORM expressions from strings remains unsafe. Select table names, column names, and sort directions from a fixed allowlist when they cannot be bound as parameters
 - Ban string concatenation in SQL/command contexts
 - Input filtering + allowlists
 - Use CSP as defense-in-depth
@@ -367,9 +367,9 @@ Impact:
 - If OS command execution is unavoidable: use a fixed executable path, argv-style APIs without shell expansion, a small allowlist of operations, strict argument validation, and no user-controlled command names
 - Shell metacharacter escaping is a last-resort compensating control, not the primary defense; test metacharacters and argument injection explicitly
 - Isolate interpreter/template runtimes (sandbox/container)
-- For SSTI: update template libraries, forbid user template upload/modification, sanitize template input, prefer logic-less templates
+- For SSTI, pass user input only as data to a trusted template; do not compile or interpret it as template source. User-authored templates require separate isolation and engine capability review; string sanitization and logic-less templates alone do not establish safety
 - For SSRF: allowlist trusted addresses, validate parameters, account for DNS rebinding behavior
-- For XSS/PHP injection: htmlspecialchars, filtering/escaping, disable unnecessary functions
+- For XSS, use output-context encoding and a reviewed HTML sanitizer when markup is allowed. `htmlspecialchars` does not protect arbitrary JavaScript, CSS, or server-side PHP execution. Untrusted data must not reach `eval`, dynamic `include`, or other code-execution mechanisms
 - Make `SAST`/`DAST`/fuzzing mandatory in CI
 - Verification:
   - payload regression suite
@@ -460,7 +460,7 @@ Release-ready defaults:
 - Critical flows have a documented state machine, allowed transitions, idempotency model, replay handling, and failure behavior.
 - Abuse controls exist for signup, login, checkout, transfer, refund, export, invite, support, and privilege-change flows where applicable.
 - High-impact operations require step-up, approval, rate/velocity limits, or dual control based on risk.
-- Exceptional-condition handling is designed per critical flow: fail closed, roll back partial state, preserve idempotency, emit a security-relevant event, and return a safe user-facing error without internal details.
+- Exceptional-condition handling is designed per critical flow: fail closed, roll back partial state or reconcile and compensate completed external actions, preserve idempotency, emit a security-relevant event, and return a safe user-facing error without internal details.
 - Threat modeling is mandatory before release for new trust boundaries, sensitive data, external integrations, AI/agentic flows, and payment/security workflows.
 
 Required evidence:
@@ -545,6 +545,7 @@ Release-ready defaults:
 - Browser applications use server-side sessions or BFF-style token handling; refresh tokens are not stored in browser storage.
 - Session ID rotates after login, privilege elevation, and recovery completion.
 - User sessions have idle and absolute timeouts; high-risk actions require recent authentication.
+- Use the phishing-resistant authentication, passkey, and recovery profile in section 6.7 of the [OIDC/OAuth playbook](../../identity/oidc-oauth/playbook.en.md); generic MFA coverage does not establish equivalent protection across authenticator types.
 - Credential stuffing controls include breached-password checks, per-account and per-source throttling, bot signals, and anomaly alerts.
 - Logout destroys local session and revokes or invalidates refresh/session material where the architecture supports it.
 
@@ -688,7 +689,7 @@ Release-ready defaults:
 - Security event catalog covers authentication, authorization decisions, admin actions, privilege changes, secret/key access, configuration changes, data export, rate limits, validation failures, and webhook/API abuse.
 - Logs use a consistent schema with timestamp, actor, tenant, client, source, action, resource, decision, reason, correlation ID, and request ID where applicable.
 - Tokens, credentials, secrets, full payment data, and sensitive payloads are redacted before storage.
-- High-value audit logs are centralized, access-controlled, tamper-evident or append-only, and retained at least `90d` unless stricter requirements apply.
+- High-value audit logs are centralized, access-controlled, and tamper-evident or append-only. Define retention and deletion periods from investigation needs and applicable legal, privacy, and contractual requirements, including copies and backups. A `90d` retention period is an initial local policy assumption requiring approval, not a universal minimum; test both preservation and deletion.
 - Alerts have owner, severity, runbook, and target response SLO.
 
 Required evidence:
@@ -742,7 +743,7 @@ Impact:
 ### 11.3 Practical defense
 
 - Allowlist exact outbound destinations by business purpose; avoid generic "any URL" fetchers in live environments.
-- Resolve and validate the final destination after redirects, canonicalization, DNS resolution, and IP normalization; block private, loopback, link-local, multicast, and cloud metadata ranges unless explicitly approved.
+- Validate the initial destination before connecting, including normalized scheme, host, port, and every resolved IPv4/IPv6 address. Disable redirects by default; if required, repeat validation before every redirected request and do not forward credentials to a different origin. Bind the actual connection to the validated address or enforce equivalent proxy policy; block private, loopback, link-local, multicast, cloud metadata, and internal control-plane destinations unless explicitly approved.
 - Enforce network egress policy from the workload namespace/VPC/subnet so application validation is not the only control.
 - Disable or tightly configure parser features that resolve remote references in XML, SVG, PDF, office, media, and archive processing.
 - Use dedicated fetcher services with low privilege, no ambient cloud credentials, no access to internal admin networks, response size/time limits, and audited destination policy.
@@ -759,7 +760,7 @@ Priority:
 
 Release-ready defaults:
 - User-controlled fetch destinations are either not supported or constrained to approved schemes, hosts, ports, content types, and response sizes.
-- Final effective destination is validated after redirects and DNS resolution; private, loopback, link-local, multicast, and metadata destinations are blocked by both application policy and network egress control.
+- Every destination, including the initial request and each redirect, is validated before connection; DNS validation must cover the address actually used to connect. Private, loopback, link-local, multicast, metadata, and internal control-plane destinations are blocked by application policy and network egress control.
 - Fetching runs under a dedicated identity with no broad cloud metadata, service-mesh admin, Kubernetes API, Vault, CI/CD, or internal admin access.
 - Parser/converter features that can fetch remote content are disabled or routed through the same controlled fetcher.
 - SSRF attempts produce security events with source actor, feature, requested URL class, resolved destination class, decision, and correlation ID.

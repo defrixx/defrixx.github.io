@@ -113,6 +113,7 @@ Control labels in this document are requirement profiles, not finding severity:
 
 **Practical controls:**
 - `Baseline`: trusted registry + provenance checks (hash/signature/publisher)
+- `Baseline`: treat model loading as potential code execution. Do not deserialize untrusted artifacts on production servers; prefer a non-executable weight format where supported, and review the loader, custom components, and dependencies separately. Convert and evaluate third-party models in an isolated environment without production credentials and with restricted egress. A signature establishes provenance, not safe artifact behavior.
 - `Baseline`: inventory AI assets beyond deployed services: model endpoints, prompt/config stores, vector stores, memory stores, evaluation harnesses, tool adapters, MCP servers, provider consoles, and local AI runtimes
 - `High-impact/regulated`: SBOM/AI-BOM for model artifacts and runtime
 - `Baseline`: CVE scanning + gating for critical vulnerabilities
@@ -122,6 +123,7 @@ Control labels in this document are requirement profiles, not finding severity:
 
 **Verification signals:**
 - release share with signed artifacts
+- evidence that loading or converting an unreviewed model cannot reach production credentials, host files, or unapproved network destinations
 - inventory coverage for AI assets and owner/review-expiry completeness
 - time-to-fix for critical CVEs in AI stack
 
@@ -139,6 +141,7 @@ Control labels in this document are requirement profiles, not finding severity:
 
 **Practical controls:**
 - `Baseline`: strict context separation (trusted vs untrusted)
+- `Baseline`: delimiters, text sanitization, and injection detection reduce risk but do not guarantee model adherence to policy. An independent component must authorize and validate each action; retrieved documents, tool responses, and summaries cannot grant permissions. Test exfiltration through allowed tool parameters and external links, not only explicit instructions to ignore policy.
 - `Baseline`: retrieval with document-level/tenant-level authorization
 - `Baseline`: ingestion security pipeline (malware/content/policy checks)
 - `Baseline`: memory write policy for agents; exclude secrets, tokens, raw regulated data, and unnecessary sensitive fields from working memory, long-term memory, checkpoints, and summaries
@@ -148,7 +151,7 @@ Control labels in this document are requirement profiles, not finding severity:
 - `Recommended maturity`: adversarial test suite in CI/CD
 
 **Verification signals:**
-- injection success rate in red-team tests
+- injection success rate in red-team tests; record the attack objective, observed side effect, case count, model/defense versions, and outcomes for legitimate tasks. Treat execution errors and missing telemetry as inconclusive rather than blocked attacks. A small hand-picked test set establishes only those case outcomes, not a population attack rate for production traffic
 - share of RAG documents passing policy scan
 - memory write rejection rate and vector-store recovery test results
 
@@ -287,6 +290,8 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - share of raw-payload logs deleted on time per retention policy
 - percentage of high-impact agent actions reconstructable from redacted action traces
 
+The 30-day forensic retention ceiling is a local data-minimization assumption, not a general legal requirement. Use a shorter period when sufficient; longer retention or a legal hold requires an owner, separate approval, access restrictions, and a review date.
+
 ### 3.10 Governance, risk, and compliance
 
 **Risks:**
@@ -400,6 +405,12 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - `Baseline`: conduct user/machine access audits for AI tools, model registries, prompt repositories, vector stores, and provider consoles
 - `Baseline`: retain audit evidence for model decisions, dataset versions, prompt/system changes, exceptions, and incident governance
 - `High-impact/regulated`: review the AI risk register at least quarterly and on major model/provider change
+
+**Decommission:**
+- `Baseline`: assign an owner and agree the shutdown with system consumers; define a replacement or safe failure, stop new task intake, cancel queued jobs, and verify completion or cancellation of running actions, including child agents
+- `Baseline`: revoke credentials and tool permissions, remove routes and automations, and disable provider integrations; verify denial through both new connections and previously established connections and issued tokens
+- `Baseline`: delete or transfer memory, vector indexes, caches, datasets, and artifacts to an authorized owner under the approved policy; account separately for provider copies, backups, and legal deletion restrictions; retain necessary evidence with restricted access and a retention period
+- `Baseline`: close the inventory entry only after verifying that no active jobs or access remain; record residual data, deletion deadlines, and owners so that restoring an old backup cannot reactivate the retired system without renewed approval
 
 ---
 

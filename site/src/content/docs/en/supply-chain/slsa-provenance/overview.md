@@ -40,6 +40,8 @@ SLSA adoption trace in this document:
 - verifier checks signature and builder identity
 - baseline for live supply chains
 
+A hosted platform may use shared or dedicated infrastructure; SLSA does not require a particular commercial runner provider. A runner label or a signature created by a user-defined build step is insufficient to establish Build L2. Verify platform-controlled provenance generation, its trust boundary, and the controls behind the claimed level.
+
 ### 2.3 Build L3
 
 - stronger resistance to provenance forgery by tenant process
@@ -74,7 +76,7 @@ These controls are Build-track expectations about what the builder is allowed to
 
 ### 3.2 Build environment controls
 
-- hosted runners for release builds
+- release builds on a hosted build platform with a documented trust boundary; internally operated infrastructure is acceptable when the platform meets the target level, while an individual's workstation does not meet the hosted requirement
 - one-build-one-ephemeral-environment
 - no shared mutable state across concurrent builds
 - treat cache as untrusted input; release pipelines must enforce cache-safe controls (scoped cache keys, provenance-consistent inputs), with optional no-cache rebuilds for high-risk releases
@@ -239,16 +241,18 @@ Minimum policy model for the SLSA GitHub container generator. For a different bu
 ```yaml
 trusted_builders:
   - signature_oidc_issuer: https://token.actions.githubusercontent.com
-    signature_certificate_identity: https://github.com/ORG/REPO/.github/workflows/release.yml@refs/tags/v*
+    signature_certificate_identity: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/<approved-generator-version>
     github_oidc_subject_pattern: repo:ORG/REPO:ref:refs/tags/v*
     source_repository: github.com/ORG/REPO
     source_ref_pattern: refs/tags/v*
     workflow_ref: ORG/REPO/.github/workflows/release.yml@refs/tags/v*
-    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
+    builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/<approved-generator-version>
     max_slsa_build_level: 3
     build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
     external_parameters_schema: policy://slsa/github-container-generator/v1
 ```
+
+This is a local policy model, not a ready-to-run verifier configuration. Replace `<approved-generator-version>` with the exact approved version from a real attestation; a new generator version requires a trust allowlist change. This generator's certificate identity identifies its reusable workflow rather than the calling release workflow. Match the source repository and release workflow separately against signed data. Release-rule `v*` patterns require explicit matching semantics in the implementation. The generator may emit v0.2; select the separate compatibility policy in section 8.1 from the actual `predicateType`.
 
 ### 7.2 Rotating trust roots/identity without outage
 
@@ -277,7 +281,7 @@ Organization deployment policy checks:
 
 1. If `predicate.runDetails.metadata.startedOn` and `finishedOn` are present, verify `startedOn <= finishedOn`; if they are absent, require builder-specific evidence or a documented policy exception instead of treating absence as SLSA failure
 2. Enforce provenance freshness through local `max_provenance_age` per environment (for example, prod `24h`, staging `7d`), except for approved delayed deploy/promote cases
-3. For delayed deploy/promote, redeploy of a previously approved digest is allowed when artifact digest is unchanged, provenance/attestation digest is unchanged, and a valid prior gate-pass exists in audit trail
+3. For delayed deploy/promote, an unchanged artifact and provenance/attestation digest plus a prior gate-pass can support reuse of historical build evidence, but do not authorize deployment by themselves. Re-evaluate current trust policy, builder/key compromise notices, vulnerability and secret findings, exception expiry, target environment, and deployment configuration. Preserve the original provenance; do not re-sign it merely to reset its age. A rollback needs the same current authorization or an explicit emergency exception.
 
 ### 8.2 Decision policy
 
@@ -298,7 +302,7 @@ If the reference model cannot be reached in one step, adopt in phases:
 - persist gate result in audit trail
 
 2. Phase B (L2):
-- move release builds to hosted runners
+- move release builds to a hosted platform and verify platform-controlled provenance generation; changing runner type alone does not establish L2
 - enforce provenance signature + `builder.id` + issuer/identity allowlist checks
 - block deployment unless mandatory gate fully passes
 

@@ -101,6 +101,8 @@ Compromise or misrepresentation of models, adapters, datasets, dependencies, too
 ### Summary (OWASP)
 Poisoning of pre-training, fine-tuning, feedback, or retrieval data, or direct manipulation of model artifacts, introduces triggers, biases, or unsafe behavior that persists into production.
 
+Training-data poisoning can embed unsafe behavior in model parameters. RAG corpus poisoning acts through retrieved content: changing a response does not require changing model weights. These paths can overlap with prompt injection, but require reviewing different parts of the data lifecycle.
+
 ### How it appears in live environments
 - poisoned training, fine-tuning, or preference datasets
 - fine-tuning subversion and trigger-based backdoors

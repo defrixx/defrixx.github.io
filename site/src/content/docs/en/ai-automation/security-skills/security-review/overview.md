@@ -16,6 +16,8 @@ Provide exact base/head revisions for a PR, or a repository revision and working
 
 Threat modeling, vulnerability discovery, reachability and prerequisite checks, attack analysis, and prioritized findings. The optional `scripts/pr_context.py` records local Git context; it does not scan for vulnerabilities. It requires Python 3.9+ and Git.
 
+The helper also needs POSIX no-follow output support. Its PR comparison uses merge-base-to-head semantics; uncommitted and untracked content is recorded as dirty state but is not included in that diff. Review selected working-tree changes separately. Missing or ambiguous history produces an incomplete result rather than a fallback assessment of the current directory.
+
 ## Example request
 
 > Use security-review on this PR with the supplied base/head commits. Distinguish introduced issues from existing ones. Report confirmed findings, hypotheses, evidence, and untested areas without changing the code.

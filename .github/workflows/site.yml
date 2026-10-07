@@ -20,28 +20,18 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Validate source Markdown
-        run: |
-          if [ -f scripts/validate.py ]; then
-            python3 scripts/validate.py
-          else
-            echo "scripts/validate.py not found; skipping source Markdown validation."
-          fi
+        run: python3 scripts/validate.py
 
-      - name: Generate Starlight content
-        run: |
-          if [ -f scripts/sync_starlight_content.py ]; then
-            python3 scripts/sync_starlight_content.py
-          else
-            echo "scripts/sync_starlight_content.py not found; skipping generated content check."
-          fi
+      - name: Check generated Starlight content
+        run: python3 scripts/sync_starlight_content.py --check
 
       - name: Install, build, and upload site
-        uses: withastro/action@v6
+        uses: withastro/action@3eafd002e65cc31b4f0eae0bb05450d521562247 # v6
         with:
-          path: ${{ hashFiles('site/package.json') != '' && 'site' || '.' }}
+          path: site
           node-version: 22.23.2
           package-manager: npm@10.9.8
 
@@ -49,7 +39,7 @@ jobs:
         run: python3 scripts/validate_site.py
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -61,4 +51,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5

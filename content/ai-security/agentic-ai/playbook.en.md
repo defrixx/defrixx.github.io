@@ -86,21 +86,30 @@ A particularly dangerous combination is access to sensitive data, ingestion of u
 - For multi-agent workflows, propagate original user/workload context and enforce delegation boundaries at every hop.
 
 Starting defaults:
+
+These are local assumptions for an initial rollout of short, interactive workflows with individually authorized tools and no unattended bulk jobs. They are not OWASP or ACS limits. Step counts limit how far an unexpected plan can proceed before review; they do not replace per-call authorization or impact/spend budgets. The kill-switch target assumes an out-of-band control plane can deny new effects, including dispatch of queued work, within the stated window. Workflows whose possible damage occurs sooner need a tighter target or preventive transaction limits.
+
 - `max autonomous steps=5` for read-only workflows;
 - `max autonomous steps=3` before re-authorization for state-changing workflows;
 - `max tool-chain depth=3`;
 - default state-changing execution flow: `preview -> explicit confirm -> execute`;
 - kill-switch SLO `<=60s` for state-changing or execution agents.
 
+Count an autonomous step as one attempted tool call, including denied calls and retries; parallel and delegated calls consume the shared count. Tool-chain depth counts nested tool/agent invocations, with the root at depth zero. Exhaustion stops new effects and requires re-authorization; re-authorization cannot reset the parent workflow's total budgets. Record each limit, rationale, owner, and accepted maximum impact in the deployment policy. Change values only after representative success-path, loop, retry, and parallel-delegation tests; repeat them after material tool or model changes.
+
+Measure emergency disable from acceptance of the operator's command to denial of new effects across all workers and children. Track cancellation of queued/in-flight actions separately and identify effects that cannot be rolled back. An average disable time does not demonstrate that every worker meets the target.
+
 #### Delegation, Approval Binding, and Budgets
 
 Carry the original subject, tenant, authorization and policy context, and delegation chain across agent calls. Reduce delegated permissions to the required subset; delegation cannot increase privilege. Enforce authorization at the tool/action boundary even when a parent agent has approved the plan.
 
-Bind approval to the exact operation, target, material parameters, and expected impact. Recheck that binding immediately before execution. Changed parameters require a new approval; high-risk approvals need a configured expiry and single-use or replay protection appropriate to the operation. Preview text alone is not a permission token.
+Bind approval to the exact operation, target, material parameters, and expected impact. Recheck that binding immediately before execution. Changed parameters require a new approval; high-risk approvals need a configured expiry and single-use or replay protection appropriate to the operation. Preview text alone is not a permission token. Check and consume single-use approval atomically in the execution component outside model context, bound to the current actor and tool call. Two concurrent workers must not both acquire permission to execute from the same approval.
+
+For state-changing operations, persist the business operation identifier and idempotency key before the first external call. A retry after a timeout is not a new operation: first establish the outcome through the downstream audit trail or API. Retry with the same key and material parameters only within that system's guaranteed deduplication window. Do not let the model create a new key, switch providers, or reuse approval to bypass an uncertain outcome. If the tool lacks idempotency support, stop automatic retries until the outcome is reconciled and a possible duplicate effect is separately authorized.
 
 Set enforceable budgets for tool calls, external requests, spend, tokens/compute, elapsed time, destructive operations, and delegated agents. Children consume the parent's total budget rather than resetting it. Define cancellation and safe recovery when a limit is hit.
 
-Verification: attempt tenant substitution, child privilege expansion, replayed/expired approval, and destination or amount changes after preview. Exhaust the shared budget through parallel children. No unauthorized side effect may occur, and denial must appear in the action trace.
+Verification: attempt tenant substitution, child privilege expansion, replayed/expired approval and concurrent reuse across two workers, and destination or amount changes after preview. Exhaust the shared budget through parallel children. Simulate a successful action with a lost response, worker restart, and expired deduplication protection: the workflow must not create a second business operation or treat a timeout as proof of failure. No unauthorized side effect may occur, and denial must appear in the action trace.
 
 #### Runtime Controls and ACS
 
@@ -123,6 +132,9 @@ As a playbook baseline, intercept tool invocation before effects occur, resolve 
 - Test recovery for semantic integrity: restored vector stores and memory must produce expected authorized retrieval behavior and must not reintroduce poisoned content.
 
 Production defaults:
+
+The forensic retention ceiling below is a local data-minimization assumption for scoped investigations, not a general legal retention rule. Use the shortest sufficient retention, record the data owner and deletion evidence, and separately approve any legal hold or longer retention with access restrictions and a review date.
+
 - no indefinite retention for working memory;
 - raw session/scratchpad retention disabled by default outside forensic mode;
 - memory entries containing sensitive data require explicit retention class and deletion workflow;
@@ -188,7 +200,7 @@ Operational signals:
 - approval coverage for high-impact actions;
 - denied tool calls per 1k sessions;
 - memory write rejection rate and sensitive-data detections;
-- mean time to kill runaway agents, target `<=60s`;
+- maximum observed time to deny new effects during kill-switch drills, target `<=60s`; report average latency and in-flight cancellation separately;
 - behavior drift alerts after model, prompt, tool, or memory-policy changes.
 
 ---

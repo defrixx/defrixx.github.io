@@ -18,9 +18,11 @@ Report triage and code review are alternative entry points. You can start direct
 
 ## Passing results between stages
 
-The [finding handoff contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/handoff-contract.md) is bundled as a local copy in each new skill. Equivalent fields in an ordinary report are sufficient for manual work; JSON is optional.
+The [finding handoff contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/handoff-contract.md) is bundled as a local copy in `security-report-triage` and `security-fix-verification`. Equivalent fields in an ordinary report are sufficient for manual work; JSON is optional.
 
 Stages preserve the origin assessment ID together with the finding ID, evidence references, revision and local changes, task scope, assumptions, and limits. Merged findings retain old IDs as aliases; split findings link their new IDs to the original.
+
+Use the pair `(origin_assessment_id, finding_id)` for global identity and aliases; a bare finding ID may collide between independent assessments. Reject unknown major handoff schema versions instead of interpreting them as compatible. Retain extensions as inert data, and keep evidence attachments inside the selected delivery root after checking them for sensitive content.
 
 | Field | What it records |
 | --- | --- |

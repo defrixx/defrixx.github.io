@@ -65,7 +65,7 @@ Secret values must be stored in `Secret`, not in `ConfigMap`, annotations, label
 **Production defaults:**
 - forbid plaintext/base64 Secret manifests in Git, Helm values, and CI artifacts;
 - allow encrypted-at-source approaches (`sops`, sealed/encrypted manifests, provider-specific encryption) only with controlled keys, review, and no local decryption outside the trusted CI/CD path;
-- do not use `ConfigMap` for passwords, tokens, certificates, private keys, OAuth client secrets, webhook secrets, or database credentials;
+- do not use `ConfigMap` for passwords, tokens, private keys, OAuth client secrets, webhook secrets, or database credentials; public certificates and CA trust bundles are not secrets merely because they are certificates, but their integrity and change authority still need protection;
 - if an existing `ConfigMap` contains a sensitive value, treat the value as compromised and rotate it after migration.
 
 ### 3.2 Pod delivery: files first, env only by exception
@@ -78,6 +78,7 @@ Environment variables are acceptable only when the application does not support 
 - mount the Secret only into containers that actually need it;
 - set `readOnly: true` for Secret volume mounts;
 - do not use `subPath` for a Secret if the application expects automatic value updates;
+- Secret volume updates are eventually consistent and do not make the application reload credentials automatically. Test file reopening or reload behavior, including long-lived connections and connection pools. Env-based credentials need container replacement to receive updated values. Verify every replica uses the replacement credential before revoking the old one; after suspected compromise, prioritize immediate revocation and use the incident recovery path.
 - do not pass Secrets in container args, command-line flags, or startup scripts that may be logged;
 - for high-value secrets, forbid env delivery without owner, expiry, compensating controls, and migration plan.
 
@@ -118,10 +119,10 @@ Encryption at rest reduces the risk of reading etcd storage, disks, and backups,
 Secret transfer between API server, etcd, kubelet, and node must use protected channels with correct component authentication. In managed Kubernetes, some control-plane guarantees belong to the provider, but the team still owns RBAC, audit, and workload delivery model.
 
 **Production defaults:**
-- kubelet, API server, and etcd endpoints are not directly reachable from application namespaces;
+- block application access to etcd and kubelet management endpoints; permit Kubernetes API access only for workloads with a documented need, authenticated identity, and restricted RBAC, and test the network path separately from API authorization;
 - kubelet client credentials, API server etcd credentials, and control-plane certificates are protected as high-value secrets;
 - node access is treated as potential access to workload Secrets on that node;
-- multi-tenant workloads with different trust boundaries are separated with node pools, taints/tolerations, runtime policy, and NetworkPolicy.
+- multi-tenant workloads with different trust boundaries are separated with node pools, runtime policy, and NetworkPolicy. For dedicated pools, enforce a required `nodeSelector` or node affinity together with taints/tolerations; admission must reject another tenant's tolerations and arbitrary `nodeName`, which bypasses the scheduler. Protect security boundary node labels from kubelet changes with the Node authorizer and `NodeRestriction`. Verify through a negative test that a tenant cannot place a Pod in another tenant's pool; taints alone do not provide that guarantee.
 
 ### 3.6 External secret managers
 
@@ -157,11 +158,13 @@ kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/servi
 kubectl get secrets -A -o jsonpath='{range .items[?(@.type=="kubernetes.io/dockerconfigjson")]}{.metadata.namespace}/{.metadata.name}{"\n"}{end}'
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" sa="}{.spec.serviceAccountName}{" automount="}{.spec.automountServiceAccountToken}{"\n"}{end}'
 kubectl get serviceaccounts -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{" imagePullSecrets="}{.imagePullSecrets[*].name}{"\n"}{end}'
-kubectl get roles,clusterroles -A -o yaml | grep -n 'resources:.*secrets'
+kubectl get roles,clusterroles -A -o yaml
 kubectl get rolebindings,clusterrolebindings -A
 ```
 
 Check deployment rights as well as direct Secret grants:
+
+Review complete role rules and bindings, including wildcard resources and verbs; a text match for `secrets` alone misses effective access through wildcards and workload creation. The inventory JSONPath commands filter displayed output but still retrieve Secret objects from the API; run them only under an authorized review identity and do not capture raw responses in debug logs or artifacts.
 
 ```bash
 kubectl auth can-i list secrets --as=<subject> -n <ns>
@@ -174,7 +177,7 @@ kubectl auth can-i update pods/ephemeralcontainers --as=<subject> -n <ns>
 ### 4.2 Negative tests
 
 Policy/admission must reject:
-- `ConfigMap` with keys or values resembling passwords, tokens, private keys, or certificates;
+- `ConfigMap` containing credentials or private keys; detection by key names or value patterns is a supplementary check, not proof that all sensitive values are detected, and public certificate bundles must not be rejected solely for containing certificates;
 - Pod that mounts a Secret without an explicit allowlist/owner for the workload;
 - Pod that passes a Secret through env for high-value classes without an approved exception;
 - workload with `serviceAccountName: default`;
@@ -184,6 +187,8 @@ Policy/admission must reject:
 - arbitrary `hostPath`, `privileged: true`, `pods/exec`, and ephemeral debug in protected namespaces.
 
 ### 4.3 Audit and detection
+
+Use audit level `Metadata` for Secret requests so request and response bodies do not copy values into audit storage. Place this rule before broader body-logging rules: the first matching rule applies. Review `serviceaccounts/token` and other credential-issuing endpoints for the same exposure. Test with a synthetic credential that the expected event is recorded and the credential value is absent from every audit sink.
 
 Minimum centralized audit events:
 - `get/list/watch` on `secrets`;

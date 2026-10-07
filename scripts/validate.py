@@ -193,6 +193,8 @@ def check_russian_terminology(errors: list[str], path: Path, text: str) -> None:
             continue
 
         prose = re.sub(r"`[^`]*`", "", line)
+        if re.search(r"[\u0451\u0401\u2013\u2014]", prose):
+            fail(errors, path, line_no, "Russian prose must use e instead of yo and ASCII hyphens instead of long dashes")
         match = RU_DISCOURAGED_TERMS.search(prose)
         if match:
             fail(

@@ -1,12 +1,12 @@
 ---
 title: "Kubernetes Pod Security Playbook"
-description: "Focus strictly on **Pod / Container runtime security**:"
+description: "Focus strictly on **Linux Pod / Container runtime security**:"
 sidebar:
   order: 30
 ---
 ## 1. Scope and Objective
 
-Focus strictly on **Pod / Container runtime security**:
+Focus strictly on **Linux Pod / Container runtime security**:
 - Covers only **workload-level controls**
 - Excludes **networking, ingress, and cluster-wide policies**
 - Objective: **minimize impact in case of container compromise**
@@ -87,7 +87,7 @@ Where relevant, distinguish between:
 
 **Compatibility and failure modes for `hostUsers: false`:**
 - Do not treat `hostUsers: false` as a drop-in YAML flag. Verify it on the same Kubernetes minor version, kernel, runtime, CSI/storage stack, and admission policy used in live environments.
-- Minimum runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all filesystems used by the workload, containerd `2.0+` or CRI-O `1.25+`, an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`, and kubelet events/metrics showing successful user-namespace Pod creation.
+- Minimum runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all filesystems used by the workload, containerd `2.0+` or CRI-O `1.25+`, an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`, and evidence that the user-namespace Pod starts successfully. These are compatibility minimums, not recommended secure versions: use supported releases with current security patches. `started_user_namespaced_pods_total` counts creation attempts rather than successful starts; correlate it with errors, kubelet events, and actual Pod state.
 - Roll out in stages: first stateless workloads without `hostNetwork`, `hostPID`, `hostIPC`, raw block `volumeDevices`, or special storage assumptions; then stateful/storage-heavy workloads only after CSI/storage compatibility testing; then platform workloads through separate design review.
 - For images that genuinely need root-like behavior inside the container, use a dedicated exception path: owner, expiry, incompatibility reason for `runAsNonRoot`, evidence that host UID/GID remain unprivileged, and compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
 - Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and should fail admission or deployment validation.
@@ -112,7 +112,7 @@ Where relevant, distinguish between:
 
 **Container-level controls:**
 - `capabilities.drop: ["ALL"]`
-- Add back only explicitly required capabilities
+- Under PSS `restricted`, only `NET_BIND_SERVICE` may be added back with a documented need; other capabilities require a separately approved admission-policy exception, not merely a manifest justification
 
 **Critical:**
 - Avoid `CAP_SYS_ADMIN`
@@ -123,7 +123,7 @@ Where relevant, distinguish between:
 - Minimize kernel-exposed privileged operations
 - Reduce privilege escalation and breakout opportunities
 
-For review, do not stop at YAML. `capabilities.drop/add` controls several Linux capability sets through the CRI/runtime, and the final state depends on the entrypoint, `execve`, file capabilities, and `allowPrivilegeEscalation`. For disputed workloads, verify `CapEff`, `CapPrm`, `CapBnd`, `CapAmb`, and `NoNewPrivs` at runtime; the detailed model is covered in the [container escape and capability abuse overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/).
+For review, do not stop at YAML. `capabilities.drop/add` controls several Linux capability sets through the CRI/runtime, and the final state depends on the entrypoint, `execve`, file capabilities, and `allowPrivilegeEscalation`. For disputed workloads, verify `CapEff`, `CapPrm`, `CapBnd`, `CapInh`, `CapAmb`, and `NoNewPrivs` at runtime; the detailed model is covered in the [container escape and capability abuse overview](/Product-security-playbook/en/platform-security/kubernetes/container-escape-capability-abuse/overview/).
 
 ---
 
@@ -202,7 +202,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 
 **Pod-level controls:**
 - `automountServiceAccountToken: false` by default
-- Use a dedicated ServiceAccount only when Kubernetes API access is required
+- Use a dedicated ServiceAccount per workload, including workloads without Kubernetes API access; keep token automount disabled when it is unnecessary
 - Apply least-privilege RBAC
 - Do not use the namespace `default` ServiceAccount for application workloads
 
@@ -212,7 +212,8 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 - Uncontrolled privilege reuse across workloads
 
 **Mandatory admission/policy gates (prevent namespace-level bypass):**
-- Reject pods that do not set `automountServiceAccountToken: false` unless explicitly annotated as API-calling workloads.
+- Reject pods that do not set `automountServiceAccountToken: false` unless a policy-controlled exception authorizes the workload's API access. A workload-supplied annotation alone must not grant that exception; restrict exception creation and validate its workload identity, namespace, scope, and expiry.
+- Review explicit projected ServiceAccount token volumes separately: `automountServiceAccountToken: false` disables automatic mounting, not an explicitly requested token projection. Authorize projections for Kubernetes API or external federation with the intended audience, recipient container, and lifetime.
 - Reject pods that use `serviceAccountName: default`.
 - Require an explicitly named ServiceAccount for every workload.
 - Enforce these checks via admission policy (Kyverno/Gatekeeper/ValidatingAdmissionPolicy), not documentation-only review.
@@ -230,7 +231,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 
 **Critical `shareProcessNamespace` semantics:**
 - If `shareProcessNamespace: true`, processes become visible across containers in the Pod, including data exposed via `/proc`.
-- Containers can send signals to processes in sibling containers.
+- Processes in sibling containers become addressable for signaling, subject to normal UID and capability checks; sharing the process namespace does not itself remove those checks.
 - `/proc/<pid>/root` can expose another container's filesystem.
 - For live workloads, deny `shareProcessNamespace: true` by default; allow only explicit break-glass exceptions with owner and expiry.
 
@@ -253,6 +254,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 - Treat CPU limits as workload-specific, not a blanket security default. CPU limits can introduce throttling and latency regressions for services with bursty or latency-sensitive behavior; use them when the DoS/noisy-neighbor risk is higher than the throttling risk, or when required by platform policy.
 - For internet-facing, multi-tenant, batch, build, AI/inference, and untrusted-code workloads, document the resource abuse model and choose CPU, memory, and ephemeral-storage guardrails explicitly.
 - For critical services, validate limits through load testing rather than copying generic values.
+- Set an explicit `emptyDir.sizeLimit` for bounded temporary storage. A memory-backed `emptyDir` (`medium: Memory`) consumes memory rather than the `ephemeral-storage` budget; include it in the container/Pod memory budget and test shared-volume writers. Disk-backed ephemeral-storage limits rely on kubelet accounting and eviction, not a synchronous filesystem write quota. Verify accounting for the node filesystem layout and test exhaustion, eviction, and recovery in an isolated environment; use application-level upload/cache limits to prevent filling storage before eviction.
 
 **Namespace-level controls:**
 - apply `ResourceQuota` and, where needed, `LimitRange` for shared protected namespaces;
@@ -326,13 +328,13 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
 
 - `pod-security.kubernetes.io/enforce: restricted` on all protected namespaces.
 - Pin the policy version for all modes to the approved Kubernetes minor version:
-  - `pod-security.kubernetes.io/enforce-version: v<minor>`
-  - `pod-security.kubernetes.io/audit-version: v<minor>`
-  - `pod-security.kubernetes.io/warn-version: v<minor>`
+  - `pod-security.kubernetes.io/enforce-version: v1.<minor>`
+  - `pod-security.kubernetes.io/audit-version: v1.<minor>`
+  - `pod-security.kubernetes.io/warn-version: v1.<minor>`
 - Use `latest` only in explicitly owned canary or non-protected namespaces where policy drift is intentionally tested before cluster-wide adoption.
 - Separate `warn`/`audit` from `enforce`; live environments must not rely on warn-only mode.
 - Treat seccomp as a separate runtime evidence requirement: `restricted` admission must reject workloads without explicit `RuntimeDefault` or approved `Localhost`, equivalent custom policies must do the same, or node configuration must prove kubelet `--seccomp-default` / `seccompDefault` is enabled for namespaces where unspecified profiles are temporarily tolerated.
-- Namespace policy drift check every `24h`.
+- Use `24h` as an initial local namespace-policy drift-check interval; also detect label and admission-exemption changes as they occur. Restrict who can change those settings.
 - Block deployment if namespace labels regress or are removed.
 - During Kubernetes upgrades, run a dry-run evaluation of the next PSS version before changing namespace labels, record violations by workload owner, remediate or approve time-boxed exceptions, then update `enforce-version`, `audit-version`, and `warn-version` together.
 - Treat a PSS version change as a policy change: it needs owner approval, rollout window, rollback plan, and post-change evidence that protected namespaces still enforce `restricted`.

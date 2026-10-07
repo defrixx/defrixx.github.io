@@ -78,7 +78,7 @@ Kubernetes auth minimums:
   - `token_period`: only for periodic long-running workload tokens, with explicit role owner, renewal monitoring, and incident revocation path
   - `token_explicit_max_ttl`: set when the role needs a hard cap that renewal cannot exceed
   - Human/admin token TTL belongs to the OIDC/SSO auth method policy: `<=1h`, no non-expiring admin tokens
-- Prefer batch/non-renewable short-lived tokens for jobs and one-shot workloads where re-authentication is cheap. For long-running services through Vault Agent, a renewable service token is acceptable when it has a short `token_ttl`, a bounded `token_max_ttl` or `token_explicit_max_ttl`, and renewal monitoring.
+- Use short-lived batch tokens for jobs and one-shot workloads only when their TTL fits the incident containment deadline: they have no accessor and cannot be individually revoked or renewed. Choose service tokens when immediate individual revocation is required. For long-running services through Vault Agent, a renewable service token is acceptable when it has a short `token_ttl`, a bounded `token_max_ttl` or `token_explicit_max_ttl`, and renewal monitoring.
 - Treat periodic tokens as an exception path: use `token_period <=15m`, renewal failure alerting, and `token_explicit_max_ttl <=24h` unless a documented platform exception explains why the token must remain renewable indefinitely.
 - Do not use periodic tokens for human or administrator sessions.
 - Avoid wildcard role bindings.
@@ -170,6 +170,8 @@ Use dynamic engines whenever available (database, cloud, broker credentials).
 - Renew only while workload is healthy.
 - Revoke leases immediately for decommissioned workloads or incidents.
 
+Use the TTL returned by issuance or renewal, not the requested increment, to schedule the next renewal or replacement. Test revocation against the downstream service: removing a lease record is not sufficient evidence that credentials no longer work. KV values have no revocable lease; token revocation prevents further Vault access but does not invalidate a copied static password or API key. Rotate or revoke those values at their issuer.
+
 Operational commands:
 
 ```bash
@@ -209,8 +211,10 @@ path "kv/*" {
 - Restrict PKI roles by domain, SAN rules, key type, and TTL.
 - Rotate certificates before expiry through automation.
 
+PKI roles default to `generate_lease=false`: certificate validity is governed by its X.509 expiry, and revoking the issuing token does not automatically revoke such a certificate. Record the role's lease/storage settings and test the actual revocation path. `tidy` removes eligible expired records after the configured buffer; it is maintenance, not a replacement for revocation or incident evidence retention.
+
 Compromise response for certificates:
-1. Revoke by serial number.
+1. Revoke by serial number when Vault stores the certificate. With `no_store=true`, test the supported bring-your-own-certificate (BYOC) revocation path in advance; ordinary serial-only revocation is unavailable.
 2. Confirm CRL/OCSP publication and downstream consumption.
 3. Re-issue certificate and redeploy affected workload.
 4. Investigate usage from audit evidence.
@@ -223,18 +227,17 @@ vault read pki_int/crl
 vault write pki_int/tidy tidy_cert_store=true tidy_revoked_certs=true safety_buffer=72h
 ```
 
-Important: revocation works only where relying systems actually validate CRL/OCSP.
+Important: revocation works only where relying systems actually validate CRL/OCSP. Separately terminate established connections if they do not recheck certificate status within the response deadline.
 
 ### 3.6 Token hygiene
 
 - Do not keep long-lived broad tokens.
-- Do not create orphan tokens for workloads unless parent revocation semantics are explicitly unwanted and the runbook includes revoke-by-accessor or revoke-by-path evidence.
+- Login through non-`token` auth methods issues orphan tokens: revoking an assumed parent will not stop them. Do not create additional orphan tokens without justification; test individual service-token revocation by accessor. For batch tokens, test revocation of a known parent when the token is not orphan, or bound residual access by TTL and revoke issued credentials at their issuer.
 - Revoke tokens for offboarded users/services immediately.
 - Use accessors in incident workflows to avoid exposing full token values.
 
 ```bash
-vault token lookup <token>
-vault token revoke <token>
+vault token lookup -accessor <accessor>
 vault token revoke -accessor <accessor>
 ```
 
@@ -271,7 +274,7 @@ This example disables the default Kubernetes API-audience ServiceAccount token m
 
 The application container must not mount the projected Vault login token. It should read only rendered secret files from `/vault/secrets`; otherwise a compromised application process can use the projected JWT to authenticate to Vault directly under the workload role.
 
-The `app-config.env` name in this example describes the file format. The Injector does not export its entries into the process environment. The application must open and parse `/vault/secrets/app-config.env` without copying the values into command-line arguments, logs, or durable writable storage.
+The template serializes each value as JSON so that quotes, backslashes, and line breaks in credentials cannot change the file structure. The Injector does not export the fields into the process environment. The application must parse `/vault/secrets/app-config.json` as JSON, require string values for `DB_USER` and `DB_PASS`, and reject missing or invalid fields. Do not execute the file through a shell or copy its values into command-line arguments, logs, or durable writable storage.
 
 ```yaml
 apiVersion: apps/v1
@@ -280,8 +283,13 @@ metadata:
   name: payments-api
   namespace: prod-payments
 spec:
+  selector:
+    matchLabels:
+      app: payments-api
   template:
     metadata:
+      labels:
+        app: payments-api
       annotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "payments-api-prod"
@@ -290,13 +298,16 @@ spec:
         vault.hashicorp.com/agent-inject-containers: "app"
         vault.hashicorp.com/agent-inject-secret-app-config: "kv/data/prod/payments/api"
         vault.hashicorp.com/secret-volume-path-app-config: "/vault/secrets"
-        vault.hashicorp.com/agent-inject-file-app-config: "app-config.env"
+        vault.hashicorp.com/agent-inject-file-app-config: "app-config.json"
         vault.hashicorp.com/agent-inject-perms-app-config: "0400"
+        vault.hashicorp.com/agent-run-as-user: "10001"
         vault.hashicorp.com/error-on-missing-key-app-config: "true"
         vault.hashicorp.com/agent-inject-template-app-config: |
           {{- with secret "kv/data/prod/payments/api" -}}
-          DB_USER={{ .Data.data.username }}
-          DB_PASS={{ .Data.data.password }}
+          {
+            "DB_USER": {{ .Data.data.username | toJSON }},
+            "DB_PASS": {{ .Data.data.password | toJSON }}
+          }
           {{- end -}}
         # If Vault is reached through a non-default service or private CA, also set:
         # vault.hashicorp.com/service: "https://vault.vault.svc:8200"
@@ -317,6 +328,8 @@ spec:
         - name: app
           image: ghcr.io/example/payments-api:1.0.0@sha256:<digest>
           securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
 ```
@@ -324,9 +337,10 @@ spec:
 The tag in `tag@sha256` is for readability. Live admission/deploy policy must enforce the digest as the immutable artifact identity.
 
 Verification:
-- `kubectl exec deploy/payments-api -n prod-payments -c app -- ls /var/run/secrets/vault.hashicorp.com/serviceaccount` must fail or return `not found`.
-- Vault Agent auto-auth must still succeed, and `/vault/secrets/app-config.env` must be present in the application container after injection.
+- Inspect the final pod specification to confirm that the application container does not mount `vault-token` while the agent does. If checking the path through `kubectl exec`, first confirm that the command works and the image contains the tool: missing `ls` or exec failure does not prove token absence.
+- Vault Agent auto-auth must still succeed, and `/vault/secrets/app-config.json` must be present in the application container after injection.
 - Deployment policy must reject the same manifest if the image is changed to a tag-only reference.
+- With synthetic credentials containing quotes, backslashes, line breaks, and shell command syntax, verify that JSON parsing preserves the original strings and causes no command execution. Do not use live credentials for this test.
 
 ### 4.3 Application contract
 
@@ -345,8 +359,8 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
   - Critical: `0m` (fail closed)
   - High: `<=15m`
   - Recommended: `<=60m`
-- After stale window expiry, pod must fail readiness and be restarted only after secret retrieval recovers.
-- Rotation operations must stop automatically if Vault health is degraded to avoid split-brain credentials.
+- After the window expires, stop operations requiring secrets, including background work and use of established connections, and fail pod readiness. Readiness alone does not stop the process or existing connections. Resume processing only after obtaining valid secrets; an outage window does not permit expired or revoked credentials.
+- During a Vault outage, pause planned rotation until coordinated switching can safely resume. Emergency revocation of compromised credentials at their issuer must remain possible independently of Vault availability.
 
 ### 4.4 CI/CD boundary
 
@@ -356,11 +370,11 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 ### 4.5 Rotation playbook for service teams
 
-1. Write new secret version in Vault.
+1. For a static secret, create or change credentials in the target system and store the new value in Vault; for a dynamic secret, obtain new credentials through the appropriate secrets engine. If the target cannot accept old and new credentials concurrently, agree on the switching sequence and acceptable interruption in advance.
 2. Trigger rollout or reload.
-3. Validate health and downstream connectivity with new value.
-4. Revoke or delete old credential after overlap window closes.
-5. Verify no active leases remain for old credential after revocation SLA window.
+3. Validate service health and downstream connectivity with the new value across all replicas and background workers, including connection pools.
+4. After confirming consumer migration and closing the agreed overlap window, revoke old credentials in their issuing system or through supported lease revocation. For a compromise, follow the immediate revocation procedure.
+5. Within the revocation SLA, confirm that fresh authentication with old credentials fails and check existing connections and derived sessions. Deleting a KV version or observing no lease does not prove revocation of a static secret in the target system; clean up old Vault versions separately under the retention policy.
 
 ### 4.6 Common mistakes in applications
 
@@ -373,7 +387,7 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 ### 5.1 Suspected workload token theft
 
-1. Revoke token/accessor and active leases.
+1. Revoke a service token by accessor and revoke associated leases. For a batch token, apply section 3.6; do not assume individual revocation. Verify loss of Vault access and rejection of issued credentials by their target systems.
 2. Tighten or disable affected role.
 3. Rotate related secrets.
 4. Redeploy workload with reviewed policy.
@@ -388,7 +402,7 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 ### 5.3 Compromised CI identity
 
 1. Disable CI auth role/mount.
-2. Revoke CI-issued tokens and leases by prefix.
+2. Revoke CI-issued service tokens and associated leases using a verified path prefix. Apply section 3.6 to batch tokens. Disabling a role stops new logins but does not itself prove that previously issued tokens are invalid.
 3. Rotate all secrets accessed by that CI scope.
 4. Re-enable with narrowed policy and stronger identity constraints.
 

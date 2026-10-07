@@ -18,6 +18,8 @@ The assistant accounts for every raw result, examines execution paths and guards
 
 Priority follows supported impact and exposure. Scanner severity, confidence, and the resulting priority remain separate.
 
+For AI-related signals, distinguish prompt tampering, model proposals, and effects actually performed by a tool or data sink. Passing prompt-integrity verification does not disprove tool abuse, and an adversarial model response alone does not confirm an unauthorized effect. Trace the request, authorization gate, and destination before changing the finding's assessment.
+
 ## Local SARIF processing
 
 The bundled normalizer supports a bounded subset of SARIF 2.1.0. It requires Python 3.9+ and POSIX filesystem operations. From the copied skill directory:
@@ -31,6 +33,8 @@ Choose a fresh output directory with an existing trusted parent. Supply `--targe
 Exit code `0` means extraction completed within the supported subset, `2` means partial output, unknown scanner invocation completeness, or unsupported fields, and `1` means a fatal error. These codes do not confirm a vulnerability or its repair.
 
 The normalizer never opens report-supplied paths or links. Arbitrary strings, messages, and snippets are omitted; identifiers become opaque labels. Source and the original report require separate inspection within the agreed scope. Size and format limits are documented in the [SARIF intake contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/sarif-subset.md).
+
+Opaque labels are per-input identifiers, not stable cross-run identities or content hashes. Preserve run/result ordinals for comparison with the original report; do not group findings across reports by these labels alone. Missing result arrays and unknown invocation completion do not establish a successful scan with zero findings.
 
 ## Example request
 

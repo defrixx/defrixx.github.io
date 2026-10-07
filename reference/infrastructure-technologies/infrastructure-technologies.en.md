@@ -11,6 +11,7 @@ Sections are grouped by the role a technology plays in a live system: build and 
   - [Docker](#docker)
   - [OCI Registry / Artifact Registry](#oci-registry--artifact-registry)
   - [Helm](#helm)
+  - [GitOps / Argo CD / Flux](#gitops--argo-cd--flux)
 - [Container Platform and Kubernetes Runtime](#container-platform-and-kubernetes-runtime)
   - [Container Runtimes](#container-runtimes)
   - [Kubernetes](#kubernetes)
@@ -21,6 +22,8 @@ Sections are grouped by the role a technology plays in a live system: build and 
 - [Identity, Secrets, and Access](#identity-secrets-and-access)
   - [Cloud IAM / Workload Identity](#cloud-iam--workload-identity)
   - [Vault](#vault)
+  - [PKI / cert-manager](#pki--cert-manager)
+  - [KMS / HSM](#kms--hsm)
 - [Automation and Configuration Management](#automation-and-configuration-management)
   - [Ansible](#ansible)
   - [Terraform / OpenTofu](#terraform--opentofu)
@@ -85,9 +88,17 @@ Hosted runners reduce operational burden and usually provide a clean ephemeral e
 - Separate runners for trusted and untrusted workloads.
 - Ephemeral self-hosted runners for pull request builds from untrusted code.
 - No production secrets, signing material, or deploy credentials on runners that execute untrusted fork or branch code.
-- Artifact upload by digest and publication of SBOM/provenance/signatures.
+- Artifact transfer bound to an immutable identifier and verifiable digest; publication of SBOM, provenance, and signatures.
 - Read-only source token by default; write permissions only for selected jobs.
 - A deploy gate that does not trust pipeline success alone.
+
+#### Security and Operational Verification
+
+Treat repository content, pull request metadata, dependency scripts, caches, and artifacts from untrusted jobs as attacker-controlled input. A privileged follow-up job must not execute their contents merely because the earlier job completed successfully. Keep untrusted build execution separate from signing and deployment, and verify the producer, revision, digest, and required provenance before promotion.
+
+Test that an untrusted change cannot acquire a write token, cloud deployment session, signing credential, or access to internal services. For self-hosted runners, confirm that the whole execution environment is disposable or otherwise isolated between jobs; removing the runner registration alone does not remove host persistence. Separate cache write permissions and trust scopes so that an untrusted producer cannot supply executable cache content to release jobs.
+
+For GitHub Actions, review privileged triggers such as `pull_request_target` and `workflow_run`, including checkout, artifact consumption, and dependency execution. Do not disable platform safeguards to execute an untrusted revision with privileged credentials. Pin third-party actions to reviewed immutable revisions and pass event metadata as data rather than interpolating it into shell scripts.
 
 #### Related Project Files
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trusted builders, provenance, and verification policy.
@@ -101,7 +112,7 @@ Hosted runners reduce operational burden and usually provide a clean ephemeral e
 Docker is used to build, package, and run applications in containers. In live environments it most often appears as an image build tool, a local development tool, a CI/CD pipeline component, and part of the container supply chain, even when Kubernetes runs containers through containerd or CRI-O rather than Docker Engine.
 
 #### Operating Model
-`Dockerfile` describes what an image is built from: the base image, package installation, copied files, environment variables, user, working directory, and startup command. During a build, Docker turns instructions into a set of layers. Each layer records a filesystem change, and the final image becomes a portable artifact that can be pushed to a registry and run in different environments.
+`Dockerfile` describes what an image is built from: the base image, package installation, copied files, environment variables, user, working directory, and startup command. Build instructions produce filesystem changes and image configuration. Layers record filesystem changes; instructions such as `ENV` and `CMD` set metadata and runtime defaults, so not every instruction produces a new filesystem layer. The final image becomes a portable artifact that can be pushed to a registry and run in different environments.
 
 At the OCI level, a runnable image is not a single opaque file. A platform-specific image manifest points to one image config object and an ordered set of filesystem layer descriptors. The config records runtime defaults such as entrypoint, command, environment, user, exposed ports, volumes, labels, and root filesystem metadata. Layers record filesystem changes; they do not carry the runtime configuration by themselves. An image index, also called a manifest list in Docker terminology, points to one or more platform-specific manifests.
 
@@ -151,6 +162,14 @@ The application still owns its own authentication, authorization, input handling
 - Image signing and provenance for critical services.
 - Digest-pinned live deployments; tags are used for discovery or channels, not as the release trust anchor.
 - Running containers in Kubernetes through containerd or CRI-O rather than directly through Docker Engine.
+
+#### Security and Operational Verification
+
+Treat access to a rootful Docker daemon as host-administrator access. Do not mount its socket into application containers or untrusted build jobs. A read-only socket mount does not make the API read-only: authorized clients can still send state-changing requests. Secure remote access through authenticated SSH or TLS and restrict who can reach and use the endpoint.
+
+Verify the daemon and context actually used by CI, rather than inferring rootless operation from the container's `USER`. For a rootless deployment, confirm daemon mode and test that resource limits and required network behavior work on the deployed host. Rootless execution reduces host privileges but does not protect files and credentials accessible to the daemon's user from malicious jobs.
+
+Use isolated disposable build environments for untrusted changes. With synthetic secrets, check image layers, image configuration, build logs, and exported caches for leakage; deleting a file in a later layer does not erase it from earlier layers. Verify runtime privileges, mounts, capabilities, and resource limits separately from image scanning.
 
 #### Related Project Files
 - `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — OCI image model, Dockerfile baseline, registry promotion, digest pinning, scanning, and signing.
@@ -222,6 +241,16 @@ The artifact registry should not be the only control point. Even if the registry
 - Pull-through cache with a separate trust policy for upstream images.
 - Audit logging for push/delete/tag mutation/anomalous pull patterns.
 
+#### Security and Operational Verification
+
+Separate build publication, release promotion, workload pull, and deletion identities. Test that a workload pull credential cannot publish or delete content and that a build job cannot overwrite the approved release channel. Apply repository-scoped permissions and verify effective access to signatures and attestations as well as images.
+
+Verify the effective scope of immutability: tag selection rules, exclusions, permission to change the policy itself, and interaction with deletion and retention. Semantics depend on the registry; preventing overwrites of an existing tag alone does not prove that deletion or recreation is blocked. In a test repository, exercise overwriting, deleting, and republishing a release tag through the API and replication. A build identity must not be able to change protection rules; authorized administrative changes must leave an audit trail.
+
+Exercise promotion and retention with an image index and its platform manifests, signatures, SBOM, and provenance. Confirm the destination digest and all required evidence remain discoverable and verifiable after replication and cleanup. Missing evidence must reject a deployment that requires it; an existing image is not sufficient proof that its evidence survived retention.
+
+Deleting a registry artifact does not stop running containers or erase copies in node caches, mirrors, or exported archives. For a compromised digest, block new deployments, identify and replace affected workloads, and rotate exposed credentials. Test the incident procedure against a cached image. Registry cleanup and garbage collection are storage operations, not artifact revocation.
+
 #### Related Project Files
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — provenance, verification policy, and trusted builders.
 - `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — container image and OCI registry security baseline.
@@ -239,7 +268,7 @@ A chart is a package of Kubernetes manifests and templates for one application o
 
 A release is an installed instance of a chart in a specific namespace with a specific set of values. A repository stores charts and chart versions. A dependency allows a chart to include other charts, such as a database or sidecar component. A hook runs Kubernetes resources at specific lifecycle points, such as before install, after upgrade, or before deletion.
 
-Helm renders manifests from templates and values, then sends the resulting Kubernetes objects to the cluster API. Release state is stored in Kubernetes, and updates are performed with `helm upgrade`: Helm compares the new chart/values with the current release and applies changes.
+The Helm CLI renders templates and values and submits the resulting objects to the Kubernetes API. Helm-managed release state is stored in Kubernetes by default; `helm upgrade` uses the release history and desired configuration to apply an update. GitOps integrations can use a different model: Argo CD uses Helm to render templates and owns synchronization itself, while Flux Helm Controller manages Helm releases. Review hook execution, cleanup, rollback, and release history for the selected controller. Hook-created resources are not automatically removed by `helm uninstall`; define hook deletion policies or Job TTL where appropriate.
 
 When used with GitOps, Helm is often not run manually by an operator. A GitOps controller takes a chart and values from Git or a registry, renders them or delegates rendering to Helm, then synchronizes the resulting objects with Kubernetes.
 
@@ -276,17 +305,59 @@ The team is responsible for reviewing rendered manifests, controlling values, ve
 
 #### Common Live Patterns
 - Internal chart repository.
-- Pinning chart/app versions.
+- Pinning chart versions and application image digests; chart `appVersion` is metadata and does not force the image version used by templates.
 - Separate values per environment.
 - Rendering manifests in CI with policy checks.
 - A GitOps controller applies the chart instead of manual `helm install`.
 - Signature/provenance checks for third-party charts.
 - Minimizing post-install hooks and privileged jobs.
 
+#### Security and Operational Verification
+
+Treat chart installation as execution under the deployer's Kubernetes permissions. Review rendered RBAC, cluster-scoped objects, hooks, and dependency charts before granting a deployment identity additional rights. Test the exact chart and values used for the target environment; successful rendering does not prove admission acceptance or application readiness.
+
+Keep live secrets out of committed values and command-line arguments. Helm release storage can retain supplied values and rendered Secret objects across revisions. Restrict access to that storage, protect render and dry-run output, and verify with synthetic secrets that CI logs and artifacts do not expose them. Prefer references to independently managed secrets where the chart supports them.
+
+Test install, upgrade, rollback, and uninstall in an isolated environment. Inventory retained volumes, hook resources, and custom resource definitions separately; uninstall success is not proof of complete data deletion or credential revocation. A rollback of Kubernetes objects does not undo database migrations or external side effects of hooks.
+
+Set an explicit `helm.sh/hook-delete-policy` for Helm hook resources; use `ttlSecondsAfterFinished` for finished jobs where appropriate. Do not rely on `helm uninstall` to delete them automatically. Check for residual Jobs, Secrets, ServiceAccounts, and permissions after successful and failed execution, reinstallation, and release deletion. Job cleanup does not undo external resources created by the job; assign ownership of their deletion and credential revocation. Preserve necessary diagnostic data before cleanup while keeping secrets out of logs.
+
+For CRD definitions in the `crds/` directory, Helm does not perform ordinary upgrades or deletion with the release; an existing definition is skipped during installation. Assign ownership of CRD upgrades and verify schema compatibility with the controller and existing custom resources. Check the actual cluster schema after a chart upgrade rather than relying on the release version. If templates, hooks, or a separate controller manage CRDs, review their lifecycle and deletion consequences separately.
+
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Helm is often a source of RBAC, workload, and ingress configuration for review.
 - `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — review of final pod specs after chart rendering.
 - `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trust in artifacts, including charts and deployment packages.
+
+### GitOps / Argo CD / Flux
+
+#### What It Is Used For
+GitOps controllers reconcile a declared configuration from Git or an artifact source with a running environment. Argo CD and Flux commonly deploy Kubernetes workloads. The repository becomes a deployment authority: a reviewed commit can cause the controller to change live resources without a CI runner holding cluster credentials.
+
+#### Operating Model
+The controller fetches a revision, renders manifests or invokes Helm/Kustomize, compares the result with live objects, and applies changes under its Kubernetes identity. Automatic synchronization, drift correction, pruning, and health assessment are separate behaviors. A synchronized application can still be unhealthy; removing a manifest can delete a live resource when pruning is enabled.
+
+Argo CD uses Applications and AppProjects to scope sources and destinations; Flux reconciles source, Kustomization, and HelmRelease resources and can impersonate dedicated ServiceAccounts. These scopes complement Kubernetes RBAC. Rendering plugins, remote bases, chart dependencies, and decrypted secrets introduce additional execution and data-access boundaries.
+
+#### Responsibility Boundaries
+Protect repository write access, controller configuration, credentials, renderers, and the objects that select deployment sources. Restrict projects and reconciliation identities to approved repositories, namespaces, clusters, and resource kinds. A tenant must not be able to redirect an application to an attacker-controlled repository, select a privileged ServiceAccount, or modify the controller's own namespace.
+
+#### Common Live Patterns
+- Reviewed immutable source revisions and digest-pinned images.
+- Separate reconciliation identities and controller trust domains for tenants with incompatible privileges.
+- Deliberate pruning and drift-correction settings, with a controlled way to suspend reconciliation during incident response.
+- Secret retrieval or decryption with restricted identities; decrypted manifests excluded from logs and broadly accessible caches.
+
+#### Security and Operational Verification
+Attempt an unauthorized source, destination, cluster-scoped resource, and ServiceAccount selection through the real tenant role. Verify both the GitOps decision and Kubernetes denial. Exercise a rollback to a reviewed revision, suspension during an incident, and controller restart; record the revision actually applied, health outcome, and any deleted resources. Review resource hooks and deletion protection for databases and other stateful assets.
+
+In Argo CD, test `Application` deletion separately: the `resources-finalizer.argocd.argoproj.io` finalizer triggers cascading deletion of managed resources. Disabling automated pruning during sync does not protect against this path. In a test application, exercise cascading and non-cascading deletion, including child applications; define who retains management of surviving resources and how data is protected. A manifest backup does not replace a backup of database or volume contents.
+
+In Argo CD, the repository allow-list restricts the initial repository, but not every source of Helm dependencies or Kustomize remote bases. Review and pin these dependencies separately, restrict outbound connections from the manifest-rendering component, and disable unused tools. In a test application, attempt to reference a dependency from a forbidden source: record which mechanism rejects the fetch or prevents its output from being deployed. An allowed primary repository alone does not establish trust in every rendered resource.
+
+#### Related Project Files
+- `content/review/release-governance/playbook.en.md`: deployment authority, approvals, and release evidence.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.en.md`: controller RBAC and admission controls.
 
 ## Container Platform and Kubernetes Runtime
 
@@ -298,7 +369,7 @@ A container runtime starts containers on a node: it pulls images, prepares the f
 #### Operating Model
 CRI is the interface between kubelet and the runtime. Because of CRI, kubelet is not tied to a specific implementation and can work with containerd, CRI-O, or another compatible runtime. The runtime receives kubelet requests to create a pod sandbox, pull an image, start a container, stop a container, and report status.
 
-The OCI image spec defines the image format, while the OCI runtime spec defines how to start a container from that image with the required namespaces, cgroups, mounts, capabilities, and entrypoint process. The image store keeps pulled images locally on the node. The snapshotter prepares filesystem layers so a container gets its working filesystem view without copying the whole image.
+The OCI image spec defines the image format. The OCI runtime spec defines a runtime bundle containing a root filesystem and `config.json`, including the process, mounts, namespaces, cgroups, and capabilities. Higher-level software pulls and unpacks the image and prepares that bundle; a low-level runtime such as `runc` does not independently pull an OCI image. The image store keeps pulled images locally on the node. The snapshotter prepares filesystem layers so a container gets its working filesystem view without copying the whole image.
 
 A pod sandbox represents the infrastructure shell of a pod: networking, namespaces, and base resources inside which application containers run. A shim process maintains the connection to a running container and lets the runtime avoid keeping the entire lifecycle inside one process.
 
@@ -343,6 +414,12 @@ Policy, admission control, and baselines belong to the platform.
 - gVisor or Kata Containers for workloads with stronger isolation requirements.
 - Centralized runtime configuration in node images.
 - Runtime event monitoring and node-level audit.
+
+#### Security and Operational Verification
+
+Verify the actual runtime handler and node configuration for each selected RuntimeClass. Its name alone does not prove sandbox isolation. Restrict scheduling to nodes with the configured handler and protect the labels used for that selection. Test startup on supported nodes and failure on an unsupported configuration; do not permit a fallback that silently removes the required isolation.
+
+Restrict runtime socket access and keep sockets out of application mounts. Inspect a running test container through the node's CRI endpoint and confirm its mounts, capabilities, seccomp configuration, and resource limits match the approved workload settings. Check process behavior where configuration inspection alone cannot prove enforcement. Repeat relevant checks after node image or runtime upgrades.
 
 #### Related Project Files
 - `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md` — the connection between runtime isolation, capabilities, and escape scenarios.
@@ -414,6 +491,14 @@ Application teams own secure pod specs, health checks, resource limits, secrets,
 - Policy engine: Kyverno or OPA Gatekeeper.
 - Private control plane and restricted access to the Kubernetes API.
 
+#### Security and Operational Verification
+
+Verify allowed and denied API operations using representative workload and deployment identities. An authorization check does not prove that admission accepts the object or that runtime constraints are applied. Include cross-namespace access, Secret reads, workload creation, role binding changes, and applicable impersonation or escalation permissions in the review.
+
+Test network isolation from actual Pods on the deployed CNI, including permitted dependencies and denied tenant, metadata, and management endpoints. Namespace separation alone does not create a network boundary. Confirm rejection of unsafe workload settings at admission and verify the approved settings on a running test workload.
+
+After upgrades or policy changes, repeat the affected checks and inspect audit coverage. Use synthetic resources and credentials; do not turn a review into extraction of production Secret values. Assign owners to existing violations and verify remediation rather than treating a healthy cluster or successful rollout as security evidence.
+
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — comprehensive Kubernetes cluster security review.
 - `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — requirements for secure pod/workload configuration.
@@ -430,7 +515,7 @@ Common implementations include Cilium, Calico, cloud-provider CNIs, Flannel, and
 #### Operating Model
 Kubernetes defines the general network model: a pod gets an IP, pods can communicate with each other, a Service provides a stable virtual IP or DNS name for a set of endpoints, and NetworkPolicy describes allowed ingress/egress flows. The Kubernetes API stores objects, but it does not enforce NetworkPolicy on the datapath. Enforcement is performed by the CNI plugin or an associated policy engine.
 
-The CNI plugin is called by kubelet/container runtime when a pod sandbox is created. It allocates an IP, connects the pod network interface, programs routes, rules, eBPF maps, or iptables/nftables, and then maintains state as pods, nodes, services, and policies change. DNS is usually provided by CoreDNS, while Service traffic is implemented by kube-proxy through iptables/IPVS or by the CNI datapath when kube-proxy replacement is used.
+The CNI plugin is called by kubelet/container runtime when a pod sandbox is created. It allocates an IP, connects the pod network interface, programs routes, rules, eBPF maps, or iptables/nftables, and then maintains state as pods, nodes, services, and policies change. DNS is usually provided by CoreDNS, while On Linux, Service traffic is implemented by kube-proxy in iptables or nftables mode, or by the CNI datapath when kube-proxy replacement is used. IPVS is deprecated since Kubernetes 1.35; plan migration of existing installations to a supported mode. When switching, verify the kernel, CNI compatibility, NodePort reachability on intended addresses, and firewall rules: nftables behavior is not identical to iptables.
 
 NetworkPolicy is a namespace-scoped Kubernetes resource. It selects pods through labels and defines which ingress and egress traffic is allowed. The important semantic detail: a pod without a matching policy is usually non-isolated for that direction. Once a pod is selected by an ingress or egress policy, only explicitly described flows are allowed for that direction. This means default deny requires a dedicated policy, not just the presence of a CNI.
 
@@ -481,6 +566,16 @@ Application teams own correct labels, required service-to-service flow definitio
 - NetworkPolicy re-test after changes to namespace labels, pod labels, CNI version, and service selectors.
 - Separate controls for metadata endpoints and cloud control-plane endpoints.
 
+#### Security and Operational Verification
+
+Standard Kubernetes NetworkPolicy combines allow rules additively: any matching policy can allow a flow. When both ends are isolated, source egress and destination ingress must both permit the connection. It has no rule ordering or overriding deny; vendor policy models can differ. A namespace is not isolated merely because it exists.
+
+NetworkPolicy behavior for `hostNetwork` Pods depends on the network plugin and has no uniform guarantee: the plugin may enforce policy on those Pods or treat their traffic as node traffic. The standard model also permits ingress to a Pod from its own node. Do not use ordinary NetworkPolicy as evidence of isolation from a compromised node; restrict `hostNetwork`, apply supported host-network controls, and test flows from the same and a different node separately.
+
+Verify reachability from representative Pods after policy rollout, including DNS, direct Pod IPs, Service IPs, metadata endpoints, and the deployed `hostNetwork` path. Use flow evidence to distinguish policy denial from an unavailable service; repeat after CNI upgrades or selector changes.
+
+Default-deny egress also blocks DNS. Allow access to the deployed resolver rather than every destination on port 53; verify both UDP and TCP for conventional DNS. Account for the actual address in the Pod's `/etc/resolv.conf`, including a node-local DNS cache when deployed. From that same Pod, test a fully qualified service name containing its namespace and an external name, then separately test connectivity to the resolved address. On failure, inspect the DNS Service and EndpointSlices, CoreDNS logs, and its permissions to read Kubernetes resources. Successful name resolution proves neither service reachability nor network policy enforcement.
+
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — service boundary review, egress, and NetworkPolicy baseline.
 - `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md` — namespace bypass, SSRF, NodePort exposure, and actual reachability checks.
@@ -524,10 +619,12 @@ flowchart TB
     Secret --> Controller
     Policy --> Controller
 
-    GatewayDP --> TLS["TLS termination or passthrough"]
+    GatewayDP --> TLS["TLS termination"]
     TLS --> Auth["AuthN/AuthZ, WAF, rate limits, header policy"]
     Auth --> Service["Kubernetes Service"]
     Service --> Pod["Backend Pods"]
+    GatewayDP --> Passthrough["TLS passthrough without HTTP processing"]
+    Passthrough --> Service
   end
 
   GatewayDP --> Logs["Access logs / metrics / traces"]
@@ -545,9 +642,17 @@ The platform owns controller hardening, class ownership, public exposure, certif
 - Strict policy for `X-Forwarded-*`, `Forwarded`, `Host`, and client IP headers; applications trust only headers from approved proxies.
 - WAF/API security and rate limiting on public routes.
 - Wildcard hosts denied or separately approved.
-- Cross-namespace route attachment only through explicit `allowedRoutes`/ReferenceGrant and ownership rules.
+- Route-to-Gateway attachment constrained through listener `allowedRoutes` and Route `parentRefs`; cross-namespace backend or certificate references require a `ReferenceGrant` from the target namespace owner. These mechanisms authorize different relationships.
 - Access logs with correlation ID, request outcome, upstream service, and policy decision.
 - Controller service account protection: it can often read Secrets and change gateway/proxy configuration.
+
+#### Security and Operational Verification
+
+With TLS passthrough, the gateway does not decrypt HTTP: token validation, WAF inspection, header modification, and HTTP request rate limits must run where TLS terminates. Do not credit these controls merely because a gateway plugin is installed; test them on the actual request path. When TLS terminates at the gateway, encryption to the backend is configured separately. For Gateway API, verify deployed controller support for `BackendTLSPolicy`, the trusted CA, and server name; connections with untrusted certificates or mismatched names must fail.
+
+The community Kubernetes `ingress-nginx` controller is retired: upstream maintenance ended in March 2026, including security fixes. It is distinct from vendor products named NGINX Ingress Controller. Inventory the actual image, repository, and controller class; migrate community `ingress-nginx` to a maintained implementation. Any temporary exception needs an owner, expiry, and migration deadline.
+
+For a shared Gateway, test unauthorized Route attachment separately from cross-namespace backend and TLS Secret references. Check `Accepted`, `ResolvedRefs`, and `Programmed` conditions where applicable, then probe the public endpoint: accepted configuration does not prove correct authentication, header trust, or backend encryption.
 
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — entry point inventory, service exposure, and ownership.
@@ -570,6 +675,8 @@ Key CRDs define mesh behavior. In the Istio API, `VirtualService` describes rout
 When combined with Kubernetes, the application remains a regular Deployment/Pod, but its traffic passes through the data plane. Istiod watches services and policies in the Kubernetes API, recalculates configuration, and sends it to proxies. Proxies on the traffic path then enforce mTLS, routing, policy, and telemetry without changing application business code.
 
 #### Interaction Diagram
+The diagram below shows the sidecar model. In ambient mode, L4 traffic passes through node-level `ztunnel` proxies; L7 features require a waypoint on the relevant path.
+
 ```mermaid
 flowchart TB
   K8sAPI["Kubernetes API"] --> Istiod["Istiod control plane"]
@@ -579,9 +686,9 @@ flowchart TB
   Istiod --> Certs["Workload certificates"]
 
   subgraph Mesh["Service mesh data plane"]
-    ServiceA["Service A app"] --> EnvoyA["Envoy sidecar / ambient proxy"]
+    ServiceA["Service A app"] --> EnvoyA["Envoy sidecar"]
     EnvoyA --> MTLS["mTLS + routing + policy"]
-    MTLS --> EnvoyB["Envoy sidecar / ambient proxy"]
+    MTLS --> EnvoyB["Envoy sidecar"]
     EnvoyB --> ServiceB["Service B app"]
   end
 
@@ -610,9 +717,15 @@ The platform owns correct mesh onboarding, certificate lifecycle, policy model, 
 - AuthorizationPolicy for service-to-service access.
 - Separate ingress and egress gateways when north-south or outbound traffic must pass through controlled mesh edge points.
 - Explicit decision on which API owns routing: Istio `VirtualService`/`Gateway`, Kubernetes Gateway API, or both during a transition.
-- Canary/blue-green routing through VirtualService and DestinationRule.
+- Canary/blue-green routing through `VirtualService`/`DestinationRule` for supported sidecar paths, or Gateway API routes for ambient waypoints. Validate feature support on the deployed Istio version; do not assume sidecar routing and policy attachment work unchanged in ambient mode.
 - Telemetry integration with Prometheus, Grafana, or OpenTelemetry.
 - Gradual migration from sidecar to ambient mesh where justified.
+
+#### Security and Operational Verification
+
+In ambient mode, `ztunnel` provides L4 transport and identity; L7 routing and authorization require the relevant traffic to traverse an enrolled waypoint. Bind L7 `AuthorizationPolicy` to the intended waypoint/resource using the supported attachment model, and verify the actual path. A deployed waypoint or an mTLS handshake alone does not establish application authorization. Direct Pod IP traffic and mixed sidecar/ambient migration paths need separate negative tests.
+
+An egress gateway does not force traffic through itself merely because it exists. Confirm routing and network enforcement prevent workloads from reaching external destinations directly; test gateway unavailability and attempted bypass.
 
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — applies to mesh as part of the Kubernetes control/data plane.
@@ -631,6 +744,8 @@ OPA is a general-purpose policy engine: an application or tool passes structured
 In Kubernetes, a policy engine usually runs as a dynamic admission controller. After authentication and authorization, the API Server sends an AdmissionReview to a validating or mutating webhook. The policy engine checks the object, userInfo, namespace, labels, image references, and external context where supported, then allows, denies, or mutates the request before it is persisted in etcd.
 
 Gatekeeper is built around constraint templates and constraints, and supports admission validation and audit of existing resources. Kyverno uses Kubernetes-native policy resources and supports validate, mutate, generate, cleanup/delete, and image verification patterns. During policy rollout, teams usually use audit/dry-run/warn modes before enforce; otherwise an untested rule can block deployment of critical workloads.
+
+For checks expressible in CEL using request data and policy parameters, consider built-in `ValidatingAdmissionPolicy` with `ValidatingAdmissionPolicyBinding`: it runs inside the API Server without an external webhook. A policy without a matching binding does not enforce a decision; for mandatory rejection, verify `validationActions: [Deny]`, matching conditions, and error handling. External signature verification and arbitrary external context retrieval require another mechanism.
 
 CI policy and runtime admission policy solve different problems. CI policy checks proposed configuration before merge/deploy and gives developers fast feedback. Runtime admission policy protects the cluster from CI bypass, manual changes, compromised deploy credentials, and drift, but must be highly available, observable, and carefully configured for failure policy.
 
@@ -662,6 +777,14 @@ A policy engine makes decisions according to configured rules, but it does not d
 - Monitoring webhook latency, denial rates, audit violations, and policy engine availability.
 - Image verification policies for digest, signature, and attestations on live workloads.
 
+#### Security and Operational Verification
+
+For mandatory validating controls, use `failurePolicy: Fail` on the matching webhook and test rejection when its endpoint is unavailable or times out. Set `timeoutSeconds` from measured latency and monitor API Server webhook errors. Keep an audited recovery procedure that restores the controller without granting application teams a general bypass. A mutating webhook may use `Ignore` only when independent validation rejects objects missing required security properties.
+
+Protect policies, webhook configuration, exception resources, and labels used by `namespaceSelector` or `objectSelector`. Workload owners must not bypass checks by changing labels or creating exceptions. Test create and update requests, controller-created Pods, and relevant subresources against the deployed rules.
+
+Admission checks matching requests; it does not retrospectively remove existing violations. Background audit findings need remediation owners and deadlines. Reporting differs from separately configured mutation, generation, and cleanup rules, which have their own permissions and effects. Verify an existing violation, a new violating request, and an approved object, checking both reports and actual admission outcomes.
+
 #### Related Project Files
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — admission control and cluster policy gates.
 - `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — workload controls that can be enforced through a policy engine.
@@ -679,6 +802,8 @@ Cloud IAM manages access to cloud resources: compute, storage, databases, queues
 IAM usually consists of principals and policies. A principal can be a user, group, service account, managed identity, role, or federated subject. A policy defines allowed actions on resources and conditions such as account, project, region, tag, resource name, or token claims. In AWS, the key objects are IAM users, groups, roles, policies, and STS. In Google Cloud, they are principals/service accounts, IAM roles, and allow policies. In Azure, they are Microsoft Entra identities, managed identities, app registrations, and Azure RBAC role assignments.
 
 Short-lived credentials are issued through federation. A workload receives a signed token from a trusted issuer, such as the Kubernetes API server or CI/CD platform. Cloud IAM verifies the OIDC issuer, audience, subject, and conditions, then issues a temporary access token or role session. In Kubernetes this is implemented through cloud-specific integrations: AWS IAM Roles for Service Accounts, GCP Workload Identity Federation for GKE, and Microsoft Entra Workload ID for AKS.
+
+EKS Pod Identity is a different path: a node agent uses the EKS Auth API and associations between cluster, namespace, ServiceAccount, and IAM role; it does not require an IAM OIDC provider per cluster. Constrain the association and role trust with the supported attributes or session tags, and verify the SDK credential chain does not select static or node credentials first. Do not copy IRSA trust policies into this integration.
 
 The metadata service is a separate important boundary. On a cloud VM/node, the metadata endpoint can issue credentials for the instance/node identity. If a pod can reach the metadata service and the node role is too broad, workload compromise becomes lateral movement from Kubernetes into the cloud control plane. Workload identity reduces this risk, but only when node metadata access is restricted, service accounts are separated, trust policies are narrow, and cloud permissions are minimal.
 
@@ -715,6 +840,14 @@ The cloud provider owns IAM primitives, token exchange, and enforcement on cloud
 - Separate identities for build, deploy, and runtime.
 - Auditing for AssumeRole/token exchange, key creation, policy changes, and anomalous API calls.
 
+#### Security and Operational Verification
+
+Review who can launch or modify workloads under a ServiceAccount bound to a cloud role. Permission to create Pods or change controller templates may allow using that identity even without permission to read Secrets; separately account for token issuance through `serviceaccounts/token` and access to running containers. Separate namespaces by trust level and restrict ServiceAccount selection through admission policy. With a test workload, confirm that a less privileged principal cannot select a protected ServiceAccount, change its cloud binding, or access its credentials.
+
+Distinguish blocking new token issuance from disabling credentials already issued. In AWS, changing a role trust policy does not invalidate existing role sessions. Use the applicable session-revocation or permission-denial mechanism and test a harmless resource operation with an existing session. Measure propagation and account for chained roles; an identity lookup alone does not prove resource access was revoked.
+
+Test approved and rejected federation subjects, verify the resulting cloud principal, and exercise credential refresh failures. The application must not fall back to embedded keys or an unintended node or developer identity.
+
 #### Related Project Files
 - `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC concepts, token validation, and trust boundaries.
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Kubernetes-to-cloud attack paths and cluster identity.
@@ -731,9 +864,9 @@ Vault server receives API requests, performs authentication, checks policy, call
 
 Auth methods connect an external identity to a Vault identity: Kubernetes service account, OIDC subject, AppRole, cloud IAM principal, or another source. A policy defines which paths and operations are available. A token is the result of authentication and carries a set of policies. A lease defines the lifetime of an issued secret or credential and lets Vault renew or revoke it.
 
-Secret engines perform the actual work. KV stores static secrets. The database engine issues dynamic database credentials. The PKI engine issues certificates. The Transit engine performs cryptographic operations without exposing key material to the client. Audit devices record requests and responses in audit logs with sensitive values masked.
+Secret engines perform the actual work. KV stores static secrets. The database engine issues dynamic database credentials. The PKI engine issues certificates. The Transit engine performs cryptographic operations without exposing key material to the client. Audit devices record requests and responses. By default, most string values are HMAC-hashed; this does not protect every field. Headers, non-string values, configured exemptions, and `log_raw` require separate review.
 
-A normal flow is: a workload authenticates through an auth method, receives a token with a limited policy, calls a secret engine path, and Vault returns a secret, dynamic credential, or cryptographic result. If the secret is leased, Vault tracks its lifetime and can renew or revoke it.
+A normal flow is: a workload authenticates through an auth method, receives a token with a limited policy, calls a secret engine path, and Vault returns a secret, dynamic credential, or cryptographic result. If the secret is leased, Vault tracks its lifetime and can renew or revoke it. Static KV values do not acquire automatic rotation or downstream invalidation from a token TTL. PKI certificates have their own expiry and revocation model; role `generate_lease` defaults to `false`, so token revocation alone must not be assumed to revoke issued certificates. Define certificate revocation and how relying services consume CRLs or OCSP.
 
 #### Interaction Diagram
 ```mermaid
@@ -751,7 +884,7 @@ flowchart LR
     Path --> Transit["Transit engine"]
     KV --> StaticSecret["Static secret"]
     DB --> DynamicCred["Dynamic credential + lease"]
-    PKI --> Certificate["Certificate + lease"]
+    PKI --> Certificate["Certificate + expiry / revocation state"]
     Transit --> CryptoResult["Encrypt / decrypt / sign result"]
   end
 
@@ -776,12 +909,71 @@ Vault protects secret issuance and lifecycle, but it does not make every applica
 - PKI engine for internal certificates.
 - External Secrets Operator or Vault Agent Injector.
 - Centralized audit devices.
-- Separation of namespace, mount, and policy by team and environment.
+- Separate mounts and policies by team and environment; Vault namespaces apply to Vault Enterprise and managed deployments that support them. They are not Kubernetes namespaces. In Community Edition, use tested ACLs for separate paths and mounts, or separate clusters when independent administration or stronger isolation is required.
+
+#### Security and Operational Verification
+
+Test denial of another service's secret path, renewal failure, and lease revocation against the downstream system. A removed Vault lease is insufficient evidence if the database or other service still accepts the credential. For static secrets, verify rotation at their issuer and application reload rather than relying on Vault token expiry.
+
+Exercise audit-device failure and restore in an isolated environment. Audit delivery is a service dependency: monitor blocked writes, capacity, and latency, and verify the behavior of the deployed audit configuration without disabling required logging as a routine workaround. Restore tests must include access to the original seal mechanism or key material and actual authenticated secret access; accepting a snapshot file does not prove recovery completed.
 
 #### Related Project Files
 - `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — the main Vault playbook covering policies, auth methods, audit, and operational hardening.
 - `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — relevant when Vault is integrated with Kubernetes auth or secret delivery.
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — useful for analyzing trust boundaries around secrets.
+
+### PKI / cert-manager
+
+#### What It Is Used For
+PKI binds identities to public keys through certificates and trusted issuers. cert-manager automates certificate issuance and renewal in Kubernetes through ACME, Vault, or another configured issuer. Certificate lifecycle automation does not itself define which identities an application trusts or authorizes.
+
+#### Operating Model
+A `Certificate` selects names, usages, an issuer, and a target Secret. cert-manager creates requests and completes the issuer-specific validation, then stores the certificate and private key in that Secret. An `Issuer` is namespace-scoped; a `ClusterIssuer` is cluster-scoped. A workload, ingress controller, or gateway must actually load the new material. Renewal success does not prove the serving endpoint has stopped using the old certificate.
+
+#### Responsibility Boundaries
+Constrain who may use an issuer and request each identity. Kubernetes permission to create a request is not automatically an approved right to obtain any SAN. Protect CA keys, DNS challenge credentials, ACME accounts, and TLS Secrets; separate public certificate validation from internal workload identity. Decide how trust bundles, key rotation, and revocation reach every verifier.
+
+#### Common Live Patterns
+- Automated renewal and an explicit private-key rotation policy supported by the deployed cert-manager version.
+- DNS challenge credentials restricted to the intended validation zones.
+- Controlled issuer access and policy for SANs, usages, and certificate lifetime.
+- CA rollover with overlapping trust and a tested removal of the old trust anchor.
+- Distribute trusted CAs separately from the server TLS Secret. A client that only needs a trust bundle must not receive access to the server private key just to read `ca.crt`. Approve trust-bundle membership separately: a CA appearing in the server certificate or its Secret does not itself justify trusting that CA.
+
+#### Security and Operational Verification
+Test rejection of an unauthorized name and issuer, renewal during an issuer outage, and recovery before certificate expiry. Inspect the certificate served by the real endpoint after Secret rotation and process restart. A certificate marked ready is insufficient evidence. Verify trust-chain and identity checks, plus revocation behavior where the relying protocol and clients support it.
+
+As the client workload, confirm access to the trust bundle and denial of reads of the server TLS Secret; also inspect the actual mounted files, since restricting API access does not remove a previously distributed key copy. Replacing the server certificate with one issued by an unapproved CA must not automatically change client trust. After CA rollover completes, a new connection using a certificate from the removed root is rejected; separately define how established connections are terminated when immediate access cessation is required.
+
+#### Related Project Files
+- `content/platform-security/secrets/vault/playbook.en.md`: PKI issuance and revocation.
+- `content/platform-security/kubernetes/secrets/playbook.en.md`: TLS Secret access and distribution.
+
+### KMS / HSM
+
+#### What It Is Used For
+A KMS provides managed key lifecycle and cryptographic APIs. An HSM protects key operations within a hardware security boundary; it can back a KMS or be operated directly. Common uses include envelope encryption, signing, and protecting Vault seal or backup dependencies.
+
+#### Operating Model
+With envelope encryption, a data-encryption key encrypts the payload and a key-encryption key protects that data key. The stored record includes the ciphertext and wrapped data key, plus the key/version identifier and algorithm metadata needed to recover it. A KMS API can return plaintext data keys to authorized clients, so hardware protection of the master key does not mean plaintext or all data keys stay inside the HSM.
+
+#### Responsibility Boundaries
+Separate key administration from application encrypt/decrypt permissions, protect grants and key policies, and constrain operation context where supported. Authenticated encryption context must bind expected metadata, but is not an authorization substitute; exclude secrets and PII because provider audit logs may record it. Rotation does not necessarily re-encrypt existing records, and disabling or deleting a key can make production data and backups unreadable.
+
+#### Common Live Patterns
+- Distinct keys and identities for environments and purposes.
+- Least-privilege cryptographic operations, with audited key-policy and grant changes.
+- Planned rotation, retention of required decryption versions, and protection against accidental key deletion.
+- A defined behavior for KMS outage and explicit limits on plaintext key caching.
+
+#### Security and Operational Verification
+Try decrypting under the wrong role and context, then restore an old backup using its actual key dependencies. Test denied permissions, throttling, and a controlled service outage. Measure recovery and verify that key deletion protection covers the full data-retention period, including disaster-recovery copies.
+
+If the application caches plaintext data keys, disabling the KMS key does not stop operations using keys already obtained. Test outages and access revocation with both a populated cache and after cache clearing or process restart. Define the acceptable delay before access stops and a cache-clearing procedure; successful cached operations do not prove KMS availability or retention of keys required for later recovery. Set retention and reuse limits according to the selected SDK capabilities and threat model.
+
+#### Related Project Files
+- `content/platform-security/secrets/vault/playbook.en.md`: envelope encryption and auto-unseal recovery.
+- `content/review/architecture/checklist.en.md`: cryptographic trust boundaries and recovery design.
 
 ## Automation and Configuration Management
 
@@ -838,8 +1030,17 @@ A mistake in a playbook can propagate insecure configuration at scale.
 - Ansible Vault or an external secrets manager for sensitive variables.
 - Execution through AWX/Automation Controller or CI with an audit trail.
 - Restricted `become` and SSH access.
+- SSH host-key verification with trusted initial key acquisition and an approved replacement procedure. Do not globally disable verification to enable unattended runs; a substituted target host key must cause connection failure.
 - Dry-run/check mode for risky changes.
 - Roles for baseline hardening and patch management.
+
+#### Security and Operational Verification
+
+Account for each task's execution location: `delegate_to`, `local_action`, and local connections can execute code on the controller or another designated host. Limiting target hosts does not itself restrict delegated actions. Review these tasks and their available credentials before running a third-party role; protect the controller as a privileged execution environment rather than only an SSH client.
+
+Check mode is a module-dependent simulation, not a guarantee of a safe change. Unsupported tasks can be skipped, conditionals can depend on unavailable registered results, and `check_mode: false` can execute a task even during a check run. Inspect the selected modules, review the diff, and test privileged changes on a limited host group before broad rollout.
+
+Ansible Vault protects stored files, not plaintext after decryption. Use `no_log` for sensitive tasks and avoid exposing values through debug tasks or diff output. `no_log` does not protect Ansible's own debugging output, so do not enable it in production with real secrets. Use a synthetic secret to test normal execution and approved diagnostic modes: the value must not appear in controller logs, callback output, or retained job artifacts. When module parameters reach temporary files on the controller or target, verify restrictive permissions and cleanup after execution, including task failure. Do not enable `world_readable_temp` for tasks carrying secrets; when using a shared group, review every member. Pipelining reduces temporary-file use but is not supported by every module and does not replace permission checks.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to change management, privileged automation, and trust boundaries.
@@ -854,7 +1055,7 @@ Terraform and OpenTofu are used for Infrastructure as Code: describing, creating
 #### Operating Model
 Configuration describes desired state through resources, data sources, variables, outputs, providers, and modules. A provider knows the API of a specific platform: cloud, Kubernetes, Vault, DNS, monitoring, or SaaS. The CLI builds a dependency graph, reads current state from the state file, creates a plan, and then apply calls provider operations to bring infrastructure to the desired state.
 
-State maps configuration to real remote objects and contains attributes of created resources. It is a critical artifact: state often includes internal identifiers, connection strings, generated passwords, private endpoints, IAM bindings, and other sensitive values even when variables are marked sensitive. A remote backend is needed not only for collaboration, but also for access control, audit, encryption, and locking. Locking protects against concurrent apply operations that can corrupt state or create conflicting changes.
+State maps configuration to real remote objects and contains attributes of created resources. It is a critical artifact: state often includes internal identifiers, connection strings, generated passwords, private endpoints, IAM bindings, and other sensitive values even when variables are marked sensitive. Select a remote backend with the required access control, audit, encryption, recovery, and locking support; a remote location alone does not provide all these controls. Locking protects against concurrent apply operations that can corrupt state or create conflicting changes.
 
 Modules provide reuse, but create a supply-chain boundary. Public modules, provider versions, and transitive module sources should be pinned and reviewed like application dependencies. A plan is an important review artifact, but not an absolute guarantee: drift, out-of-band changes, provider behavior, and data sources can change the final apply.
 
@@ -888,13 +1089,25 @@ The state backend should be treated as high-value storage. Access to it is often
 
 #### Common Live Patterns
 - Remote state backend with encryption, access control, audit logs, backup/versioning, and locking.
-- Separate state/workspaces or backends by environment, account, blast-radius zone, and ownership domain.
+- Separate configurations and state backends with independent access controls and credentials for environments and ownership domains that require isolation.
 - Plan in a pull request or change request; apply only after approval.
 - Short-lived cloud credentials through OIDC/workload identity instead of long-lived access keys.
 - Provider and module versions pinned; external module sources reviewed.
 - Policy-as-code to block public exposure, broad IAM, unencrypted storage, and unsafe Kubernetes resources.
 - Drift detection and import workflow for resources changed outside IaC.
-- No plaintext secrets in variables, outputs, state-sharing outputs, or CI logs.
+- No secrets in Git-committed variables, published outputs, or CI logs; restricted access and encryption for state and plans containing secrets.
+
+#### Security and Operational Verification
+
+The `sensitive` flag redacts normal presentation; it does not itself encrypt or omit a value from state or a saved plan. Where supported by the exact CLI and provider versions, ephemeral values and write-only arguments can avoid persistence. Confirm the actual resulting state and plan rather than relying on the flag. Saved plans are sensitive executable change artifacts: approve and apply the same protected plan, bound to the source revision and environment.
+
+Machine-readable output also needs protection: `terraform output -json` and `-raw` expose sensitive values without normal redaction. Do not publish this output in PR comments, shared logs, or third-party service reports without checking the data it contains. When passing a plan between jobs, restrict access and retention; verify that approval binds to the exact artifact, and require new approval if the plan is replaced. Test rejection of a substituted artifact and absence of a canary secret from publicly accessible pipeline results.
+
+CLI workspaces separate states within one configuration, but do not create an independent access boundary. Do not rely solely on workspace switching to isolate test and production environments. Verify that test pipeline credentials cannot read or modify production state or access production resources. HCP Terraform workspaces have a different access model; assess it separately.
+
+Backend support varies. Test that a concurrent writer cannot acquire the state lock, and protect lock removal as an exceptional operation. For current Terraform S3 backends, enable `use_lockfile`; DynamoDB-based locking is deprecated. Check OpenTofu and mixed-client compatibility separately instead of copying backend settings blindly.
+
+In Terraform, `.terraform.lock.hcl` records provider versions and checksums, but not remote module versions. Keep it in Git and review changes; pin modules separately to an exact version or immutable source revision. A checksum proves a match to the previously selected package, not the security of its code. Verify the initial source and publisher before accepting a new lock file; CI reinitialization must not silently upgrade approved dependencies.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to trust boundaries, data flows, and architecture changes through IaC.
@@ -913,7 +1126,7 @@ Object storage is used to store files and blobs: user uploads, backups, logs, ar
 #### Operating Model
 A bucket or container is the top-level storage container. An object stores content, metadata, key/name, and versions if versioning is enabled. A prefix is not a real directory in most object storage systems, but is used as a namespace convention for grouping objects, lifecycle policies, and IAM conditions.
 
-Access is controlled through a combination of IAM policies, bucket/container policies, ACLs, or legacy access models. In live environments, a centralized IAM/policy model with public access blocked by default is preferred; ACLs should be used only where they are truly needed and understood. Signed URLs, presigned URLs, and SAS tokens provide time-limited upload/download access without giving users cloud credentials. Such a URL itself becomes a bearer credential until it expires or the signing credential is revoked.
+Access is controlled through a combination of IAM policies, bucket/container policies, ACLs, or legacy access models. In live environments, a centralized IAM/policy model with public access blocked by default is preferred; ACLs should be used only where they are truly needed and understood. Signed URLs, presigned URLs, and SAS tokens provide time-limited upload/download access without giving users cloud credentials. The URL itself is a bearer credential; effective validity and revocation depend on the provider, signing mechanism, credential lifetime, and current access policy.
 
 Encryption can be provider-managed, customer-managed through KMS, or client-side. Versioning, retention, soft delete, and object lock/immutability help protect against accidental deletion, ransomware, and destructive insider actions, but increase cost and require lifecycle management. Access logs and cloud audit logs are needed for investigations: who read, wrote, deleted, or changed policy.
 
@@ -942,6 +1155,16 @@ Object storage reliably stores objects and enforces access policy, but it does n
 - Object lock or immutable retention for compliance archives and ransomware-resistant backups.
 - Access logs/audit logs with a separate write-only destination.
 - Lifecycle policies for old versions, incomplete uploads, and temporary exports.
+
+#### Security and Operational Verification
+
+A signed URL is normally reusable within its validity period; it is not a one-time authorization ticket. Revocation differs by provider and signing mechanism, so do not promise that revoking one signing credential invalidates every URL immediately. Keep URLs out of logs and referrers, restrict the operation and object, and verify expiry and revocation with the deployed mechanism.
+
+For user uploads, authorize the object key on the server, prevent overwriting another tenant's object, and validate the completed object's size, type, and content before publication. A signed upload request alone does not establish that the resulting file is safe.
+
+Do not publish a mutable object key based solely on an earlier successful check: a still-valid upload URL may allow replacement after scanning. Receive the file in a private area, bind the check result to a specific version or immutable content, and publish that exact checked object to an area where the client has no write permission. Test repeated and concurrent uploads through the same URL during and after scanning: unchecked content must not inherit the checked file status.
+
+In versioning-enabled S3, a normal `DELETE` without `versionId` creates a delete marker rather than erasing older versions. For deletion requirements, check every object version, noncurrent-version expiration rules, and copies covered by the retention policy. A `404` on ordinary reads does not prove data erasure. Account for immutable-retention restrictions and separately test whether the application role can read an older version by its ID.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — data flows, trust boundaries, and storage exposure.
@@ -975,6 +1198,18 @@ The database engine provides storage, transactions, privileges, and replication 
 - RLS for high-risk multi-tenant tables after a dedicated threat model.
 - Audit logging for privileged operations and sensitive data access.
 
+#### Security and Operational Verification
+
+In PostgreSQL, superusers and roles with `BYPASSRLS` always bypass RLS. Table owners normally bypass it too; `FORCE ROW LEVEL SECURITY` subjects the owner to policies but does not constrain superusers or `BYPASSRLS`. Application roles should neither own tenant tables nor be able to assume bypass roles. Review `SECURITY DEFINER` functions and the combination of permissive and restrictive policies.
+
+RLS does not restrict table-level operations, including `TRUNCATE` and `REFERENCES`: review those privileges separately. Unique, primary-key, and foreign-key checks bypass RLS to preserve integrity and can reveal a hidden record through the operation outcome. For shared tables, test uniqueness conflicts and references to another tenant's object; include tenant context in constraints where it matches the business invariant, and do not expose internal error details to clients. Denial of `SELECT` alone does not prove these disclosure channels are absent.
+
+Test reads and writes through the real application role and connection pool, including reuse of a connection between tenants and forged tenant context. If tenant identity comes from a session setting, reset it safely and do not treat a value the client can choose as independent proof of authorization. Verify restored backups with the expected grants and RLS policies.
+
+For `SECURITY DEFINER` functions, set a protected `search_path` that excludes schemas writable by untrusted users and explicitly places `pg_temp` last. Restrict `EXECUTE`: new functions grant it to `PUBLIC` by default, so create the function, explicitly revoke execution from `PUBLIC`, and grant it only to permitted roles within one transaction. Granting a selected role access does not itself remove access through `PUBLIC`. Test object shadowing through a temporary table and invocation by a role that should not use the function.
+
+PITR requires a physical base backup and an uninterrupted WAL sequence through the selected recovery point; a `pg_dump` dump does not replace that base backup. Test recovery to a specified point in an isolated environment, measure actual RPO/RTO, and monitor archive lag and free space in `pg_wal`. WAL replay does not restore `postgresql.conf`, `pg_hba.conf`, or `pg_ident.conf`: preserve their configuration separately and verify it after recovery.
+
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — data classification, tenant isolation, and trust boundaries.
 - `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md` — integrity-sensitive flows and abuse cases.
@@ -990,7 +1225,7 @@ Redis stores keys of different types: strings, hashes, lists, sets, sorted sets,
 
 AUTH and ACL restrict client access to commands and key patterns. TLS protects network traffic. Dangerous commands such as administrative, persistence-changing, scripting, or bulk key operations can cause data loss, credential exposure, DoS, or tenant boundary bypass if available to the application without need.
 
-The eviction policy defines which keys are removed under memory pressure. For cache this is normal behavior; for session store or queue usage it can become an incident. Multi-tenant Redis requires especially strict key namespace, ACLs, memory quotas, and operational separation; using separate instances for different trust domains is often more reliable.
+The eviction policy defines which keys are removed under memory pressure. For cache this is normal behavior; for session store or queue usage it can become an incident. Shared Redis requires key and channel access controls plus enforceable resource isolation; prefixes alone do not provide memory quotas. Separate instances for different trust domains are often more reliable.
 
 #### Responsibility Boundaries
 Redis provides a fast in-memory data store and primitives for persistence/replication, but it does not guarantee safe cache, session, or lock semantics. The team owns network isolation, AUTH/ACL/TLS, command restrictions, key namespace, memory limits, eviction behavior, backups where needed, monitoring, and protection of secrets/PII in values.
@@ -1003,6 +1238,18 @@ Redis provides a fast in-memory data store and primitives for persistence/replic
 - Explicit TTL for cache/session keys.
 - Memory limits and eviction policy aligned with the use case.
 - Monitoring memory, evictions, blocked clients, replication lag, and command latency.
+
+#### Security and Operational Verification
+
+Key prefixes and numbered logical databases are not independent security boundaries. Use named ACL users with narrowly allowed commands, key patterns, and Pub/Sub channel patterns where needed. Test the actual command set: a key-pattern rule alone is not a universal restriction on administrative, scripting, or channel operations. Ordinary Redis deployments do not provide per-tenant memory quotas just because keys have different prefixes.
+
+ACL key patterns do not filter whole-database enumeration results: permitted `SCAN` and `KEYS` commands can expose other users' key names even when reading their values is denied. Do not grant these commands to an application user without a need; a client-selected `MATCH` parameter is not an access restriction. Test enumeration as each restricted user with the `*` pattern, rather than testing only denial of `GET` on another user's key.
+
+Redis replication is asynchronous. Failover can lose a recent lock or counter update; expiry can let a paused lock holder resume after a new owner acquires the lock. Use ownership-checked release and, for correctness-critical writes, a fencing mechanism enforced by the protected resource or a transactional alternative. Test failover and expiry against the business invariant. Choose and test whether authentication or rate limiting rejects requests or degrades when Redis is unavailable.
+
+Setting an ACL user to `off` prevents new authentication but does not close already authenticated connections. When revoking access, test both a new connection and the application's existing pool; terminate existing connections through a supported administrative mechanism where necessary. Password rotation without checking an existing connection does not prove immediate access revocation.
+
+If Redis holds data that cannot be reconstructed from another source, select RDB/AOF and `appendfsync` based on acceptable data loss and write latency. An RDB snapshot does not preserve subsequent changes; enabling AOF does not mean every acknowledged write has reached durable storage. Test recovery from the preserved file set and lost writes after an abrupt shutdown. Monitor persistence errors, free disk space, and the impact of snapshots and AOF rewriting on memory and request latency.
 
 #### Related Project Files
 - `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md` — rate limits, sessions, and abuse controls.
@@ -1034,9 +1281,15 @@ A vector database provides embedding storage and similarity-based retrieval, but
 - Audit logging for queries, retrieved document IDs, metadata filters, and administrative changes.
 - Regular index rebuild/cleanup after document deletion, permission changes, and embedding model upgrades.
 
+#### Security and Operational Verification
+
+Build tenant and access filters on the server from the authenticated principal, not from model output or client-selected metadata. If index permissions can lag, reauthorize candidates against current source permissions before returning content. An index namespace is not sufficient if a caller can select another namespace or query without the required filter.
+
+Test cross-tenant queries, direct object lookup, permission revocation, deleted documents, cached retrieval, and exported indexes. Measure the deletion and access-revocation delay across the source, index, caches, and backup retention; protect embeddings and query logs as sensitive derived data.
+
 #### Related Project Files
 - `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md` — LLMSecOps lifecycle, RAG data pipeline, and vector database controls.
-- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM09 Vector and Embedding Weaknesses.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM08 Vector and Embedding Weaknesses.
 - There is no dedicated vector database security playbook yet.
 
 ### Elasticsearch / OpenSearch
@@ -1062,6 +1315,16 @@ A search cluster indexes and searches documents, but it does not decide which da
 - Least-privilege dashboard roles.
 - Snapshot repository with restricted IAM and restore drills.
 - Alerting on authentication failures, public exposure, disk watermarks, and ingestion spikes.
+
+#### Security and Operational Verification
+
+Separate ingestion identities from search and dashboard users. Treat document- and field-level security as read restrictions, not as authorization to write only the visible documents or fields. Verify effective permissions across all assigned roles: in Elasticsearch, another role granting unrestricted access to the same index removes the corresponding document or field restriction. Permissions from multiple roles are combined, so a narrow role does not reduce access already granted by a broad one. Include additional group and role assignments in testing: hidden fields and documents must not become accessible without the intended authorization to expand access. Test direct API access, not only the dashboard interface.
+
+Use synthetic documents from two tenants to check search, direct document lookup, multi-search, exports, and any enabled write APIs. Confirm that ingestion credentials cannot read unrelated indexes and that search users cannot change mappings, retention, roles, or snapshot repositories. Check the deployed distribution and edition before relying on document- or field-level controls.
+
+For Elasticsearch backups, use the built-in cluster snapshot mechanism: copies of node data directories and filesystem snapshots do not replace a supported backup, even when nodes are stopped. Do not delete or modify individual snapshot repository files through object-storage tools; manage snapshots through the Elasticsearch API, otherwise later restoration may fail or silently lose data.
+
+Restore snapshots into an isolated environment and explicitly select data indexes, global state, and feature states. In Elasticsearch, restoring the `security` feature state overwrites authentication system indexes; require a reviewed recovery procedure and an independent access path before doing so. Verify restored access rules, repository permissions, and retention before reconnecting applications. Restoring older data must not silently reintroduce documents whose deletion or access revocation is still required.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — sensitive data flows and observability surfaces.
@@ -1122,9 +1385,17 @@ Kafka does not guarantee that a consumer interprets a message safely.
 - SASL, OAuth, or mTLS for authentication.
 - ACLs by topic and group.
 - Schema Registry for contracts.
-- Separate clusters or prefixes for environments and domains.
+- Separate clusters across trust boundaries, or environment/domain-specific topic and group naming with explicit ACLs. A name prefix alone does not restrict access.
 - Kafka Connect with a separate secret model.
 - Monitoring lag, under-replicated partitions, auth failures, and retention pressure.
+
+#### Security and Operational Verification
+
+Ordinary consumer groups assign each partition to one consumer at a time, but this does not make external side effects exactly-once. Commit offsets after the required durable outcome and make retries idempotent. Kafka transactions can coordinate Kafka records and offsets; they do not automatically atomically commit a payment, database update, or external API call. Share groups use different consumption semantics and must not inherit ordinary consumer-group assumptions.
+
+Where a consumer must see only committed Kafka transactions, set `isolation.level=read_committed`; `read_uncommitted` can expose records from aborted and still-open transactions. Test transaction abort and restart: these records must not trigger business actions, and the consumer position after abort must allow unfinished processing to be retried. This mode also returns non-transactional records and does not validate their business correctness.
+
+For durable publication, verify the effective producer `acks=all` and `enable.idempotence=true` settings, compatible retry/in-flight settings, and the topic's replication and minimum in-sync replica requirements. Test broker loss, reduced ISR, restart after processing but before offset commit, and duplicate events. Protect Schema Registry and Kafka Connect separately: they are additional services and credentials, not automatically covered by topic ACLs.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to event-driven architecture, trust boundaries, and data flow review.
@@ -1137,13 +1408,15 @@ Kafka does not guarantee that a consumer interprets a message safely.
 RabbitMQ is used as a message broker for queues, routing, asynchronous processing, task distribution, and service integration. In live environments it often appears in background jobs, transactional messaging, integration queues, and systems where routing semantics, acknowledgements, and backpressure matter.
 
 #### Operating Model
-A broker accepts messages, stores queues, and delivers messages to consumers. A virtual host separates a logical RabbitMQ space: exchanges, queues, bindings, user permissions, and policies live inside a vhost. An exchange accepts publications from producers and decides which queues should receive a message. A queue stores messages until a consumer reads them. A binding connects an exchange and a queue with a routing rule.
+A broker accepts messages, stores queues, and delivers messages to consumers. A virtual host separates a logical RabbitMQ space: exchanges, queues, bindings, user permissions, and policies live inside a vhost. An exchange accepts publications from producers and decides which queues should receive a message. A queue holds messages for delivery; with manual acknowledgement, a consumer reading a message does not itself permanently remove it. Removal or redelivery depends on acknowledgement and queue rules. A binding connects an exchange and a queue with a routing rule.
 
-A routing key is used by an exchange to select matching bindings. A direct exchange routes by exact routing key, a topic exchange by patterns, a fanout exchange to all bound queues, and a headers exchange by message headers. A consumer reads a message from a queue and sends an acknowledgement after successful processing. If an acknowledgement is not received, the broker can return the message to the queue or send it through a dead-letter topology, depending on configuration.
+Routing depends on the exchange type and bindings. A direct exchange matches routing keys exactly, a topic exchange matches key patterns, a fanout exchange routes to all bound queues regardless of the key, and a headers exchange uses message headers. With manual acknowledgements, the consumer acknowledges after the required processing outcome; outstanding deliveries remain unacknowledged until acknowledged, negatively acknowledged, or the channel closes. Automatic acknowledgement treats delivery as complete when sent and can lose work if the consumer fails.
+
+Account for the delivery acknowledgement timeout: when it expires, the broker closes the channel with `PRECONDITION_FAILED` and requeues outstanding deliveries on that channel. Starting with RabbitMQ `4.3`, this mechanism is supported only for quorum queues. Align the configured timeout with processing duration and test a stalled consumer; do not assume the time limit automatically sends a message to a DLQ.
 
 A policy defines queue and exchange behavior: TTL, max length, dead-letter exchange, quorum settings, and other parameters. Operator policy acts as a guardrail above client-provided arguments and ordinary policies, especially for resource limits. User/permission defines which operations are allowed inside a vhost: configure, write, and read.
 
-The working flow is: a producer publishes a message to an exchange, the exchange uses routing key and bindings to select a queue, the broker stores the message, a consumer takes it and acknowledges processing. If processing fails or the message expires, DLX/retry topology decides whether it is retried, delayed, or sent to a dead-letter queue.
+The working flow is: a producer publishes a message to an exchange, the exchange uses its type and bindings to select destinations, the broker stores the message, a consumer takes it and acknowledges processing. If processing fails or the message expires, DLX/retry topology decides whether it is retried, delayed, or sent to a dead-letter queue.
 
 #### Interaction Diagram
 ```mermaid
@@ -1186,6 +1459,16 @@ RabbitMQ owns broker delivery and routing, but not message content security or b
 - Policies and operator policies for TTL, max length, quorum settings, and upper resource limits.
 - Restricted access to the management UI.
 - Monitoring queue depth, consumer count, unacked messages, and publish/ack rates.
+
+#### Security and Operational Verification
+
+For AMQP 0-9-1 manual acknowledgements, an outstanding delivery stays unacknowledged while the channel is open; lack of an acknowledgement is not itself a request to dead-letter. Channel/connection closure normally requeues outstanding deliveries, subject to queue delivery limits. `basic.nack` or `basic.reject` with `requeue=false` dead-letters only when a DLX is configured, otherwise the message is discarded. Requeue loops need bounded retries and an explicit failure destination.
+
+Publisher confirms acknowledge the broker-side publication outcome, not consumer completion. Use confirms and handle unroutable publications, for example with `mandatory` and returned-message handling; an unroutable publication can still be confirmed. For critical work, use suitable durable queues and message persistence, manual consumer acknowledgement after the durable business outcome, bounded prefetch, and idempotent processing. Test a lost connection before a confirm, consumer failure before acknowledgement, an unavailable DLX target, and replay from the failure queue.
+
+Configuring a DLX alone does not guarantee durability: internal republishing uses no confirms by default, and a message can be lost when the destination queue is unavailable. Where loss is unacceptable, verify supported `at-least-once` dead-lettering for the source quorum queue and all prerequisites in the deployed version. Account for possible duplicates and message accumulation during destination failure; test routing recovery and absence of repeated business effects.
+
+For this mode, set `dead-letter-strategy=at-least-once`, `overflow=reject-publish`, and `dead-letter-exchange` in the source queue policy; verify required feature flags for the deployed version. `drop-head` falls back to `at-most-once` transfer even without a queue length limit. Bound accumulation with `max-length` or `max-length-bytes` and test producer handling of rejected new publications during a prolonged destination outage. Do not switch the strategy to `at-most-once` or `overflow` to `drop-head` while messages remain unconfirmed by target queues: this change deletes them from the source queue.
 
 #### Related Project Files
 - `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to asynchronous flows, trust boundaries, and message processing.

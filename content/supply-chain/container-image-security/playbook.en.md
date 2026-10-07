@@ -34,13 +34,14 @@ Reviewers must distinguish these objects:
 | Manifest | Platform-specific object that references one config and ordered layer descriptors | The digest actually pulled for a platform |
 | Image index / manifest list | Higher-level object pointing to platform-specific manifests | Multi-arch ambiguity and platform coverage |
 | Tag | Human-readable registry reference to an index or manifest | Mutable unless registry policy enforces immutability |
-| Digest | Content-addressed identifier for registry content such as index, manifest, config, or layer | Live-environment trust anchor |
+| Digest | Content-addressed identifier for registry content such as index, manifest, config, or layer | Content matching the expected identifier and checks bound to the exact artifact |
 | Image ID | Local identifier derived from image config | Useful locally, but not the registry reference Kubernetes should trust |
 | Registry repository | Namespace grouping related artifacts, tags, manifests, indexes, signatures, SBOMs, and attestations | Access control, retention, audit, promotion |
 
 Rule for live environments:
 - Treat tags as discovery labels or release channels, not as approval evidence.
 - Treat digests as the deployable artifact identity.
+- Obtain the expected digest from a protected approval process and verify downloaded content against it. The hash alone does not establish publisher trust or image safety; verify those through signatures, provenance, vulnerability assessment, and release policy.
 - For multi-arch images, decide whether policy verifies the index digest, each platform-specific manifest digest, or both. Critical images should verify both.
 
 ---
@@ -88,7 +89,7 @@ Verification:
 ## 5. Secrets Leakage
 
 Common leakage paths:
-- copied `.env`, `.npmrc`, `.pypirc`, Maven/Gradle settings, cloud credentials, kubeconfigs, SSH keys, certificates, or package tokens;
+- copied `.env`, `.npmrc`, `.pypirc`, Maven/Gradle settings, cloud credentials, kubeconfigs, SSH/TLS private keys, or package tokens; public certificates and CA trust bundles are not secrets by themselves, but require integrity protection;
 - secrets passed through build args or environment variables and preserved in image metadata or layer history;
 - private repository URLs with embedded credentials;
 - test fixtures, logs, crash dumps, debug bundles, and generated config;
@@ -96,6 +97,7 @@ Common leakage paths:
 
 Release-ready controls:
 - Use BuildKit secret mounts or equivalent ephemeral secret mechanisms for build-time access.
+- A secret mount limits how the builder injects a credential; the consuming build step can still copy it into output, log it, or send it elsewhere. Review commands and dependency installation hooks executed while the mount is available, grant short-lived read-only credentials where possible, and do not expose release credentials to untrusted Dockerfiles or pull-request builds.
 - Do not copy developer home directories, whole repositories, or broad glob patterns into images without `.dockerignore` review.
 - Rotate credentials immediately if a secret is found in an image, even if a later layer deletes the file. Deleted files may remain recoverable from earlier layers.
 - Keep scanning evidence for the final image digest and for base/shared images consumed by many services.
@@ -104,6 +106,7 @@ Verification:
 - Inspect image history, layer contents, config environment, labels, and build logs.
 - Run secrets scanning against the built image and repository history.
 - Confirm remediation includes credential rotation, registry cleanup where possible, and updated build controls.
+- Test the corrected build with a synthetic secret and inspect all exported layers, config/history, build logs, cache exports, and attestations for its value. Inspect layer archives as well as the merged filesystem, since later deletion can hide an earlier-layer leak. Registry deletion does not revoke credentials or erase copies already pulled; verify revocation at the credential issuer and assess other copies, including mirrors and caches.
 
 ---
 
@@ -170,9 +173,11 @@ Example policy fields:
 image: registry.example.com/team/app@sha256:...
 allowed_signers:
   - oidc_issuer: https://token.actions.githubusercontent.com
-    certificate_identity: repo:ORG/REPO:ref:refs/tags/v*
+    certificate_identity: https://github.com/ORG/REPO/.github/workflows/release.yml@refs/tags/v1.2.3
 trusted_builders:
-  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v*
+  - builder_id: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/<approved-generator-version>
+    provenance_oidc_issuer: https://token.actions.githubusercontent.com
+    provenance_certificate_identity: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/<approved-generator-version>
     build_type: https://github.com/slsa-framework/slsa-github-generator/container@v1
 expected_source:
   repository: github.com/ORG/REPO
@@ -185,6 +190,8 @@ required_attestations:
 multi_arch_policy: verify-index-and-platform-manifests
 admission_failure_mode: fail-closed
 ```
+
+The example describes a local policy model rather than a specific tool configuration. Verify image-signing and provenance-signing identities separately: the generator reusable workflow may sign the attestation under its own identity. Replace `<approved-generator-version>` with the exact approved version from a real sample. If the generator emits v0.2, select its corresponding `predicate_type` and separate structural checks; the example v1 value cannot be applied to v0.2 without a compatibility policy.
 
 Vulnerability policy:
 - Critical/high vulnerabilities with plausible reachability or exposed attack surface should block deployment to live environments unless an exception has owner, justification, expiry, compensating controls, and verification evidence.

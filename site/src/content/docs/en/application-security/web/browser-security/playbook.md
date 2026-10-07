@@ -59,12 +59,15 @@ Release-ready defaults:
 - Set `form-action 'self'` plus explicit payment/IdP endpoints where required.
 - Avoid `unsafe-inline` and `unsafe-eval` for new code. If legacy code needs them, document owner, affected routes, expiry, and compensating controls.
 - Use nonce- or hash-based script execution for applications that still require inline bootstrap scripts.
+- Generate CSP nonces with a cryptographically secure random generator, using at least `128 bits` before encoding and a fresh value for each response. The header and authorized elements must use the same value. Do not reuse a build-time or session-wide nonce, or automatically attach a nonce to attacker-controlled markup. Shared HTML caches must not replay a nonce-bearing response; use a hash-based policy for suitable static pages or a tested response-time rendering design.
 - For modern applications with DOM XSS exposure, use `script-src-attr 'none'` and enforce Trusted Types where supported; legacy rollout requires route owners, compatibility testing, and a migration plan for unsafe DOM sinks.
 - Roll out material CSP changes through `Content-Security-Policy-Report-Only` first, then enforce after false positives are reviewed.
+- `Report-Only` does not block violations or replace the enforced protection policy. Keep the existing `Content-Security-Policy` header while evaluating a new policy; establish release readiness with negative tests under enforcement, not merely an absence of reports.
 
 Verification:
 - Confirm the effective header on every browser entry point, including error pages, login/callback pages, admin pages, and static shell routes.
 - Run a representative user journey with CSP reporting enabled and review violations before enforcement.
+- Compare independently served responses, including CDN cache hits, to verify nonce freshness and header/HTML consistency. Injected markup must not acquire an authorized nonce through template processing.
 - Negative test: injected inline script, inline event handler, `<object>`/plugin load, and unapproved external script must not execute in the enforced profile.
 
 ### 3.2 CORS and Cross-Origin Data Exposure
@@ -75,12 +78,14 @@ Release-ready defaults:
 - Do not use `Access-Control-Allow-Origin: *` for responses containing user, tenant, internal, payment, or admin data.
 - Treat `Origin` as a browser signal only. Non-browser clients can spoof it; server-side authentication and authorization remain mandatory.
 - Restrict allowed methods and headers to the smallest operational set.
+- If CORS headers vary by request origin, include `Origin` in `Vary` and verify the CDN or proxy honors that variation. Preserve other required `Vary` fields. This separates origin-dependent response variants; it does not permit shared caching of authenticated data or replace authorization.
 - Cache preflight responses only after the policy is stable; use conservative `Access-Control-Max-Age` for sensitive APIs.
 
 Verification:
 - Test allowed and denied origins with and without credentials.
 - Test `null` origin, sibling subdomains, attacker-controlled subdomains, and HTTP origins against HTTPS APIs.
 - Confirm sensitive responses do not include wildcard CORS headers.
+- Test alternating allowed, denied, and absent origins against a warmed CDN/proxy cache, in both request orders. The cache must not reuse another origin's CORS policy or another user's sensitive response.
 
 ### 3.3 Cookies, Browser Storage, and Session Data
 
@@ -90,6 +95,7 @@ Release-ready defaults:
 - Use `SameSite=Strict` for high-risk admin or step-up cookies where UX allows it.
 - Use `SameSite=None; Secure` only for documented cross-site embed or federated flows.
 - Scope `Domain` and `Path` narrowly. Do not share session cookies across unrelated subdomains.
+- Do not treat `Path` as a security boundary between applications on the same host; cookies are not isolated by port either. Host applications with different trust levels on separate hosts and verify session cookie scope.
 - Use the `__Host-` cookie prefix for host-only session cookies where the framework and deployment model support it: `Secure`, no `Domain`, and `Path=/`.
 - Do not store access tokens, refresh tokens, session IDs, or long-lived secrets in `localStorage`.
 - Prefer BFF/session-cookie patterns for browser apps that need durable authentication. If an SPA must hold tokens, document the risk decision and keep token lifetime short per the OIDC/OAuth playbook.
@@ -104,7 +110,9 @@ Verification:
 Release-ready defaults:
 - Cookie-authenticated applications protect every state-changing route with framework CSRF protection, a synchronizer token, signed double-submit cookie, or a Fetch Metadata policy with a tested fallback for unsupported clients.
 - Do not rely on `SameSite` alone for normal web applications. Treat it as defense in depth alongside server-side request validation.
-- State-changing operations do not use `GET`, including login, logout, password reset consumption, email change, approval, checkout, and admin actions.
+- Business mutations, local logout, password changes, email changes, approvals, checkout submission, and admin actions require a non-`GET` method and server-side CSRF protection. Opening a login page, starting an authorization redirect, or displaying a reset form may use `GET`; displaying the form must not consume its reset token or change the password.
+- OAuth/OIDC redirect callbacks may use `GET` as required by the selected response mode. Protect them with transaction-bound `state`, PKCE, expected issuer, and ID-token `nonce` validation before creating the session. Apply the protocol's own binding checks to RP-initiated and federated logout endpoints; a navigable local `GET /logout` must not silently destroy a session.
+- Signed double-submit tokens are bound to the authenticated session through a server-verified MAC; do not accept a merely signed token that can be transplanted between sessions. Protect the CSRF cookie from injection by untrusted sibling hosts. Fetch Metadata policies must define whether sibling subdomains are trusted: `same-site` does not mean `same-origin`.
 - CSRF tokens are unique to the user session, unpredictable, validated server-side, and never placed in URLs, logs, analytics events, or referrer-bearing links.
 - API-style browser flows that cannot use form tokens require a custom request header and strict CORS policy. The server must reject simple cross-site requests that lack the expected header or fail `Origin`/Fetch Metadata checks.
 - Validate `Origin` on state-changing cookie-authenticated requests where browsers send it; use `Referer` only as a fallback over HTTPS. Missing Fetch Metadata headers must follow an explicit compatibility rule, not silently bypass CSRF enforcement.
@@ -122,6 +130,7 @@ Release-ready defaults:
 - Do not load tag-manager or analytics scripts on admin, checkout, identity, or sensitive data-entry pages unless there is explicit business approval and data minimization.
 - Prefer self-hosting or pinned versions for critical frontend dependencies.
 - Use SRI for static third-party scripts/styles where the provider and update model allow it.
+- SRI verifies expected bytes, not the behavior or privileges of approved code. A third-party script executing in the page has access to that page's DOM and available browser state. If it must not see sensitive fields, remove it from that page or isolate the sensitive interaction in a separate origin with a narrowly defined message interface; naming an owner does not create isolation.
 - Require `crossorigin="anonymous"` for cross-origin SRI resources where needed by browser behavior.
 - Review npm/package lockfile changes that affect frontend build, bundler plugins, minifiers, auth/session packages, and payment UI.
 - Remove unused scripts and stale feature flags; frontend supply-chain risk accumulates through forgotten integrations.
@@ -136,7 +145,9 @@ Verification:
 Release-ready defaults:
 - Use `frame-ancestors` for anti-clickjacking. Keep `X-Frame-Options` only as compatibility defense where needed.
 - Sandbox untrusted iframes and grant capabilities explicitly.
+- Do not combine `allow-scripts` and `allow-same-origin` for untrusted content sharing the parent's origin: it can remove the sandbox attribute. Use a separate origin and review navigation, popup, and message permissions as part of the isolation boundary.
 - For `postMessage`, always set a specific target origin and verify `event.origin` exactly on receive.
+- For messages bound to an iframe or popup, also require `event.source` to match the expected window and validate message type, schema, and transaction state before acting. An allowed origin can contain several windows; origin validation alone does not bind the sender to the intended interaction. Do not authorize sensitive actions merely because a message has a trusted origin.
 - Treat `postMessage` data as untrusted input; never evaluate it as code or write it to the DOM through unsafe sinks.
 - Use explicit policy for clipboard, camera, microphone, geolocation, payment, and file APIs.
 - Use `Permissions-Policy` to disable powerful browser features by default on admin, account, checkout, support, and internal-tool pages. Start from deny-by-default and open only the features required by the route:
@@ -145,12 +156,14 @@ Release-ready defaults:
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), clipboard-read=(), display-capture=(), fullscreen=(self)
 ```
 
+- Permissions-Policy support differs by browser and directive; unsupported directives are ignored. Record the supported browser/version matrix and test actual API denial, not only header presence. Where a required restriction is unavailable, disable the feature or block the unsupported client under a documented policy; the header cannot remove the privileges of a script already executing in the page.
 - Feature exceptions require an owner, affected routes, allowed origins, business purpose, expiry or review date, and a negative test showing that unauthorized origins cannot use the feature. For example, checkout may allow `payment=(self)` only on payment routes; a video-verification flow may allow `camera=(self)` only for the verification origin and only while that feature exists.
 - Do not grant browser capabilities through iframe `allow` attributes unless the parent page's `Permissions-Policy` also permits that feature for the embedded origin.
 
 Verification:
 - Attempt to frame sensitive pages from an untrusted origin.
 - Test `postMessage` with attacker origins and malformed payloads.
+- Test a different window on an allowed origin, a navigated popup, duplicate messages, and messages from an expired interaction; none may complete the protected operation.
 - Review iframe `sandbox` and `allow` attributes for least privilege.
 - Inspect the effective `Permissions-Policy` response header on sensitive routes with browser DevTools or an automated header check.
 - Negative test: unapproved origins and unrelated routes cannot access camera, microphone, geolocation, payment, display capture, USB/serial/Bluetooth, or clipboard-read capabilities.
@@ -162,21 +175,24 @@ Release-ready defaults:
 - Set `X-Content-Type-Options: nosniff` on script, style, JSON, file download, and API responses to reduce MIME confusion and unsafe content interpretation.
 - Set `Referrer-Policy: strict-origin-when-cross-origin` as a general default. Use `no-referrer` or `same-origin` for admin, identity, payment, support, and sensitive data-entry routes where external analytics or partner redirects do not need referrer context.
 - Use `Cache-Control: no-store` for authenticated pages and responses containing user, tenant, payment, admin, or regulated data. Static assets may use long cache lifetimes only when filename/content hashing is in place.
+- The Cache API does not honor HTTP caching headers. If the application uses a service worker, explicitly exclude sensitive responses from its cache. Define deletion rules for application data in IndexedDB and other storage on logout and user or tenant changes. Test these transitions, including offline operation: data from the previous session must not appear in the new one.
 - Use `Cross-Origin-Opener-Policy: same-origin` for admin, account, checkout, and internal-tool pages unless OAuth/payment popup behavior requires `same-origin-allow-popups`.
-- Use `Cross-Origin-Resource-Policy` on sensitive JSON, media, documents, and downloads so they are not embedded or consumed by unrelated origins. Start with `same-origin`; use `same-site` only when sibling subdomain sharing is intentional.
-- Require `Cross-Origin-Embedder-Policy` only for applications that intentionally need cross-origin isolation, such as `SharedArrayBuffer` or high-resolution timing features. Do not enable it blindly: every embedded script, worker, frame, and media resource must be compatible through CORP or CORS.
+- Use `Cross-Origin-Resource-Policy` to restrict cross-origin loading of sensitive resources in `no-cors` mode, such as images and classic scripts. Start with `same-origin`; use `same-site` only when sibling subdomain sharing is intentional. CORP does not replace server-side authorization, CORS policy for script-readable responses, or `frame-ancestors` for page embedding; the header alone does not establish protection for JSON, documents, and downloads across all request modes.
+- Require `Cross-Origin-Embedder-Policy` only for applications that intentionally need cross-origin isolation, such as `SharedArrayBuffer` or high-resolution timing features. Do not enable it blindly: test embedded scripts, workers, frames, and media against the chosen COEP mode and its applicable CORP/CORS requirements.
+- For cross-origin isolation, pair COEP `require-corp` or a supported `credentialless` mode with COOP `same-origin` and verify `crossOriginIsolated` in the document and workers. `same-origin-allow-popups` does not provide this isolation. In `credentialless` mode, cross-origin `no-cors` requests omit credentials; test resources that require cookies and retain normal CORS checks for `cors` requests.
 - Do not rely on `X-XSS-Protection`; keep it disabled or absent. Modern XSS defense comes from output encoding, safe DOM APIs, CSP, Trusted Types where supported, and review of dangerous sinks.
 
 Verification:
 - Check headers on success, error, redirect, login/callback, logout, API, file download, and static asset responses; edge/CDN and application responses must not conflict.
 - Validate HSTS in a staging domain before enabling `includeSubDomains` or `preload` on a parent domain.
-- Negative test: authenticated sensitive responses are not stored by the browser cache, CDN, or shared proxy; cross-origin pages cannot retain opener access to sensitive routes; unrelated origins cannot embed protected resources.
+- Negative test: authenticated sensitive responses are not stored by the browser cache, CDN, or shared proxy; cross-origin pages cannot retain opener access to sensitive routes.
+- Test access modes separately: a disallowed origin cannot use a resource through `no-cors` loading under CORP or read its response through CORS; a protected page cannot be framed by an unrelated origin under `frame-ancestors`. A direct request without browser restrictions must be denied by the server when the required permissions are absent.
 
 ---
 
 ### Selected ASVS verification references
 
-v5.0.0-3.3.1.
+`v5.0.0-3.3.1`: verify `Secure` and the name prefix of sensitive cookies. To meet this requirement, cookies without `__Host-` need `__Secure-`; the `Secure` attribute alone does not establish full compliance.
 
 Use these ASVS 5.0.0 requirements when recording verification results for the relevant controls; the list is not a complete ASVS assessment.
 

@@ -26,6 +26,8 @@ Start with [requirement selection by change](https://github.com/defrixx/Product-
 
 Changed code or an explicitly labeled candidate implementation, applied requirement IDs, verification evidence, exceptions, and unresolved conditions. Align the requirements with the project's policies.
 
+Explain non-applicability from the actual threat model; reserve exceptions for applicable controls deliberately left unmet. A requirement marked MUST in the skill is a proposed acceptance condition, not proof of legal or organizational authority. Verify version-dependent settings against current primary documentation for the target stack and label unavailable verification explicitly.
+
 Before delivery, match each verified condition to evidence for that exact property at the reported revision. A scoped database lookup does not establish input validation or tenant membership. Tests on a candidate patch establish candidate behavior; label it applied only after observing the change in the named target, and record deployment separately.
 
 ## Files and verification

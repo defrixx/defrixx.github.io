@@ -24,6 +24,8 @@ Five standalone skills can be used individually or combined in a [shared workflo
 
 The instructions are in English. The assistant needs file access; installation depends on the host application. Each skill page lists requirements for its optional helpers.
 
+For repeatable installation, select and record the source commit before copying the package, review its instructions and optional scripts, and retain that revision with assessment evidence. Review updates before replacing the installed copy. Preserve the repository's MIT license notice when redistributing a standalone skill.
+
 Each skill directory contains its required instructions, references, and templates; sibling skills are not required. For a combined task, copy the selected skills and name the stages to perform. No separate workflow execution engine is included. Installation of `prompt-integrity` is covered on the tool page.
 
 ## Connection to the playbooks
