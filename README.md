@@ -15,7 +15,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 - [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist
 - [`content/review/threat-modeling/`](content/review/threat-modeling/) - threat modeling methodology review and practical playbook
 - [`content/review/release-governance/`](content/review/release-governance/) - release governance and security quality gates for protected environments, deployment approvals, release evidence, exceptions, and escalation
-- [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, exploitability, SLA, release blocking, exceptions, and closure evidence
+- [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, external reports and coordinated disclosure, exploitability, SLA, release blocking, exceptions, and closure evidence
 
 ### Application Security
 - [`content/application-security/`](content/application-security/) - [choose a document by task](content/application-security/overview.en.md)
@@ -46,7 +46,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 ### AI Security
 - [`content/ai-security/`](content/ai-security/) - [choose an AI security document](content/ai-security/overview.en.md) by task and document scope
 - [`content/ai-security/securing-ai/`](content/ai-security/securing-ai/) - Securing AI overview
-- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2025)
+- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2026), with the 2025/2026 map and stable historical links
 - [`content/ai-security/agentic-ai/`](content/ai-security/agentic-ai/) - Agentic AI security playbook for autonomy, tools, memory, action traces, sandboxing, and kill-switch controls
 - [`content/ai-security/ai-assisted-development/`](content/ai-security/ai-assisted-development/) - secure AI-assisted development playbook for coding assistants, generated code review, dependency verification, SDLC gates, and coding-agent environments
 - [`content/ai-security/mcp-security/`](content/ai-security/mcp-security/) - MCP security playbook for server/tool registry, deployment patterns, OAuth, capability drift, and protocol-layer logging

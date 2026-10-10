@@ -108,7 +108,7 @@ def check_input(policy: str, path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--policy', choices=['pod', 'aws_trust'])
+    parser.add_argument('--policy', choices=['pod', 'aws_trust', 'slsa_build'])
     parser.add_argument('--input', type=Path)
     args = parser.parse_args()
     if bool(args.policy) != bool(args.input):
@@ -126,9 +126,9 @@ def main() -> None:
         if not isinstance(case['name'], str) or not case['name'] or case['name'] in names:
             raise ValueError('Missing or duplicate scenario name')
         names.add(case['name'])
-        if case['policy'] not in {'pod', 'aws_trust'} or type(case['allowed']) is not bool:
+        if case['policy'] not in {'pod', 'aws_trust', 'slsa_build'} or type(case['allowed']) is not bool:
             raise ValueError('Unknown policy or non-boolean expected decision')
-    for policy, manifest in [('pod', 'pod.json'), ('aws_trust', 'aws-trust.json')]:
+    for policy, manifest in [('pod', 'pod.json'), ('aws_trust', 'aws-trust.json'), ('slsa_build', 'slsa-build.json')]:
         selected = [case for case in cases if case['policy'] == policy]
         if {case['allowed'] for case in selected} != {True, False}:
             raise ValueError(f'{policy}: allow and deny cases are required')
@@ -138,7 +138,7 @@ def main() -> None:
     run_opa(['check', '--strict', '/policies'])
     result = run_opa(['test', '/policies', '--fail-on-empty', '--format=json'])
     validate_test_report(json.loads(result.stdout), names)
-    print(f'PASS: {len(cases)} scenarios across 2 policies; OPA strict checks passed')
+    print(f'PASS: {len(cases)} scenarios across 3 policies; OPA strict checks passed')
 
 
 if __name__ == '__main__':

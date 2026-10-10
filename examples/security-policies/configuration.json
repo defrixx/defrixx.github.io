@@ -3,6 +3,15 @@
     "namespace": "payments",
     "service_account": "payments-app",
     "aws_provider": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com",
-    "github_subject": "repo:example/payments:ref:refs/heads/main"
+    "github_subject": "repo:example@123456/payments@456789:ref:refs/heads/main",
+    "slsa": {
+      "issuer": "https://issuer.example",
+      "signer": "https://build.example/release-signer",
+      "builder": "https://build.example/synthetic-builder",
+      "build_type": "https://build.example/synthetic/v1",
+      "source": "https://github.com/example/payments",
+      "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
   }
 }

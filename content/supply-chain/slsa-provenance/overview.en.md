@@ -288,6 +288,8 @@ Organization deployment policy checks:
 Guardrail for live environments:
 - live-environment `break-glass` must not exceed `24h`, with mandatory post-incident review
 
+Synthetic positive/negative [policy scenarios](../../../reference/security-policy-examples/overview.en.md) exercise signer, builder and subject binding without pretending to verify cryptography. Use them to test the decision contract, then add signed fixtures for the actual verifier and trust roots.
+
 ### 8.3 Minimal implementation recipe (phased)
 
 If the reference model cannot be reached in one step, adopt in phases:

@@ -248,7 +248,7 @@ SITE_MAP_LABELS = {
  'supply-chain/container-image-security/playbook': ('Контейнерные образы', 'Container images'),
  'ai-security/overview': ('Обзор', 'Overview'),
  'ai-security/securing-ai/overview': ('Защита функций ИИ', 'Securing AI features'),
- 'ai-security/owasp-llm-top-10/overview': ('OWASP LLM Top 10', 'OWASP LLM Top 10'),
+ 'ai-security/owasp-llm-top-10/overview': ('OWASP LLM Top 10 (2026)', 'OWASP LLM Top 10 (2026)'),
  'ai-security/agentic-ai/playbook': ('Безопасность агентов', 'Agent security'),
  'ai-security/ai-assisted-development/playbook': ('Разработка с ИИ', 'AI-assisted development'),
  'ai-security/mcp-security/playbook': ('Безопасность MCP', 'MCP security'),

@@ -1,0 +1,33 @@
+{
+  "verification": {
+    "signature_verified": true,
+    "issuer": "https://issuer.example",
+    "signer": "https://build.example/release-signer"
+  },
+  "statement": {
+    "_type": "https://in-toto.io/Statement/v1",
+    "subject": [
+      {
+        "name": "payments",
+        "digest": {
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    ],
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "predicate": {
+      "buildDefinition": {
+        "buildType": "https://build.example/synthetic/v1",
+        "externalParameters": {
+          "source": "https://github.com/example/payments",
+          "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      },
+      "runDetails": {
+        "builder": {
+          "id": "https://build.example/synthetic-builder"
+        }
+      }
+    }
+  }
+}

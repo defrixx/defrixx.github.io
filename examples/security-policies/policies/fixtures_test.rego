@@ -2,6 +2,7 @@ package examples.tests
 
 import data.examples.pod
 import data.examples.aws_trust
+import data.examples.slsa_build
 
 # An unknown policy name remains false and fails an expected-allow case.
 default decision(_) := false
@@ -10,6 +11,8 @@ decision(case) := pod.allow if {
     case.policy == "pod"
 } else := aws_trust.allow if {
     case.policy == "aws_trust"
+} else := slsa_build.allow if {
+    case.policy == "slsa_build"
 }
 
 test_fixture_cases[name] if {

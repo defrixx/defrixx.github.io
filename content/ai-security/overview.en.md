@@ -18,4 +18,4 @@ Start with the question you need to answer. These documents distinguish AI featu
 
 ## Where to find the threat taxonomy
 
-The [OWASP LLM Top 10 overview (2025)](owasp-llm-top-10/overview.en.md) explains threat categories and their differences. Use it as shared vocabulary during threat modeling and reviews, then follow the documents above for controls and verification methods.
+The [OWASP LLM Top 10 overview (2026)](owasp-llm-top-10/overview.en.md) explains threat categories and their differences. Use it as shared vocabulary during threat modeling and reviews, then follow the documents above for controls and verification methods.

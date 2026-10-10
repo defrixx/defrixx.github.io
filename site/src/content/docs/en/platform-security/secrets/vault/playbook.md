@@ -316,6 +316,10 @@ spec:
     spec:
       serviceAccountName: payments-api
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
         - name: vault-token
           projected:
@@ -332,11 +336,16 @@ spec:
             runAsUser: 10001
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
 ```
 
 The tag in `tag@sha256` is for readability. Live admission/deploy policy must enforce the digest as the immutable artifact identity.
 
+Apply the [Pod security profile](/en/platform-security/kubernetes/pod-security/playbook/) to the rendered Pod after injection. Pod-level seccomp is inherited unless a container overrides it; capability drops and `allowPrivilegeEscalation: false` must hold for every ordinary and init container, including Vault Agent containers. Keep Injector security-context generation enabled and verify the deployed Injector's actual output against the namespace's pinned Restricted version. This application fragment alone does not prove the injected Pod passes admission.
+
 Verification:
+- Confirm admission accepts the injected Pod under the selected Restricted profile and rejects missing or unsafe required fields; do not weaken the namespace policy to run the example. Check file permissions and successful secret rendering after injection.
 - Inspect the final pod specification to confirm that the application container does not mount `vault-token` while the agent does. If checking the path through `kubectl exec`, first confirm that the command works and the image contains the tool: missing `ls` or exec failure does not prove token absence.
 - Vault Agent auto-auth must still succeed, and `/vault/secrets/app-config.json` must be present in the application container after injection.
 - Deployment policy must reject the same manifest if the image is changed to a tag-only reference.

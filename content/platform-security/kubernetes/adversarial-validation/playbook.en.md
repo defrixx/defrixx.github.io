@@ -181,7 +181,7 @@ kubectl auth can-i update pods --subresource=ephemeralcontainers --as=system:ser
 kubectl get rolebindings,clusterrolebindings -A
 ```
 
-Impersonation checks require reviewer impersonation permission and the actual subject groups. `--as` alone does not reproduce ServiceAccount group grants; use the applicable authenticated and ServiceAccount groups via `--as-group`, or verify with the workload identity in an approved test. Check both `update` and `patch` on ephemeral containers and the transport-dependent `get`/`create` permissions for exec, attach, and port-forward.
+Impersonation checks require the reviewer's corresponding impersonation permissions. In the standard API-server impersonation path verified for Kubernetes 1.36, `--as=system:serviceaccount:<ns>:<sa>` without `--as-group` adds `system:serviceaccounts`, `system:serviceaccounts:<ns>` and `system:authenticated` automatically. Explicit `--as-group` values replace the ServiceAccount group mapping; when specifying groups manually, supply the complete expected set and verify the reviewer's permissions to impersonate them. For an ordinary user, the API server does not recover arbitrary identity-provider groups: supply the actual groups or test with the real identity. Check the target version and impersonation mode, including restrictions on UID and extra fields; a substituted name alone does not reproduce every token property. Verify with the workload identity in an approved test where those properties affect authorization. Check both `update` and `patch` on ephemeral containers and the transport-dependent `get`/`create` permissions for exec, attach, and port-forward.
 
 ### 3.7 Resource exhaustion
 

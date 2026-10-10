@@ -127,7 +127,7 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { slug: 'ai-security/securing-ai/overview', label: 'Защита функций ИИ', translations: { en: 'Securing AI features' }, attrs: { class: 'sidebar-topic' } },
-                { slug: 'ai-security/owasp-llm-top-10/overview', label: 'OWASP LLM Top 10', translations: { en: 'OWASP LLM Top 10' } },
+                { slug: 'ai-security/owasp-llm-top-10/overview', label: 'OWASP LLM Top 10 (2026)', translations: { en: 'OWASP LLM Top 10 (2026)' } },
               ],
             },
             {

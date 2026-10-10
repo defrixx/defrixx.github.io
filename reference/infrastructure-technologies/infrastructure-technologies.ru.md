@@ -1291,7 +1291,7 @@ Redis предоставляет быстрое хранилище данных 
 
 #### Связанные файлы из проекта
 - `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md`: жизненный цикл LLMSecOps, конвейер данных RAG и защита векторной БД.
-- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md`: LLM08 Vector and Embedding Weaknesses.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md`: LLM09:2026 Vector and Embedding Weaknesses.
 - Отдельного плейбука по безопасности векторных БД пока нет.
 
 ### Elasticsearch / OpenSearch

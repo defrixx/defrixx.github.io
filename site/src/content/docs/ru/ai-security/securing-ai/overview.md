@@ -52,6 +52,8 @@ sidebar:
 
 ---
 
+Идентификаторы покрытия OWASP ниже относятся к редакции 2026 года. [Обзор LLM-рисков](/ru/ai-security/owasp-llm-top-10/overview/) содержит карту 2025/2026 и сохраняет исторические ссылки. Применимость мер защиты определяется моделью угроз, а не местом категории в рейтинге.
+
 ## 3. Аспекты безопасности и меры контроля
 
 ### 3.1 Учетные записи и доступ (IAM для ИИ)
@@ -62,8 +64,8 @@ sidebar:
 - доступ к данным другого арендатора
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM06: Excessive Agency`
-- `LLM02: Sensitive Information Disclosure`
+- `LLM03:2026 Excessive Agency`
+- `LLM02:2026 Sensitive Information Disclosure`
 
 **Практические меры контроля:**
 - `Базовые требования`: идентичность рабочей нагрузки вместо статических ключей
@@ -84,8 +86,8 @@ sidebar:
 - нарушение требований к хранению и регуляторных требований
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM02: Sensitive Information Disclosure`
-- `LLM07: System Prompt Leakage`
+- `LLM02:2026 Sensitive Information Disclosure`
+- `LLM08:2026 Hidden Context Exposure`
 
 **Практические меры контроля:**
 - `Базовые требования`: классификация данных и матрица их обработки для сценариев применения ИИ
@@ -112,8 +114,8 @@ sidebar:
 - неуправляемые активы ИИ вне обычного реестра ПО и инфраструктуры
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM03: Supply Chain`
-- `LLM04: Data and Model Poisoning`
+- `LLM04:2026 Supply Chain`
+- `LLM05:2026 Data and Model Poisoning`
 
 **Практические меры контроля:**
 - `Базовые требования`: доверенный реестр и проверки происхождения (хеш, подпись, издатель)
@@ -139,9 +141,9 @@ sidebar:
 - поиск без ACL и утечки между арендаторами
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM01: Prompt Injection`
-- `LLM08: Vector and Embedding Weaknesses`
-- `LLM04: Data and Model Poisoning`
+- `LLM01:2026 Prompt Injection`
+- `LLM09:2026 Vector and Embedding Weaknesses`
+- `LLM05:2026 Data and Model Poisoning`
 
 **Практические меры контроля:**
 - `Базовые требования`: строгое разделение контекста (доверенный и недоверенный)
@@ -167,8 +169,8 @@ sidebar:
 - повышение привилегий через последовательные вызовы инструментов
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM05: Improper Output Handling`
-- `LLM06: Excessive Agency`
+- `LLM10:2026 Improper Output Handling`
+- `LLM03:2026 Excessive Agency`
 
 **Практические меры контроля:**
 - `Базовые требования`: рассматривать ответ модели как недоверенные входные данные
@@ -196,9 +198,9 @@ sidebar:
 - неучтенные инструменты, избыточная передача контекста и утечка токенов в журналы протокола
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM06: Excessive Agency`
-- `LLM02: Sensitive Information Disclosure`
-- `LLM03: Supply Chain`
+- `LLM03:2026 Excessive Agency`
+- `LLM02:2026 Sensitive Information Disclosure`
+- `LLM04:2026 Supply Chain`
 
 **Границы ответственности:**
 - [Плейбук безопасности агентного ИИ](/ru/ai-security/agentic-ai/playbook/) определяет авторизацию действий агента, сохранение контекста полномочий, ограничения автономности, подтверждение опасных действий и аварийную остановку.
@@ -219,8 +221,8 @@ sidebar:
 - неконтролируемые исходящие соединения
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM10: Unbounded Consumption`
-- `LLM03: Supply Chain`
+- `LLM06:2026 Unbounded Consumption`
+- `LLM04:2026 Supply Chain`
 
 **Практические меры контроля:**
 - `Базовые требования`: усиление защиты контейнеров и узлов (seccomp, политики среды выполнения)
@@ -247,8 +249,8 @@ sidebar:
 - браузерные, файловые, почтовые инструменты агента и средства выполнения кода как недоверенные пути загрузки данных и выполнения действий
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM05: Improper Output Handling`
-- `LLM01: Prompt Injection` (в процессах с участием LLM)
+- `LLM10:2026 Improper Output Handling`
+- `LLM01:2026 Prompt Injection` (в процессах с участием LLM)
 
 **Практические меры контроля:**
 - `Базовые требования`: базовые требования безопасной разработки для кода веб-приложений и API, дополненные проверками для ИИ
@@ -323,9 +325,9 @@ sidebar:
 - в антифрод-сценариях: адаптация атакующего и обход механизмов обнаружения
 
 **Покрытие OWASP LLM Top 10:**
-- `LLM09: Misinformation`
-- `LLM10: Unbounded Consumption` (циклы злоупотребления или автоматизации)
-- `LLM04: Data and Model Poisoning` (манипулирование моделью)
+- `LLM07:2026 Misinformation`
+- `LLM06:2026 Unbounded Consumption` (циклы злоупотребления или автоматизации)
+- `LLM05:2026 Data and Model Poisoning` (манипулирование моделью)
 
 **Практические меры контроля:**
 - `Базовые требования`: фильтры политик для вредоносных и запрещенных намерений

@@ -520,7 +520,7 @@ Common implementations include Cilium, Calico, cloud-provider CNIs, Flannel, and
 #### Operating Model
 Kubernetes defines the general network model: a pod gets an IP, pods can communicate with each other, a Service provides a stable virtual IP or DNS name for a set of endpoints, and NetworkPolicy describes allowed ingress/egress flows. The Kubernetes API stores objects, but it does not enforce NetworkPolicy on the datapath. Enforcement is performed by the CNI plugin or an associated policy engine.
 
-The CNI plugin is called by kubelet/container runtime when a pod sandbox is created. It allocates an IP, connects the pod network interface, programs routes, rules, eBPF maps, or iptables/nftables, and then maintains state as pods, nodes, services, and policies change. DNS is usually provided by CoreDNS, while On Linux, Service traffic is implemented by kube-proxy in iptables or nftables mode, or by the CNI datapath when kube-proxy replacement is used. IPVS is deprecated since Kubernetes 1.35; plan migration of existing installations to a supported mode. When switching, verify the kernel, CNI compatibility, NodePort reachability on intended addresses, and firewall rules: nftables behavior is not identical to iptables.
+The CNI plugin is called by kubelet/container runtime when a pod sandbox is created. It allocates an IP, connects the pod network interface, programs routes, rules, eBPF maps, or iptables/nftables, and then maintains state as pods, nodes, services, and policies change. DNS is usually provided by CoreDNS. On Linux, Service traffic is implemented by kube-proxy in iptables or nftables mode, or by the CNI datapath when kube-proxy replacement is used. IPVS is deprecated since Kubernetes 1.35; plan migration of existing installations to a supported mode. When switching, verify the kernel, CNI compatibility, NodePort reachability on intended addresses, and firewall rules: nftables behavior is not identical to iptables.
 
 NetworkPolicy is a namespace-scoped Kubernetes resource. It selects pods through labels and defines which ingress and egress traffic is allowed. The important semantic detail: a pod without a matching policy is usually non-isolated for that direction. Once a pod is selected by an ingress or egress policy, only explicitly described flows are allowed for that direction. This means default deny requires a dedicated policy, not just the presence of a CNI.
 
@@ -1295,7 +1295,7 @@ Test cross-tenant queries, direct object lookup, permission revocation, deleted 
 
 #### Related Project Files
 - `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md` — LLMSecOps lifecycle, RAG data pipeline, and vector database controls.
-- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM08 Vector and Embedding Weaknesses.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM09:2026 Vector and Embedding Weaknesses.
 - There is no dedicated vector database security playbook yet.
 
 ### Elasticsearch / OpenSearch

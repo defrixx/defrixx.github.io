@@ -48,6 +48,8 @@ Control labels in this document are requirement profiles, not finding severity:
 
 ---
 
+OWASP coverage identifiers below use the 2026 edition. The [LLM risk overview](../owasp-llm-top-10/overview.en.md) contains the 2025/2026 map and preserves historical links. Control applicability follows the threat model rather than the category rank.
+
 ## 3. Security aspects and controls
 
 ### 3.1 Identity and access (AI IAM)
@@ -58,8 +60,8 @@ Control labels in this document are requirement profiles, not finding severity:
 - cross-tenant access
 
 **OWASP LLM Top 10 coverage:**
-- `LLM06: Excessive Agency`
-- `LLM02: Sensitive Information Disclosure`
+- `LLM03:2026 Excessive Agency`
+- `LLM02:2026 Sensitive Information Disclosure`
 
 **Practical controls:**
 - `Baseline`: workload identity instead of static keys
@@ -80,8 +82,8 @@ Control labels in this document are requirement profiles, not finding severity:
 - retention/regulatory violations
 
 **OWASP LLM Top 10 coverage:**
-- `LLM02: Sensitive Information Disclosure`
-- `LLM07: System Prompt Leakage`
+- `LLM02:2026 Sensitive Information Disclosure`
+- `LLM08:2026 Hidden Context Exposure`
 
 **Practical controls:**
 - `Baseline`: data classification + data handling matrix for AI use cases
@@ -108,8 +110,8 @@ Control labels in this document are requirement profiles, not finding severity:
 - unmanaged AI assets outside normal software and infrastructure inventory
 
 **OWASP LLM Top 10 coverage:**
-- `LLM03: Supply Chain`
-- `LLM04: Data and Model Poisoning`
+- `LLM04:2026 Supply Chain`
+- `LLM05:2026 Data and Model Poisoning`
 
 **Practical controls:**
 - `Baseline`: trusted registry + provenance checks (hash/signature/publisher)
@@ -135,9 +137,9 @@ Control labels in this document are requirement profiles, not finding severity:
 - retrieval without ACL and cross-tenant leakage
 
 **OWASP LLM Top 10 coverage:**
-- `LLM01: Prompt Injection`
-- `LLM08: Vector and Embedding Weaknesses`
-- `LLM04: Data and Model Poisoning`
+- `LLM01:2026 Prompt Injection`
+- `LLM09:2026 Vector and Embedding Weaknesses`
+- `LLM05:2026 Data and Model Poisoning`
 
 **Practical controls:**
 - `Baseline`: strict context separation (trusted vs untrusted)
@@ -163,8 +165,8 @@ Control labels in this document are requirement profiles, not finding severity:
 - escalation through tool chains
 
 **OWASP LLM Top 10 coverage:**
-- `LLM05: Improper Output Handling`
-- `LLM06: Excessive Agency`
+- `LLM10:2026 Improper Output Handling`
+- `LLM03:2026 Excessive Agency`
 
 **Practical controls:**
 - `Baseline`: always treat output as untrusted input
@@ -192,9 +194,9 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - shadow tools, context over-sharing, and token leakage in protocol logs
 
 **OWASP LLM Top 10 coverage:**
-- `LLM06: Excessive Agency`
-- `LLM02: Sensitive Information Disclosure`
-- `LLM03: Supply Chain`
+- `LLM03:2026 Excessive Agency`
+- `LLM02:2026 Sensitive Information Disclosure`
+- `LLM04:2026 Supply Chain`
 
 **Ownership boundaries:**
 - The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns agent-action authorization, authorization-context preservation, autonomy bounds, approval of dangerous actions, and emergency stop behavior.
@@ -215,8 +217,8 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - uncontrolled egress
 
 **OWASP LLM Top 10 coverage:**
-- `LLM10: Unbounded Consumption`
-- `LLM03: Supply Chain`
+- `LLM06:2026 Unbounded Consumption`
+- `LLM04:2026 Supply Chain`
 
 **Practical controls:**
 - `Baseline`: node/container hardening (seccomp, runtime policies)
@@ -243,8 +245,8 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - agent browser, file, email, and code-execution tools becoming untrusted ingestion and execution paths
 
 **OWASP LLM Top 10 coverage:**
-- `LLM05: Improper Output Handling`
-- `LLM01: Prompt Injection` (in LLM-mediated flows)
+- `LLM10:2026 Improper Output Handling`
+- `LLM01:2026 Prompt Injection` (in LLM-mediated flows)
 
 **Practical controls:**
 - `Baseline`: secure coding baseline for web/API code plus AI-specific checks
@@ -319,9 +321,9 @@ The 30-day forensic retention ceiling is a local data-minimization assumption, n
 - in antifraud scenarios: adversarial adaptation and detector bypass
 
 **OWASP LLM Top 10 coverage:**
-- `LLM09: Misinformation`
-- `LLM10: Unbounded Consumption` (abuse/automation loops)
-- `LLM04: Data and Model Poisoning` (for model manipulation)
+- `LLM07:2026 Misinformation`
+- `LLM06:2026 Unbounded Consumption` (abuse/automation loops)
+- `LLM05:2026 Data and Model Poisoning` (for model manipulation)
 
 **Practical controls:**
 - `Baseline`: policy filters for harmful/disallowed intents

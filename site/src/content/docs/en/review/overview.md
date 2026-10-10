@@ -22,3 +22,5 @@ Start with an architecture review or threat model. Use the relevant playbooks fo
 ## When to use other sections
 
 For code, API, and web application reviews, use [application security](/en/application-security/overview/). Kubernetes and Vault reviews are covered in [platform security](/en/platform-security/overview/).
+
+For an external researcher report, use the intake and coordinated-disclosure process in section 2.1 of [vulnerability management](/en/review/vulnerability-management/playbook/).

@@ -61,6 +61,17 @@ sequenceDiagram
 - when requested and granted, an offline token is issued with long-lived or non-session-bound behavior
 - this is not a separate grant flow, but token behavior modification in existing flows (for example, authorization_code)
 
+### 2.2.1 Keycloak Standard Token Exchange V2 and revocation
+
+Standard V2 is supported from Keycloak 26.2; use a maintained release and verify its actual feature configuration. The server feature `token-exchange-standard:v2` is enabled by default, but the requesting confidential client also needs `Standard token exchange` enabled and must authenticate. This profile covers internal access-token exchange within one realm; do not assume legacy V1 capabilities.
+
+- Allow only approved requesting clients, target audiences and client scopes. Validate the resulting `aud`, roles and scopes at the target API: `audience` filters available audiences, while `scope` can add optional client scopes. Exchange does not inherently guarantee reduced privileges.
+- In the current V2 implementation, `resource` is not supported; RFC 8693 support alone does not establish support for every optional parameter.
+- Revoking the source access token does not revoke an access token already obtained through exchange. Bound residual access by the derived token's lifetime and the target API's actual revocation mechanism; document the accepted window, including verification-cache effects. Apply section 6.4 rather than assuming logout or source-token revocation immediately stops downstream access.
+- Keep refresh-token exchange disabled unless explicitly required. Enabling `Allow refresh token in Standard Token Exchange` with `Same session` permits a refresh token in the existing user session; transient/offline sessions and an offline-token request are not supported by this mode. Keycloak documents a revocation chain for exchanged refresh tokens, subject to the source-token/session conditions; this does not establish immediate invalidation of an access token already held by an API client.
+
+Before release, obtain a derived token and confirm the target API accepts it; revoke the source token and repeat the request with that same derived token. Record the actual result and when access stops, and compare it with the accepted residual window. Separately test denial of new exchanges, wrong audience, disallowed scopes, and any approved refresh-token chain, including an expired source token. Retain version, configuration and timestamps, never raw tokens.
+
 ### 2.3 Purpose of each token
 
 - `id_token`: user authentication result for client session context

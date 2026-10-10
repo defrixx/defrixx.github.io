@@ -28,6 +28,12 @@ jobs:
       - name: Check generated Starlight content
         run: python3 scripts/sync_starlight_content.py --check
 
+      - name: Test validation and generation helpers
+        run: python3 -m unittest discover -s scripts/tests -v
+
+      - name: Test security policy examples
+        run: python3 scripts/test_security_policies.py
+
       - name: Install, build, and upload site
         uses: withastro/action@3eafd002e65cc31b4f0eae0bb05450d521562247 # v6
         with:

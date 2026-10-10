@@ -1,12 +1,12 @@
 ---
-title: "OWASP Top 10 for LLM Applications (2025): Overview"
-description: "This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2025)."
+title: "OWASP Top 10 for LLM Applications (2026): Overview"
+description: "This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2026)."
 sidebar:
   order: 20
 ---
 ## 1. Scope
 
-This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2025).
+This overview is a threat-focused summary of OWASP Top 10 for LLM Applications (2026).
 
 This overview focuses on:
 - how each threat emerges in real systems
@@ -19,9 +19,28 @@ Document ownership:
 - It does not define the production control baseline; use [Securing AI](/en/ai-security/securing-ai/overview/) for controls, implementation priorities, and verification signals.
 - It does not replace the specialized playbooks for agent autonomy or MCP protocol governance.
 
-The 2025 taxonomy covers a model used as an application component. When the model acts through tools, retains memory, coordinates with other agents, or autonomously causes downstream effects, pair this taxonomy with the OWASP Top 10 for Agentic Applications.
+The 2026 taxonomy covers a model used as an application component. When the model acts through tools, retains memory, coordinates with other agents, or autonomously causes downstream effects, pair this taxonomy with the OWASP Top 10 for Agentic Applications.
 
 ---
+
+### 1.1 Version map and stable links
+
+Use the 2026 identifiers in new threat models, findings and coverage records. The section order retains the previous layout and explicit legacy anchors preserve 2025 links; section positions are not risk ranks. Record the edition with every LLM identifier. Update linked control maps and navigation together rather than reinterpreting an old finding's number.
+
+| Category | 2025 | 2026 |
+| --- | --- | --- |
+| Prompt Injection | LLM01 | LLM01 |
+| Sensitive Information Disclosure | LLM02 | LLM02 |
+| Supply Chain | LLM03 | LLM04 |
+| Data and Model Poisoning | LLM04 | LLM05 |
+| Improper Output Handling | LLM05 | LLM10 |
+| Excessive Agency | LLM06 | LLM03 |
+| System Prompt Leakage / Hidden Context Exposure | LLM07 | LLM08 |
+| Vector and Embedding Weaknesses | LLM08 | LLM09 |
+| Misinformation | LLM09 | LLM07 |
+| Unbounded Consumption | LLM10 | LLM06 |
+
+The 2026 Hidden Context Exposure category covers extraction, inference and reconstruction of hidden operational context as well as system instructions. Classify its impact by the sensitivity of the exposed information and the attacker capability it enables, not by disclosure of instruction text alone.
 
 ## 2. Threat context (how LLM incidents happen in reality)
 
@@ -45,7 +64,11 @@ In real reviews, these areas are non-negotiable:
 This document intentionally focuses on threats, attack mechanics, and risks.
 For practical controls, implementation priorities, and verification signals, see [Securing AI](/en/ai-security/securing-ai/overview/). For agent autonomy, memory, tool execution, and action traces, use the [Agentic AI security playbook](/en/ai-security/agentic-ai/playbook/). For MCP server registry, protocol deployment, OAuth usage, and capability drift, use the [MCP security playbook](/en/ai-security/mcp-security/playbook/).
 
-## 3.1 LLM01: Prompt Injection
+<a id="31-llm01-prompt-injection"></a>
+
+## 3.1 LLM01:2026 Prompt Injection
+
+Include injected instructions retained in memory or forwarded across retrieval, multimodal inputs and agent boundaries; a trusted-looking wrapper does not change their origin.
 
 ### Summary (OWASP)
 A vulnerability where input (including hidden or external content) changes LLM behavior against expected rules and can lead to unauthorized actions.
@@ -62,7 +85,11 @@ A vulnerability where input (including hidden or external content) changes LLM b
 
 ---
 
-## 3.2 LLM02: Sensitive Information Disclosure
+<a id="32-llm02-sensitive-information-disclosure"></a>
+
+## 3.2 LLM02:2026 Sensitive Information Disclosure
+
+Inspect reasoning/observability output, caches and derived artifacts as disclosure paths; an embedding or summary does not remove the source data sensitivity.
 
 ### Summary (OWASP)
 Risk of exposing sensitive information (PII, secrets, internal data, intellectual property) via LLM responses, context, training, or insecure data handling.
@@ -79,7 +106,9 @@ Risk of exposing sensitive information (PII, secrets, internal data, intellectua
 
 ---
 
-## 3.3 LLM03: Supply Chain
+<a id="33-llm03-supply-chain"></a>
+
+## 3.3 LLM04:2026 Supply Chain
 
 ### Summary (OWASP)
 Compromise or misrepresentation of models, adapters, datasets, dependencies, tools, and deployment artifacts across the LLM supply chain.
@@ -96,7 +125,9 @@ Compromise or misrepresentation of models, adapters, datasets, dependencies, too
 
 ---
 
-## 3.4 LLM04: Data and Model Poisoning
+<a id="34-llm04-data-and-model-poisoning"></a>
+
+## 3.4 LLM05:2026 Data and Model Poisoning
 
 ### Summary (OWASP)
 Poisoning of pre-training, fine-tuning, feedback, or retrieval data, or direct manipulation of model artifacts, introduces triggers, biases, or unsafe behavior that persists into production.
@@ -115,7 +146,11 @@ Training-data poisoning can embed unsafe behavior in model parameters. RAG corpu
 
 ---
 
-## 3.5 LLM05: Improper Output Handling
+<a id="35-llm05-improper-output-handling"></a>
+
+## 3.5 LLM10:2026 Improper Output Handling
+
+Rendering output can automatically load external URLs or resources and leak context even without script execution; inspect Markdown, image and document clients as downstream consumers.
 
 ### Summary (OWASP)
 Insufficient validation, sanitization, and contextual encoding of LLM output before it reaches consumer systems turns model responses and generated code into injection or execution paths.
@@ -134,7 +169,9 @@ Here, downstream systems means any component that consumes LLM output and perfor
 
 ---
 
-## 3.6 LLM06: Excessive Agency
+<a id="36-llm06-excessive-agency"></a>
+
+## 3.6 LLM03:2026 Excessive Agency
 
 ### Summary (OWASP)
 Excessive functionality, permissions, or autonomy allows model output to trigger damaging actions, especially when prompt injection or misinformation reaches tools and downstream systems.
@@ -151,10 +188,12 @@ Excessive functionality, permissions, or autonomy allows model output to trigger
 
 ---
 
-## 3.7 LLM07: System Prompt Leakage
+<a id="37-llm07-system-prompt-leakage"></a>
+
+## 3.7 LLM08:2026 Hidden Context Exposure
 
 ### Summary (OWASP)
-System prompts or instructions can expose sensitive information embedded in them, including credentials and internal rules that help an attacker exploit the application. Disclosure of the prompt text alone does not establish a vulnerability: the underlying risk is exposed sensitive data or security decisions delegated to the model. Authorization and privilege boundaries must hold even when the instructions are known.
+Hidden Context Exposure includes unauthorized extraction, inference or reconstruction of system/developer instructions, retrieved policy text, tool schemas and other non-user-facing operational context. Exposure matters when it reveals sensitive information or logic that increases attacker capability. Disclosure of the prompt text alone does not establish a vulnerability: the underlying risk is exposed sensitive data or security decisions delegated to the model. Authorization and privilege boundaries must hold even when the instructions are known.
 
 ### How it appears in live environments
 - extraction of system prompts, developer instructions, or retrieved policy text
@@ -168,7 +207,11 @@ System prompts or instructions can expose sensitive information embedded in them
 
 ---
 
-## 3.8 LLM08: Vector and Embedding Weaknesses
+<a id="38-llm08-vector-and-embedding-weaknesses"></a>
+
+## 3.8 LLM09:2026 Vector and Embedding Weaknesses
+
+Manipulation of embedding geometry or retrieval ranking can select attacker-controlled context without changing model weights; distinguish relevance from authorization.
 
 ### Summary (OWASP)
 Weaknesses in generating, storing, authorizing, and retrieving embeddings and vectors, especially in RAG, lead to cross-tenant leakage, poisoned context, unauthorized access, and reconstruction of source data.
@@ -185,7 +228,9 @@ Weaknesses in generating, storing, authorizing, and retrieving embeddings and ve
 
 ---
 
-## 3.9 LLM09: Misinformation
+<a id="39-llm09-misinformation"></a>
+
+## 3.9 LLM07:2026 Misinformation
 
 ### Summary (OWASP)
 Plausible but false, misleading, or unsupported output causes users or downstream systems to make incorrect decisions or perform unsafe actions.
@@ -202,7 +247,11 @@ Plausible but false, misleading, or unsupported output causes users or downstrea
 
 ---
 
-## 3.10 LLM10: Unbounded Consumption
+<a id="310-llm10-unbounded-consumption"></a>
+
+## 3.10 LLM06:2026 Unbounded Consumption
+
+Include reasoning-token and multimodal-processing costs, repeated failed calls and work that continues after client cancellation; input size alone does not bound resource use.
 
 ### Summary (OWASP)
 Uncontrolled use of requests, context, tokens, inference, tools, or recursive workflows causes availability loss, denial of wallet, capacity exhaustion, or model extraction.
@@ -223,14 +272,14 @@ Uncontrolled use of requests, context, tokens, inference, tools, or recursive wo
 
 - `LLM01 Prompt Injection`: attacks execution instructions; key distinction is behavioral control of the model through input content.
 - `LLM02 Sensitive Information Disclosure`: leaks sensitive data in outputs; distinction is confidentiality impact rather than action control.
-- `LLM03 Supply Chain`: compromises or misrepresents external artifacts and dependencies; distinction is risk entering through the delivery chain.
-- `LLM04 Data and Model Poisoning`: poisons training, fine-tuning, feedback, or retrieval data; distinction is persistent behavior manipulation through model inputs or artifacts.
-- `LLM05 Improper Output Handling`: passes model output unsafely to a consumer; distinction is the integration boundary after generation.
-- `LLM06 Excessive Agency`: grants excessive functionality, permissions, or autonomy; distinction is that model output can reach privileged actions.
-- `LLM07 System Prompt Leakage`: exposes sensitive information in system instructions; distinguish disclosure of prompt text from exposed secrets or authorization delegated to the model.
-- `LLM08 Vector and Embedding Weaknesses`: exploits authorization, integrity, and confidentiality failures in retrieval and embedding storage.
-- `LLM09 Misinformation`: produces plausible but false or unsupported content; distinction is decision-quality and downstream trust.
-- `LLM10 Unbounded Consumption`: permits uncontrolled resource use; distinction is availability, capacity, cost, and extraction impact.
+- `LLM04 Supply Chain`: compromises or misrepresents external artifacts and dependencies; distinction is risk entering through the delivery chain.
+- `LLM05 Data and Model Poisoning`: poisons training, fine-tuning, feedback, or retrieval data; distinction is persistent behavior manipulation through model inputs or artifacts.
+- `LLM10 Improper Output Handling`: passes model output unsafely to a consumer; distinction is the integration boundary after generation.
+- `LLM03 Excessive Agency`: grants excessive functionality, permissions, or autonomy; distinction is that model output can reach privileged actions.
+- `LLM08 Hidden Context Exposure`: exposes or reconstructs sensitive instructions and hidden operational context; distinguish disclosure of prompt text from exposed secrets or authorization delegated to the model.
+- `LLM09 Vector and Embedding Weaknesses`: exploits authorization, integrity, and confidentiality failures in retrieval and embedding storage.
+- `LLM07 Misinformation`: produces plausible but false or unsupported content; distinction is decision-quality and downstream trust.
+- `LLM06 Unbounded Consumption`: permits uncontrolled resource use; distinction is availability, capacity, cost, and extraction impact.
 
 ---
 

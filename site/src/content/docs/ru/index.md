@@ -121,7 +121,7 @@ sidebar:
 <h4>Защита ИИ и типовые угрозы</h4>
 <ul>
 <li><a href="/ru/ai-security/securing-ai/overview/">Защита функций ИИ</a></li>
-<li><a href="/ru/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10</a></li>
+<li><a href="/ru/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10 (2026)</a></li>
 </ul>
 </div>
 <div class="site-map-group">

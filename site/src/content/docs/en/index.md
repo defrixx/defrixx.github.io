@@ -121,7 +121,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 <h4>AI features and threats</h4>
 <ul>
 <li><a href="/en/ai-security/securing-ai/overview/">Securing AI features</a></li>
-<li><a href="/en/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10</a></li>
+<li><a href="/en/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10 (2026)</a></li>
 </ul>
 </div>
 <div class="site-map-group">

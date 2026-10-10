@@ -112,6 +112,7 @@ Release-ready defaults:
 - Gates apply to changes, not only full repositories. Do not block a release solely because unrelated legacy debt exists unless policy says legacy debt has crossed the release threshold.
 - New Critical findings block release unless a valid Critical exception exists.
 - New High findings block high-risk release to a live environment by default; a standard live release may proceed only with owner, due date, compensating controls, and explicit acceptance.
+- A protected staging environment does not automatically fall under this live-release rule. If sensitive staging data or release-approval roles justify the same High gate, adopt and record that extension explicitly in the shared environment policy for both languages.
 - A KEV, credible public exploit, active exploitation, broken embargo, or urgent vendor security patch may justify emergency release approval for a narrow remediation change. The release still needs artifact identity, approver, rollback/mitigation reference, and post-release review evidence.
 - Live secret findings block release until the secret is revoked/rotated and exposure is assessed.
 - Scanner output must be triaged into confirmed issue, false positive, accepted risk, or backlog debt. Raw unreviewed reports are not release evidence by themselves.

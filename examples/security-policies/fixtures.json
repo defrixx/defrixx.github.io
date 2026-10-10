@@ -1372,7 +1372,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1418,7 +1418,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:attacker/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:attacker@999999/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1441,7 +1441,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/dev"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/dev"
                 }
               }
             }
@@ -1464,7 +1464,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:environment:production"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:environment:production"
                 }
               }
             }
@@ -1487,7 +1487,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:pull_request"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:pull_request"
                 }
               }
             }
@@ -1510,7 +1510,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "other",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1533,7 +1533,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1554,7 +1554,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1580,7 +1580,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1603,7 +1603,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             },
@@ -1631,7 +1631,7 @@
               "Condition": {
                 "StringLike": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1654,7 +1654,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               },
               "NotAction": "sts:AssumeRoleWithWebIdentity"
@@ -1678,7 +1678,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               },
               "NotPrincipal": {
@@ -1712,7 +1712,7 @@
             "Condition": {
               "StringEquals": {
                 "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
               }
             }
           }
@@ -1748,7 +1748,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1770,7 +1770,7 @@
               "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@456789:ref:refs/heads/main"
                 }
               }
             }
@@ -1982,6 +1982,726 @@
             ]
           }
         }
+      },
+      {
+        "name": "aws/wrong-owner-id",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example@999999/payments@456789:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/wrong-repository-id",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example@123456/payments@999999:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "aws/legacy-name-only",
+        "policy": "aws_trust",
+        "allowed": false,
+        "input": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example/payments:ref:refs/heads/main"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "slsa/allowed-without-optional-metadata",
+        "policy": "slsa_build",
+        "allowed": true,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/allowed-with-optional-metadata",
+        "policy": "slsa_build",
+        "allowed": true,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                },
+                "metadata": {
+                  "startedOn": "2026-10-10T00:00:00Z",
+                  "finishedOn": "2026-10-10T00:01:00Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/bad-signature",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": false,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-issuer",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://wrong.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-signer",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://wrong.example"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-builder",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://wrong.example"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-digest",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-build-type",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://wrong.example",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-source",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/other/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-revision",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "cccccccccccccccccccccccccccccccccccccccc"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/legacy-predicate",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v0.2",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/wrong-statement-type",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v0.1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/non-boolean-verification",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": "true",
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/missing-verification",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/unknown-external-parameter",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "unapproved": "yes"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/missing-subject",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/ambiguous-subject",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": {
+          "verification": {
+            "signature_verified": true,
+            "issuer": "https://issuer.example",
+            "signer": "https://build.example/release-signer"
+          },
+          "statement": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              },
+              {
+                "name": "payments",
+                "digest": {
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://build.example/synthetic/v1",
+                "externalParameters": {
+                  "source": "https://github.com/example/payments",
+                  "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://build.example/synthetic-builder"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "slsa/malformed-input",
+        "policy": "slsa_build",
+        "allowed": false,
+        "input": []
       }
     ]
   }

@@ -57,7 +57,7 @@ High-impact scenarios:
 
 `Baseline`:
 - Maintain an enterprise MCP registry as the authoritative inventory for production-approved servers, tools, resources, prompts, transports, owners, environments, scopes, downstream destinations, and review expiry.
-- Record a capability baseline for every server: tool names, descriptions, input schemas, resource URI patterns, prompt identifiers, transport, authentication mode, package/artifact identity, and expected logging fields.
+- Record a capability baseline for every server: tool names, descriptions, input schemas, resource URI patterns, message-template identifiers (`prompts`), transport, authentication mode, package/artifact identity, and expected logging fields.
 - Treat any new tool, resource, prompt, schema expansion, resource pattern expansion, transport change, or authorization change as a security-relevant change.
 - Default policy for unregistered or changed capabilities is `deny`.
 
@@ -96,7 +96,7 @@ Remote Streamable HTTP servers:
 - Validate every present authorization-response `iss` against the recorded authorization-server issuer before redeeming a code, whether or not metadata advertised support. Reject a missing `iss` when `authorization_response_iss_parameter_supported=true`; use exact string comparison after decoding, without URI normalization.
 - Validate token issuer, expiry, audience, and scopes on every request. Establish that the token was issued for this MCP server's resource; a `resource` parameter in a client request does not establish that binding by itself.
 - Send the access token only in the `Authorization: Bearer <access-token>` header of every protected HTTP request. Prohibit tokens in URL query strings, which can reach logs, browser history, and observability systems.
-- Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners.
+- Do not pass client access tokens through to downstream APIs. Tool handlers must obtain separate downstream credentials or use a controlled token exchange pattern approved by identity/security owners. For Keycloak V2, apply the exchange and revocation checks in [OIDC/OAuth section 2.2.1](../../application-security/identity/oidc-oauth/playbook.en.md). Revoking an MCP token does not itself revoke an already exchanged downstream access token. Test that token at the target API after source-token revocation and document the residual-access window; the general OAuth pattern is not a Keycloak implementation contract.
 - Do not make `offline_access` or refresh-token issuance part of the MCP resource-server baseline. If an approved client receives a refresh token, it must be sender-constrained or rotated with reuse detection; storage and revocation are separate identity controls. The MCP server must not request or advertise `offline_access` through `WWW-Authenticate` challenges or Protected Resource Metadata `scopes_supported` without an explicitly approved use case.
 
 Third-party MCP servers:
