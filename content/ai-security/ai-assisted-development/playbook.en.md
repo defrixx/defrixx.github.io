@@ -144,6 +144,16 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 - Use a disposable environment per task and short-lived, task-specific credentials.
 - An agent-authored change must not modify or disable the controls that verify that same change.
 
+#### Access Profiles for Development Tasks
+
+Select the profile in a trusted launcher before executing commands. For static review, expose source read-only, provide a separate report directory, and disable network access. If review requires code execution, switch to a verification profile using a disposable checkout. For fixes and tests, allow writes only to that checkout and separate temporary directories; do not expose the host home directory, credentials, or privileged sockets.
+
+Separate dependency installation into an approved phase with access to approved registries. Treat install scripts and build hooks as untrusted code execution. After preparing dependencies, run tests with networking disabled unless required; define necessary external dependencies in a separate verified profile. Do not automatically carry installation permissions into subsequent commands.
+
+Keep approved policies and profile selection outside the agent-writable checkout. `SKILL.md`, project configuration, README, and command output may request access but cannot grant it. Policy changes require separate approval and must not occur as automatic repairs for access failures. Inspect tool configuration in the checkout: even with a cleared environment, a utility may read `.npmrc`, `.gitconfig`, or other settings from the selected home directory.
+
+Apply backend verification and negative scenarios from [Agentic AI Security §3.4](../agentic-ai/playbook.en.md#34-browser-email-file-and-code-execution-tools). Distinguish enforced restrictions actually tested, declared settings, and unverified runtime capabilities in the report.
+
 ### 3.8 Skills and Agent Instructions
 
 Review `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, MCP configuration, referenced scripts, and templates together before enabling or updating them:

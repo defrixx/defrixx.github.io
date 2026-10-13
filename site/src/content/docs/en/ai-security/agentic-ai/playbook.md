@@ -159,6 +159,22 @@ The forensic retention ceiling below is a local data-minimization assumption for
 - Use ephemeral execution environments with network restrictions, CPU/memory/time limits, read-only base images where practical, and central log export before teardown.
 - Prohibit agents from autonomously navigating the public web for state-changing workflows unless the domain set, data handling, and prompt-injection controls are explicitly reviewed.
 
+#### Enforced Isolation and Runtime Verification
+
+The sandbox must restrict the actual access of the process and its descendants through OS or virtual-machine controls. A separate process, timeout, and argument validation do not establish this boundary by themselves. Operation authorization remains mandatory inside the sandbox: an allowed connection does not authorize every operation in the target system.
+
+Maintain a verified capability matrix for each supported combination of OS, version, and isolation backend: filesystem permissions, network, host-local sockets and services, environment, GUI, clipboard, resource limits, and process cancellation. A unified SDK does not guarantee equivalent protection across platforms. Refuse launch when a required restriction is unavailable or policy validation fails; never retry automatically without the sandbox or with broader permissions. For threats requiring a separate kernel, select an appropriate virtual machine.
+
+Specify read-only paths, writable paths, and denials explicitly; account for default system-directory access and backend exceptions. Pass only allowlisted environment variables. Deny access to credentials, SSH-agent and container-runtime sockets, host-local services, GUI, and clipboard by default. Check the effective scope when enabling GUI or key-store compatibility or replacing a generated policy.
+
+For proxy-mediated access, enforce denial of direct connections and apply destination policy at the proxy. `HTTP_PROXY` and `HTTPS_PROXY` variables alone are insufficient. Test host reachability separately: loopback and inbound-connection semantics depend on the isolation backend.
+
+Use diagnostic modes that disable enforcement only with trusted workloads in a separate environment without sensitive data. For example, Microsoft eXecution Container (MXC) `--audit` disables sandbox security and is unsuitable for analyzing untrusted code. Do not automatically promote every observed access into an allowed policy.
+
+Record the backend and version, policy version or digest, execution mode, and material warnings in the action trace. On cancellation or budget exhaustion, stop all task processes and verify that descendants do not continue running. Export necessary logs with sensitive-value redaction before teardown.
+
+Verification: from inside the environment, attempt to read a synthetic secret outside allowed paths, write outside the workspace through a symlink, open a direct connection bypassing the proxy, and reach a denied host-local service. Start a descendant process and cancel the task. Verify launch refusal when the backend is unavailable or a required restriction is unsupported. Pair each denial with an allowed control reaching the same operation: startup failure does not prove enforcement. Repeat checks after OS, runtime, or policy updates; virtual actions in model tests do not establish OS isolation.
+
 ### 3.5 Action Trace, Monitoring, and Incident Response
 
 `Baseline`:

@@ -84,6 +84,9 @@ Local `stdio` servers:
 - Restrict filesystem access with OS permissions, a runtime sandbox, and explicit path allowlists. MCP Roots do not enforce access. Do not grant home-directory or repository-wide access by default.
 - Maintain an allowlist of environment variables exposed to each server and block credential-bearing variables unless explicitly approved.
 - Block outbound network access from local servers unless the server requires it and the destination is approved.
+- Apply restrictions to the entire server process tree, including commands and background processes it starts. Verify their termination when stopping the server. `stdio` access must not require opening a network port or granting GUI and clipboard access.
+- Deny host-local services and sockets by default, including SSH-agent and container-runtime APIs. Permission to read a directory must not also grant access to a privileged socket inside it. Approve system key-store, GUI, and clipboard access separately and verify the permission expansion introduced by the selected isolation backend.
+- Verify backend capabilities and launch refusal for unsupported mandatory restrictions using [Agentic AI Security §3.4](../agentic-ai/playbook.en.md#34-browser-email-file-and-code-execution-tools). Run checks from the server process and its descendant, not only through the MCP client; a denied tool call does not establish OS restrictions.
 
 Remote Streamable HTTP servers:
 - Validate `Origin` to prevent DNS rebinding; a present invalid origin requires HTTP `403`. Local HTTP servers should bind to loopback, not `0.0.0.0`.
