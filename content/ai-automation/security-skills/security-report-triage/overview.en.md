@@ -14,7 +14,7 @@ The assistant accounts for every raw result, examines execution paths and guards
 
 Priority follows supported impact and exposure. Scanner severity, confidence, and the resulting priority remain separate.
 
-For AI-related signals, distinguish prompt tampering, model proposals, and effects actually performed by a tool or data sink. Passing prompt-integrity verification does not disprove tool abuse, and an adversarial model response alone does not confirm an unauthorized effect. Trace the request, authorization gate, and destination before changing the finding's assessment.
+For AI-related signals, assess instruction integrity, model proposals, and effects actually performed by a tool or data sink separately. When prompt-integrity results are available, include them in the request-integrity assessment. Use authorization-gate and destination evidence to assess the performed action.
 
 ## Local SARIF processing
 
@@ -26,26 +26,43 @@ python3 scripts/normalize_sarif.py --input /path/to/report.sarif --output /path/
 
 Choose a fresh output directory with an existing trusted parent. Supply `--target-root` when source is available to keep output outside the assessed tree. The script creates `normalized.json` and `normalization-summary.json`, preserving the original report. A `RUNNING` marker means processing is incomplete.
 
-Exit code `0` means extraction completed within the supported subset, `2` means partial output, unknown scanner invocation completeness, or unsupported fields, and `1` means a fatal error. These codes do not confirm a vulnerability or its repair.
+Exit code `0` means extraction completed within the supported subset, `2` means partial output, unknown scanner invocation completeness, or unsupported fields, and `1` means a fatal error. These codes describe SARIF processing; the assistant records vulnerability and repair assessments in its findings.
 
 The normalizer never opens report-supplied paths or links. Arbitrary strings, messages, and snippets are omitted; identifiers become opaque labels. Source and the original report require separate inspection within the agreed scope. Size and format limits are documented in the [SARIF intake contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/sarif-subset.md).
 
 Opaque labels are per-input identifiers, not stable cross-run identities or content hashes. Preserve run/result ordinals for comparison with the original report; do not group findings across reports by these labels alone. Missing result arrays and unknown invocation completion do not establish a successful scan with zero findings.
 
+## From advisory to vulnerable functionality
+
+For dependency and image signals, trace five links independently: advisory identity, affected/fixed versions and conditions, resolved dependency identity/version/source, build/package inclusion, exact delivered artifact and inventory provenance, then the runtime or build-time path to vulnerable functionality. Include platform/features, transitive parents, vendored or bundled components, image stage and architecture where relevant. A lockfile does not establish shipped content, and a digest does not establish authorship or inventory completeness.
+
+Mark each link observed, contradicted, or unknown, with evidence and a next decisive check. Proven absence from a runtime artifact does not settle build-time exposure; missing reachability evidence does not disprove applicability. Keep scanner severity, exploitability, confidence, and priority separate. Triage alone does not authorize builds, downloads, scanner runs, or remote artifact retrieval.
+
+> Use security-report-triage on this dependency advisory and supplied image inventory. Trace resolution, build inclusion, delivered digest, and vulnerable functionality; retain unknown links as investigation actions and preserve raw-result mappings when grouping findings.
+
 ## Example request
 
 > Use security-report-triage on this SARIF report and the current project revision. Account for every raw signal, separate confirmed findings from hypotheses and disproved results, and justify duplicate grouping and priorities. Do not change code.
 
-## Expected result and limits
+## Expected result
 
-The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/assets/triage-report.md) includes an action queue, raw-signal and unique-finding counts, evidence, errors, and coverage gaps. Normalization does not replace vulnerability validation. Ordinary prose reports can use manual signal mapping with an explicit coverage statement.
+The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/assets/triage-report.md) includes an action queue, raw-signal and unique-finding counts, evidence, errors, and coverage gaps. The normalizer prepares a signal inventory for the assistant's vulnerability validation. Ordinary prose reports can use manual signal mapping with an explicit coverage statement.
 
 Triage alone does not include scanner execution, running report-suggested commands, changing code, or creating external tickets. Continue through implementation and verification using the [combined workflow](../workflow/overview.en.md).
 
-Before delivery, distinguish content identity from historical provenance: matching hashes do not establish report authorship or when a defect arose. Keep absent history unknown and retain unresolved signals in the action queue. A proposed repair, an observed applied change, and a verified fix remain separate states.
+Before delivery, record content identity using hashes, and report authorship and defect history using available provenance evidence. Keep absent history unknown and retain unresolved signals in the action queue. A proposed repair, an observed applied change, and a verified fix remain separate states.
 
 ## Related material
 
 - [Security review](../security-review/overview.en.md)
 - [Fix verification](../security-fix-verification/overview.en.md)
 - [Vulnerability management](../../../review/vulnerability-management/playbook.en.md)
+
+## Choose another task
+
+Each skill handles an independent task. Choose the one you need:
+
+- [Secure development](../secure-development/overview.en.md)
+- [Security review](../security-review/overview.en.md)
+- [Fix verification](../security-fix-verification/overview.en.md)
+- [Sensitive data cleanup](../sensitive-data-cleanup/overview.en.md)

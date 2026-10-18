@@ -19,7 +19,7 @@ sidebar:
 | `review` | 2 | Stop automatic dispatch and resolve the signal through application policy. |
 | `error` | 3 | Stop dispatch and address the diagnostic code. |
 
-`allow` means the configured rules accepted the input. It does not establish semantic safety or authorize a model-proposed action. Sanitization can change task meaning; test allowed tasks as well as attacks before enabling replacements.
+`allow` means the input passed the configured content checks. The application checks authorization for model-proposed actions separately at execution. Sanitization can change task meaning; test allowed tasks as well as attacks before enabling replacements.
 
 ## Installation and first check
 
@@ -148,6 +148,6 @@ Diagnostics include decisions, codes, policy/rule IDs and counts, excluding inpu
 
 [Package tests and synthetic corpus](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard/tests) cover attacks, benign controls and intentional topic blocks. Before deployment, verify final-payload dispatch, all model-call routes, false blocks, withheld rejected outputs, contract revalidation after sanitization, truncated streams, resource exhaustion and policy mismatch handling in your integration.
 
-[model-security-eval](/en/ai-automation/model-security-eval/overview/) supports `--guard-profile`, `--guard-mode` and `--compare-guard` when the package is installed. Paired trials retain guard decisions, model violations and fixture actions separately, including blocked benign controls. A blocked input is `not_assessed_for_blocked_input`, not evidence that the model resisted the attack. Synthetic results do not establish detection coverage for arbitrary production inputs.
+[model-security-eval](/en/ai-automation/model-security-eval/overview/) supports `--guard-profile`, `--guard-mode` and `--compare-guard` when the package is installed. Paired trials retain guard decisions, model violations and fixture actions separately, including blocked benign controls. A blocked input is `not_assessed_for_blocked_input`, not evidence that the model resisted the attack.
 
 For paired output evaluation, use `--output-guard-profile output-security-and-topics --compare-guard`, optionally with an input profile. Reports separately retain raw-generation violations as redacted evidence, released responses, output guard decisions and fixture actions. Blocking a violation can pass the application control while the model violation remains recorded. Blocked benign controls fail; output inspection execution errors are inconclusive.

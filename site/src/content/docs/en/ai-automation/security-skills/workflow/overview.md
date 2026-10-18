@@ -6,7 +6,7 @@ sidebar:
 ---
 Each of the five skills works independently. For an end-to-end task, combine report triage or code review, implementation, fix verification, and optional cleanup of selected delivery material.
 
-This is an assistant workflow with compatible stage outputs. There is no separate automation engine or requirement to run every skill. [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) integrates separately with an application and does not orchestrate this workflow.
+The skills share compatible stage outputs. Choose the stages needed and assign them to the assistant within one task; each skill also works independently. [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) complements the application by checking instruction integrity before model dispatch.
 
 ## Choose the stages
 
@@ -39,6 +39,8 @@ An applied change does not automatically become `fixed`. A confirmed vulnerabili
 
 The standalone report templates share an action ledger. Carry it forward with the original finding IDs, historical assessments, evidence, implementation state, verification verdict, and remaining work. Lead the final report with unresolved actions; producing a patch does not close a finding. Record self-verification only when the same assistant actually implemented and checked the change.
 
+The updated report templates also retain task-specific evidence: review security deltas and stateful cases; verification bypass matrices and policy/state dependencies; triage artifact-applicability links; and cleanup component counts and entity/reference checks. Carry observations with their exact revision or final copy. A changed dependency invalidates affected evidence, not the historical record. Deliver only selected redacted material. Keep intermediate files, private evidence records, and replacement maps in local working storage.
+
 ## Example combined task
 
 > Use security-report-triage on the attached SARIF and current revision. Use secure-development to repair confirmed findings in the agreed components, then verify them with security-fix-verification. Preserve IDs, original evidence, and separate assessment, implementation, and verification statuses. Perform changes and checks locally; record untested conditions in the final report.
@@ -51,6 +53,6 @@ Within an already authorized combined task, the assistant proceeds through selec
 
 On resumption, compare input fingerprints, revisions, working snapshot, scope, and completed stages. Recheck affected evidence after drift. Resolve contradictions using revision-specific observations or retain an explicit inconclusive state. Implementation and verification by one assistant are labeled self-verification.
 
-## Validation in the source project
+## Checks and evaluations
 
-The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. The regression runner also discovers the separate `evals/tests/` suite without a model server. Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare selected synthetic scenarios with and without skill instructions. Harness success does not establish model compliance or the reliability of assistant decisions on arbitrary projects. Coverage and limits are described in the [test guide](https://github.com/defrixx/Product-security-skills/blob/main/tests/README.md); application integration checks run separately. Evaluation tools and local artifacts are not part of copied skills.
+The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. The regression runner also discovers the separate `evals/tests/` suite without a model server. Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare selected synthetic scenarios with and without skill instructions. Coverage and limits are described in the [test guide](https://github.com/defrixx/Product-security-skills/blob/main/tests/README.md); application integration checks run separately. Evaluation tools and local artifacts are not part of copied skills.

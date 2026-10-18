@@ -224,7 +224,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 ### 3.6 Поток секретов
 
 **Что проверять:**
-- где создается секрет и находится его авторитетный источник, как он попадает в среду выполнения, где выполняется его ротация;
+- где создается секрет и хранится его исходное значение, как он попадает в среду выполнения, где выполняется его ротация;
 - есть ли в Git секреты в открытом виде или base64 в манифестах;
 - включено ли шифрование данных Secret при хранении в etcd;
 - кто имеет `get/list/watch` к Secret в рабочей среде;
@@ -342,7 +342,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 
 ## 7. Связанные материалы в репозитории
 
-- Усиление защиты среды выполнения pod: [kubernetes/pod-security/playbook.ru.md](../pod-security/playbook.ru.md)
+- Усиление защиты среды выполнения Pod: [kubernetes/Pod-security/playbook.ru.md](../pod-security/playbook.ru.md)
 - Проверка Kubernetes имитацией действий атакующего: [kubernetes/adversarial-validation/playbook.ru.md](../adversarial-validation/playbook.ru.md)
 - Чеклист ревью seccomp: [kubernetes/seccomp/checklist.ru.md](../seccomp/checklist.ru.md)
 - Выход из контейнера и capabilities: [kubernetes/container-escape-capability-abuse/overview.ru.md](../container-escape-capability-abuse/overview.ru.md)

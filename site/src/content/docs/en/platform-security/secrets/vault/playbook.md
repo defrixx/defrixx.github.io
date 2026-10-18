@@ -446,4 +446,4 @@ Treat Raft snapshots as sensitive encrypted backups. Restrict snapshot creation 
 
 ## Preparing materials for sharing
 
-To prepare a separate copy of materials for sharing, use the [Sensitive Data Cleanup skill](/en/ai-automation/security-skills/sensitive-data-cleanup/overview/). See the skill page for processing scope and limitations.
+To prepare a separate copy of materials for sharing, use the [Sensitive Data Cleanup skill](/en/ai-automation/security-skills/sensitive-data-cleanup/overview/). The skill preserves originals and helps prepare a cleaned copy with a report of replacements and omitted files.

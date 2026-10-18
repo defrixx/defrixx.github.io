@@ -72,6 +72,6 @@ Each run creates `report.md`, structured `report.json`, and an atomically update
 
 ## Connection to application controls
 
-[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval/tests) cover fixture actions, normalization, identity, comparison, redaction, checkpoints, CI statuses, and loopback HTTP. They do not require a real model. A passing model run establishes the observed result for the selected synthetic profile; verify application dispatch and action authorization separately.
+[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval/tests) cover fixture actions, normalization, identity, comparison, redaction, checkpoints, CI statuses, and loopback HTTP. They do not require a real model. Verify application dispatch and action authorization separately.
 
-[prompt-integrity](/en/ai-automation/prompt-integrity/overview/) checks approved static instructions at dispatch. `model-security-eval` evaluates model behavior and fixture action boundaries; it does not automatically install that wrapper or enforce production tool permissions. Keep independent argument validation, resource and recipient scope checks, and authorization before actual application effects.
+[prompt-integrity](/en/ai-automation/prompt-integrity/overview/) checks approved static instructions at dispatch. `model-security-eval` assesses model behavior and fixture action boundaries. In the production application, integrate the wrapper and configure tool permissions for the assessed profile. Keep independent argument validation, resource and recipient scope checks, and authorization before actual application effects.

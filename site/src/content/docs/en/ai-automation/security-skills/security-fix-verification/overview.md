@@ -22,7 +22,7 @@ The assistant examines the repair and surrounding data flow: attacker control, e
 
 A complete static trace can establish a code property with a stated rationale. Conclusions that depend on browser, deployment, network, or concurrency behavior need corresponding runtime checks. Component substitutions, skipped checks, and environment differences are explicit.
 
-For AI-related repairs, test the boundary where a tool performs the action, including a direct unauthorized tool proposal and an allowed operation. A model refusing the original prompt does not establish that tool authorization is repaired. For integrity repairs, inspect affected dispatch, retry, and fallback paths and verify that rejected bytes never reach the transport. Revalidate snapshot identity after working-tree drift and invalidate evidence affected by the change.
+For AI-related repairs, test the boundary where a tool performs the action, including a direct unauthorized tool proposal and an allowed operation. Check authorization at tool execution, independently of the model's response to the original prompt. For integrity repairs, inspect affected dispatch, retry, and fallback paths and verify that rejected bytes never reach the transport. Revalidate snapshot identity after working-tree drift and invalidate evidence affected by the change.
 
 ## Per-finding verdict
 
@@ -33,22 +33,41 @@ For AI-related repairs, test the boundary where a tool performs the action, incl
 | `not_fixed` | The original defect or equivalent in-scope bypass remains, without an established complete repair of a distinct required portion. |
 | `inconclusive` | Missing or conflicting evidence prevents the necessary conclusion. |
 
-Unknown coverage alone means insufficient evidence, not partial repair. An absent scanner signal, a closed ticket, or a test that failed to start does not prove remediation. Denying every operation is not a repair when allowed behavior must be preserved.
+A repair verdict needs results for the original defect, applicable bypass paths, and allowed operations. Use `inconclusive` when necessary cases remain untested; for `partially_fixed`, identify the established portion and the remaining defect or regression in allowed behavior.
+
+## Bypass matrix and stateful effects
+
+Build one matrix row for each actual path with a distinct guard: finding ID, entry/input representation, actor and prerequisites, guard and repair location, allowed control, forbidden effect, original/patched observations, evidence, and next action. Select alternate routes, methods, create/update/bulk/import/export, shared callers, encodings, cache hits, jobs, redirects, retries, and fallback only where relevant to the defective control. A shared sink alone does not establish shared protection.
+
+For lifecycle repairs, declare the effective transition boundary and exercise warm state, revocation/transfer/deletion, delayed consumption, restart, and replay as applicable. For repeated effects, interrupt around independent commits and inspect both caller state and recipient effects after retry. Observe the effect boundary, not merely an error response. Sequential cases and mocks retain their evidence limits.
+
+A necessary untested path leaves the bounded claim inconclusive; an observed bypass is evaluated under the existing verdict rules. Record policy/configuration and state dependencies so affected cases can be rerun after drift.
+
+> Use security-fix-verification on F-007's download repair. Build a bypass matrix for direct download, export, and the existing worker; check allowed owner access, revocation with warm cache, and replay after restart. Report actual data and durable effects, retaining unknown cases explicitly.
 
 ## Example request
 
 > Use security-fix-verification to check F-007 at this revision. Check the original failure, relevant bypass paths, and allowed operations. Preserve the finding ID and record evidence and untested conditions. Do not change code.
 
-## Expected result and limits
+## Expected result
 
-The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. A successfully verified candidate remains a candidate; verification does not mean it was applied. Historical confirmation at the old revision remains in the record after remediation.
+The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. The report records verification results and application to the target separately. Finding history preserves the original assessment and subsequent remediation.
 
-The skill needs no sibling skills and does not itself authorize code changes or production access. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Implementation and verification by the same assistant are labeled self-verification.
+The skill works independently from a defect description and available evidence. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Include code changes and production access explicitly in the task; label implementation and verification by the same assistant as self-verification.
 
-Before delivery, reconcile verdicts with recorded cases and counts at the checked revision. Keep `partially_fixed` when a relevant bypass remains alongside an established portion of the repair. Candidate state changes only after application to the named target is observed. Label self-verification only when the checking assistant actually implemented the assessed change; a supplied patch or fixture does not establish authorship.
+Before delivery, reconcile verdicts with recorded cases and counts at the checked revision. Keep `partially_fixed` when a relevant bypass remains alongside an established portion of the repair. Candidate state changes only after application to the named target is observed. Record who implemented and verified the change; label self-verification when the same assistant performed both.
 
 ## Related material
 
 - [Secure development](/en/ai-automation/security-skills/secure-development/overview/)
 - [Report triage](/en/ai-automation/security-skills/security-report-triage/overview/)
 - [Vulnerability management](/en/review/vulnerability-management/playbook/)
+
+## Choose another task
+
+Each skill handles an independent task. Choose the one you need:
+
+- [Secure development](/en/ai-automation/security-skills/secure-development/overview/)
+- [Security review](/en/ai-automation/security-skills/security-review/overview/)
+- [Report triage](/en/ai-automation/security-skills/security-report-triage/overview/)
+- [Sensitive data cleanup](/en/ai-automation/security-skills/sensitive-data-cleanup/overview/)

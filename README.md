@@ -56,12 +56,12 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 - [`reference/security-policy-examples/`](reference/security-policy-examples/) - executable OPA policies, configuration examples, and allowed/denied CI scenarios
 
 ### Security Skills and Tools
-- [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - catalogue of the independently maintained Product Security Skills
-- [`content/ai-automation/security-skills/secure-development/`](content/ai-automation/security-skills/secure-development/) - secure development workflow
-- [`content/ai-automation/security-skills/security-review/`](content/ai-automation/security-skills/security-review/) - PR and repository assessment
-- [`content/ai-automation/security-skills/sensitive-data-cleanup/`](content/ai-automation/security-skills/sensitive-data-cleanup/) - preparation of separate cleaned copies
-- [`content/ai-automation/security-skills/security-report-triage/`](content/ai-automation/security-skills/security-report-triage/) - scanner report triage and bounded SARIF intake
-- [`content/ai-automation/security-skills/security-fix-verification/`](content/ai-automation/security-skills/security-fix-verification/) - verification of specified repairs
+- [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - Product Security Skills, developed alongside the playbooks for assistant-driven security tasks
+- [`content/ai-automation/security-skills/secure-development/`](content/ai-automation/security-skills/secure-development/) - architecture-aware control selection, implementation, and access/recovery checks
+- [`content/ai-automation/security-skills/security-review/`](content/ai-automation/security-skills/security-review/) - architecture-aware PR and repository assessment, security deltas, and decisive checks
+- [`content/ai-automation/security-skills/sensitive-data-cleanup/`](content/ai-automation/security-skills/sensitive-data-cleanup/) - separate cleaned copies, compound-content coverage, and linked-replacement checks
+- [`content/ai-automation/security-skills/security-report-triage/`](content/ai-automation/security-skills/security-report-triage/) - scanner report triage, delivered-artifact applicability, and bounded SARIF intake
+- [`content/ai-automation/security-skills/security-fix-verification/`](content/ai-automation/security-skills/security-fix-verification/) - verification of specified repairs across bypass, lifecycle, and recovery cases
 - [`content/ai-automation/security-skills/workflow/`](content/ai-automation/security-skills/workflow/) - independent use and combined assessment, implementation, verification, and optional cleanup
 - [`content/ai-automation/prompt-integrity/`](content/ai-automation/prompt-integrity/) - standalone static instruction integrity library and CLI
 - [`content/ai-automation/model-security-eval/`](content/ai-automation/model-security-eval/) - local model security scenarios and blocking CI verdicts

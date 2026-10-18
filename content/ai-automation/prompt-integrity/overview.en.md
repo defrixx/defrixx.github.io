@@ -67,12 +67,12 @@ Use the bounded `TransportError.code` diagnostic to distinguish timeout, connect
 
 ## Protection boundaries and validation
 
-The tool checks the observable request. It does not guarantee model obedience, prompt-injection resistance, output safety, or action authorization. Wrapper bypass, a compromised process, and control over both the baseline and checker are outside its protection.
+The tool checks the integrity of static instructions and tool definitions in the dispatched request. Route all model calls through the wrapper and protect the process, baseline, and checking code. Optional complementary tools include model-security-eval for model behavior and prompt-guard for inputs and outputs. Control action authorization in the application.
 
 An exact model string binds request selection, not the model weights served behind that identifier. Record and control the inference server's model artifacts separately; a provider-side model replacement under the same name is not detected by this request check. Endpoint mappings also need independent release controls because they are outside the baseline digest.
 
 Filesystem operations require an explicit root and refuse symlink path components, nonregular input files, and input hardlinks. Hostile concurrent directory replacement is outside the guarantee. An interrupted candidate write can leave a partial file: validate before approval and use a fresh path for a retry.
 
-[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity/tests) exercise instruction changes, request shape, snapshots, retries, CLI behavior, filesystem restrictions, and local HTTP. They use synthetic data and need no model. Before use in your application, inspect every dispatch call site and transport interceptor; package tests do not establish the absence of bypass in your integration.
+[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity/tests) exercise instruction changes, request shape, snapshots, retries, CLI behavior, filesystem restrictions, and local HTTP. They use synthetic data and need no model. Before use in your application, inspect every dispatch call site and transport interceptor.
 
 Record primary calls, background jobs, tool rounds, retries, and fallbacks in the [integration report](https://github.com/defrixx/Product-security-skills/blob/main/tools/prompt-integrity/examples/integration-report.md), with request-to-wire evidence and untested routes. The [model pilot](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) checks each outbound Chat Completions request only when `--integrity` is selected; its experiment baseline is not an approved deployment release. Unguarded Chat and Responses runs remain separate evaluation modes.
