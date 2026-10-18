@@ -95,6 +95,7 @@ Remote Streamable HTTP servers:
 - Require PKCE with `S256` for public clients.
 - Publish OAuth Protected Resource Metadata and return `WWW-Authenticate` on `401` so clients discover the correct authorization server from the MCP server, not from user-supplied configuration.
 - Prefer OAuth Client ID Metadata Documents; use pre-registration for managed clients where appropriate. Dynamic Client Registration is deprecated and retained only for compatibility. Constrain legacy registration by redirect URI, client type, grant, scope, lifetime, and owner; it must not grant broad access without review.
+- Store pre-registered and persisted DCR client credentials under the issuing authorization server's `issuer`. If protected resource metadata selects a different authorization server, never reuse the previous issuer's credentials; obtain registration for the new server. For a pre-registration mismatch, report the error instead of silently sending mismatched credentials. CIMD HTTPS client IDs are portable across authorization servers and need no re-registration on issuer change; this does not make issued tokens or issuer-specific credentials portable.
 - Require MCP clients to send the OAuth `resource` parameter in both authorization and token requests, using the canonical MCP server URI.
 - Validate every present authorization-response `iss` against the recorded authorization-server issuer before redeeming a code, whether or not metadata advertised support. Reject a missing `iss` when `authorization_response_iss_parameter_supported=true`; use exact string comparison after decoding, without URI normalization.
 - Validate token issuer, expiry, audience, and scopes on every request. Establish that the token was issued for this MCP server's resource; a `resource` parameter in a client request does not establish that binding by itself.
@@ -201,6 +202,7 @@ Negative tests:
 - Decline, cancel, and an unfinished external flow cannot trigger the dependent action.
 - Forged Roots cannot widen OS/sandbox access; legacy Sampling remains disabled unless explicitly approved, and unapproved requests are denied.
 - DCR cannot activate outside the compatibility policy or obtain wider scopes through self-registration.
+- Change the authorization-server issuer in synthetic protected resource metadata: the client must not send the old pre-registered/DCR credentials to the new server. The credential flow requires registration for the new issuer; separately confirm that a supported CIMD HTTPS client ID continues without re-registration.
 - unregistered server is blocked;
 - registered server with a new tool or wider resource URI pattern is blocked until approved;
 - model-supplied parameter outside schema or business constraints is rejected server-side;
