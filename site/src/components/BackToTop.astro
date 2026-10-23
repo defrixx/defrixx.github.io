@@ -1,0 +1,32 @@
+---
+const ru = Astro.locals.starlightRoute.lang === 'ru';
+const label = ru ? 'Наверх страницы' : 'Back to top';
+---
+<a class="back-to-top" href="#_top" aria-label={label} title={label} hidden>
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 12l6-6 6 6M12 6v13" /></svg>
+</a>
+<script>
+  const link = document.querySelector<HTMLAnchorElement>('.back-to-top');
+  if (link) {
+    // Keep the edge control outside Starlight's isolated main-pane stacking context.
+    document.body.append(link);
+    let queued = false;
+    const update = () => {
+      const longPage = document.documentElement.scrollHeight > innerHeight * 1.6;
+      link.hidden = !(longPage && scrollY > Math.max(400, innerHeight * 0.75));
+      queued = false;
+    };
+    const schedule = () => {
+      if (!queued) { queued = true; requestAnimationFrame(update); }
+    };
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', schedule);
+    update();
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      const target = document.getElementById('_top') ?? document.querySelector<HTMLElement>('main');
+      if (target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); }
+      scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  }
+</script>

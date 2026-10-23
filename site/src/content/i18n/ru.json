@@ -1,0 +1,10 @@
+{
+  "pagefind.clear_search": "Очистить поиск",
+  "pagefind.load_more": "Показать еще",
+  "pagefind.search_label": "Поиск по сайту",
+  "pagefind.filters_label": "Фильтры",
+  "pagefind.zero_results": "По запросу «[SEARCH_TERM]» ничего не найдено",
+  "pagefind.many_results": "Результатов по запросу «[SEARCH_TERM]»: [COUNT]",
+  "pagefind.one_result": "Один результат по запросу «[SEARCH_TERM]»",
+  "pagefind.searching": "Поиск по запросу «[SEARCH_TERM]»…"
+}

@@ -1,0 +1,22 @@
+test_id,requirement_id,scenario,expected,status,observed,revision,artifact_digest,evidence_ref,author,license,run_id,applicability,applicability_reason,finding_ids,baseline_revision,repair_revision,fix_state,retest_id,retest_status,retest_observed,retest_evidence_ref,owner,template_version
+REL-T-01,REL-001,Reviewed SHA and workflow,Selected source accepted,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-02,REL-001,Untrusted fork changes workflow,No protected trust inherited,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-03,REL-002,Poisoned shared cache or foreign job output,No artifact substitution,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-04,REL-003,Foreign audience/subject requests deployment role,Credential denied,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-05,REL-004,Bytes change after approval/signing,Integrity check rejects,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-001,,,,,not-run,,,,0.2
+REL-T-06,REL-006,Valid signature from wrong identity/issuer,Reject under identity policy,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-002,,,,,not-run,,,,0.2
+REL-T-07,REL-005,Provenance subject uses another digest,Reject mismatch,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-002,,,,,not-run,,,,0.2
+REL-T-08,REL-005,Wrong builder or source SHA,Reject provenance,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-002,,,,,not-run,,,,0.2
+REL-T-09,REL-007,SBOM/scan belongs to another artifact,Unusable for admission,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-003,,,,,not-run,,,,0.2
+REL-T-10,REL-008,Valid signatures but applicable blocking risk,Risk gate blocks unless allowed scoped exception,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-003,,,,,not-run,,,,0.2
+REL-T-11,REL-010,Missing or inconclusive checks,No automatic pass,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-003,,,,,not-run,,,,0.2
+REL-T-12,REL-009,Tag changes after decision,Deployment remains bound to verified digest,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-001,,,,,not-run,,,,0.2
+REL-T-13,REL-004,Promote artifact between registries,Same digest without rebuild,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-001,,,,,not-run,,,,0.2
+REL-T-14,REL-008,Exception expired or for another digest,Exception rejected,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-003,,,,,not-run,,,,0.2
+REL-T-15,REL-009,Rollback and concurrent deployment requests,Verified artifact and controlled transition,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-001,,,,,not-run,,,,0.2
+REL-T-16,REL-006,Trust service unavailable or verifier error,Stop automatic admission,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-17,REL-005,Wrong buildType or unknown externalParameters,Reject pending policy review; accept allowed parameters,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-002,,,,,not-run,,,,0.2
+REL-T-18,REL-005,Wrong canonical repository/predicateType; untrusted job self-report,Reject format/source/trust-model mismatch,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-002,,,,,not-run,,,,0.2
+REL-T-19,REL-008,Valid exact requirement/digest/environment exception; then forged signature,Exception is scoped; signature verification still required,not-run,,,,,Defrixx,CC-BY-4.0,,,,F-REL-003,,,,,not-run,,,,0.2
+REL-T-20,REL-009,Allowed verified chain and environment; then wrong environment/stale policy,Allow normal promotion; changed context needs a fresh decision,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2
+REL-T-21,REL-006,PR/artifact substitutes verifier/roots/policy; verifier unavailable,Untrusted substitution cannot affect verification; no automatic admission on failure,not-run,,,,,Defrixx,CC-BY-4.0,,,,,,,,,not-run,,,,0.2

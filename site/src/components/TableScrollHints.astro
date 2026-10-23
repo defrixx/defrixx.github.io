@@ -1,0 +1,38 @@
+---
+const text = Astro.locals.starlightRoute.lang === 'ru'
+  ? 'Таблицу можно прокрутить вбок. Используйте жест или клавиши со стрелками.'
+  : 'Scroll horizontally to see the full table. Use a swipe or the arrow keys.';
+---
+<span data-table-scroll-hints data-hint={text} hidden></span>
+<script>
+  const marker = document.querySelector<HTMLElement>('[data-table-scroll-hints]');
+  if (marker) {
+    const mobile = matchMedia('(max-width: 50rem)');
+    const entries = [...document.querySelectorAll<HTMLTableElement>('.sl-markdown-content table')].map((table, index) => {
+      const hint = document.createElement('p');
+      hint.className = 'table-scroll-hint';
+      hint.id = `hub-table-scroll-hint-${index}`;
+      hint.hidden = true;
+      const icon = document.createElement('span');
+      icon.setAttribute('aria-hidden', 'true'); icon.textContent = '↔';
+      hint.append(icon, document.createTextNode(marker.dataset.hint ?? ''));
+      table.before(hint);
+      return { table, hint, tabIndex: table.getAttribute('tabindex') };
+    });
+    const update = () => {
+      for (const { table, hint, tabIndex } of entries) {
+        const overflow = mobile.matches && table.scrollWidth > table.clientWidth + 1;
+        hint.hidden = !overflow;
+        const ids = new Set((table.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean));
+        if (overflow) { ids.add(hint.id); table.setAttribute('tabindex', '0'); }
+        else { ids.delete(hint.id); if (tabIndex === null) table.removeAttribute('tabindex'); else table.setAttribute('tabindex', tabIndex); }
+        if (ids.size) table.setAttribute('aria-describedby', [...ids].join(' '));
+        else table.removeAttribute('aria-describedby');
+      }
+    };
+    const observer = new ResizeObserver(update);
+    entries.forEach(({ table }) => observer.observe(table));
+    addEventListener('resize', update); mobile.addEventListener('change', update);
+    document.fonts.ready.then(update); update();
+  }
+</script>

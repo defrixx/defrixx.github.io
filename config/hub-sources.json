@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/defrixx/Product-security-skills",
+  "revision": "55010b3f94844e310bc3ac85fae2a0256b689595",
+  "imports": false,
+  "entries": [
+    {
+      "id": "secure-development",
+      "kind": "skill",
+      "path": "skills/secure-development",
+      "guide": "ai-automation/security-skills/secure-development/overview",
+      "version": "commit:55010b3f9484",
+      "license": "MIT",
+      "applies": {
+        "ru": "Писать или менять код",
+        "en": "Write or change code"
+      },
+      "inputs": {
+        "ru": "Изменение, архитектура, границы доверия",
+        "en": "Change, architecture, trust boundaries"
+      },
+      "result": {
+        "ru": "Применимые требования, реализация и проверки",
+        "en": "Applicable requirements, implementation and checks"
+      },
+      "local": {
+        "ru": "Ассистент в разрешенном локальном проекте",
+        "en": "Assistant in an authorized local project"
+      },
+      "limits": {
+        "ru": "Выбирайте меры по архитектуре; изменение кода требует задания",
+        "en": "Select controls for the actual architecture; modifications need a task"
+      }
+    },
+    {
+      "id": "security-review",
+      "kind": "skill",
+      "path": "skills/security-review",
+      "guide": "ai-automation/security-skills/security-review/overview",
+      "version": "commit:55010b3f9484",
+      "license": "MIT",
+      "applies": {
+        "ru": "Оценить PR или репозиторий",
+        "en": "Assess a PR or repository"
+      },
+      "inputs": {
+        "ru": "Область и точные base/head либо ревизия проекта",
+        "en": "Scope and exact base/head or project revision"
+      },
+      "result": {
+        "ru": "Замечания, гипотезы и приоритетные действия",
+        "en": "Findings, hypotheses and prioritized actions"
+      },
+      "local": {
+        "ru": "Ассистент; необязательный скрипт Python 3.9+ и Git",
+        "en": "Assistant; optional Python 3.9+ and Git helper"
+      },
+      "limits": {
+        "ru": "Оценка сама по себе не меняет код",
+        "en": "Assessment itself does not modify code"
+      }
+    },
+    {
+      "id": "sensitive-data-cleanup",
+      "kind": "skill",
+      "path": "skills/sensitive-data-cleanup",
+      "guide": "ai-automation/security-skills/sensitive-data-cleanup/overview",
+      "version": "commit:55010b3f9484",
+      "license": "MIT",
+      "applies": {
+        "ru": "Подготовить материалы к передаче",
+        "en": "Prepare material for sharing"
+      },
+      "inputs": {
+        "ru": "Согласованный каталог, режим и политика",
+        "en": "Agreed directory, mode and policy"
+      },
+      "result": {
+        "ru": "Отдельная очищенная копия и обезличенный реестр",
+        "en": "Separate cleaned copy and redacted inventory"
+      },
+      "local": {
+        "ru": "Ассистент; скрипт Python 3.9+, POSIX",
+        "en": "Assistant; Python 3.9+, POSIX helper"
+      },
+      "limits": {
+        "ru": "Текст UTF-8/JSON/JSONL/CSV; у JPEG/PNG только метаданные; оригиналы сохраняются",
+        "en": "UTF-8 text/JSON/JSONL/CSV; JPEG/PNG metadata only; preserve originals"
+      }
+    },
+    {
+      "id": "security-report-triage",
+      "kind": "skill",
+      "path": "skills/security-report-triage",
+      "guide": "ai-automation/security-skills/security-report-triage/overview",
+      "version": "commit:55010b3f9484",
+      "license": "MIT",
+      "applies": {
+        "ru": "Разобрать сигналы сканера",
+        "en": "Triage scanner signals"
+      },
+      "inputs": {
+        "ru": "Происхождение отчета, ревизия цели и область",
+        "en": "Report provenance, target revision and scope"
+      },
+      "result": {
+        "ru": "Учтенные сигналы и очередь действий",
+        "en": "Accounted signals and action queue"
+      },
+      "local": {
+        "ru": "Ассистент; ограниченный SARIF скрипт Python 3.9+, POSIX",
+        "en": "Assistant; bounded SARIF helper Python 3.9+, POSIX"
+      },
+      "limits": {
+        "ru": "Нормализация учитывает сигналы; для вывода нужен контекст",
+        "en": "Normalization inventories signals; findings need context"
+      }
+    },
+    {
+      "id": "security-fix-verification",
+      "kind": "skill",
+      "path": "skills/security-fix-verification",
+      "guide": "ai-automation/security-skills/security-fix-verification/overview",
+      "version": "commit:55010b3f9484",
+      "license": "MIT",
+      "applies": {
+        "ru": "Перепроверить выбранное исправление",
+        "en": "Recheck a selected repair"
+      },
+      "inputs": {
+        "ru": "ID замечания, исходные данные и ревизия исправления",
+        "en": "Finding ID, original evidence and patched revision"
+      },
+      "result": {
+        "ru": "Вердикт по замечанию, штатные и обходные случаи",
+        "en": "Per-finding verdict and allowed/bypass cases"
+      },
+      "local": {
+        "ru": "Ассистент в выбранной локальной области",
+        "en": "Assistant in the selected local scope"
+      },
+      "limits": {
+        "ru": "Разделяйте историю оценки и текущий итог проверки",
+        "en": "Keep historical assessment separate from current repair verdict"
+      }
+    },
+    {
+      "id": "prompt-integrity",
+      "kind": "tool",
+      "path": "tools/prompt-integrity",
+      "guide": "ai-automation/prompt-integrity/overview",
+      "version": "0.1.0",
+      "license": "MIT",
+      "applies": {
+        "ru": "Проверить статические инструкции перед отправкой",
+        "en": "Verify static instructions at dispatch"
+      },
+      "inputs": {
+        "ru": "Защищенный эталон и запрос приложения",
+        "en": "Protected baseline and application request"
+      },
+      "result": {
+        "ru": "Блокировка несовпадения либо отправка проверенного снимка",
+        "en": "Mismatch block or dispatch of checked snapshot"
+      },
+      "local": {
+        "ru": "Python 3.11+, POSIX; CLI/библиотека",
+        "en": "Python 3.11+, POSIX; CLI/library"
+      },
+      "limits": {
+        "ru": "Ограниченные адаптеры Ollama/LM Studio; охватите все пути отправки",
+        "en": "Strict Ollama/LM Studio adapter subsets; cover every dispatch route"
+      }
+    },
+    {
+      "id": "prompt-guard",
+      "kind": "tool",
+      "path": "tools/prompt-guard",
+      "guide": "ai-automation/prompt-guard/overview",
+      "version": "0.3.0",
+      "license": "MIT",
+      "applies": {
+        "ru": "Проверить входной контекст и ответ модели",
+        "en": "Inspect input and output at content boundaries"
+      },
+      "inputs": {
+        "ru": "Текст UTF-8/JSON, доверенный источник и политика",
+        "en": "UTF-8 text/JSON, trusted source and policy"
+      },
+      "result": {
+        "ru": "allow/block/review/error; явно разрешенная очищенная копия",
+        "en": "allow/block/review/error; explicit sanitized result"
+      },
+      "local": {
+        "ru": "Python 3.11+, POSIX; CLI/библиотека",
+        "en": "Python 3.11+, POSIX; CLI/library"
+      },
+      "limits": {
+        "ru": "Лексические правила дают ложные блокировки; полномочия на действия проверяются отдельно",
+        "en": "Literal/regex policies have false positives; action authorization is separate"
+      }
+    },
+    {
+      "id": "model-security-eval",
+      "kind": "tool",
+      "path": "tools/model-security-eval",
+      "guide": "ai-automation/model-security-eval/overview",
+      "version": "0.4.0",
+      "license": "MIT",
+      "applies": {
+        "ru": "Проверить регрессии безопасности локальной модели",
+        "en": "Evaluate local model security regressions"
+      },
+      "inputs": {
+        "ru": "Локальная модель, синтетический профиль и бюджеты",
+        "en": "Local model, synthetic profile and budgets"
+      },
+      "result": {
+        "ru": "Вердикт CI, события и локальные закрытые результаты",
+        "en": "CI verdict, events and private local evidence"
+      },
+      "local": {
+        "ru": "Python 3.11+ и локальная конечная точка LM Studio/Ollama",
+        "en": "Python 3.11+ and a local LM Studio/Ollama endpoint"
+      },
+      "limits": {
+        "ru": "Фиксированные сценарии и виртуальные действия; лимиты могут дать неопределенный итог",
+        "en": "Fixed scenarios and virtual effects; budgets may yield inconclusive"
+      }
+    }
+  ]
+}

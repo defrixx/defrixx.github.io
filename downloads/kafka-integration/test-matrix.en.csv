@@ -1,0 +1,21 @@
+test_id,requirement_id,scenario,expected,status,observed,revision,evidence_ref,run_id,applicability,applicability_reason,finding_ids,baseline_revision,repair_revision,fix_state,retest_id,retest_status,retest_observed,retest_evidence_ref,owner,author,license,template_version
+KAF-T-01,KAF-001,Allowed application certificate,Expected principal and protected connection,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-02,KAF-001,"Foreign certificate, wrong hostname or revoked access",No unauthorized connection/operation,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-03,KAF-002,orders-writer publishes to the allowed topic,Publication succeeds with minimal rights,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-04,KAF-002,Write foreign topic or request administration,Operations rejected; no publication,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-05,KAF-003,billing-reader uses the selected group,Read and offset commit allowed,not-run,,,,,,,F-KAF-001,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-06,KAF-003,Allowed topic with foreign group or vice versa,Unauthorized read/group operation rejected,not-run,,,,,,,F-KAF-001,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-07,KAF-004,Authorized source approves its own order,Consumer receives the minimal allowed fields,not-run,,,,,,,F-KAF-001,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-08,KAF-004,Test principal in prod or forged tenant in source command,Reject access/command before publication,not-run,,,,,,,F-KAF-001,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-09,KAF-005,Compatible event version,Schema and business fields accepted,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-10,KAF-005,"Foreign schema, unknown type or oversized record",No execution/database mutation; controlled failure/DLQ,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-11,KAF-006,Normal dispatch of a persisted event,Event binds to the source mutation,not-run,,,,,,,F-KAF-002,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-12,KAF-006,Crash before/after producer acknowledgement and restart,No lost business event; duplicates retain their ID,not-run,,,,,,,F-KAF-002,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-13,KAF-007,One allowed event ID,One committed effect with accounted offset,not-run,,,,,,,F-KAF-002,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-14,KAF-007,"Crash after DB before offset, rebalance or same ID with changed body",Retry is safe; changed contents rejected,not-run,,,,,,,F-KAF-002,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-15,KAF-008,Next order version; committed transaction if applicable,Allowed transition occurs once,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-16,KAF-008,"Old version, new ID for same operation or aborted transaction",No duplicate/invalid effect; transactional cases require a reason if non-applicable,not-run,,,,,,,,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-17,KAF-009,Fix the cause and re-drive the selected event,Original ID/history retained; effect remains idempotent,not-run,,,,,,,F-KAF-003,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-18,KAF-009,"Unauthorized operator, invalid schema or unavailable DLQ",No check bypass; error/unprocessed event remains visible,not-run,,,,,,,F-KAF-003,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-19,KAF-010,Recover processing from agreed history,Available data and repeated effects are accounted for,not-run,,,,,,,F-KAF-003,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1
+KAF-T-20,KAF-010,"Retention expired, quota exhausted or access revoked",No false recovery/immediate-erasure promise; record outcome and decision,not-run,,,,,,,F-KAF-003,,,,,not-run,,,,Defrixx,CC-BY-4.0,0.1

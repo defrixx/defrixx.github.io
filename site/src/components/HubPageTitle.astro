@@ -1,0 +1,5 @@
+---
+import DefaultTitle from '@astrojs/starlight/components/PageTitle.astro';
+const landing = Astro.locals.starlightRoute.entry.data.title === 'Product Security / DevSecOps Hub';
+---
+{!landing && <DefaultTitle />}

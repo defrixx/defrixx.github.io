@@ -7,9 +7,9 @@
     "sync": "python3 ../scripts/sync_starlight_content.py",
     "check:sync": "python3 ../scripts/sync_starlight_content.py --check",
     "dev": "npm run sync && astro dev",
-    "build": "npm run sync && npm run test:dependencies && astro build",
+    "build": "npm run sync && npm run test:dependencies && astro build --force",
     "preview": "astro preview",
-    "test:dependencies": "node --test tests/dependency-compatibility.test.mjs"
+    "test:dependencies": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.1",
@@ -22,10 +22,12 @@
   "devDependencies": {},
   "overrides": {
     "mermaid": {
-      "katex": "0.18.2"
+      "katex": "0.18.2",
+      "dompurify": "3.4.17"
     },
     "@expressive-code/core": {
       "postcss-nested": "8.0.1"
-    }
+    },
+    "vite": "8.3.3"
   }
 }

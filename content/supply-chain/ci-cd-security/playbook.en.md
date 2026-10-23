@@ -18,7 +18,9 @@ For GitHub Actions, start with `permissions: {}` and grant each job only the per
 
 Pass event fields into commands as quoted environment variables or structured arguments. Do not interpolate pull-request titles, branch names, issue text, or commit messages into generated shell code. Quoting a workflow expression inside a shell string does not remove the code-injection boundary.
 
-Pin third-party actions and reusable workflows to reviewed full commit SHAs belonging to the intended upstream repository. Pin container images by digest and use dependency lockfiles with immutable resolution where the package ecosystem supports it. Track updates through a reviewed process; a permanent pin to a vulnerable revision is not an update strategy.
+For GitHub Actions, select dependency locking against the deployed platform. [Workflow dependency lockfiles](https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles) are in public preview; the official October 14, 2026 announcement lists GitHub Enterprise Cloud, its data-residency variant, Team and Free. Confirm support on the deployed platform and onboarding of the specific workflow. For supported repositories and onboarded workflows, review `.github/workflows/actions.lock`, its locked commits and source repository identities. It covers transitive action dependencies; dependencies inside a called reusable workflow are governed by the lockfile in that workflow's repository. For workflows without this support or onboarding, pin third-party actions and reusable workflows to reviewed full commit SHAs from the intended upstream repository.
+
+Review the complete generated diff when adopting or updating a lockfile: the generator also changes workflow/action references. Check allowed-actions policy against the locked commits. Keep lock updates in reviewed changes, not automatic release-time regeneration. Pin container images by digest and use frozen dependency resolution where supported; update reviewed pins deliberately.
 
 ## 3. Isolate executors and build credentials
 
@@ -67,6 +69,7 @@ Use a disposable repository and non-production roles. Record the trigger, effect
 | Approved artifact is replaced under the same tag | Deployment denied or continues using the approved digest | Requested digest and verifier decision |
 | Signed image has a different signer or source revision | Deployment denied | Verified identity and provenance mismatch |
 | Old executor is reused after an untrusted job | Pool policy prevents reuse | Executor lifecycle and host teardown evidence |
+| Onboarded workflow encounters an unapproved dependency commit or different source repository identity | Locked policy rejects the substitution; the reviewed graph runs in the allowed control case | Resolved commit/repository identity, lock revision and runner decision |
 
 Static examples in [security policy examples](../../../reference/security-policy-examples/overview.en.md) check selected configuration invariants. They do not exercise these runtime boundaries.
 

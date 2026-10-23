@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -154,7 +155,7 @@ def extract_title_and_body(path: Path, text: str) -> tuple[str, str]:
     return title, body
 
 
-def description_from(body: str) -> str:
+def description_from(body: str, lang: str = "en") -> str:
     for raw_line in body.splitlines():
         line = raw_line.strip()
         if not line or line.startswith(("#", "-", "|", "```", "---")):
@@ -162,7 +163,7 @@ def description_from(body: str) -> str:
         if len(line) > 180:
             return line[:177].rstrip() + "..."
         return line
-    return "Product security playbook."
+    return "Плейбук безопасности продукта." if lang == "ru" else "Product security playbook."
 
 
 def rewrite_markdown_links(source: Path, body: str) -> str:
@@ -199,8 +200,9 @@ def generated_content(source: Path) -> str:
     title, body = extract_title_and_body(source, text)
     body = rewrite_markdown_links(source, body)
     lang, logical_key, _ = source_info(source)
+    body = expand_hub_content(body, lang)
     order = PAGE_ORDER.get(logical_key, TOP_LEVEL_ORDER.get(logical_key.split("/", 1)[0], 100))
-    description = description_from(body)
+    description = description_from(body, lang)
 
     frontmatter = [
         "---",
@@ -211,6 +213,8 @@ def generated_content(source: Path) -> str:
         "---",
         "",
     ]
+    if logical_key.startswith("hub/"):
+        frontmatter[1:1] = ["template: splash", "tableOfContents: false", "prev: false", "next: false"]
     return "\n".join(frontmatter) + body.rstrip() + "\n"
 
 
@@ -309,127 +313,304 @@ SITE_MAP_GROUPS = {
 }
 
 
+LIBRARY_DESCRIPTIONS = {
+    "review": ("Границы доверия, сценарии атак и решения по риску. От архитектурного разбора до допуска релиза и работы с уязвимостями.",
+               "Trust boundaries, attack scenarios and risk decisions. From architecture review to release acceptance and vulnerability management."),
+    "application-security": ("Код и пользовательские потоки: API, OIDC/OAuth, бизнес-логика и защита в браузере. Проверки доступа и обработки недоверенных данных.",
+               "Code and user flows: APIs, OIDC/OAuth, business logic and browser security. Verify access and untrusted data handling."),
+    "platform-security": ("Облачные права, Kubernetes и управление секретами. Разбор конфигурации, изоляции и поведения платформы при атаке.",
+               "Cloud permissions, Kubernetes and secrets management. Assess configuration, isolation and platform behavior under attack."),
+    "supply-chain": ("Доверие от коммита до развертывания: исполнители CI/CD, происхождение сборок, контейнерные образы и проверка артефактов.",
+               "Trust from commit to deployment: CI/CD executors, build provenance, container images and artifact verification."),
+    "ai-security": ("Модели, агенты, MCP и разработка с ИИ. Выбор границ автономности, доступа к инструментам и проверок недоверенного контекста.",
+               "Models, agents, MCP and AI-assisted development. Assess autonomy boundaries, tool access and untrusted context."),
+    "ai-automation": ("Практическое применение наших пяти скиллов и трех локальных инструментов: входные данные, установка, результаты и совместная работа.",
+               "Practical guides to our five skills and three local tools: inputs, setup, outputs and combined workflows."),
+    "reference": ("Контекст инфраструктурных технологий и исполняемые примеры политик: сопоставьте инженерное решение с проверяемой конфигурацией.",
+               "Infrastructure operating context and executable policy examples: connect engineering decisions to verifiable configuration."),
+}
+
+
 def site_map_content(lang: str) -> str:
     from html import escape
 
-    language_index = 0 if lang == "ru" else 1
-    title = "Карта сайта" if lang == "ru" else "Site map"
-    documents = {}
-    for path in source_files():
-        source_lang, key, _ = source_info(path)
-        if source_lang == lang:
-            documents[key] = path
-    lines = ['<section class="home-site-map" aria-labelledby="home-site-map-title">', f'<h2 id="home-site-map-title">{title}</h2>', '<div class="site-map-grid">']
-    for prefix, ru_label, en_label, overview in SITE_MAP_SECTIONS:
-        label = ru_label if lang == "ru" else en_label
-        heading = escape(label)
+    ix = 0 if lang == "ru" else 1
+    documents = {source_info(p)[1]: p for p in source_files()
+                 if source_info(p)[0] == lang and source_info(p)[1].split("/", 1)[0] in LIBRARY_DESCRIPTIONS}
+    count = len(documents)
+    label = "материала" if lang == "ru" else "resources"
+    search = "Найти по слову или технологии" if lang == "ru" else "Search a topic or technology"
+    nav_label = "Направления библиотеки" if lang == "ru" else "Library domains"
+    lines = [f'<div class="library-toolbar"><span class="library-stats">{count} {label} · 7 ' + ("направлений" if lang == "ru" else "domains") + ' · RU / EN</span>',
+             f'<button type="button" class="library-search" data-open-library-search>{search}<span aria-hidden="true">⌕</span></button></div>',
+             f'<nav class="library-index" aria-label="{nav_label}">']
+    for prefix, rt, et, _ in SITE_MAP_SECTIONS:
+        lines.append(f'<a href="#library-{prefix}">{escape(rt if ix == 0 else et)}</a>')
+    lines += ['</nav>', '<div class="library-directory">']
+    for number, (prefix, rt, et, overview) in enumerate(SITE_MAP_SECTIONS, 1):
+        keys = sorted((key for key in documents if key.startswith(prefix + "/")), key=lambda k: (PAGE_ORDER.get(k, 100), k))
+        lines += [f'<section class="library-section" id="library-{prefix}"><header>',
+                  f'<p class="eyebrow">{number:02d}</p><h2>{escape(rt if ix == 0 else et)}</h2>',
+                  f'<p class="library-description">{escape(LIBRARY_DESCRIPTIONS[prefix][ix])}</p>',
+                  '<p class="library-count">' + ("Материалов: " if ix == 0 else "Resources: ") + str(len(keys)) + '</p>']
         if overview in documents:
-            heading = f'<a href="{escape(source_route(documents[overview]), quote=True)}">{heading}</a>'
-        lines.extend(['<section class="site-map-card">', f'<h3>{heading}</h3>'])
-        keys = sorted(
-            (key for key in documents if key.startswith(prefix + "/") and key != overview),
-            key=lambda key: (PAGE_ORDER.get(key, 100), key),
-        )
-        def append_links(group_keys: list[str]) -> None:
-            lines.append('<ul>')
-            for key in group_keys:
+            route = escape(source_route(documents[overview]), quote=True)
+            lines.append(f'<a class="library-overview" href="{route}">' + ("Обзор направления" if ix == 0 else "Domain overview") + '</a>')
+        lines += ['</header>', '<div class="library-links">']
+        remaining = [key for key in keys if key != overview]
+        groups = list(SITE_MAP_GROUPS.get(prefix, ()))
+        groups.append(("Материалы", "Resources", (prefix + "/",)))
+        for gr, ge, prefixes in groups:
+            selected = [key for key in remaining if key.startswith(prefixes)]
+            if not selected:
+                continue
+            lines += ['<div class="library-group">', f'<h3>{gr if ix == 0 else ge}</h3><ul>']
+            for key in selected:
                 path = documents[key]
-                label = SITE_MAP_LABELS.get(key, (None, None))[language_index]
+                label = SITE_MAP_LABELS.get(key, (None, None))[ix]
                 if label is None:
                     label, _ = extract_title_and_body(path, path.read_text(encoding="utf-8"))
+                kind = (("Плейбук", "Playbook") if path.name.startswith("playbook.") else
+                        ("Чеклист", "Checklist") if path.name.startswith("checklist.") else
+                        ("Справочник", "Reference") if key.startswith("reference/") else ("Руководство", "Guide"))[ix]
                 route = escape(source_route(path), quote=True)
-                lines.append(f'<li><a href="{route}">{escape(label)}</a></li>')
-            lines.append('</ul>')
-
-        remaining = keys[:]
-        groups = SITE_MAP_GROUPS.get(prefix, ())
-        for group_ru, group_en, path_prefixes in groups:
-            group_keys = [key for key in remaining if key.startswith(path_prefixes)]
-            if not group_keys:
-                continue
-            group_label = group_ru if lang == "ru" else group_en
-            lines.append('<div class="site-map-group">')
-            lines.append(f'<h4>{escape(group_label)}</h4>')
-            append_links(group_keys)
-            lines.append('</div>')
-            remaining = [key for key in remaining if key not in group_keys]
-        if remaining:
-            if groups:
-                label = "Другие материалы" if lang == "ru" else "Other material"
-                lines.append(f'<h4>{label}</h4>')
-            append_links(remaining)
-        lines.append('</section>')
-    lines.extend(['</div>', '</section>'])
-    return "\n".join(lines) + "\n"
+                lines.append(f'<li><a class="library-resource" href="{route}"><span class="library-resource-title">{escape(label)}</span><span class="library-resource-kind">{kind}</span></a></li>')
+            lines += ['</ul></div>']
+            remaining = [key for key in remaining if key not in selected]
+        lines += ['</div></section>']
+    return "\n".join(lines + ['</div>']) + "\n"
 
 
 def getting_started_content(lang: str) -> str:
     from html import escape
 
     ru = lang == "ru"
-    title = "С чего начать" if ru else "Where to start"
-    tasks = (
-        ("Проверить архитектуру", "Review an architecture",
-         "Определите границы доверия и сценарии атак, затем проверьте проектные решения.",
-         "Identify trust boundaries and attack scenarios, then review design decisions.",
-         (("review/threat-modeling/playbook", "Моделирование угроз", "Threat modeling"),
-          ("review/architecture/checklist", "Архитектурное ревью", "Architecture review"))),
-        ("Разработать или проверить код", "Develop or review code",
-         "Выберите применимые требования, проверьте защитные меры и зафиксируйте результаты.",
-         "Select applicable requirements, verify controls, and record the results.",
-         (("application-security/secure-coding/code-review/playbook", "Ревью кода", "Code review"),
-          ("ai-automation/security-skills/secure-development/overview", "Скилл безопасной разработки", "Secure development skill"))),
-        ("Подготовить выпуск в рабочую среду", "Prepare a production release",
-         "Проверьте платформу, права развертывания и условия допуска релиза.",
-         "Review the platform, deployment permissions, and release acceptance criteria.",
-         (("platform-security/kubernetes/cluster-security-review/playbook", "Ревью Kubernetes-кластера", "Kubernetes cluster review"),
-          ("review/release-governance/playbook", "Управление выпуском", "Release governance"))),
-        ("Защитить ИИ-систему", "Secure an AI system",
-         "Начните с общих мер защиты, затем выберите проверки для агентов и интеграций.",
-         "Start with the common controls, then select checks for agents and integrations.",
-         (("ai-security/securing-ai/overview", "Защита функций ИИ", "Securing AI features"),
-          ("ai-security/overview", "Выбор плейбука по задаче", "Choose a playbook by task"))),
-    )
-    lines = ['<section class="home-getting-started" aria-labelledby="home-start-title">',
-             f'<h2 id="home-start-title">{title}</h2>', '<div class="site-map-grid">']
-    for ru_title, en_title, ru_description, en_description, links in tasks:
-        lines.extend(['<section class="site-map-card">',
-                      f'<h3>{escape(ru_title if ru else en_title)}</h3>',
-                      f'<p>{escape(ru_description if ru else en_description)}</p>', '<ul>'])
-        for key, ru_label, en_label in links:
-            route = f"{SITE_BASE}/{lang}/{key}/"
-            lines.append(f'<li><a href="{escape(route, quote=True)}">{escape(ru_label if ru else en_label)}</a></li>')
-        lines.extend(['</ul>', '</section>'])
-    lines.extend(['</div>', '</section>'])
-    return "\n".join(lines) + "\n"
+    lines = ['<ol class="scenario-directory">']
+    for entry in load_hub_scenarios():
+        route = f'{SITE_BASE}/{lang}/{entry["route"]}/'
+        lines += ['<li><article>', f'<h2>{escape(entry["title"][lang])}</h2>',
+                  '<dl class="scenario-facts"><div><dt>' + ("Когда применять" if ru else "When to use") + f'</dt><dd>{escape(entry["applies"][lang])}</dd></div>',
+                  '<div><dt>' + ("Результат" if ru else "Result") + f'</dt><dd>{escape(entry["result"][lang])}</dd></div></dl>',
+                  f'<a href="{route}">' + ("Открыть маршрут" if ru else "Open route") + '</a></article></li>']
+    return "\n".join(lines + ['</ol>'])
+
+
+REGISTRY_PATHS = {
+    "secure-development": "skills/secure-development",
+    "security-review": "skills/security-review",
+    "sensitive-data-cleanup": "skills/sensitive-data-cleanup",
+    "security-report-triage": "skills/security-report-triage",
+    "security-fix-verification": "skills/security-fix-verification",
+    "prompt-integrity": "tools/prompt-integrity",
+    "prompt-guard": "tools/prompt-guard",
+    "model-security-eval": "tools/model-security-eval",
+}
+PUBLIC_DOWNLOADS = tuple(f"{name}.{lang}.{extension}" for lang in ("ru", "en")
+                         for name, extension in (("review-template", "md"), ("test-matrix", "csv")))
+
+
+def load_hub_registry(path: Path | None = None) -> dict:
+    """Validate a link-only allowlist; never fetch or copy the sibling repository."""
+    value = json.loads((path or ROOT / "config/hub-sources.json").read_text(encoding="utf-8"))
+    if (set(value) != {"schema_version", "repository", "revision", "imports", "entries"}
+            or value["schema_version"] != 1 or value["imports"] is not False
+            or value["repository"] != "https://github.com/defrixx/Product-security-skills"
+            or not isinstance(value["revision"], str)
+            or not re.fullmatch(r"[0-9a-f]{40}", value["revision"])):
+        raise ValueError("Invalid pinned hub source registry")
+    seen = set()
+    for entry in value["entries"]:
+        required = {"id", "kind", "path", "guide", "version", "license", "applies", "inputs", "result", "local", "limits"}
+        if not isinstance(entry, dict) or set(entry) != required:
+            raise ValueError("Invalid hub catalogue entry")
+        identifier = entry["id"]
+        if identifier not in REGISTRY_PATHS or identifier in seen or entry["path"] != REGISTRY_PATHS[identifier]:
+            raise ValueError("Unapproved or duplicate hub source path")
+        seen.add(identifier)
+        skill = entry["path"].startswith("skills/")
+        guide = (f"ai-automation/security-skills/{identifier}/overview" if skill
+                 else f"ai-automation/{identifier}/overview")
+        if (entry["kind"] != ("skill" if skill else "tool") or entry["license"] != "MIT"
+                or entry["guide"] != guide or not isinstance(entry["version"], str)
+                or not entry["version"]):
+            raise ValueError("Invalid hub source metadata")
+        if skill and entry["version"] != "commit:" + value["revision"][:12]:
+            raise ValueError("Skill version must match the pinned revision")
+        for field in ("applies", "inputs", "result", "local", "limits"):
+            localized = entry[field]
+            if (not isinstance(localized, dict) or set(localized) != {"ru", "en"}
+                    or any(not isinstance(v, str) or not v.strip() for v in localized.values())):
+                raise ValueError("Missing localized hub card field")
+    if seen != set(REGISTRY_PATHS):
+        raise ValueError("Incomplete hub source registry")
+    return value
+
+
+def hub_catalogue_content(lang: str) -> str:
+    from html import escape
+
+    registry = load_hub_registry()
+    ru = lang == "ru"
+    sha, repo = registry["revision"], registry["repository"]
+    labels = (("inputs", "Входные данные", "Inputs"), ("local", "Локальное выполнение", "Local execution"),
+              ("limits", "Ограничения", "Limits"))
+    lines = ['<div class="hub-catalogue">']
+    for kind in ("skill", "tool"):
+        heading = ("Скиллы для ассистента" if ru else "Skills for your assistant") if kind == "skill" else ("Локальные инструменты" if ru else "Local tools")
+        lines += [f'<section class="catalogue-group"><h2>{heading}</h2>']
+        for entry in registry["entries"]:
+            if entry["kind"] != kind:
+                continue
+            source = f'{repo}/tree/{sha}/{entry["path"]}'
+            license_url = f'{repo}/blob/{sha}/LICENSE'
+            lines += ['<article class="catalogue-item">', '<div class="catalogue-summary">',
+                      f'<h3><a href="{SITE_BASE}/{lang}/{entry["guide"]}/">{escape(entry["id"])}</a></h3>',
+                      f'<p>{escape(entry["applies"][lang])}</p></div>',
+                      f'<p class="catalogue-result">{escape(entry["result"][lang])}</p>',
+                      '<details class="catalogue-details"><summary>' + ("Входные данные, запуск и версия" if ru else "Inputs, execution and version") + '</summary><dl>']
+            for field, rt, et in labels:
+                lines += [f'<dt>{rt if ru else et}</dt><dd>{escape(entry[field][lang])}</dd>']
+            version_label = "Версия / источник" if ru else "Version / source"
+            source_label = "Руководство этой ревизии" if ru else "Guide at this revision"
+            license_label = "Лицензия" if ru else "License"
+            lines += [f'<dt>{version_label}</dt><dd>{escape(entry["version"])} · <code>{sha[:12]}</code><br /><a href="{source}">{source_label}</a></dd>',
+                      f'<dt>{license_label}</dt><dd><a href="{license_url}">MIT</a></dd></dl></details></article>']
+        lines.append('</section>')
+    return "\n".join(lines + ['</div>'])
+
+
+def hub_downloads_content(lang: str) -> str:
+    labels = (("review-template", "md", "Шаблон отчета (Markdown)", "Review template (Markdown)"),
+              ("test-matrix", "csv", "Матрица проверок (CSV)", "Test matrix (CSV)"))
+    lines = ['<ul class="hub-downloads">']
+    for name, extension, rt, et in labels:
+        route = f"{SITE_BASE}/downloads/api-integration/{name}.{lang}.{extension}"
+        lines.append(f'<li><a href="{route}" download>{rt if lang == "ru" else et}</a></li>')
+    return "\n".join(lines + ['</ul>'])
+
+
+def hub_navigation_content(lang: str) -> str:
+    links = (("tasks", "Сценарии", "Scenarios"), ("knowledge", "База знаний", "Knowledge base"),
+             ("catalogue", "Навыки и инструменты", "Skills and tools"),
+             ("reviews/delivery-api", "Примеры ревью", "Review examples"), ("usage", "Как использовать", "How to use"))
+    label = "Разделы хаба" if lang == "ru" else "Hub sections"
+    lines = [f'<nav class="hub-navigation" aria-label="{label}">']
+    for key, rt, et in links:
+        lines.append(f'<a href="{SITE_BASE}/{lang}/hub/{key}/overview/">{rt if lang == "ru" else et}</a>')
+    return "\n".join(lines + ['</nav>'])
+
+
+
+def load_hub_scenarios(path: Path | None = None) -> list[dict]:
+    """Publish only ready routes whose localized source documents already exist."""
+    value = json.loads((path or ROOT / "config/hub-scenarios.json").read_text(encoding="utf-8"))
+    if not isinstance(value, dict) or set(value) != {"schema_version", "scenarios"} or value["schema_version"] != 1:
+        raise ValueError("Invalid scenario registry")
+    entries = value["scenarios"]
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("Scenario registry needs an existing ready route")
+    identifiers, routes = set(), set()
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"id", "status", "route", "title", "applies", "result"}:
+            raise ValueError("Invalid scenario entry")
+        identifier, route = entry["id"], entry["route"]
+        if (not isinstance(identifier, str) or not re.fullmatch(r"[a-z0-9-]+", identifier)
+                or not isinstance(route, str) or not re.fullmatch(r"hub/[a-z0-9/-]+/overview", route)
+                or identifier in identifiers or route in routes or entry["status"] != "ready"):
+            raise ValueError("Duplicate, unready or invalid scenario route")
+        identifiers.add(identifier); routes.add(route)
+        for field in ("title", "applies", "result"):
+            localized = entry[field]
+            if (not isinstance(localized, dict) or set(localized) != {"ru", "en"}
+                    or any(not isinstance(v, str) or not v.strip() for v in localized.values())):
+                raise ValueError("Scenario fields need RU and EN text")
+        for language in ("ru", "en"):
+            source = ROOT / "content" / (route + f".{language}.md")
+            if not source.is_file() or source.resolve() != ROOT.resolve() / "content" / (route + f".{language}.md"):
+                raise ValueError("Scenario route is missing localized source material")
+    return entries
+
+
+RELEASE_DOWNLOADS = tuple(f"{name}.{lang}.{ext}" for lang in ("ru", "en") for name, ext in (("release-template", "md"), ("release-checks", "csv")))
+
+def hub_scenarios_content(lang: str) -> str:
+    from html import escape
+    ru = lang == "ru"
+    entries = load_hub_scenarios()
+    label = "Учебные маршруты" if ru else "Learning routes"
+    previous = "Предыдущий маршрут" if ru else "Previous route"
+    following = "Следующий маршрут" if ru else "Next route"
+    lines = [f'<div class="route-explorer" data-lang="{lang}" role="region" aria-label="{label}">',
+             '<div class="route-stage">',
+             f'<button type="button" class="route-arrow route-previous" data-route-action="previous" aria-label="{previous}" hidden><span aria-hidden="true">←</span></button>',
+             '<div class="route-panels">',
+             f'<span class="route-counter" role="img" aria-live="off" aria-label="' + (f'Сценарий 1 из {len(entries)}' if ru else f'Scenario 1 of {len(entries)}') + f'">1 / {len(entries)}</span>']
+    for i, entry in enumerate(entries):
+        route = f'{SITE_BASE}/{lang}/{entry["route"]}/'
+        lines += [f'<article class="route-panel" id="route-panel-{i}" data-title="{escape(entry["title"][lang], quote=True)}">',
+                  f'<h3>{escape(entry["title"][lang])}</h3><dl class="scenario-facts">',
+                  '<div><dt>' + ("Когда применять" if ru else "When to use") + f'</dt><dd>{escape(entry["applies"][lang])}</dd></div>',
+                  '<div><dt>' + ("Результат" if ru else "Result") + f'</dt><dd>{escape(entry["result"][lang])}</dd></div></dl>',
+                  f'<a class="landing-cta scenario-action" href="{escape(route, quote=True)}">' + ("Открыть маршрут" if ru else "Open route") + ' <span aria-hidden="true">↗</span></a></article>']
+    lines.append(f'</div><button type="button" class="route-arrow route-next" data-route-action="next" aria-label="{following}" hidden><span aria-hidden="true">→</span></button></div><div class="route-controls" hidden>')
+    for action, label in [('play', 'Отключить автосмену' if ru else 'Disable automatic switching')]:
+        lines.append(f'<button type="button" data-route-action="{action}">{label}</button>')
+    lines.append('</div></div>')
+    return "\n".join(lines)
+
+
+SCENARIO_DOWNLOAD_DIRS = ("llm-rag", "agent-tools", "kafka-integration")
+
+
+def scenario_downloads_content(lang: str, scenario: str) -> str:
+    if scenario not in SCENARIO_DOWNLOAD_DIRS:
+        raise ValueError("Unknown public scenario download directory")
+    labels = (("review-template", "md", "Шаблон ревью" if lang == "ru" else "Review template"),
+              ("test-matrix", "csv", "Матрица проверок" if lang == "ru" else "Test matrix"))
+    return '<ul class="hub-downloads">' + ''.join(f'<li><a download href="{SITE_BASE}/downloads/{scenario}/{name}.{lang}.{ext}">{label}</a></li>' for name, ext, label in labels) + '</ul>'
+
+
+def release_downloads_content(lang: str) -> str:
+    labels = [("release-template", "md", "Шаблон решения" if lang == "ru" else "Decision template"),
+              ("release-checks", "csv", "Матрица проверок" if lang == "ru" else "Test matrix")]
+    return '<ul class="hub-downloads">' + ''.join(f'<li><a download href="{SITE_BASE}/downloads/ci-cd-release/{name}.{lang}.{ext}">{label}</a></li>' for name, ext, label in labels) + '</ul>'
+
+
+def review_breadcrumb_content(lang: str) -> str:
+    ru = lang == "ru"
+    route = f"{SITE_BASE}/{lang}/hub/api-integration/overview/"
+    label = "Навигационная цепочка" if ru else "Breadcrumb"
+    title = "Внешняя API-интеграция" if ru else "External API integration"
+    current = "Пример ревью" if ru else "Review example"
+    return (f'<nav class="review-breadcrumb" aria-label="{label}"><ol><li><a href="{route}">{title}</a></li>'
+            f'<li aria-current="page"><span aria-hidden="true">/</span> {current}</li></ol></nav>')
+
+
+def expand_hub_content(body: str, lang: str) -> str:
+    # Expand only known authored markers. No arbitrary paths or external imports.
+    fragments = {"navigation": hub_navigation_content, "tasks": getting_started_content,
+                 "library": site_map_content, "catalogue": hub_catalogue_content,
+                 "downloads": hub_downloads_content, "scenarios": hub_scenarios_content,
+                 "review-breadcrumb": review_breadcrumb_content, "release-downloads": release_downloads_content,
+                 **{name + "-downloads": (lambda language, directory=name: scenario_downloads_content(language, directory))
+                    for name in SCENARIO_DOWNLOAD_DIRS}}
+    for name, function in fragments.items():
+        marker = f"<!-- hub:{name} -->"
+        if marker in body:
+            body = body.replace(marker, function(lang))
+    if SITE_BASE:
+        for language in ("ru", "en"):
+            body = body.replace(f'href="/{language}/', f'href="{SITE_BASE}/{language}/')
+    return body
 
 
 def index_content(lang: str) -> str:
-    if lang == "ru":
-        introduction = """Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
-
-Здесь собраны плейбуки, чеклисты и методики ревью, которые помогают применять отраслевые стандарты и инженерные практики к конкретным задачам безопасности продукта.
-
-Материалы обновляются по мере развития технологий и способов атак. При работе с ними учитывайте архитектуру, версии компонентов и модель угроз своего проекта.
-"""
-        description = "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
-    else:
-        introduction = """A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
-
-The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
-
-Materials evolve with technologies and attack techniques. Apply them in the context of your project's architecture, component versions, and threat model.
-"""
-        description = "A practical knowledge base for AppSec, platform security, supply chain, and AI security."
-    frontmatter = f'''---
-title: "Product Security Playbook"
-description: "{description}"
-tableOfContents: false
-sidebar:
-  order: 0
----
-'''
-    return frontmatter + "\n" + introduction + "\n" + getting_started_content(lang) + "\n" + site_map_content(lang)
+    source = ROOT / "content" / "hub" / f"overview.{lang}.md"
+    title, body = extract_title_and_body(source, source.read_text(encoding="utf-8"))
+    body = expand_hub_content(rewrite_markdown_links(source, body), lang)
+    description = "От инженерной задачи к проверяемому решению по безопасности." if lang == "ru" else "From engineering tasks to evidence-based security decisions."
+    return (f"---\ntitle: {yaml_quote(title)}\ndescription: {yaml_quote(description)}\n"
+            "template: splash\ntableOfContents: false\nprev: false\nnext: false\nsidebar:\n  order: 0\n---\n\n" + body.rstrip() + "\n")
 
 
 def validate_pairs(files: list[Path]) -> list[str]:
@@ -445,6 +626,7 @@ def validate_pairs(files: list[Path]) -> list[str]:
 
 
 def render_all() -> dict[Path, str]:
+    load_hub_registry()
     files = source_files()
     errors = validate_pairs(files)
     if errors:
@@ -456,6 +638,23 @@ def render_all() -> dict[Path, str]:
 
     rendered[DOCS_ROOT / "ru" / "index.md"] = index_content("ru")
     rendered[DOCS_ROOT / "en" / "index.md"] = index_content("en")
+    for name in PUBLIC_DOWNLOADS:
+        source = ROOT / "downloads" / "api-integration" / name
+        expected = ROOT.resolve() / "downloads" / "api-integration" / name
+        if source.resolve() != expected or not source.is_file():
+            raise ValueError(f"Invalid public template source: {name}")
+        rendered[ROOT / "site/public/downloads/api-integration" / name] = source.read_text(encoding="utf-8")
+    for name in RELEASE_DOWNLOADS:
+        source = ROOT / "downloads/ci-cd-release" / name
+        if source.resolve() != ROOT.resolve() / "downloads/ci-cd-release" / name or not source.is_file():
+            raise ValueError(f"Invalid public template source: {name}")
+        rendered[ROOT / "site/public/downloads/ci-cd-release" / name] = source.read_text(encoding="utf-8")
+    for directory in SCENARIO_DOWNLOAD_DIRS:
+        for name in PUBLIC_DOWNLOADS:
+            source = ROOT / "downloads" / directory / name
+            if source.resolve() != ROOT.resolve() / "downloads" / directory / name or not source.is_file():
+                raise ValueError(f"Invalid public template source: {directory}/{name}")
+            rendered[ROOT / "site/public/downloads" / directory / name] = source.read_text(encoding="utf-8")
     return rendered
 
 
@@ -493,7 +692,7 @@ def write_all(rendered: dict[Path, str], check: bool) -> int:
         if path != DOCS_ROOT and not any(path.iterdir()):
             path.rmdir()
 
-    print(f"Generated {len(rendered)} Starlight document(s).")
+    print(f"Generated {len(rendered) - (len(PUBLIC_DOWNLOADS) * (1 + len(SCENARIO_DOWNLOAD_DIRS)) + len(RELEASE_DOWNLOADS))} Starlight documents and {(len(PUBLIC_DOWNLOADS) * (1 + len(SCENARIO_DOWNLOAD_DIRS)) + len(RELEASE_DOWNLOADS))} public downloads.")
     return 0
 
 

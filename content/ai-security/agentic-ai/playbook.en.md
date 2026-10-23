@@ -189,6 +189,15 @@ Verification: from inside the environment, attempt to read a synthetic secret ou
 
 ## 4. Verification
 
+### Reproducible adversarial checks
+
+For scoped exercises, use [OWASP GenAI Red Teaming Manual 1.0, §7.2-7.4](https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/) as methodological guidance:
+- Record configuration, state, attempt/turn/token budgets and benign controls.
+- Score model output separately from authorization and downstream effects. Missing telemetry or denial for an unrelated reason is inconclusive.
+- Compare matched budgets and retain protected evidence references, excluding secrets from routine traces.
+
+Select exercises by risk; a complete eight-phase engagement is optional.
+
 Required evidence:
 - agent inventory entry with autonomy profile, owner, tools, memory stores, identities, and data classes;
 - deployed-agent identity/configuration attestation and reconciliation results showing no unknown, duplicate, or unregistered agent runtime;

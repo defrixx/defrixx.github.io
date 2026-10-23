@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "external-api",
+      "status": "ready",
+      "route": "hub/api-integration/overview",
+      "title": {
+        "ru": "Внешняя API-интеграция",
+        "en": "External API integration"
+      },
+      "applies": {
+        "ru": "Подключаете API партнера через OAuth и принимаете webhook в сервисе с несколькими tenant.",
+        "en": "Connect a partner API through OAuth and receive webhooks in a service with multiple tenants."
+      },
+      "result": {
+        "ru": "Схема доверия, требования с ID, матрица проверок, пример ревью и шаблоны для своей работы.",
+        "en": "A trust diagram, requirement IDs, a test matrix, a worked review and templates for your own assessment."
+      }
+    },
+    {
+      "id": "ci-cd-release",
+      "status": "ready",
+      "route": "hub/ci-cd-release/overview",
+      "title": {
+        "ru": "CI/CD: безопасный выпуск релиза",
+        "en": "CI/CD: a secure release"
+      },
+      "applies": {
+        "ru": "Определяете условия допуска артефакта через сборку, проверку и развертывание в выбранной среде.",
+        "en": "Define artifact admission across build, verification and deployment to a selected environment."
+      },
+      "result": {
+        "ru": "Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств. Локальный учебный черновик.",
+        "en": "Release requirements, a test matrix, a synthetic decision example and an evidence template. Local learning draft."
+      }
+    },
+    {
+      "id": "llm-rag",
+      "status": "ready",
+      "route": "hub/llm-rag/overview",
+      "title": {
+        "ru": "ИИ-помощник: внешняя LLM и внутренние знания",
+        "en": "Knowledge assistant: external LLM and RAG"
+      },
+      "applies": {
+        "ru": "Сотрудники задают вопросы по внутренним документам, а фрагменты отправляются внешней модели.",
+        "en": "Employees ask questions about internal documents and excerpts are sent to an external model."
+      },
+      "result": {
+        "ru": "Модель доступа к знаниям, контракт передачи данных, проверки отзыва и внедренных инструкций, пример ревью и шаблоны.",
+        "en": "Knowledge-access model, provider data contract, revocation/injection checks, worked review and templates."
+      }
+    },
+    {
+      "id": "agent-tools",
+      "status": "ready",
+      "route": "hub/agent-tools/overview",
+      "title": {
+        "ru": "ИИ-агент с инструментами и MCP",
+        "en": "AI agent with tools and MCP"
+      },
+      "applies": {
+        "ru": "Помощник читает тикеты и готовит изменения, а отдельные действия выполняет от имени сотрудника.",
+        "en": "An assistant reads tickets and prepares changes, with selected actions on an employee’s behalf."
+      },
+      "result": {
+        "ru": "Границы чтения и действий, авторизация вызовов, подтверждения точных параметров, проверки повторов и отключения.",
+        "en": "Read/action boundaries, per-call authorization, exact-parameter approvals, replay and shutdown checks."
+      }
+    },
+    {
+      "id": "kafka-integration",
+      "status": "ready",
+      "route": "hub/kafka-integration/overview",
+      "title": {
+        "ru": "Событийная интеграция через Kafka",
+        "en": "Event integration with Kafka"
+      },
+      "applies": {
+        "ru": "Продукты обмениваются событиями заказов; нужны права на топики/группы и безопасная повторная обработка.",
+        "en": "Products exchange order events and need scoped topic/group access and safe reprocessing."
+      },
+      "result": {
+        "ru": "Матрица идентичностей и ACL, контракт событий, идемпотентная обработка, DLQ, синтетическое ревью и проверки.",
+        "en": "Identity/ACL matrix, event contract, idempotent processing, DLQ, synthetic review and tests."
+      }
+    }
+  ]
+}

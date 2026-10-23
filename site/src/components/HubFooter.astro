@@ -1,0 +1,22 @@
+---
+import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
+import BackToTop from './BackToTop.astro';
+import RouteExplorer from './RouteExplorer.astro';
+import TableScrollHints from './TableScrollHints.astro';
+const route = Astro.locals.starlightRoute;
+const ru = route.lang === 'ru';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const lang = ru ? 'ru' : 'en';
+---
+{route.hasSidebar ? <DefaultFooter /> : <footer class="hub-footer">
+  <a href={`${base}/${lang}/hub/usage/overview/`}>{ru ? 'Авторство и лицензии' : 'Attribution and licenses'}</a>
+  <a href="https://github.com/defrixx/defrixx.github.io">GitHub ↗</a>
+  <a href={`${base}/third-party-notices.txt`}>{ru ? "Лицензии сторонних компонентов" : "Third-party notices"}</a>
+</footer>}
+{route.hasSidebar && <p class="hub-notices-link"><a href={`${base}/third-party-notices.txt`}>{ru ? "Лицензии сторонних компонентов" : "Third-party notices"}</a></p>}
+
+<BackToTop />
+
+<TableScrollHints />
+
+<RouteExplorer />

@@ -1,0 +1,51 @@
+---
+import scenarioRegistry from '../../../config/hub-scenarios.json';
+import Search from '@astrojs/starlight/components/Search.astro';
+import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro';
+const route = Astro.locals.starlightRoute;
+const lang = route.lang === 'ru' ? 'ru' : 'en';
+const ru = lang === 'ru';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const alternate = ru ? 'en' : 'ru';
+const relative = Astro.url.pathname.slice(base.length);
+const alternateHref = base + relative.replace(/^\/(ru|en)(?=\/|$)/, '/' + alternate);
+const isScenario = relative.startsWith(`/${lang}/hub/tasks/`)
+  || relative.startsWith(`/${lang}/hub/reviews/`)
+  || scenarioRegistry.scenarios.some(entry => relative.startsWith(`/${lang}/${entry.route}/`));
+const activeKey = isScenario ? 'tasks'
+  : relative.startsWith(`/${lang}/hub/usage/`) ? 'usage'
+  : relative.startsWith(`/${lang}/hub/catalogue/`) || relative.startsWith(`/${lang}/ai-automation/`) ? 'catalogue'
+  : relative !== `/${lang}/` ? 'knowledge' : undefined;
+const links = [
+  ['tasks', ru ? 'Сценарии' : 'Scenarios'],
+  ['knowledge', ru ? 'Библиотека' : 'Library'],
+  ['catalogue', ru ? 'Навыки и инструменты' : 'Skills and tools'],
+  ['usage', ru ? 'Как использовать' : 'How to use'],
+];
+---
+<div class="hub-header">
+  <a class="hub-brand" href={`${base}/${lang}/`} aria-label="Defrixx · Product Security">defrixx<span aria-hidden="true">.</span></a>
+  <nav class="hub-header-links" aria-label={ru ? 'Основная навигация' : 'Main navigation'}>
+    {links.map(([key, label]) => <a href={`${base}/${lang}/hub/${key}/overview/`} aria-current={activeKey === key ? "page" : undefined}>{label}</a>)}
+  </nav>
+  <div class="hub-header-tools">
+    <Search />
+    <ThemeSelect />
+    <a class="hub-language" href={alternateHref} lang={alternate} aria-label={ru ? 'Read in English' : 'Читать по-русски'}>{alternate.toUpperCase()}</a>
+    {!route.hasSidebar && <details class="hub-mobile-menu">
+      <summary aria-label={ru ? 'Открыть меню' : 'Open menu'}><span aria-hidden="true">☰</span></summary>
+      <nav aria-label={ru ? 'Основная навигация' : 'Main navigation'}>
+        {links.map(([key, label]) => <a href={`${base}/${lang}/hub/${key}/overview/`} aria-current={activeKey === key ? "page" : undefined}>{label}</a>)}
+      </nav>
+    </details>}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('[data-open-library-search]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      document.querySelector<HTMLButtonElement>('site-search button[data-open-modal]')?.click();
+    });
+  });
+</script>

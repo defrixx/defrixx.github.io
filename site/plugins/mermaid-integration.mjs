@@ -35,7 +35,17 @@ export default function mermaidIntegration() {
             mermaid.initialize({
               startOnLoad: false,
               securityLevel: 'strict',
-              theme: currentTheme(),
+              theme: 'base',
+              themeVariables: {
+                darkMode: currentTheme() === 'dark',
+                background: getComputedStyle(document.documentElement).getPropertyValue('--hub-paper').trim(),
+                primaryColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-surface').trim(),
+                secondaryColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-surface').trim(),
+                tertiaryColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-paper').trim(),
+                primaryTextColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-ink').trim(),
+                primaryBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-line').trim(),
+                lineColor: getComputedStyle(document.documentElement).getPropertyValue('--hub-muted').trim(),
+              },
             });
 
             await mermaid.run({ nodes: diagrams });

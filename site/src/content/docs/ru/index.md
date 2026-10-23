@@ -1,176 +1,55 @@
 ---
-title: "Product Security Playbook"
-description: "Практическая база знаний по безопасности приложений, платформы, цепочки поставки и ИИ."
+title: "Product Security / DevSecOps Hub"
+description: "От инженерной задачи к проверяемому решению по безопасности."
+template: splash
 tableOfContents: false
+prev: false
+next: false
 sidebar:
   order: 0
 ---
 
-Практическая база знаний для проверки архитектуры, кода, платформы и инженерных процессов.
+<div class="hub-landing">
+<section class="scenario-intro" aria-labelledby="_top">
+<div><p class="eyebrow">PRODUCT SECURITY / DEVSECOPS</p><h1 id="_top">От задачи<br /><em>к проверке.</em></h1></div>
+<p class="scenario-benefit">Практические маршруты помогают разобрать инженерную задачу, выбрать требования и собрать понятный результат проверки. Общие материалы остаются в библиотеке; свой проект вы проверяете локально.</p>
+</section>
+<section class="scenario-section" aria-labelledby="scenarios">
+<h2 id="scenarios">Выберите сценарий</h2>
 
-Здесь собраны плейбуки, чеклисты и методики ревью, которые помогают применять отраслевые стандарты и инженерные практики к конкретным задачам безопасности продукта.
+<div class="route-explorer" data-lang="ru" role="region" aria-label="Учебные маршруты">
+<div class="route-stage">
+<button type="button" class="route-arrow route-previous" data-route-action="previous" aria-label="Предыдущий маршрут" hidden><span aria-hidden="true">←</span></button>
+<div class="route-panels">
+<span class="route-counter" role="img" aria-live="off" aria-label="Сценарий 1 из 5">1 / 5</span>
+<article class="route-panel" id="route-panel-0" data-title="Внешняя API-интеграция">
+<h3>Внешняя API-интеграция</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Подключаете API партнера через OAuth и принимаете webhook в сервисе с несколькими tenant.</dd></div>
+<div><dt>Результат</dt><dd>Схема доверия, требования с ID, матрица проверок, пример ревью и шаблоны для своей работы.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/api-integration/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-1" data-title="CI/CD: безопасный выпуск релиза">
+<h3>CI/CD: безопасный выпуск релиза</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Определяете условия допуска артефакта через сборку, проверку и развертывание в выбранной среде.</dd></div>
+<div><dt>Результат</dt><dd>Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств. Локальный учебный черновик.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/ci-cd-release/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-2" data-title="ИИ-помощник: внешняя LLM и внутренние знания">
+<h3>ИИ-помощник: внешняя LLM и внутренние знания</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Сотрудники задают вопросы по внутренним документам, а фрагменты отправляются внешней модели.</dd></div>
+<div><dt>Результат</dt><dd>Модель доступа к знаниям, контракт передачи данных, проверки отзыва и внедренных инструкций, пример ревью и шаблоны.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/llm-rag/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-3" data-title="ИИ-агент с инструментами и MCP">
+<h3>ИИ-агент с инструментами и MCP</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Помощник читает тикеты и готовит изменения, а отдельные действия выполняет от имени сотрудника.</dd></div>
+<div><dt>Результат</dt><dd>Границы чтения и действий, авторизация вызовов, подтверждения точных параметров, проверки повторов и отключения.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/agent-tools/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-4" data-title="Событийная интеграция через Kafka">
+<h3>Событийная интеграция через Kafka</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Продукты обмениваются событиями заказов; нужны права на топики/группы и безопасная повторная обработка.</dd></div>
+<div><dt>Результат</dt><dd>Матрица идентичностей и ACL, контракт событий, идемпотентная обработка, DLQ, синтетическое ревью и проверки.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/kafka-integration/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+</div><button type="button" class="route-arrow route-next" data-route-action="next" aria-label="Следующий маршрут" hidden><span aria-hidden="true">→</span></button></div><div class="route-controls" hidden>
+<button type="button" data-route-action="play">Отключить автосмену</button>
+</div></div>
 
-Материалы обновляются по мере развития технологий и способов атак. При работе с ними учитывайте архитектуру, версии компонентов и модель угроз своего проекта.
-
-<section class="home-getting-started" aria-labelledby="home-start-title">
-<h2 id="home-start-title">С чего начать</h2>
-<div class="site-map-grid">
-<section class="site-map-card">
-<h3>Проверить архитектуру</h3>
-<p>Определите границы доверия и сценарии атак, затем проверьте проектные решения.</p>
-<ul>
-<li><a href="/ru/review/threat-modeling/playbook/">Моделирование угроз</a></li>
-<li><a href="/ru/review/architecture/checklist/">Архитектурное ревью</a></li>
-</ul>
-</section>
-<section class="site-map-card">
-<h3>Разработать или проверить код</h3>
-<p>Выберите применимые требования, проверьте защитные меры и зафиксируйте результаты.</p>
-<ul>
-<li><a href="/ru/application-security/secure-coding/code-review/playbook/">Ревью кода</a></li>
-<li><a href="/ru/ai-automation/security-skills/secure-development/overview/">Скилл безопасной разработки</a></li>
-</ul>
-</section>
-<section class="site-map-card">
-<h3>Подготовить выпуск в рабочую среду</h3>
-<p>Проверьте платформу, права развертывания и условия допуска релиза.</p>
-<ul>
-<li><a href="/ru/platform-security/kubernetes/cluster-security-review/playbook/">Ревью Kubernetes-кластера</a></li>
-<li><a href="/ru/review/release-governance/playbook/">Управление выпуском</a></li>
-</ul>
-</section>
-<section class="site-map-card">
-<h3>Защитить ИИ-систему</h3>
-<p>Начните с общих мер защиты, затем выберите проверки для агентов и интеграций.</p>
-<ul>
-<li><a href="/ru/ai-security/securing-ai/overview/">Защита функций ИИ</a></li>
-<li><a href="/ru/ai-security/overview/">Выбор плейбука по задаче</a></li>
-</ul>
 </section>
 </div>
-</section>
-
-<section class="home-site-map" aria-labelledby="home-site-map-title">
-<h2 id="home-site-map-title">Карта сайта</h2>
-<div class="site-map-grid">
-<section class="site-map-card">
-<h3><a href="/ru/review/overview/">Ревью и управление</a></h3>
-<ul>
-<li><a href="/ru/review/architecture/checklist/">Архитектурное ревью</a></li>
-<li><a href="/ru/review/threat-modeling/playbook/">Моделирование угроз</a></li>
-<li><a href="/ru/review/release-governance/playbook/">Управление выпуском</a></li>
-<li><a href="/ru/review/vulnerability-management/playbook/">Управление уязвимостями</a></li>
-</ul>
-</section>
-<section class="site-map-card">
-<h3><a href="/ru/application-security/overview/">Безопасность приложений</a></h3>
-<div class="site-map-group">
-<h4>Код, API и доступ</h4>
-<ul>
-<li><a href="/ru/application-security/api/api-security-patterns/playbook/">Безопасность API</a></li>
-<li><a href="/ru/application-security/business-logic/business-logic-abuse/playbook/">Бизнес-логика</a></li>
-<li><a href="/ru/application-security/secure-coding/code-review/playbook/">Ревью кода</a></li>
-<li><a href="/ru/application-security/identity/oidc-oauth/playbook/">OIDC и OAuth</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Веб и браузер</h4>
-<ul>
-<li><a href="/ru/application-security/web/owasp-top-10/playbook/">OWASP Top 10</a></li>
-<li><a href="/ru/application-security/web/browser-security/playbook/">Защита в браузере</a></li>
-</ul>
-</div>
-</section>
-<section class="site-map-card">
-<h3><a href="/ru/platform-security/overview/">Безопасность платформы</a></h3>
-<div class="site-map-group">
-<h4>Доступ к облаку</h4>
-<ul>
-<li><a href="/ru/platform-security/cloud-iam-workload-identity/playbook/">Cloud IAM и доступ рабочих нагрузок</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Kubernetes</h4>
-<ul>
-<li><a href="/ru/platform-security/kubernetes/cluster-security-review/playbook/">Ревью кластера</a></li>
-<li><a href="/ru/platform-security/kubernetes/adversarial-validation/playbook/">Проверка защиты от атак</a></li>
-<li><a href="/ru/platform-security/kubernetes/pod-security/playbook/">Безопасность Pod</a></li>
-<li><a href="/ru/platform-security/kubernetes/secrets/playbook/">Секреты Kubernetes</a></li>
-<li><a href="/ru/platform-security/kubernetes/seccomp/checklist/">Проверка seccomp</a></li>
-<li><a href="/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/">Выход из контейнера и capabilities</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Управление секретами</h4>
-<ul>
-<li><a href="/ru/platform-security/secrets/vault/playbook/">Секреты в Vault</a></li>
-</ul>
-</div>
-</section>
-<section class="site-map-card">
-<h3><a href="/ru/supply-chain/overview/">Цепочка поставки</a></h3>
-<ul>
-<li><a href="/ru/supply-chain/slsa-provenance/overview/">SLSA и происхождение сборок</a></li>
-<li><a href="/ru/supply-chain/container-image-security/playbook/">Контейнерные образы</a></li>
-<li><a href="/ru/supply-chain/ci-cd-security/playbook/">Безопасность CI/CD</a></li>
-</ul>
-</section>
-<section class="site-map-card">
-<h3><a href="/ru/ai-security/overview/">Безопасность ИИ</a></h3>
-<div class="site-map-group">
-<h4>Защита ИИ и типовые угрозы</h4>
-<ul>
-<li><a href="/ru/ai-security/securing-ai/overview/">Защита функций ИИ</a></li>
-<li><a href="/ru/ai-security/owasp-llm-top-10/overview/">OWASP LLM Top 10 (2026)</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Агенты и интеграции</h4>
-<ul>
-<li><a href="/ru/ai-security/agentic-ai/playbook/">Безопасность агентов</a></li>
-<li><a href="/ru/ai-security/mcp-security/playbook/">Безопасность MCP</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Разработка с ИИ</h4>
-<ul>
-<li><a href="/ru/ai-security/ai-assisted-development/playbook/">Разработка с ИИ</a></li>
-</ul>
-</div>
-</section>
-<section class="site-map-card">
-<h3><a href="/ru/ai-automation/security-skills/overview/">Скиллы и инструменты</a></h3>
-<div class="site-map-group">
-<h4>Скиллы</h4>
-<ul>
-<li><a href="/ru/ai-automation/security-skills/secure-development/overview/">Безопасная разработка</a></li>
-<li><a href="/ru/ai-automation/security-skills/security-review/overview/">Ревью безопасности</a></li>
-<li><a href="/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/">Очистка чувствительных данных</a></li>
-<li><a href="/ru/ai-automation/security-skills/security-report-triage/overview/">Разбор отчетов безопасности</a></li>
-<li><a href="/ru/ai-automation/security-skills/security-fix-verification/overview/">Проверка исправлений</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Совместная работа скиллов</h4>
-<ul>
-<li><a href="/ru/ai-automation/security-skills/workflow/overview/">Совместная работа скиллов</a></li>
-</ul>
-</div>
-<div class="site-map-group">
-<h4>Инструменты</h4>
-<ul>
-<li><a href="/ru/ai-automation/prompt-integrity/overview/">prompt-integrity</a></li>
-<li><a href="/ru/ai-automation/model-security-eval/overview/">model-security-eval</a></li>
-<li><a href="/ru/ai-automation/prompt-guard/overview/">prompt-guard</a></li>
-</ul>
-</div>
-</section>
-<section class="site-map-card">
-<h3>Справочник</h3>
-<ul>
-<li><a href="/ru/reference/infrastructure-technologies/infrastructure-technologies/">Инфраструктурные технологии</a></li>
-<li><a href="/ru/reference/security-policy-examples/overview/">Примеры политик безопасности</a></li>
-</ul>
-</section>
-</div>
-</section>
