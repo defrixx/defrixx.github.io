@@ -19,7 +19,7 @@ Choose an engineering task. Each learning route connects inputs, decisions, requ
 <li><article>
 <h2>CI/CD: a secure release</h2>
 <dl class="scenario-facts"><div><dt>When to use</dt><dd>Define artifact admission across build, verification and deployment to a selected environment.</dd></div>
-<div><dt>Result</dt><dd>Release requirements, a test matrix, a synthetic decision example and an evidence template. Local learning draft.</dd></div></dl>
+<div><dt>Result</dt><dd>Release requirements, a test matrix, a synthetic decision example and an evidence template.</dd></div></dl>
 <a href="/en/hub/ci-cd-release/overview/">Open route</a></article></li>
 <li><article>
 <h2>Knowledge assistant: external LLM and RAG</h2>
@@ -36,4 +36,14 @@ Choose an engineering task. Each learning route connects inputs, decisions, requ
 <dl class="scenario-facts"><div><dt>When to use</dt><dd>Products exchange order events and need scoped topic/group access and safe reprocessing.</dd></div>
 <div><dt>Result</dt><dd>Identity/ACL matrix, event contract, idempotent processing, DLQ, synthetic review and tests.</dd></div></dl>
 <a href="/en/hub/kafka-integration/overview/">Open route</a></article></li>
+<li><article>
+<h2>Urgent vulnerability in a running product</h2>
+<dl class="scenario-facts"><div><dt>When to use</dt><dd>A new advisory or scanner report requires identifying affected artifacts, running instances and the remediation path.</dd></div>
+<div><dt>Result</dt><dd>Applicability evidence, containment, repair, deployment confirmation, rechecks and safe rollback.</dd></div></dl>
+<a href="/en/hub/vulnerability-response/overview/">Open route</a></article></li>
+<li><article>
+<h2>Service secret exposure</h2>
+<dl class="scenario-facts"><div><dt>When to use</dt><dd>An exposed credential requires a verifiable plan for containment, revocation and service recovery.</dd></div>
+<div><dt>Result</dt><dd>Compromise scope, replacement plan, old-credential and session checks, copy inventory and closure evidence.</dd></div></dl>
+<a href="/en/hub/secret-exposure-response/overview/">Open route</a></article></li>
 </ol>

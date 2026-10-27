@@ -34,7 +34,7 @@ Opaque labels are per-input identifiers, not stable cross-run identities or cont
 
 ## From advisory to vulnerable functionality
 
-For dependency and image signals, trace five links independently: advisory identity, affected/fixed versions and conditions, resolved dependency identity/version/source, build/package inclusion, exact delivered artifact and inventory provenance, then the runtime or build-time path to vulnerable functionality. Include platform/features, transitive parents, vendored or bundled components, image stage and architecture where relevant. A lockfile does not establish shipped content, and a digest does not establish authorship or inventory completeness.
+For dependency and image signals, trace the evidence chain independently: advisory identity, affected/fixed versions and conditions, resolved dependency identity/version/source, build/package inclusion, exact delivered artifact and inventory provenance, then the runtime or build-time path to vulnerable functionality. Include platform/features, transitive parents, vendored or bundled components, image stage and architecture where relevant. A lockfile does not establish shipped content, and a digest does not establish authorship or inventory completeness.
 
 Mark each link observed, contradicted, or unknown, with evidence and a next decisive check. Proven absence from a runtime artifact does not settle build-time exposure; missing reachability evidence does not disprove applicability. Keep scanner severity, exploitability, confidence, and priority separate. Triage alone does not authorize builds, downloads, scanner runs, or remote artifact retrieval.
 

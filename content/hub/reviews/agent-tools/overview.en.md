@@ -34,9 +34,9 @@ flowchart TB
 
 | ID | design-v0 / impact | Proposed design-v1 | Requirements / tests | Recheck |
 | --- | --- | --- | --- | --- |
-| F-AGT-001 | Agent service token substitutes for user rights; Read-only user comments in a restricted project | Enforce current object rights behind MCP transport | AGT-002, AGT-003; AGT-T-03, AGT-T-04, AGT-T-05, AGT-T-06 | `not-run` |
-| F-AGT-002 | Approval is bound only to a button label; Ticket or diff changes after review | Immutable proposal/hash and conditional execution | AGT-004, AGT-005; AGT-T-07, AGT-T-08, AGT-T-09, AGT-T-10 | `not-run` |
-| F-AGT-003 | Retry after timeout receives a new operation ID; Duplicate comments or execution after shutdown | Persistent ID, effect ledger and executor shutdown check | AGT-007, AGT-010; AGT-T-13, AGT-T-14, AGT-T-19, AGT-T-20 | `not-run` |
+| F-AGT-001 | Agent service token substitutes for user rights; read-only user comments in a restricted project | Enforce current object rights behind MCP transport | AGT-002, AGT-003; AGT-T-03, AGT-T-04, AGT-T-05, AGT-T-06 | `not-run` |
+| F-AGT-002 | Approval is bound only to a button label; ticket or diff changes after review | Immutable proposal/hash and conditional execution | AGT-004, AGT-005; AGT-T-07, AGT-T-08, AGT-T-09, AGT-T-10 | `not-run` |
+| F-AGT-003 | Retry after timeout receives a new operation ID; duplicate comments or execution after shutdown | Persistent ID, effect ledger and executor shutdown check | AGT-007, AGT-010; AGT-T-13, AGT-T-14, AGT-T-19, AGT-T-20 | `not-run` |
 
 Confirmation in your project needs exact revision, reachability, prerequisites and observations. Expected results are not evidence. Preserve original findings and history through repair.
 

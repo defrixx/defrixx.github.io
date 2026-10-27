@@ -1,6 +1,6 @@
 # CI/CD: requirements for a secure release
 
-Local learning draft, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes no checks on your system.
+Learning route, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes no checks on your system.
 
 ## When to use and expected result
 

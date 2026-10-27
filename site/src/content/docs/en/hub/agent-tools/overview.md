@@ -79,6 +79,6 @@ Exceptions record scope, objects/revision, expiry, compensating measures and app
 - [AI-assisted development](/en/ai-security/ai-assisted-development/playbook/)
 - [Our skills and tools](/en/hub/catalogue/overview/)
 
-Our independent skills support review and separately authorized repair verification. Consult the catalogue for inputs/tool limits; a skill does not automatically connect to your model, MCP server or Kafka.
+Use our independent skills to review tool authorization and verify selected repairs. Configure access to the target environment separately, following the catalogue.
 
 Author: Defrixx. Original prose, diagram and templates: CC BY 4.0. [Usage and licenses](/en/hub/usage/overview/).

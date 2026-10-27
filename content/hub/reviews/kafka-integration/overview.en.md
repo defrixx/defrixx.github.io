@@ -40,9 +40,9 @@ flowchart TB
 
 | ID | design-v0 / impact | Proposed design-v1 | Requirements / tests | Recheck |
 | --- | --- | --- | --- | --- |
-| F-KAF-001 | Consumer has Read on all groups and a shared test identity; Another product manipulates the group and reads prod | Separate principals/environments and exact Topic/Group resources | KAF-003, KAF-004; KAF-T-05, KAF-T-06, KAF-T-07, KAF-T-08 | `not-run` |
-| F-KAF-002 | Offsets and invoice mutations are uncoordinated and no event ledger exists; Crash loses effects; retry after DB commit duplicates invoice | Source outbox, atomic ID/effect ledger and correct offset ordering | KAF-006, KAF-007; KAF-T-11, KAF-T-12, KAF-T-13, KAF-T-14 | `not-run` |
-| F-KAF-003 | Shared DLQ and re-drive assigns a new event ID; Operator sees excess data and repeats business effects | DLQ access/retention and authorized re-drive retaining ID/content checks | KAF-009, KAF-010; KAF-T-17, KAF-T-18, KAF-T-19, KAF-T-20 | `not-run` |
+| F-KAF-001 | Consumer has Read on all groups and a shared test identity; another product manipulates the group and reads prod | Separate principals/environments and exact Topic/Group resources | KAF-003, KAF-004; KAF-T-05, KAF-T-06, KAF-T-07, KAF-T-08 | `not-run` |
+| F-KAF-002 | Offsets and invoice mutations are uncoordinated and no event ledger exists; crash loses effects; retry after DB commit duplicates invoice | Source outbox, atomic ID/effect ledger and correct offset ordering | KAF-006, KAF-007; KAF-T-11, KAF-T-12, KAF-T-13, KAF-T-14 | `not-run` |
+| F-KAF-003 | Shared DLQ and re-drive assigns a new event ID; operator sees excess data and repeats business effects | DLQ access/retention and authorized re-drive retaining ID/content checks | KAF-009, KAF-010; KAF-T-17, KAF-T-18, KAF-T-19, KAF-T-20 | `not-run` |
 
 Confirmation in your project needs exact revision, reachability, prerequisites and observations. Expected results are not evidence. Preserve original findings and history through repair.
 

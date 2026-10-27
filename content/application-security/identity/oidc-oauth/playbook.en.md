@@ -185,8 +185,7 @@ These numbers are a local recommended baseline for live environments, not direct
 
 ### 5.3 Maximum profile hardening
 
-- For high-risk/regulated environments: tighten TTLs and max degraded windows relative to baseline values
-- For high-risk/regulated environments: use stricter rate-limiting/burst/cache/degraded windows
+- For high-risk/regulated environments: tighten TTLs, rate and burst limits, cache lifetimes, and maximum degraded windows relative to baseline values
 
 ---
 

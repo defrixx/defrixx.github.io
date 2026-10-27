@@ -204,7 +204,7 @@ Release-ready defaults:
 - request body max size: `1-10 MB` for normal JSON endpoints; larger values require separate design review;
 - default page size: `50-100`, hard max: `500-1000`;
 - gateway timeout: `<=30s`, internal service timeout usually `<=3-5s`;
-- State-changing operations that may be retried and duplicate side effects need an appropriate idempotency mechanism, for example payment/order creation or asynchronous command submission. Do not require a separate key mechanically for every PUT or DELETE; verify the operation's semantics and side effects.
+- State-changing operations that may be retried and could duplicate side effects need an appropriate idempotency mechanism, for example payment/order creation or asynchronous command submission. Do not require a separate key mechanically for every PUT or DELETE; verify the operation's semantics and side effects.
 
 Verification:
 - OpenAPI linting and contract tests run in CI for changed endpoints.

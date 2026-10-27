@@ -309,4 +309,3 @@ Seccomp представляет собой один слой защиты. По
 - [Плейбук Pod Security](../pod-security/playbook.ru.md)
 - [Обзор выхода из контейнера и злоупотребления capabilities](../container-escape-capability-abuse/overview.ru.md)
 - [Плейбук ревью безопасности Kubernetes-кластера](../cluster-security-review/playbook.ru.md)
-- [Плейбук проверки безопасности кластера Kubernetes](../cluster-security-review/playbook.ru.md)

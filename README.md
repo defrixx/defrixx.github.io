@@ -70,7 +70,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 
 ## Product Security Hub
 
-The local hub draft uses the existing Astro/Starlight site and library.
+The hub uses the existing Astro/Starlight site and library.
 Edit source Markdown and the generator; generated pages are not independent sources.
 
 - [`content/hub/`](content/hub/) - hub introduction
@@ -79,7 +79,23 @@ Edit source Markdown and the generator; generated pages are not independent sour
 - [`content/hub/catalogue/`](content/hub/catalogue/) - skills and tools catalogue
 - [`content/hub/api-integration/`](content/hub/api-integration/) - external API route
 - [`content/hub/reviews/delivery-api/`](content/hub/reviews/delivery-api/) - synthetic review
+- [`content/hub/ci-cd-release/`](content/hub/ci-cd-release/) - local learning route for release security
+- [`content/hub/reviews/ci-cd-release/`](content/hub/reviews/ci-cd-release/) - synthetic release review
+- [`content/hub/llm-rag/`](content/hub/llm-rag/) - bilingual learning route
+- [`content/hub/reviews/llm-rag/`](content/hub/reviews/llm-rag/) - synthetic review with traceable checks
+- [`content/hub/agent-tools/`](content/hub/agent-tools/) - bilingual learning route
+- [`content/hub/reviews/agent-tools/`](content/hub/reviews/agent-tools/) - synthetic review with traceable checks
+- [`content/hub/kafka-integration/`](content/hub/kafka-integration/) - bilingual learning route
+- [`content/hub/reviews/kafka-integration/`](content/hub/reviews/kafka-integration/) - synthetic review with traceable checks
+- [`content/hub/vulnerability-response/`](content/hub/vulnerability-response/) - advisory-to-runtime remediation and closure evidence
+- [`content/hub/reviews/vulnerability-response/`](content/hub/reviews/vulnerability-response/) - synthetic vulnerability response review
+- [`content/hub/secret-exposure-response/`](content/hub/secret-exposure-response/) - credential exposure containment, replacement and recovery checks
+- [`content/hub/reviews/secret-exposure-response/`](content/hub/reviews/secret-exposure-response/) - synthetic secret exposure review
 - [`content/hub/usage/`](content/hub/usage/) - usage and attribution
+
+The home scenario list is generated from `config/hub-scenarios.json`. Add a ready
+route only after its RU and EN source pages exist. Each entry uses the same title,
+applicability and result layout; candidates and unfilled routes are not published.
 
 `config/hub-sources.json` is an allowlisted, revision-pinned link registry. The build
 does not fetch remote content or copy the sibling repository. `downloads/` contains
@@ -93,21 +109,3 @@ Original prose, diagrams and prose templates outside complete MIT skill packages
 use CC BY 4.0. Original code uses MIT. See [license boundaries](LICENSE) and
 [MIT terms](LICENSE-MIT). Third-party and unknown-owner materials are excluded
 from these grants and retain their applicable rights and notices.
-
-
-The home scenario list is generated from `config/hub-scenarios.json`. Add a ready
-route only after its RU and EN source pages exist. Each entry uses the same title,
-applicability and result layout; candidates and unfilled routes are not published.
-
-
-- [`content/hub/ci-cd-release/`](content/hub/ci-cd-release/) - local learning route for release security
-- [`content/hub/reviews/ci-cd-release/`](content/hub/reviews/ci-cd-release/) - synthetic release review
-
-- [`content/hub/llm-rag/`](content/hub/llm-rag/) - bilingual learning route
-- [`content/hub/reviews/llm-rag/`](content/hub/reviews/llm-rag/) - synthetic review with traceable checks
-
-- [`content/hub/agent-tools/`](content/hub/agent-tools/) - bilingual learning route
-- [`content/hub/reviews/agent-tools/`](content/hub/reviews/agent-tools/) - synthetic review with traceable checks
-
-- [`content/hub/kafka-integration/`](content/hub/kafka-integration/) - bilingual learning route
-- [`content/hub/reviews/kafka-integration/`](content/hub/reviews/kafka-integration/) - synthetic review with traceable checks

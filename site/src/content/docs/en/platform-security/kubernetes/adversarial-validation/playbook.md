@@ -242,7 +242,7 @@ kubectl get jobs -A -o wide
 - node-level `kubectl debug node/...` is allowed only for break-glass roles.
 
 **Recommended control:**
-- `exec` in sensitive namespaces should be restricted and audit-able;
+- `exec` in sensitive namespaces should be restricted and auditable;
 - allow ephemeral containers only to support/SRE roles with short duration and separate logging;
 - use admission policy to deny debug surfaces in high-value namespaces where operationally acceptable.
 

@@ -70,6 +70,6 @@ Exceptions record scope, objects/revision, expiry, compensating measures and app
 - [LLM threats](../../ai-security/owasp-llm-top-10/overview.en.md)
 - [Review and recheck](../catalogue/overview.en.md)
 
-Our independent skills support review and separately authorized repair verification. Consult the catalogue for inputs/tool limits; a skill does not automatically connect to your model, MCP server or Kafka.
+Use our independent skills for review and repair verification in your local project. The catalogue lists required inputs and tool limits.
 
 Author: Defrixx. Original prose, diagram and templates: CC BY 4.0. [Usage and licenses](../usage/overview.en.md).

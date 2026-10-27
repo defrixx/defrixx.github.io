@@ -4,11 +4,11 @@ tableOfContents: false
 prev: false
 next: false
 title: "CI/CD: requirements for a secure release"
-description: "Local learning draft, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes n..."
+description: "Learning route, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes no chec..."
 sidebar:
   order: 100
 ---
-Local learning draft, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes no checks on your system.
+Learning route, version 0.2. Connect source, build, artifact and deployment to verifiable requirements and a human decision. The example is synthetic; this site executes no checks on your system.
 
 ## When to use and expected result
 

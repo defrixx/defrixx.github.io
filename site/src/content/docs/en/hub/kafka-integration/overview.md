@@ -79,6 +79,6 @@ Exceptions record scope, objects/revision, expiry, compensating measures and app
 - [Threat modeling](/en/review/threat-modeling/playbook/)
 - [Our skills and tools](/en/hub/catalogue/overview/)
 
-Our independent skills support review and separately authorized repair verification. Consult the catalogue for inputs/tool limits; a skill does not automatically connect to your model, MCP server or Kafka.
+Use our independent skills for integration review and repair verification. Supply the Kafka configuration and observations from authorized local checks; the catalogue describes the inputs.
 
 Author: Defrixx. Original prose, diagram and templates: CC BY 4.0. [Usage and licenses](/en/hub/usage/overview/).

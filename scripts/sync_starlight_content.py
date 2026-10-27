@@ -559,7 +559,7 @@ def hub_scenarios_content(lang: str) -> str:
     return "\n".join(lines)
 
 
-SCENARIO_DOWNLOAD_DIRS = ("llm-rag", "agent-tools", "kafka-integration")
+SCENARIO_DOWNLOAD_DIRS = ("llm-rag", "agent-tools", "kafka-integration", "vulnerability-response", "secret-exposure-response")
 
 
 def scenario_downloads_content(lang: str, scenario: str) -> str:

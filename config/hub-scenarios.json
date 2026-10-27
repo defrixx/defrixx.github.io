@@ -31,8 +31,8 @@
         "en": "Define artifact admission across build, verification and deployment to a selected environment."
       },
       "result": {
-        "ru": "Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств. Локальный учебный черновик.",
-        "en": "Release requirements, a test matrix, a synthetic decision example and an evidence template. Local learning draft."
+        "ru": "Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств.",
+        "en": "Release requirements, a test matrix, a synthetic decision example and an evidence template."
       }
     },
     {
@@ -84,6 +84,40 @@
       "result": {
         "ru": "Матрица идентичностей и ACL, контракт событий, идемпотентная обработка, DLQ, синтетическое ревью и проверки.",
         "en": "Identity/ACL matrix, event contract, idempotent processing, DLQ, synthetic review and tests."
+      }
+    },
+    {
+      "id": "vulnerability-response",
+      "status": "ready",
+      "route": "hub/vulnerability-response/overview",
+      "title": {
+        "ru": "Срочная уязвимость в работающем продукте",
+        "en": "Urgent vulnerability in a running product"
+      },
+      "applies": {
+        "ru": "Получили бюллетень или отчет сканера и определяете затронутые артефакты, работающие экземпляры и порядок устранения.",
+        "en": "A new advisory or scanner report requires identifying affected artifacts, running instances and the remediation path."
+      },
+      "result": {
+        "ru": "Цепочка применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.",
+        "en": "Applicability evidence, containment, repair, deployment confirmation, rechecks and safe rollback."
+      }
+    },
+    {
+      "id": "secret-exposure-response",
+      "status": "ready",
+      "route": "hub/secret-exposure-response/overview",
+      "title": {
+        "ru": "Утечка секрета сервиса",
+        "en": "Service secret exposure"
+      },
+      "applies": {
+        "ru": "Обнаружили раскрытый секрет и готовите проверяемый план ограничения ущерба, отзыва и восстановления работы сервиса.",
+        "en": "An exposed credential requires a verifiable plan for containment, revocation and service recovery."
+      },
+      "result": {
+        "ru": "Область компрометации, план замены, проверки старых учетных данных и сессий, учет копий и подтверждения закрытия.",
+        "en": "Compromise scope, replacement plan, old-credential and session checks, copy inventory and closure evidence."
       }
     }
   ]

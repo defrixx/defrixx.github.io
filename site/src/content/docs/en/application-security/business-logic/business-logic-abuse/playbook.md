@@ -167,6 +167,22 @@ Verification:
 - Test that limit bypass through alternate identifiers, batch APIs, GraphQL aliases, async jobs, retries, and partner credentials is rejected or counted under the same abuse budget.
 - Simulate risk-engine or limiter outage and confirm the flow follows the documented fail-closed or bounded safe-mode behavior.
 
+### 4.7 Image Upload and Lifecycle
+
+Apply ownership checks from section 4.3, state and race protection from 4.4, and budgets from 4.6 across the full sequence: upload, attach, read, replace, and delete an image.
+
+Release-ready defaults:
+- Check ownership, tenant, and permission on the target object for every operation. Knowing a file ID or upload URL does not grant permission to attach it to another user's object, read, replace, or delete it. Background jobs retain this context and check the permitted action.
+- Define transitions from `uploaded`/`quarantined` to `verified` to `published`: uploads remain unavailable to readers until all required checks succeed. Direct calls to `finalize`, an alternative API, or a worker must not bypass verification or publish after an error, timeout, or unknown verdict.
+- Bind the verification result to an immutable object version and exact bytes, for example through a version ID and cryptographic digest. Publish that verified version. Replacement creates a new unverified version; an old approval cannot apply to new bytes. For decoding and processing, use section 3.5 of the [code review playbook](/en/application-security/secure-coding/code-review/playbook/).
+- Reserve and charge file-count, storage, and processing budgets atomically; include unfinished uploads and derivatives. Request retries and job redelivery neither create a second object nor charge twice; releasing a reservation after failure or expiry is also idempotent.
+- Define retention and deletion for originals, thumbnails and other derivatives, temporary copies, access links, and caches. Revocation and deletion cover every delivery path; specify signed-link expiry and cache purge delay. Required retention, including backups, has a separate access policy and final deletion deadline.
+
+Verification:
+- Attempts to attach, read, replace, or delete another user's image, including a different tenant's object, are denied through normal APIs, batch operations, and background jobs.
+- Calling `finalize` before verification, job redelivery, scan failure, and changing bytes between verification and publication do not expose an unverified file. Replacing a published image requires fresh verification.
+- Concurrent uploads at the quota boundary, retries after a lost response, and unfinished uploads neither bypass budgets nor leave permanent reservations. After deletion or revocation, check originals, derivatives, old links, and caches against the approved purge and retention deadlines.
+
 ---
 
 ## 5. Review Decision

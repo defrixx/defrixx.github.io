@@ -39,7 +39,7 @@ An applied change does not automatically become `fixed`. A confirmed vulnerabili
 
 The standalone report templates share an action ledger. Carry it forward with the original finding IDs, historical assessments, evidence, implementation state, verification verdict, and remaining work. Lead the final report with unresolved actions; producing a patch does not close a finding. Record self-verification only when the same assistant actually implemented and checked the change.
 
-The updated report templates also retain task-specific evidence: review security deltas and stateful cases; verification bypass matrices and policy/state dependencies; triage artifact-applicability links; and cleanup component counts and entity/reference checks. Carry observations with their exact revision or final copy. A changed dependency invalidates affected evidence, not the historical record. Deliver only selected redacted material. Keep intermediate files, private evidence records, and replacement maps in local working storage.
+The report templates retain task-specific evidence: review security deltas and stateful cases; verification bypass matrices and policy/state dependencies; triage artifact-applicability links; and cleanup component counts and entity/reference checks. Carry observations with their exact revision or final copy. A changed dependency invalidates affected evidence, not the historical record. Deliver only selected redacted material. Keep intermediate files, private evidence records, and replacement maps in local working storage.
 
 ## Example combined task
 

@@ -43,7 +43,7 @@ python3 scripts/test_security_policies.py --policy aws_trust --input examples/se
 python3 scripts/test_security_policies.py --policy slsa_build --input examples/security-policies/manifests/slsa-build.json
 ```
 
-The first command runs eight runner tests and two site generation reproducibility tests. The runner tests cover false and undefined decisions, incomplete and skipped results, invalid JSON, engine failure, and container cleanup on timeout or interruption. The second command validates scenario structure, unique names, allow/deny coverage for each policy, and correspondence between allowed fixtures and published manifests. It runs OPA strict checks and tests, then verifies that OPA executed every expected case. An empty suite, unknown policy, engine error, incomplete report, or failed case returns a nonzero status.
+The first command tests the runner and site generation reproducibility. The runner tests cover false and undefined decisions, incomplete and skipped results, invalid JSON, engine failure, and container cleanup on timeout or interruption. The second command validates scenario structure, unique names, allow/deny coverage for each policy, and correspondence between allowed fixtures and published manifests. It runs OPA strict checks and tests, then verifies that OPA executed every expected case. An empty suite, unknown policy, engine error, incomplete report, or failed case returns a nonzero status.
 
 The individual-check commands accept one JSON document and require an explicit boolean `true` decision. Duplicate JSON keys, non-standard numeric values, malformed input, errors, and undefined or `false` decisions fail. Input is serialized again as JSON and written to a temporary file before evaluation. Keep the input format explicit; the script does not split YAML streams, render Helm templates, or extract Pods from controller manifests.
 
@@ -53,7 +53,7 @@ OPA 1.21.1 is pinned by image digest in the runner. The container has no network
 
 ## What the scenarios verify
 
-The Pod cases cover host network/PID/IPC access, host volumes, wrong identity or namespace, automatic token mounting, mutable or malformed image references, empty containers, privilege escalation, writable root filesystems, added capabilities, missing capability drops, root overrides, seccomp overrides, unsupported fields, Windows input, malformed init containers, and missing fields in ordinary and init containers, and ephemeral containers in a Pod creation document. Allowed cases include ordinary and init containers. Malformed top-level inputs are rejected by all three policies.
+The Pod cases cover host network/PID/IPC access, host volumes, wrong identity or namespace, automatic token mounting, mutable or malformed image references, empty containers, privilege escalation, writable root filesystems, added capabilities, missing capability drops, root overrides, seccomp overrides, unsupported fields, Windows input, malformed init containers, missing fields in ordinary and init containers, and ephemeral containers in a Pod creation document. Allowed cases include ordinary and init containers. Malformed top-level inputs are rejected by all three policies.
 
 The IAM cases cover wrong repository, branch, audience, and provider; pull-request and environment subjects; wildcard principal or subject; extra actions or statements; `StringLike`; `NotAction`; `NotPrincipal`; missing trust elements; and malformed statement shapes. The allowed case is the exact reviewed branch profile.
 

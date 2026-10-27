@@ -43,8 +43,8 @@ flowchart TB
 | ID | design-v0 / impact | Proposed design-v1 | Requirements / tests | Recheck |
 | --- | --- | --- | --- | --- |
 | F-RAG-001 | ACL filtering occurs after external reranking; SEC-42 reaches the provider before answer filtering | Enforce current ACL before every external stage | RAG-002, RAG-003; RAG-T-03, RAG-T-04, RAG-T-05, RAG-T-06 | `not-run` |
-| F-RAG-002 | Answer cache is shared and ignores group revocation; Another user or revoked group receives stale text | Scope cache and reauthorize history/source | RAG-007, RAG-008; RAG-T-13, RAG-T-14, RAG-T-15, RAG-T-16 | `not-run` |
-| F-RAG-003 | Retrieved document controls outgoing answer links; External resource receives data or browser executes markup | Treat context as data; safe rendering and no automatic fetch | RAG-005, RAG-006; RAG-T-09, RAG-T-10, RAG-T-11, RAG-T-12 | `not-run` |
+| F-RAG-002 | Answer cache is shared and ignores group revocation; another user or revoked group receives stale text | Scope cache and reauthorize history/source | RAG-007, RAG-008; RAG-T-13, RAG-T-14, RAG-T-15, RAG-T-16 | `not-run` |
+| F-RAG-003 | Retrieved document controls outgoing answer links; external resource receives data or browser executes markup | Treat context as data; safe rendering and no automatic fetch | RAG-005, RAG-006; RAG-T-09, RAG-T-10, RAG-T-11, RAG-T-12 | `not-run` |
 
 Confirmation in your project needs exact revision, reachability, prerequisites and observations. Expected results are not evidence. Preserve original findings and history through repair.
 

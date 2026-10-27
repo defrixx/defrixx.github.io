@@ -172,7 +172,7 @@ OWASP coverage identifiers below use the 2026 edition. The [LLM risk overview](.
 - `Baseline`: always treat output as untrusted input
 - `Baseline`: schema validation + allowlisted commands/operations
 - `Baseline`: define failure behavior for every mandatory content filter, DLP check, output validator, and action-policy decision; if a required control is unavailable or returns an indeterminate result, high-impact and state-changing flows fail closed, while lower-impact flows may use only a documented bounded safe mode that cannot invoke tools or disclose sensitive data
-- `Baseline`: two-step execution for state-changing actions (`preview -> explicit confirm -> execute`)
+- `Baseline`: explicit approval before state-changing actions (`preview -> explicit confirm -> execute`)
 - `High-impact/regulated`: human-in-the-loop + four-eyes approval for high-impact/irreversible operations
 - `High-impact/regulated`: sandbox for code/command execution
 - `High-impact/regulated`: request-rate and cost limits for public and batch workloads; autonomous agents additionally use the step, tool-chain-depth, and kill-switch limits from the [Agentic AI Security playbook](../agentic-ai/playbook.en.md)
@@ -199,10 +199,9 @@ The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns numeric au
 - `LLM04:2026 Supply Chain`
 
 **Ownership boundaries:**
-- The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns agent-action authorization, authorization-context preservation, autonomy bounds, approval of dangerous actions, and emergency stop behavior.
+- The [Agentic AI Security playbook](../agentic-ai/playbook.en.md) owns agent-action authorization, authorization-context preservation, autonomy bounds, memory, action traces, rollback, approval of dangerous actions, and emergency stop behavior.
 - The [MCP Security playbook](../mcp-security/playbook.en.md) owns MCP server and tool inventory and trust, transport, token forwarding, manifest/capability changes, gateway policy, and protocol logging.
 - At overview level, verify that both specialized playbooks apply and that their decisions feed the unified AI-system release decision.
-- Agent autonomy, memory, action traces, approvals, rollback, and kill-switch behavior are owned by the [Agentic AI security playbook](../agentic-ai/playbook.en.md).
 
 **Verification signals:**
 - inventory coverage for MCP servers and registered tools

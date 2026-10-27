@@ -611,7 +611,7 @@ Impact:
 ### 9.4 Release review baseline
 
 Priority:
-- Default severity is `High`; raise to `Critical` when integrity failure enables RCE, release to a live environment compromise, payment/ledger tampering, or policy bypass.
+- Default severity is `High`; raise to `Critical` when integrity failure enables RCE, compromise of a live release, payment/ledger tampering, or policy bypass.
 
 Release-ready defaults:
 - Updates, plugins, models, configs, rules, and release artifacts are verified before use.

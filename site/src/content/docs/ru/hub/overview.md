@@ -20,7 +20,7 @@ sidebar:
 <div class="route-stage">
 <button type="button" class="route-arrow route-previous" data-route-action="previous" aria-label="Предыдущий маршрут" hidden><span aria-hidden="true">←</span></button>
 <div class="route-panels">
-<span class="route-counter" role="img" aria-live="off" aria-label="Сценарий 1 из 5">1 / 5</span>
+<span class="route-counter" role="img" aria-live="off" aria-label="Сценарий 1 из 7">1 / 7</span>
 <article class="route-panel" id="route-panel-0" data-title="Внешняя API-интеграция">
 <h3>Внешняя API-интеграция</h3><dl class="scenario-facts">
 <div><dt>Когда применять</dt><dd>Подключаете API партнера через OAuth и принимаете webhook в сервисе с несколькими tenant.</dd></div>
@@ -29,7 +29,7 @@ sidebar:
 <article class="route-panel" id="route-panel-1" data-title="CI/CD: безопасный выпуск релиза">
 <h3>CI/CD: безопасный выпуск релиза</h3><dl class="scenario-facts">
 <div><dt>Когда применять</dt><dd>Определяете условия допуска артефакта через сборку, проверку и развертывание в выбранной среде.</dd></div>
-<div><dt>Результат</dt><dd>Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств. Локальный учебный черновик.</dd></div></dl>
+<div><dt>Результат</dt><dd>Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/ci-cd-release/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 <article class="route-panel" id="route-panel-2" data-title="ИИ-помощник: внешняя LLM и внутренние знания">
 <h3>ИИ-помощник: внешняя LLM и внутренние знания</h3><dl class="scenario-facts">
@@ -46,6 +46,16 @@ sidebar:
 <div><dt>Когда применять</dt><dd>Продукты обмениваются событиями заказов; нужны права на топики/группы и безопасная повторная обработка.</dd></div>
 <div><dt>Результат</dt><dd>Матрица идентичностей и ACL, контракт событий, идемпотентная обработка, DLQ, синтетическое ревью и проверки.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/kafka-integration/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-5" data-title="Срочная уязвимость в работающем продукте">
+<h3>Срочная уязвимость в работающем продукте</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Получили бюллетень или отчет сканера и определяете затронутые артефакты, работающие экземпляры и порядок устранения.</dd></div>
+<div><dt>Результат</dt><dd>Цепочка применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/vulnerability-response/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
+<article class="route-panel" id="route-panel-6" data-title="Утечка секрета сервиса">
+<h3>Утечка секрета сервиса</h3><dl class="scenario-facts">
+<div><dt>Когда применять</dt><dd>Обнаружили раскрытый секрет и готовите проверяемый план ограничения ущерба, отзыва и восстановления работы сервиса.</dd></div>
+<div><dt>Результат</dt><dd>Область компрометации, план замены, проверки старых учетных данных и сессий, учет копий и подтверждения закрытия.</dd></div></dl>
+<a class="landing-cta scenario-action" href="/ru/hub/secret-exposure-response/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 </div><button type="button" class="route-arrow route-next" data-route-action="next" aria-label="Следующий маршрут" hidden><span aria-hidden="true">→</span></button></div><div class="route-controls" hidden>
 <button type="button" data-route-action="play">Отключить автосмену</button>
 </div></div>

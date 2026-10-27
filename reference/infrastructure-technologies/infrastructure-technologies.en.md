@@ -101,9 +101,9 @@ Test that an untrusted change cannot acquire a write token, cloud deployment ses
 For GitHub Actions, review privileged triggers such as `pull_request_target` and `workflow_run`, including checkout, artifact consumption, and dependency execution. Do not disable platform safeguards to execute an untrusted revision with privileged credentials. Pin third-party actions to reviewed immutable revisions and pass event metadata as data rather than interpolating it into shell scripts.
 
 #### Related Project Files
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trusted builders, provenance, and verification policy.
-- `content/review/release-governance/playbook.ru.md` / `playbook.en.md` — protected environments, release evidence, and approvals.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — short-lived secrets and credentials issued to pipelines.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: trusted builders, provenance, and verification policy.
+- `content/review/release-governance/playbook.ru.md` / `playbook.en.md`: protected environments, release evidence, and approvals.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: short-lived secrets and credentials issued to pipelines.
 - [CI/CD security](../../content/supply-chain/ci-cd-security/playbook.en.md): executor isolation, artifact trust, and deployment acceptance.
 - [Executable policy examples](../security-policy-examples/overview.en.md): configuration checks and allowed/denied CI scenarios.
 
@@ -173,10 +173,10 @@ Verify the daemon and context actually used by CI, rather than inferring rootles
 Use isolated disposable build environments for untrusted changes. With synthetic secrets, check image layers, image configuration, build logs, and exported caches for leakage; deleting a file in a later layer does not erase it from earlier layers. Verify runtime privileges, mounts, capabilities, and resource limits separately from image scanning.
 
 #### Related Project Files
-- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — OCI image model, Dockerfile baseline, registry promotion, digest pinning, scanning, and signing.
-- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md` — container escape risks through capabilities and dangerous container settings.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — secure workload settings that apply to containers in Kubernetes.
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — artifact origin, supply chain, and build trust.
+- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md`: OCI image model, Dockerfile baseline, registry promotion, digest pinning, scanning, and signing.
+- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md`: container escape risks through capabilities and dangerous container settings.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: secure workload settings that apply to containers in Kubernetes.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: artifact origin, supply chain, and build trust.
 
 ### OCI Registry / Artifact Registry
 
@@ -253,11 +253,11 @@ Exercise promotion and retention with an image index and its platform manifests,
 Deleting a registry artifact does not stop running containers or erase copies in node caches, mirrors, or exported archives. For a compromised digest, block new deployments, identify and replace affected workloads, and rotate exposed credentials. Test the incident procedure against a cached image. Registry cleanup and garbage collection are storage operations, not artifact revocation.
 
 #### Related Project Files
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — provenance, verification policy, and trusted builders.
-- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md` — container image and OCI registry security baseline.
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — registry as part of the deployment chain and release gate.
-- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md` — private registry exposure, image history, and supply-chain abuse path checks.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — runtime impact of running an untrusted image.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: provenance, verification policy, and trusted builders.
+- `content/supply-chain/container-image-security/playbook.ru.md` / `playbook.en.md`: container image and OCI registry security baseline.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: registry as part of the deployment chain and release gate.
+- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md`: private registry exposure, image history, and supply-chain abuse path checks.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: runtime impact of running an untrusted image.
 
 ### Helm
 
@@ -326,9 +326,9 @@ Set an explicit `helm.sh/hook-delete-policy` for Helm hook resources; use `ttlSe
 For CRD definitions in the `crds/` directory, Helm does not perform ordinary upgrades or deletion with the release; an existing definition is skipped during installation. Assign ownership of CRD upgrades and verify schema compatibility with the controller and existing custom resources. Check the actual cluster schema after a chart upgrade rather than relying on the release version. If templates, hooks, or a separate controller manage CRDs, review their lifecycle and deletion consequences separately.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Helm is often a source of RBAC, workload, and ingress configuration for review.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — review of final pod specs after chart rendering.
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — trust in artifacts, including charts and deployment packages.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: Helm is often a source of RBAC, workload, and ingress configuration for review.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: review of final pod specs after chart rendering.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: trust in artifacts, including charts and deployment packages.
 
 ### GitOps / Argo CD / Flux
 
@@ -423,9 +423,9 @@ Verify the actual runtime handler and node configuration for each selected Runti
 Restrict runtime socket access and keep sockets out of application mounts. Inspect a running test container through the node's CRI endpoint and confirm its mounts, capabilities, seccomp configuration, and resource limits match the approved workload settings. Check process behavior where configuration inspection alone cannot prove enforcement. Repeat relevant checks after node image or runtime upgrades.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md` — the connection between runtime isolation, capabilities, and escape scenarios.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — workload settings that the runtime applies on the node.
-- `content/platform-security/kubernetes/seccomp/checklist.ru.md` / `checklist.en.md` — syscall filtering as part of runtime hardening.
+- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md`: the connection between runtime isolation, capabilities, and escape scenarios.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: workload settings that the runtime applies on the node.
+- `content/platform-security/kubernetes/seccomp/checklist.ru.md` / `checklist.en.md`: syscall filtering as part of runtime hardening.
 
 ### Kubernetes
 
@@ -501,10 +501,10 @@ Test network isolation from actual Pods on the deployed CNI, including permitted
 After upgrades or policy changes, repeat the affected checks and inspect audit coverage. Use synthetic resources and credentials; do not turn a review into extraction of production Secret values. Assign owners to existing violations and verify remediation rather than treating a healthy cluster or successful rollout as security evidence.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — comprehensive Kubernetes cluster security review.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — requirements for secure pod/workload configuration.
-- `content/platform-security/kubernetes/seccomp/checklist.ru.md` / `checklist.en.md` — seccomp profile review.
-- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md` — container escape and Linux capability misuse.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: comprehensive Kubernetes cluster security review.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: requirements for secure pod/workload configuration.
+- `content/platform-security/kubernetes/seccomp/checklist.ru.md` / `checklist.en.md`: seccomp profile review.
+- `content/platform-security/kubernetes/container-escape-capability-abuse/overview.ru.md` / `overview.en.md`: container escape and Linux capability misuse.
 
 ### CNI / Kubernetes Networking
 
@@ -578,10 +578,10 @@ Verify reachability from representative Pods after policy rollout, including DNS
 Default-deny egress also blocks DNS. Allow access to the deployed resolver rather than every destination on port 53; verify both UDP and TCP for conventional DNS. Account for the actual address in the Pod's `/etc/resolv.conf`, including a node-local DNS cache when deployed. From that same Pod, test a fully qualified service name containing its namespace and an external name, then separately test connectivity to the resolved address. On failure, inspect the DNS Service and EndpointSlices, CoreDNS logs, and its permissions to read Kubernetes resources. Successful name resolution proves neither service reachability nor network policy enforcement.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — service boundary review, egress, and NetworkPolicy baseline.
-- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md` — namespace bypass, SSRF, NodePort exposure, and actual reachability checks.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — pod-level controls complement, but do not replace, network isolation.
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — trust boundary and data flow analysis.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: service boundary review, egress, and NetworkPolicy baseline.
+- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md`: namespace bypass, SSRF, NodePort exposure, and actual reachability checks.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: pod-level controls complement, but do not replace, network isolation.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: trust boundary and data flow analysis.
 
 ### Ingress / Gateway / API Gateway
 
@@ -656,10 +656,10 @@ The community Kubernetes `ingress-nginx` controller is retired: upstream mainten
 For a shared Gateway, test unauthorized Route attachment separately from cross-namespace backend and TLS Secret references. Check `Accepted`, `ResolvedRefs`, and `Programmed` conditions where applicable, then probe the public endpoint: accepted configuration does not prove correct authentication, header trust, or backend encryption.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — entry point inventory, service exposure, and ownership.
-- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md` — NodePort/Ingress/Gateway reachability and SSRF/internal exposure checks.
-- `content/application-security/web/owasp-top-10/playbook.ru.md` / `playbook.en.md` — application-layer risks behind the gateway.
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — trust boundaries, external integrations, and architectural review evidence.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: entry point inventory, service exposure, and ownership.
+- `content/platform-security/kubernetes/adversarial-validation/playbook.ru.md` / `playbook.en.md`: NodePort/Ingress/Gateway reachability and SSRF/internal exposure checks.
+- `content/application-security/web/owasp-top-10/playbook.ru.md` / `playbook.en.md`: application-layer risks behind the gateway.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: trust boundaries, external integrations, and architectural review evidence.
 
 ### Istio
 
@@ -729,9 +729,9 @@ In ambient mode, `ztunnel` provides L4 transport and identity; L7 routing and au
 An egress gateway does not force traffic through itself merely because it exists. Confirm routing and network enforcement prevent workloads from reaching external destinations directly; test gateway unavailability and attempted bypass.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — applies to mesh as part of the Kubernetes control/data plane.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — sidecar/mesh workloads remain Kubernetes workloads and inherit pod security requirements.
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — useful for analyzing trust boundaries and service-to-service communication.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: applies to mesh as part of the Kubernetes control/data plane.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: sidecar/mesh workloads remain Kubernetes workloads and inherit pod security requirements.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: useful for analyzing trust boundaries and service-to-service communication.
 - There is no dedicated Istio playbook yet.
 
 ### Policy Engines
@@ -787,9 +787,9 @@ Protect policies, webhook configuration, exception resources, and labels used by
 Admission checks matching requests; it does not retrospectively remove existing violations. Background audit findings need remediation owners and deadlines. Reporting differs from separately configured mutation, generation, and cleanup rules, which have their own permissions and effects. Verify an existing violation, a new violating request, and an approved object, checking both reports and actual admission outcomes.
 
 #### Related Project Files
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — admission control and cluster policy gates.
-- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md` — workload controls that can be enforced through a policy engine.
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — image/provenance verification before deployment.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: admission control and cluster policy gates.
+- `content/platform-security/kubernetes/pod-security/playbook.ru.md` / `playbook.en.md`: workload controls that can be enforced through a policy engine.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: image/provenance verification before deployment.
 - There is no dedicated policy engines playbook yet.
 
 ## Identity, Secrets, and Access
@@ -850,9 +850,9 @@ Distinguish blocking new token issuance from disabling credentials already issue
 Test approved and rejected federation subjects, verify the resulting cloud principal, and exercise credential refresh failures. The application must not fall back to embedded keys or an unintended node or developer identity.
 
 #### Related Project Files
-- `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC concepts, token validation, and trust boundaries.
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — Kubernetes-to-cloud attack paths and cluster identity.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — dynamic credentials and secrets delivery.
+- `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md`: OIDC concepts, token validation, and trust boundaries.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: Kubernetes-to-cloud attack paths and cluster identity.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: dynamic credentials and secrets delivery.
 - [Cloud IAM and workload identity](../../content/platform-security/cloud-iam-workload-identity/playbook.en.md): federation, effective permissions, and containment of active sessions.
 - [Executable policy examples](../security-policy-examples/overview.en.md): strict GitHub-to-AWS trust policy checks.
 
@@ -920,9 +920,9 @@ Test denial of another service's secret path, renewal failure, and lease revocat
 Exercise audit-device failure and restore in an isolated environment. Audit delivery is a service dependency: monitor blocked writes, capacity, and latency, and verify the behavior of the deployed audit configuration without disabling required logging as a routine workaround. Restore tests must include access to the original seal mechanism or key material and actual authenticated secret access; accepting a snapshot file does not prove recovery completed.
 
 #### Related Project Files
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — the main Vault playbook covering policies, auth methods, audit, and operational hardening.
-- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md` — relevant when Vault is integrated with Kubernetes auth or secret delivery.
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — useful for analyzing trust boundaries around secrets.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: the main Vault playbook covering policies, auth methods, audit, and operational hardening.
+- `content/platform-security/kubernetes/cluster-security-review/playbook.ru.md` / `playbook.en.md`: relevant when Vault is integrated with Kubernetes auth or secret delivery.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: useful for analyzing trust boundaries around secrets.
 
 ### PKI / cert-manager
 
@@ -1042,11 +1042,11 @@ Account for each task's execution location: `delegate_to`, `local_action`, and l
 
 Check mode is a module-dependent simulation, not a guarantee of a safe change. Unsupported tasks can be skipped, conditionals can depend on unavailable registered results, and `check_mode: false` can execute a task even during a check run. Inspect the selected modules, review the diff, and test privileged changes on a limited host group before broad rollout.
 
-Ansible Vault protects stored files, not plaintext after decryption. Use `no_log` for sensitive tasks and avoid exposing values through debug tasks or diff output. `no_log` does not protect Ansible's own debugging output, so do not enable it in production with real secrets. Use a synthetic secret to test normal execution and approved diagnostic modes: the value must not appear in controller logs, callback output, or retained job artifacts. When module parameters reach temporary files on the controller or target, verify restrictive permissions and cleanup after execution, including task failure. Do not enable `world_readable_temp` for tasks carrying secrets; when using a shared group, review every member. Pipelining reduces temporary-file use but is not supported by every module and does not replace permission checks.
+Ansible Vault protects stored files, not plaintext after decryption. Use `no_log` for sensitive tasks and avoid exposing values through debug tasks or diff output. `no_log` does not protect Ansible's own debugging output, so do not enable Ansible debugging in production with real secrets. Use a synthetic secret to test normal execution and approved diagnostic modes: the value must not appear in controller logs, callback output, or retained job artifacts. When module parameters reach temporary files on the controller or target, verify restrictive permissions and cleanup after execution, including task failure. Do not enable `world_readable_temp` for tasks carrying secrets; when using a shared group, review every member. Pipelining reduces temporary-file use but is not supported by every module and does not replace permission checks.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to change management, privileged automation, and trust boundaries.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when Ansible retrieves secrets from Vault or stores sensitive variables.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: applies to change management, privileged automation, and trust boundaries.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: relevant when Ansible retrieves secrets from Vault or stores sensitive variables.
 - There is no dedicated Ansible playbook yet.
 
 ### Terraform / OpenTofu
@@ -1112,10 +1112,10 @@ Backend support varies. Test that a concurrent writer cannot acquire the state l
 In Terraform, `.terraform.lock.hcl` records provider versions and checksums, but not remote module versions. Keep it in Git and review changes; pin modules separately to an exact version or immutable source revision. A checksum proves a match to the previously selected package, not the security of its code. Verify the initial source and publisher before accepting a new lock file; CI reinitialization must not silently upgrade approved dependencies.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to trust boundaries, data flows, and architecture changes through IaC.
-- `content/review/release-governance/playbook.ru.md` / `playbook.en.md` — approvals, release evidence, and separation of duties for infrastructure changes.
-- `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md` — OIDC federation for CI/CD and workload identity.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when Terraform/OpenTofu retrieves credentials or secrets from Vault.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: applies to trust boundaries, data flows, and architecture changes through IaC.
+- `content/review/release-governance/playbook.ru.md` / `playbook.en.md`: approvals, release evidence, and separation of duties for infrastructure changes.
+- `content/application-security/identity/oidc-oauth/playbook.ru.md` / `playbook.en.md`: OIDC federation for CI/CD and workload identity.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: relevant when Terraform/OpenTofu retrieves credentials or secrets from Vault.
 - There is no dedicated Terraform/OpenTofu playbook yet.
 
 ## Data Stores, Search, and Messaging
@@ -1169,8 +1169,8 @@ Do not publish a mutable object key based solely on an earlier successful check:
 In versioning-enabled S3, a normal `DELETE` without `versionId` creates a delete marker rather than erasing older versions. For deletion requirements, check every object version, noncurrent-version expiration rules, and copies covered by the retention policy. A `404` on ordinary reads does not prove data erasure. Account for immutable-retention restrictions and separately test whether the application role can read an older version by its ID.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — data flows, trust boundaries, and storage exposure.
-- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md` — artifact, SBOM, and provenance storage.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: data flows, trust boundaries, and storage exposure.
+- `content/supply-chain/slsa-provenance/overview.ru.md` / `overview.en.md`: artifact, SBOM, and provenance storage.
 - There is no dedicated object storage playbook yet.
 
 ### PostgreSQL / Relational Databases
@@ -1213,8 +1213,8 @@ For `SECURITY DEFINER` functions, set a protected `search_path` that excludes sc
 PITR requires a physical base backup and an uninterrupted WAL sequence through the selected recovery point; a `pg_dump` dump does not replace that base backup. Test recovery to a specified point in an isolated environment, measure actual RPO/RTO, and monitor archive lag and free space in `pg_wal`. WAL replay does not restore `postgresql.conf`, `pg_hba.conf`, or `pg_ident.conf`: preserve their configuration separately and verify it after recovery.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — data classification, tenant isolation, and trust boundaries.
-- `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md` — integrity-sensitive flows and abuse cases.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: data classification, tenant isolation, and trust boundaries.
+- `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md`: integrity-sensitive flows and abuse cases.
 - There is no dedicated database security playbook yet.
 
 ### Redis
@@ -1254,8 +1254,8 @@ Setting an ACL user to `off` prevents new authentication but does not close alre
 If Redis holds data that cannot be reconstructed from another source, select RDB/AOF and `appendfsync` based on acceptable data loss and write latency. An RDB snapshot does not preserve subsequent changes; enabling AOF does not mean every acknowledged write has reached durable storage. Test recovery from the preserved file set and lost writes after an abrupt shutdown. Monitor persistence errors, free disk space, and the impact of snapshots and AOF rewriting on memory and request latency.
 
 #### Related Project Files
-- `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md` — rate limits, sessions, and abuse controls.
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — state management and data flow review.
+- `content/application-security/business-logic/business-logic-abuse/playbook.ru.md` / `playbook.en.md`: rate limits, sessions, and abuse controls.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: state management and data flow review.
 - There is no dedicated Redis playbook yet.
 
 ### Vector Database / Vector DB
@@ -1290,8 +1290,8 @@ Build tenant and access filters on the server from the authenticated principal, 
 Test cross-tenant queries, direct object lookup, permission revocation, deleted documents, cached retrieval, and exported indexes. Measure the deletion and access-revocation delay across the source, index, caches, and backup retention; protect embeddings and query logs as sensitive derived data.
 
 #### Related Project Files
-- `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md` — LLMSecOps lifecycle, RAG data pipeline, and vector database controls.
-- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md` — LLM09:2026 Vector and Embedding Weaknesses.
+- `content/ai-security/securing-ai/overview.ru.md` / `overview.en.md`: LLMSecOps lifecycle, RAG data pipeline, and vector database controls.
+- `content/ai-security/owasp-llm-top-10/overview.ru.md` / `overview.en.md`: LLM09:2026 Vector and Embedding Weaknesses.
 - There is no dedicated vector database security playbook yet.
 
 ### Elasticsearch / OpenSearch
@@ -1329,8 +1329,8 @@ For Elasticsearch backups, use the built-in cluster snapshot mechanism: copies o
 Restore snapshots into an isolated environment and explicitly select data indexes, global state, and feature states. In Elasticsearch, restoring the `security` feature state overwrites authentication system indexes; require a reviewed recovery procedure and an independent access path before doing so. Verify restored access rules, repository permissions, and retention before reconnecting applications. Restoring older data must not silently reintroduce documents whose deletion or access revocation is still required.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — sensitive data flows and observability surfaces.
-- `content/application-security/web/browser-security/playbook.ru.md` / `playbook.en.md` — relevant when frontend logs/telemetry contain browser-side data.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: sensitive data flows and observability surfaces.
+- `content/application-security/web/browser-security/playbook.ru.md` / `playbook.en.md`: relevant when frontend logs/telemetry contain browser-side data.
 - There is no dedicated Elasticsearch/OpenSearch playbook yet.
 
 ### Kafka
@@ -1400,8 +1400,8 @@ Where a consumer must see only committed Kafka transactions, set `isolation.leve
 For durable publication, verify the effective producer `acks=all` and `enable.idempotence=true` settings, compatible retry/in-flight settings, and the topic's replication and minimum in-sync replica requirements. Test broker loss, reduced ISR, restart after processing but before offset commit, and duplicate events. Protect Schema Registry and Kafka Connect separately: they are additional services and credentials, not automatically covered by topic ACLs.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to event-driven architecture, trust boundaries, and data flow review.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when credentials, certificates, or connector secrets are issued through Vault.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: applies to event-driven architecture, trust boundaries, and data flow review.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: relevant when credentials, certificates, or connector secrets are issued through Vault.
 - There is no dedicated Kafka playbook yet.
 
 ### RabbitMQ
@@ -1473,8 +1473,8 @@ Configuring a DLX alone does not guarantee durability: internal republishing use
 For this mode, set `dead-letter-strategy=at-least-once`, `overflow=reject-publish`, and `dead-letter-exchange` in the source queue policy; verify required feature flags for the deployed version. `drop-head` falls back to `at-most-once` transfer even without a queue length limit. Bound accumulation with `max-length` or `max-length-bytes` and test producer handling of rejected new publications during a prolonged destination outage. Do not switch the strategy to `at-most-once` or `overflow` to `drop-head` while messages remain unconfirmed by target queues: this change deletes them from the source queue.
 
 #### Related Project Files
-- `content/review/architecture/checklist.ru.md` / `checklist.en.md` — applies to asynchronous flows, trust boundaries, and message processing.
-- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md` — relevant when broker credentials or TLS materials are managed through Vault.
+- `content/review/architecture/checklist.ru.md` / `checklist.en.md`: applies to asynchronous flows, trust boundaries, and message processing.
+- `content/platform-security/secrets/vault/playbook.ru.md` / `playbook.en.md`: relevant when broker credentials or TLS materials are managed through Vault.
 - There is no dedicated RabbitMQ playbook yet.
 ---
 

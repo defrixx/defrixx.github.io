@@ -61,7 +61,7 @@ class HubTests(unittest.TestCase):
     def test_only_explicit_authored_templates_are_rendered_to_public_directory(self):
         rendered = sync.render_all()
         public = {path: value for path, value in rendered.items() if path.is_relative_to(sync.ROOT / 'site/public')}
-        self.assertEqual(len(public), 20)
+        self.assertEqual(len(public), len(sync.PUBLIC_DOWNLOADS) * (1 + len(sync.SCENARIO_DOWNLOAD_DIRS)) + len(sync.RELEASE_DOWNLOADS))
         self.assertEqual({path.name for path in public}, set(sync.PUBLIC_DOWNLOADS + sync.RELEASE_DOWNLOADS))
         expected = {Path(directory) / name for directory in ('api-integration', *sync.SCENARIO_DOWNLOAD_DIRS) for name in sync.PUBLIC_DOWNLOADS}
         expected.update(Path('ci-cd-release') / name for name in sync.RELEASE_DOWNLOADS)
@@ -211,7 +211,7 @@ class HubTests(unittest.TestCase):
 
     def test_new_scenario_requirements_downloads_and_findings_are_bilingual(self):
         import re
-        for directory, prefix in [('llm-rag', 'RAG'), ('agent-tools', 'AGT'), ('kafka-integration', 'KAF')]:
+        for directory, prefix in [('llm-rag', 'RAG'), ('agent-tools', 'AGT'), ('kafka-integration', 'KAF'), ('vulnerability-response', 'VUL'), ('secret-exposure-response', 'SEC')]:
             pairs = []
             for lang in ('ru', 'en'):
                 route = (sync.ROOT / f'content/hub/{directory}/overview.{lang}.md').read_text()

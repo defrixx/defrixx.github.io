@@ -103,7 +103,7 @@ Use `--subresource=<name>` for `kubectl auth can-i` subresource checks, and incl
 - no artifact provenance or pre-deploy verification.
 
 **Recommended control:**
-- deploy only via CI/CD, with cluster changes audit-able and replay-able;
+- deploy only via CI/CD, with cluster changes auditable and replayable;
 - release images pinned by `@sha256` digest only;
 - branch protection + mandatory review for IaC/manifests and pipeline configuration;
 - separate `author`, `approver`, and `releaser` roles.
