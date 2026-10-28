@@ -10,7 +10,7 @@
         "en": "External API integration"
       },
       "applies": {
-        "ru": "Подключаете API партнера через OAuth и принимаете webhook в сервисе с несколькими tenant.",
+        "ru": "Подключаете API партнера через OAuth и принимаете webhook в мультитенантном сервисе.",
         "en": "Connect a partner API through OAuth and receive webhooks in a service with multiple tenants."
       },
       "result": {
@@ -31,7 +31,7 @@
         "en": "Define artifact admission across build, verification and deployment to a selected environment."
       },
       "result": {
-        "ru": "Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств.",
+        "ru": "Требования к выпуску, матрица проверок, синтетический пример решения и шаблон решения о выпуске.",
         "en": "Release requirements, a test matrix, a synthetic decision example and an evidence template."
       }
     },
@@ -99,7 +99,7 @@
         "en": "A new advisory or scanner report requires identifying affected artifacts, running instances and the remediation path."
       },
       "result": {
-        "ru": "Цепочка применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.",
+        "ru": "Цепочка проверки применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.",
         "en": "Applicability evidence, containment, repair, deployment confirmation, rechecks and safe rollback."
       }
     },

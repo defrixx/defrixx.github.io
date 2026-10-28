@@ -69,7 +69,7 @@ Kubernetes auth minimums:
 
 - Bind roles to exact `serviceAccount` and namespace.
 - Set and validate `audience` for Kubernetes auth roles. `bound_audiences` is the JWT/OIDC auth role parameter; do not use it in Kubernetes auth role examples.
-- Keep `alias_name_source=serviceaccount_uid` for Kubernetes auth roles unless there is an approved reason to use `serviceaccount_name`. Name-based aliases tolerate ServiceAccount deletion and recreation worse, so they require strict ServiceAccount creation controls and separate risk acceptance.
+- Keep `alias_name_source=serviceaccount_uid` for Kubernetes auth roles unless there is an approved reason to use `serviceaccount_name`. Name-based aliases reuse the namespace/name identity when a ServiceAccount is deleted and recreated, so they require strict ServiceAccount creation controls and separate risk acceptance.
 - Do not make a long-lived reviewer JWT the default TokenReview strategy. If Vault runs inside Kubernetes, prefer the Vault pod's local service account token or the client JWT pattern; a long-lived reviewer token is acceptable only as an exception with owner, rotation, RBAC scope, and review expiry.
 - Use explicit Vault token parameters instead of generic "short-lived" wording:
   - `token_ttl`: `15m` default for initial TTL of workload login tokens
@@ -223,7 +223,7 @@ Operational commands:
 
 ```bash
 vault write pki_int/revoke serial_number="39:dd:2e:..."
-vault read pki_int/crl
+vault read -format=raw pki_int/crl/pem
 vault write pki_int/tidy tidy_cert_store=true tidy_revoked_certs=true safety_buffer=72h
 ```
 
@@ -419,7 +419,7 @@ Runtime behavior during Vault outage must be explicit for already-running pods:
 
 - Vault admin model excludes root token from routine work.
 - Roles are tightly bound to workload identity (`serviceAccount`, namespace, audience).
-- Kubernetes auth uses `alias_name_source=serviceaccount_uid`, and reviewer JWT strategy does not depend on a non-expiring ServiceAccount token without an exception.
+- Kubernetes auth uses `alias_name_source=serviceaccount_uid` or an explicitly approved `serviceaccount_name` exception with controls over ServiceAccount creation, deletion and access; reviewer JWT strategy does not depend on a non-expiring ServiceAccount token without an exception.
 - Policy scopes are explicit by environment and service.
 - Secret class ownership, TTL, and rotation cadence are documented.
 - Each recoverable secret has a documented Vault-versus-application-database decision; database-backed designs demonstrate envelope encryption, external key-encryption-key storage, and restricted decrypt scope.

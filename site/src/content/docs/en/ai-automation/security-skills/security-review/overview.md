@@ -30,7 +30,7 @@ Choose complementary analyzers from the actual languages, lockfiles, and deploym
 
 When classification is needed, verify that the root cause matches the selected CWE definition and name the OWASP edition. CVSS v4.0 scores require a verified calculator, vector, scenario, and metric rationale; an uncomputed score stays explicit. Severity, confidence, and remediation priority remain separate, and release thresholds require authorized project policy.
 
-Select decisive checks by mechanism: observe the forbidden effect at the relevant file, network, data, or tool boundary, and show that an allowed operation succeeds. For stateful paths, include revocation, delayed work, restart, and repeated effects as applicable. Record expected/observed outcomes and what would leave the result inconclusive.
+Select decisive checks by mechanism: check whether the forbidden effect occurs at the relevant file, network, data, or tool boundary, and show that an allowed operation succeeds. For stateful paths, include revocation, delayed work, restart, and repeated effects as applicable. Record expected/observed outcomes and what would leave the result inconclusive.
 
 > Use security-review on this PR that exposes a shared export helper through a new API. Compare base/head authorization guarantees, inspect alternate callers and cached exports after revocation, and select decisive checks. Separate confirmed findings from hypotheses and report CWE/CVSS only where supported.
 

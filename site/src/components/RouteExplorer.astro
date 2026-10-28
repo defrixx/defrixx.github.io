@@ -12,7 +12,7 @@
     let timer: ReturnType<typeof setTimeout> | undefined;
     function schedule() {
       clearTimeout(timer);
-      play.textContent = enabled ? (ru ? 'Отключить автосмену' : 'Disable automatic switching') : (ru ? 'Включить автосмену' : 'Enable automatic switching');
+      play.textContent = enabled ? (ru ? 'Отключить автопереключение' : 'Disable automatic switching') : (ru ? 'Включить автопереключение' : 'Enable automatic switching');
       play.setAttribute('aria-pressed', String(!enabled));
       play.disabled = motion.matches;
       const running = enabled && !motion.matches && !hovered && !focused && !document.hidden;

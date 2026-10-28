@@ -119,7 +119,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { slug: 'platform-security/overview', label: 'Обзор', translations: { en: 'Overview' }, attrs: { class: 'section-guide' } },
-            { slug: 'platform-security/cloud-iam-workload-identity/playbook', label: 'Cloud IAM и доступ рабочих нагрузок', translations: { en: 'Cloud IAM and workload access' } },
+            { slug: 'platform-security/cloud-iam-workload-identity/playbook', label: 'Cloud IAM и доступ Workload', translations: { en: 'Cloud IAM and workload access' } },
             {
               label: 'Kubernetes',
               collapsed: true,

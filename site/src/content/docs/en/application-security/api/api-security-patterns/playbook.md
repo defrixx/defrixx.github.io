@@ -1,12 +1,12 @@
 ---
 title: "API Security and Integration Patterns Playbook"
-description: "This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook and gRPC APIs."
+description: "This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook, gRPC and WebSo..."
 sidebar:
   order: 30
 ---
 ## 1. Scope and Goal
 
-This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook and gRPC APIs.
+This playbook describes common API styles, applicable threats, baseline security controls and reference integration patterns for REST, SOAP/XML, GraphQL, Webhook, gRPC and WebSocket APIs.
 
 The baseline is aligned with OWASP API Security Top 10 2023. It is not a restatement of that list: the goal is to turn the categories into reviewable production controls, defaults and verification evidence.
 
@@ -83,7 +83,7 @@ Typical risks:
 
 A webhook is an inbound call from an external provider or another system when an event occurs: a payment succeeded, an order changed, a user was created or an alert fired. Unlike a normal API call, the receiver usually does not initiate the request and must handle events asynchronously, including retries, out-of-order delivery and duplicate delivery.
 
-For the receiver, a webhook is an internet-facing endpoint even when it does not look like a user API. Its security is built around signature verification over the raw body, timestamp/replay controls, idempotency, queue-based processing isolation and strict payload validation before any business action.
+For the receiver, a webhook is an internet-facing endpoint even when it does not look like a user API. Its security is built around signature verification over the provider-defined signed representation, timestamp/replay controls, idempotency, queue-based processing isolation and strict payload validation before any business action.
 
 Strengths:
 - asynchronous event delivery;
@@ -115,6 +115,11 @@ Typical risks:
 - Overexposed server reflection: reflection reveals services, methods and message types to clients that do not need it in live environments. For an attacker, this accelerates reconnaissance and helps build valid payloads without proto files.
 - Message size/streaming DoS: large messages, long streams or missing deadlines hold memory, connections and worker threads. Without limits on message size, stream duration and concurrency, one client can degrade the whole backend pool.
 - Weak protobuf schema backward-compatibility governance: proto changes break older clients or change the meaning of default/unknown fields. Schema evolution mistakes can cause authorization bypass, incorrect interpretation of business flags or silent data loss.
+
+### 2.6 WebSocket API
+
+A bidirectional channel for messages and subscriptions. Connection setup, authorization of individual messages and revocation on an open channel are separate checks in section 6.6.
+
 
 ---
 
@@ -216,6 +221,8 @@ Verification:
 - Write DTOs reject unknown properties or prove an explicit field allowlist to prevent mass assignment.
 - Gateway routes, service routes, and the OpenAPI inventory are compared for drift before release.
 
+- Disable unintended HTTP method overriding. Where required, gateway checks, routing, authorization and CSRF must use the same effective method. Test supported override headers and `_method`: denial must leave the object unchanged, and `GET`/`HEAD` must not change state.
+
 ### 6.2 SOAP/XML
 
 Mandatory measures:
@@ -255,14 +262,14 @@ Release-ready defaults:
 - dynamic GraphQL queries are acceptable for public APIs only with a stricter cost budget, per-client abuse monitoring, and owner-approved exception; persisted queries do not replace resolver authorization and query cost controls.
 
 Verification:
-- An unregistered hash, arbitrary query registration attempt, and alternate-route bypass do not execute the operation. Test a cold cache and an unavailable list. An allowed operation with another actor's object ID or excessive variable values is rejected by the corresponding check.
+- Where an operation allowlist is required, an unregistered hash, arbitrary query registration attempt, and alternate-route bypass do not execute the operation. Test a cold cache and an unavailable list. An allowed operation with another actor's object ID or excessive variable values is rejected by the corresponding check.
 
 ### 6.4 Webhooks
 
 Mandatory measures:
 - verify provider signature before parsing the business payload;
 - enforce request body size limits before reading the full payload into memory;
-- preserve and verify the exact raw request body used by the provider signature scheme before JSON/XML/form parsing, normalization, decompression, charset conversion, or middleware mutation;
+- preserve the provider-defined signed representation. For raw-body signatures, verify the exact bytes before parsing or middleware transformation. If verification requires envelope fields, use only the bounded parsing required by the provider scheme; defer business processing until verification succeeds;
 - disallow webhook body compression/decompression unless the provider explicitly requires it in the contract;
 - if compression is required, set a decompression ratio limit and document what is signed: compressed bytes or decompressed payload;
 - document the provider-specific canonical string, signed fields, timestamp field, allowed algorithms, key identifier rules, and secret/certificate selection logic;
@@ -303,6 +310,15 @@ Release-ready defaults:
 - max receive message size: `4-16 MB` by default, higher only for documented streaming/file scenarios;
 - server deadline for unary methods: `<=5s` for normal operations, separate budget for long-running jobs;
 - certificate lifetime for service identity: `<=90d` with automated rotation.
+
+### 6.6 WebSocket
+
+For browser connections using cookies, validate `Origin` against an explicit allowlist before establishing a WebSocket; ordinary CORS settings do not replace this. `Origin` does not authenticate a non-browser client, which needs a separate authentication contract. Authorize protected messages, subscriptions and objects; define a bounded revocation interval for open channels.
+
+Verification:
+- Compare a normal connection with an unrelated site's attempt to use a test user cookie. A forbidden origin must not obtain a channel with user authority.
+- After logout, session expiry and role revocation, test the existing channel without reconnecting. Both protected actions and delivery of fresh subscription events must stop within the defined interval. Observe operation and control-event outcomes, rather than only the channel close code.
+
 
 ---
 
@@ -375,7 +391,7 @@ Recommendations:
 Verification:
 - TLS scan;
 - no plaintext endpoints in inventory;
-- egress deny tests for metadata IPs, localhost, private ranges and forbidden domains.
+- egress deny tests for unapproved metadata IPs, localhost, private ranges and forbidden domains under the approved integration policy.
 
 ### 7.6 Logging, Audit and Detection
 

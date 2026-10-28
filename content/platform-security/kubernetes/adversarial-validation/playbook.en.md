@@ -71,8 +71,10 @@ curl -I https://<app>/.git/config
 docker history --no-trunc <image>
 # Staging/approved only: may export sensitive layers for offline scanning.
 docker save <image> -o image.tar
-trufflehog git file://<repo>
+trufflehog git file://<repo> --no-verification
 ```
+
+Scan only an authorized repository and protect the output, which may contain raw secret values. This example disables live credential verification; enabling verification through provider APIs requires separate authorization.
 
 ### 3.2 Runtime socket and host access
 
@@ -109,8 +111,10 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 **Evidence:**
 Classification: `safe in live` for policy deny logs and non-sensitive canaries; `staging only` for active service reachability probes; `requires approval` before probing live metadata endpoints.
 
+Before running the examples below, replace `<approved-curl-image>` and `<digest>` with an approved image that includes a shell and its digest.
+
 ```bash
-kubectl run -n <ns> --rm -it netcheck --image=curlimages/curl -- sh
+kubectl run -n <ns> --rm -it netcheck --image=<approved-curl-image>@sha256:<digest> --command -- sh
 curl -m 2 http://<sensitive-service>.<namespace>.svc.cluster.local
 # Safe metadata validation: prefer deny logs or a non-sensitive canary.
 curl -m 2 -I http://169.254.169.254/
@@ -157,7 +161,7 @@ nmap -Pn -p 30000-32767 <node-external-ip>
 **Evidence:**
 ```bash
 kubectl get networkpolicy -A
-kubectl run -n <low-trust-ns> --rm -it netcheck --image=curlimages/curl -- sh
+kubectl run -n <low-trust-ns> --rm -it netcheck --image=<approved-curl-image>@sha256:<digest> --command -- sh
 curl -m 2 http://<target-service>.<target-ns>.svc.cluster.local
 ```
 

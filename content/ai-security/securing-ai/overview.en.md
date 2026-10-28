@@ -115,7 +115,7 @@ OWASP coverage identifiers below use the 2026 edition. The [LLM risk overview](.
 
 **Practical controls:**
 - `Baseline`: trusted registry + provenance checks (hash/signature/publisher)
-- `Baseline`: treat model loading as potential code execution. Do not deserialize untrusted artifacts on production servers; prefer a non-executable weight format where supported, and review the loader, custom components, and dependencies separately. Convert and evaluate third-party models in an isolated environment without production credentials and with restricted egress. A signature establishes provenance, not safe artifact behavior.
+- `Baseline`: treat model loading as potential code execution. Do not deserialize untrusted artifacts on production servers; prefer a non-executable weight format where supported, and review the loader, custom components, and dependencies separately. Convert and evaluate third-party models in an isolated environment without production credentials and with restricted egress. A verified signature establishes integrity and the signer under the approved trust policy, not safe artifact behavior.
 - `Baseline`: inventory AI assets beyond deployed services: model endpoints, prompt/config stores, vector stores, memory stores, evaluation harnesses, tool adapters, MCP servers, provider consoles, and local AI runtimes
 - `High-impact/regulated`: SBOM/AI-BOM for model artifacts and runtime
 - `Baseline`: CVE scanning + gating for critical vulnerabilities
@@ -306,7 +306,7 @@ The 30-day forensic retention ceiling is a local data-minimization assumption, n
 - `Baseline`: AI risk register with owner and remediation due dates
 - `Baseline`: release gate for security/privacy/compliance criteria
 - `High-impact/regulated`: model cards + system cards for high-risk use cases
-- `High-impact/regulated`: third-party risk assessment for AI vendors
+- `Baseline`: third-party risk assessment for AI vendors
 - `Recommended maturity`: quarterly control effectiveness review
 
 **Verification signals:**

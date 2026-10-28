@@ -64,7 +64,7 @@ Secret values must be stored in `Secret`, not in `ConfigMap`, annotations, label
 
 **Production defaults:**
 - forbid plaintext/base64 Secret manifests in Git, Helm values, and CI artifacts;
-- allow encrypted-at-source approaches (`sops`, sealed/encrypted manifests, provider-specific encryption) only with controlled keys, review, and no local decryption outside the trusted CI/CD path;
+- allow encrypted-at-source approaches (`sops`, sealed/encrypted manifests, provider-specific encryption) only with controlled keys, review, and decryption only within explicitly authorized CI/CD, GitOps-controller, or recovery boundaries, without plaintext exposure in logs or artifacts;
 - do not use `ConfigMap` for passwords, tokens, private keys, OAuth client secrets, webhook secrets, or database credentials; public certificates and CA trust bundles are not secrets merely because they are certificates, but their integrity and change authority still need protection;
 - if an existing `ConfigMap` contains a sensitive value, treat the value as compromised and rotate it after migration.
 
@@ -112,7 +112,7 @@ Encryption at rest reduces the risk of reading etcd storage, disks, and backups,
 - restrict access to etcd endpoints, snapshots, backup storage, and control-plane node filesystem;
 - regularly test restore/rotation for encryption configuration and KMS keys;
 - set `immutable: true` for static Secrets that should change only through versioned rollout; do not use it for Secrets that are rotated in place or updated by a controller;
-- forbid arbitrary `hostPath`, privileged workloads, and debug containers in namespaces running workloads with high-value Secrets.
+- forbid arbitrary `hostPath` and privileged workloads in namespaces running workloads with high-value Secrets; permit debug access only through approved, time-bounded support or break-glass paths with audit logging.
 
 ### 3.5 Secret in transit and control-plane access
 
@@ -184,7 +184,7 @@ Policy/admission must reject:
 - workload without `automountServiceAccountToken: false` when Kubernetes API access is not required;
 - workload in a protected namespace that references an unapproved `imagePullSecret` or inherits broad registry credentials from the ServiceAccount;
 - manually created `kubernetes.io/service-account-token` Secret without an approved legacy or break-glass exception;
-- arbitrary `hostPath`, `privileged: true`, `pods/exec`, and ephemeral debug in protected namespaces.
+- arbitrary `hostPath`, `privileged: true`, unapproved `pods/exec`, and unapproved ephemeral debug in protected namespaces.
 
 ### 4.3 Audit and detection
 

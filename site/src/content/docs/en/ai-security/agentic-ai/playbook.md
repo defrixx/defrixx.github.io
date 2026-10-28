@@ -175,6 +175,17 @@ Record the backend and version, policy version or digest, execution mode, and ma
 
 Verification: from inside the environment, attempt to read a synthetic secret outside allowed paths, write outside the workspace through a symlink, open a direct connection bypassing the proxy, and reach a denied host-local service. Start a descendant process and cancel the task. Verify launch refusal when the backend is unavailable or a required restriction is unsupported. Pair each denial with an allowed control reaching the same operation: startup failure does not prove enforcement. Repeat checks after OS, runtime, or policy updates; virtual actions in model tests do not establish OS isolation.
 
+#### Sessions, restoration and environment reuse
+
+Where the system exposes an API for sessions or execution environments:
+- Authorize management operations separately from tool calls and code isolation. Check access to the session, its metadata, snapshots and artifacts, including listing, attachment, execution, restoration and deletion. Revocation must also apply to continuing protected access through an open channel.
+- Apply current access policy before resume, restore or fork. A snapshot must not restore revoked authority, obsolete credentials or a consumed approval. Section 3.2 continues to govern approval expiry and reconciliation of uncertain external effects.
+- Suspension is neither data deletion nor access revocation. Apply section 3.3 to retained snapshots and artifacts; reassigning an environment to another user or tenant must not disclose its previous state.
+- User-selected templates, identities or attached resources must not weaken the approved profile. Required restrictions must be effective before untrusted code executes, including on resume and newly provisioned capacity. Infrastructure readiness alone does not establish this.
+- Resume and child sessions do not reset the shared budgets from section 3.2. Where data survives stopped compute, account for it under the relevant storage limits.
+
+Verification: request another user's metadata and artifacts, revoke access on an open channel and restore a snapshot after rights change. For reused environments, test that another tenant cannot access harmless markers of previous state. Simulate unavailable mandatory protection when provisioning new capacity; verify execution denial alongside an authorized control case.
+
 ### 3.5 Action Trace, Monitoring, and Incident Response
 
 `Baseline`:
@@ -221,7 +232,7 @@ Negative tests:
 - write action cannot execute without preview and confirmation;
 - serialized checkpoint contains no active tokens or secrets;
 - browser tool cannot reach cloud metadata, internal admin services, or unapproved external domains;
-- code execution cannot access host filesystem, production credentials, or unrestricted network egress;
+- code execution cannot access host filesystem outside explicitly approved paths and mounts, production credentials, or unrestricted network egress;
 - multi-agent delegation preserves the original authorization context.
 
 Operational signals:

@@ -221,7 +221,7 @@ def generated_content(source: Path) -> str:
 # Short navigation labels; new documents fall back to their translated H1.
 SITE_MAP_LABELS = {
  'supply-chain/ci-cd-security/playbook': ('Безопасность CI/CD', 'CI/CD security'),
- 'platform-security/cloud-iam-workload-identity/playbook': ('Cloud IAM и доступ рабочих нагрузок', 'Cloud IAM and workload access'),
+ 'platform-security/cloud-iam-workload-identity/playbook': ('Cloud IAM и доступ Workload', 'Cloud IAM and workload access'),
  'reference/security-policy-examples/overview': ('Примеры политик безопасности', 'Security policy examples'),
  'review/overview': ('Обзор', 'Overview'),
  'review/architecture/checklist': ('Архитектурное ревью', 'Architecture review'),
@@ -371,7 +371,7 @@ def site_map_content(lang: str) -> str:
                 if label is None:
                     label, _ = extract_title_and_body(path, path.read_text(encoding="utf-8"))
                 kind = (("Плейбук", "Playbook") if path.name.startswith("playbook.") else
-                        ("Чеклист", "Checklist") if path.name.startswith("checklist.") else
+                        ("Чек-лист", "Checklist") if path.name.startswith("checklist.") else
                         ("Справочник", "Reference") if key.startswith("reference/") else ("Руководство", "Guide"))[ix]
                 route = escape(source_route(path), quote=True)
                 lines.append(f'<li><a class="library-resource" href="{route}"><span class="library-resource-title">{escape(label)}</span><span class="library-resource-kind">{kind}</span></a></li>')
@@ -553,7 +553,7 @@ def hub_scenarios_content(lang: str) -> str:
                   '<div><dt>' + ("Результат" if ru else "Result") + f'</dt><dd>{escape(entry["result"][lang])}</dd></div></dl>',
                   f'<a class="landing-cta scenario-action" href="{escape(route, quote=True)}">' + ("Открыть маршрут" if ru else "Open route") + ' <span aria-hidden="true">↗</span></a></article>']
     lines.append(f'</div><button type="button" class="route-arrow route-next" data-route-action="next" aria-label="{following}" hidden><span aria-hidden="true">→</span></button></div><div class="route-controls" hidden>')
-    for action, label in [('play', 'Отключить автосмену' if ru else 'Disable automatic switching')]:
+    for action, label in [('play', 'Отключить автопереключение' if ru else 'Disable automatic switching')]:
         lines.append(f'<button type="button" data-route-action="{action}">{label}</button>')
     lines.append('</div></div>')
     return "\n".join(lines)

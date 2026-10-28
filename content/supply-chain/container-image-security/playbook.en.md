@@ -51,7 +51,7 @@ Rule for live environments:
 Mandatory controls:
 - Use a minimal, supported base image. Prefer distroless, slim, or purpose-built runtime images when operationally practical.
 - Pin the base image by digest for live-environment builds or record the exact base digest in provenance/SBOM evidence.
-- Use multi-stage builds to keep compilers, package managers, test tools, and build caches out of the runtime image.
+- Use multi-stage builds when needed to separate build tools and caches from the runtime image. Otherwise, a minimal runtime image without unnecessary compilers, package managers, or test tools is sufficient.
 - Run as a non-root user by default. The image user must be compatible with the Kubernetes `securityContext`.
 - Do not require privileged mode, host namespaces, broad Linux capabilities, writable host paths, or Docker socket access.
 - Keep secrets out of `ARG`, `ENV`, copied files, package manager config, build cache, image labels, and layer history.
@@ -78,10 +78,11 @@ Release-ready defaults:
 - The image should not need root. If root is required, document the system call, filesystem, port, or ownership reason and prefer a narrower fix.
 - The Kubernetes `securityContext` must enforce the intended image assumptions: `runAsNonRoot`, `allowPrivilegeEscalation: false`, dropped capabilities, seccomp profile, and read-only root filesystem where practical.
 - Runtime-writable paths should be explicit: mounted volume, `emptyDir`, or application data directory. Do not depend on writing across the whole image filesystem.
-- Health checks and startup probes must not require privileged tools, shell access, or secrets printed to output.
+- Use HTTP/TCP/gRPC health and startup probes where suitable. An `exec` probe may directly invoke a reviewed binary with fixed arguments, without `sh`/`bash -c`; assess the binary's behavior itself. Keep the check lightweight and time-bounded, without data mutation, additional privileges, or secret output. Do not add a shell to the image solely for a probe.
 
 Verification:
 - Run the workload with the intended Pod Security profile before release.
+- For probes, check the actual command or endpoint, timeout, resource cost, and absence of data mutation or secret disclosure; for `exec`, confirm that no shell is invoked.
 - Confirm the container fails safely if filesystem writes, root execution, or extra capabilities are denied.
 
 ---
@@ -114,7 +115,7 @@ Verification:
 
 Release-ready defaults:
 - Deploy to live environments by digest: `registry.example.com/team/app@sha256:...`.
-- Use immutable release tags only as convenience references. Tag overwrite for release channels must be blocked or treated as a release incident.
+- Use immutable version tags only as convenience references and block their overwrite. If movable channel aliases are used, update them only through the authorized release process; approval and deployment remain bound to the digest.
 - Preserve the approved digest in manifests, Helm values, Kustomize overlays, GitOps state, and deployment evidence.
 - Resolve tag-to-digest before approval, not during live deployment.
 - For multi-arch images, verify the index and the platform-specific manifests allowed for the target cluster.
@@ -146,7 +147,7 @@ Registry access controls:
 
 Verification:
 - A rollback drill can pull the approved digest and its linked SBOM/provenance/signature after retention policy runs.
-- A tag overwrite attempt is blocked or produces an alert.
+- Version-tag overwrite is blocked; unauthorized channel-alias movement is blocked or produces an alert.
 
 ---
 

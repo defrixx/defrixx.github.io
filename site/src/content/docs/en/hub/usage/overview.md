@@ -12,7 +12,7 @@ Read the playbooks, choose a task and download templates. Run skills and tools i
 
 ## Workflow
 
-Record scope and revision, select applicable requirements, run authorized checks locally and retain results. Start with the [synthetic example](/en/hub/reviews/delivery-api/overview/), then replace teaching assumptions with your contract. The [catalogue](/en/hub/catalogue/overview/) helps select an independent skill or tool. Publishing reports, changing code and external actions need an appropriate task; reading a playbook starts none of these actions.
+Record scope and revision, select applicable requirements, run authorized checks locally and retain results. Use the synthetic example for your [chosen scenario](/en/hub/tasks/overview/), then replace its teaching assumptions with your project's contract. The [catalogue](/en/hub/catalogue/overview/) helps select an independent skill or tool. Publishing reports, changing code and external actions need an appropriate task; reading a playbook starts none of these actions.
 
 ## Attribution and licenses
 

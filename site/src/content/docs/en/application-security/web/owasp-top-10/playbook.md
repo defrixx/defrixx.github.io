@@ -245,8 +245,8 @@ Required evidence:
 - CI/CD permissions review for runners, workflow files, release tokens, and artifact registry access.
 
 Negative tests:
-- Deploy by mutable tag or unsupported base image is rejected in live environments.
-- Unsigned artifact, wrong builder identity, wrong repository, or wrong workflow identity fails the gate.
+- Deploy by mutable tag is rejected in live environments; an unsupported base image is rejected unless a valid, explicitly approved exception covers the deployment.
+- An artifact without the signature or verified provenance required by the approved policy, or with a wrong builder, repository, or workflow identity, fails the gate.
 - Build from fork/untrusted branch cannot access live-environment signing or deploy credentials.
 - Dependency from an unapproved source or private-name public package is blocked.
 
@@ -374,7 +374,7 @@ Impact:
 - For SSTI, pass user input only as data to a trusted template; do not compile or interpret it as template source. User-authored templates require separate isolation and engine capability review; string sanitization and logic-less templates alone do not establish safety
 - For SSRF: allowlist trusted addresses, validate parameters, account for DNS rebinding behavior
 - For XSS, use output-context encoding and a reviewed HTML sanitizer when markup is allowed. `htmlspecialchars` does not protect arbitrary JavaScript, CSS, or server-side PHP execution. Untrusted data must not reach `eval`, dynamic `include`, or other code-execution mechanisms
-- Make `SAST`/`DAST`/fuzzing mandatory in CI
+- Run required SAST, DAST, and fuzzing checks in CI for applicable languages, sinks, and interfaces; record coverage gaps under the code-review playbook
 - Verification:
   - payload regression suite
   - blind/time-based scenario coverage
@@ -764,7 +764,7 @@ Priority:
 
 Release-ready defaults:
 - User-controlled fetch destinations are either not supported or constrained to approved schemes, hosts, ports, content types, and response sizes.
-- Every destination, including the initial request and each redirect, is validated before connection; DNS validation must cover the address actually used to connect. Private, loopback, link-local, multicast, metadata, and internal control-plane destinations are blocked by application policy and network egress control.
+- Every destination, including the initial request and each redirect, is validated before connection; DNS validation must cover the address actually used to connect. Private, loopback, link-local, multicast, metadata, and internal control-plane destinations not explicitly approved under the integration policy are blocked by application policy and network egress control.
 - Fetching runs under a dedicated identity with no broad cloud metadata, service-mesh admin, Kubernetes API, Vault, CI/CD, or internal admin access.
 - Parser/converter features that can fetch remote content are disabled or routed through the same controlled fetcher.
 - SSRF attempts produce security events with source actor, feature, requested URL class, resolved destination class, decision, and correlation ID.
@@ -776,7 +776,7 @@ Required evidence:
 - Alert/audit samples for denied and allowed fetches.
 
 Negative tests:
-- `http://127.0.0.1`, `localhost`, RFC1918, link-local, IPv6 loopback, multicast, and cloud metadata endpoints are denied.
+- Destinations outside the approved integration policy are denied, including `http://127.0.0.1`, `localhost`, RFC1918, link-local, IPv6 loopback, multicast, and cloud metadata endpoints.
 - Redirects to denied destinations are blocked even when the first URL is public and allowlisted.
 - DNS rebinding from public to private address is denied after re-resolution.
 - Parser-embedded remote references cannot reach internal networks.

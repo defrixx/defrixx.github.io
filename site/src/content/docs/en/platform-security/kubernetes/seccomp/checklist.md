@@ -191,7 +191,7 @@ Treat `io_uring` as a syscall-multiplexing risk. Check the anti-pattern:
 - classic network/file syscalls blocked;
 - `io_uring_setup` + `io_uring_enter` allowed.
 
-Always document:
+If `io_uring` is allowed, document:
 - business need for `io_uring`;
 - fallback without `io_uring`;
 - accepted residual risk.

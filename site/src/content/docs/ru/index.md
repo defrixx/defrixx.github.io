@@ -24,13 +24,13 @@ sidebar:
 <span class="route-counter" role="img" aria-live="off" aria-label="Сценарий 1 из 7">1 / 7</span>
 <article class="route-panel" id="route-panel-0" data-title="Внешняя API-интеграция">
 <h3>Внешняя API-интеграция</h3><dl class="scenario-facts">
-<div><dt>Когда применять</dt><dd>Подключаете API партнера через OAuth и принимаете webhook в сервисе с несколькими tenant.</dd></div>
+<div><dt>Когда применять</dt><dd>Подключаете API партнера через OAuth и принимаете webhook в мультитенантном сервисе.</dd></div>
 <div><dt>Результат</dt><dd>Схема доверия, требования с ID, матрица проверок, пример ревью и шаблоны для своей работы.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/api-integration/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 <article class="route-panel" id="route-panel-1" data-title="CI/CD: безопасный выпуск релиза">
 <h3>CI/CD: безопасный выпуск релиза</h3><dl class="scenario-facts">
 <div><dt>Когда применять</dt><dd>Определяете условия допуска артефакта через сборку, проверку и развертывание в выбранной среде.</dd></div>
-<div><dt>Результат</dt><dd>Требования к выпуску, матрица проверок, синтетический пример решения и шаблон доказательств.</dd></div></dl>
+<div><dt>Результат</dt><dd>Требования к выпуску, матрица проверок, синтетический пример решения и шаблон решения о выпуске.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/ci-cd-release/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 <article class="route-panel" id="route-panel-2" data-title="ИИ-помощник: внешняя LLM и внутренние знания">
 <h3>ИИ-помощник: внешняя LLM и внутренние знания</h3><dl class="scenario-facts">
@@ -50,7 +50,7 @@ sidebar:
 <article class="route-panel" id="route-panel-5" data-title="Срочная уязвимость в работающем продукте">
 <h3>Срочная уязвимость в работающем продукте</h3><dl class="scenario-facts">
 <div><dt>Когда применять</dt><dd>Получили бюллетень или отчет сканера и определяете затронутые артефакты, работающие экземпляры и порядок устранения.</dd></div>
-<div><dt>Результат</dt><dd>Цепочка применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.</dd></div></dl>
+<div><dt>Результат</dt><dd>Цепочка проверки применимости, временные меры, исправление, подтверждение развертывания, повторная проверка и безопасный откат.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/vulnerability-response/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 <article class="route-panel" id="route-panel-6" data-title="Утечка секрета сервиса">
 <h3>Утечка секрета сервиса</h3><dl class="scenario-facts">
@@ -58,7 +58,7 @@ sidebar:
 <div><dt>Результат</dt><dd>Область компрометации, план замены, проверки старых учетных данных и сессий, учет копий и подтверждения закрытия.</dd></div></dl>
 <a class="landing-cta scenario-action" href="/ru/hub/secret-exposure-response/overview/">Открыть маршрут <span aria-hidden="true">↗</span></a></article>
 </div><button type="button" class="route-arrow route-next" data-route-action="next" aria-label="Следующий маршрут" hidden><span aria-hidden="true">→</span></button></div><div class="route-controls" hidden>
-<button type="button" data-route-action="play">Отключить автосмену</button>
+<button type="button" data-route-action="play">Отключить автопереключение</button>
 </div></div>
 
 </section>

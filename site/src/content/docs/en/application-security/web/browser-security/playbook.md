@@ -156,7 +156,7 @@ Release-ready defaults:
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), clipboard-read=(), display-capture=(), fullscreen=(self)
 ```
 
-- Permissions-Policy support differs by browser and directive; unsupported directives are ignored. Record the supported browser/version matrix and test actual API denial, not only header presence. Where a required restriction is unavailable, disable the feature or block the unsupported client under a documented policy; the header cannot remove the privileges of a script already executing in the page.
+- Permissions-Policy support differs by browser and directive; unsupported directives are ignored. Record the supported browser/version matrix and test actual API denial, not only header presence. Where a required restriction is unavailable, disable the feature or block the unsupported client under a documented policy; the header restricts supported browser features but does not isolate an executing script from the page's DOM and data.
 - Feature exceptions require an owner, affected routes, allowed origins, business purpose, expiry or review date, and a negative test showing that unauthorized origins cannot use the feature. For example, checkout may allow `payment=(self)` only on payment routes; a video-verification flow may allow `camera=(self)` only for the verification origin and only while that feature exists.
 - Do not grant browser capabilities through iframe `allow` attributes unless the parent page's `Permissions-Policy` also permits that feature for the embedded origin.
 

@@ -58,7 +58,7 @@ Validate controls through threat scenarios and abuse cases from section 2: which
 
 | What to verify | Evidence |
 |---|---|
-| Mechanisms: OAuth 2.0, OpenID Connect, API keys, mTLS | IdP/provider configuration |
+| Example mechanisms appropriate to the caller: OpenID Connect for user authentication, API keys or mTLS for clients and services | IdP/provider configuration |
 | Centralized authentication; no custom cryptography; token validation (`issuer`, `audience`, `expiration`) | Token validator examples; failure tests for invalid tokens |
 
 ### 3.2 Authorization
@@ -188,7 +188,7 @@ Use the lite path from the [Threat Modeling Playbook](/en/review/threat-modeling
 
 Use Lite Path only if all are true:
 - no new external integrations;
-- no authentication/authorization/session changes;
+- no authentication/authorization/session/cryptography changes;
 - no new sensitive data processing;
 - no new internet-facing entry points;
 - no privilege expansion or trust-boundary change.

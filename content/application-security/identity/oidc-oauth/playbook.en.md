@@ -10,7 +10,7 @@ This playbook describes secure OIDC (authentication) and OAuth 2.0 (authorizatio
 
 - **OIDC** handles user login and identity context via `id_token`
 - **OAuth 2.0** handles delegated API access via `access_token`/`refresh_token`
-- In Authorization Code flow, both are used together in one end-to-end sequence
+- For OIDC authentication using Authorization Code with the `openid` scope, both protocols form one end-to-end sequence
 
 ### 2.1 Sequence (Authorization Code + PKCE, SPA + BFF pattern)
 

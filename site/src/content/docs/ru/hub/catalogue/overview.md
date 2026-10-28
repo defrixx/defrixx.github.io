@@ -52,7 +52,7 @@ sidebar:
 <p class="catalogue-result">Учтенные сигналы и очередь действий</p>
 <details class="catalogue-details"><summary>Входные данные, запуск и версия</summary><dl>
 <dt>Входные данные</dt><dd>Происхождение отчета, ревизия цели и область</dd>
-<dt>Локальное выполнение</dt><dd>Ассистент; ограниченный SARIF скрипт Python 3.9+, POSIX</dd>
+<dt>Локальное выполнение</dt><dd>Ассистент; нормализатор подмножества SARIF, Python 3.9+, POSIX</dd>
 <dt>Ограничения</dt><dd>Нормализация учитывает сигналы; для вывода нужен контекст</dd>
 <dt>Версия / источник</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/security-report-triage">Руководство этой ревизии</a></dd>
 <dt>Лицензия</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>

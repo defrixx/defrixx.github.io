@@ -61,7 +61,7 @@ Review intervals and operational response targets below assume production worklo
 - live deployments are performed only by dedicated CI/CD ServiceAccounts;
 - human users do not deploy directly except break-glass roles with owner + expiry;
 - review all ClusterRole/ClusterRoleBinding objects every `30d`;
-- enforce automatic policy fail for high-risk RBAC verbs outside an approved allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
+- enforce automatic policy fail for high-risk RBAC permissions outside an approved allowlist (`escalate`, `bind`, `impersonate`, `serviceaccounts/token`, `nodes/proxy`);
 - for Kubernetes `v1.36+`: `KubeletFineGrainedAuthz` is GA and the feature gate is locked/enabled, so observability workloads should use minimal subresources (`nodes/metrics`, `nodes/stats`, `nodes/pods`, and other required endpoints) instead of broad `nodes/proxy`;
 - deny new RBAC bindings to `nodes/proxy` for observability workloads when their kubelet scraping/logging use case is covered by fine-grained permissions.
 - primary evidence for reducing `nodes/proxy`: `kubectl auth can-i get nodes --subresource=<metrics|stats|pods> --as=<subject>` and equivalent checks for the actual kubelet endpoints required;
@@ -248,7 +248,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - limit Secret ACL to minimum required workload identities;
 - use short-lived tokens and regular secret rotation;
 - scope registry pull credentials to the minimum repository and pull-only permission set; prefer provider-supported credential providers over long-lived `imagePullSecrets` where available;
-- if an encrypted-at-source push model is used for operational reasons (for example `sops`/`helm-secrets`), require controlled keys, review, and no decryption outside trusted CI/CD boundaries;
+- if an encrypted-at-source push model is used for operational reasons (for example `sops`/`helm-secrets`), require controlled keys, review, and decryption only within explicitly authorized CI/CD, GitOps-controller, or recovery boundaries, without plaintext exposure in logs or artifacts;
 - periodically verify logging does not expose secret values.
 
 ---
@@ -289,7 +289,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 The minimum gatekeeping baseline should include:
 - deny direct human deploy into protected namespaces;
 - deny tag-only images in live environments and require an immutable digest reference (`@sha256:...`); `tag@sha256` may be allowed for readability, but the digest must be the value used for deployment;
-- block high-risk RBAC verbs outside explicit allowlist;
+- block high-risk RBAC permissions outside explicit allowlist;
 - require protected namespaces to have ingress and egress default-deny NetworkPolicy, or a documented CNI-equivalent policy with tested enforcement;
 - block new Service objects with `spec.externalIPs`; existing use is allowed only as a migration exception with `owner`, `expiry`, verified external IP ownership, and a transition plan to `LoadBalancer`, Gateway API/Ingress, or controlled `NodePort`;
 - maintain ingress controller and Gateway API implementation inventory; any remaining community `ingress-nginx` deployment requires an approved exception with owner/expiry and a migration deadline; block new deployments on it. For Gateway API, enforce policy gates for `allowedRoutes`, cross-namespace `ReferenceGrant`, TLS secret ownership, and route attachment to shared Gateways;

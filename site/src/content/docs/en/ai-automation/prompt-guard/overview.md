@@ -71,7 +71,7 @@ Schema v2 adds `normalized` detection views and `assembled` rules. Normalized vi
 ## Application integration and policy protection
 
 1. Inspect incoming data and every new retrieval/tool round with trusted provenance. Check assembled context where fragments can combine into a prohibited expression.
-2. Assemble the request from accepted payloads. Keep static instructions and tool definitions under [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) at final dispatch.
+2. Assemble the request from accepted payloads and a trusted static template. If [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) is configured, verify static instructions and tool definitions through it at final dispatch.
 3. Inspect model responses with a separate output policy before user delivery or execution of proposed tool calls.
 4. Validate arguments, resource scope and permissions for every proposed tool action before execution.
 

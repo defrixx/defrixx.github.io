@@ -30,7 +30,7 @@ Promote the same artifact without rebuilding. In the OCI model, verification, pr
 
 ## Verification policy before execution
 
-For REL-001 define the trusted repository, build-definition revision, triggers and actual CI dependency resolutions. Follow the [CI/CD playbook](../../supply-chain/ci-cd-security/playbook.en.md): a supported, onboarded lockfile or full reviewed SHAs for other cases. A lockfile in a workflow that is not onboarded does not establish dependency pinning.
+For REL-001 define the trusted repository, build-definition revision, triggers and actual CI dependency resolutions. For GitHub Actions dependencies, follow the [CI/CD playbook](../../supply-chain/ci-cd-security/playbook.en.md): a supported, onboarded lockfile or full reviewed SHAs for other cases. A lockfile in a workflow that is not onboarded does not establish dependency pinning.
 
 For REL-005 specify expected format/`predicateType`, `subject`, `builder.id`, canonical source repository/revision, `buildType` and allowed `externalParameters` using the actual builder format. This model rejects unknown external parameters pending policy review. A signed arbitrary JSON document is insufficient. Establish who produces the attestation: an untrusted job's self-report does not inherit protected-builder trust just because it is signed.
 

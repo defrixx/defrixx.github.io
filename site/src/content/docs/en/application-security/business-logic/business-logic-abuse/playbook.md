@@ -141,6 +141,10 @@ Model double spending, repeated withdrawal/transfer, duplicate redemption or pro
 
 Test actual simultaneous requests synchronized at the vulnerable boundary, not only sequential retries. Inspect committed state and downstream side effects after success, timeout, worker redelivery, and restart. Include account recovery, support overrides, administrator impersonation, and manual balance/status corrections; these paths must enforce the same invariant, scoped authorization, and audit trail as normal operations.
 
+Partial refunds:
+- Calculate the permitted amount and recipient server-side from returned items and product rules. Completed and accepted pending refunds together must not exceed the refundable amount of the confirmed payment. Account for concurrent operations atomically; confirming a pending refund must not deduct its amount again, and an unknown outcome does not release it before reconciliation.
+- Test a normal partial refund, an excessive amount, a forbidden recipient and concurrent requests against the remainder. Reconcile actual credits and the available remainder after confirmation, failure and an indeterminate result under the provider contract.
+
 ### 4.5 Abuse Monitoring and Response
 
 Release-ready defaults:

@@ -108,7 +108,7 @@
         "en": "Accounted signals and action queue"
       },
       "local": {
-        "ru": "Ассистент; ограниченный SARIF скрипт Python 3.9+, POSIX",
+        "ru": "Ассистент; нормализатор подмножества SARIF, Python 3.9+, POSIX",
         "en": "Assistant; bounded SARIF helper Python 3.9+, POSIX"
       },
       "limits": {

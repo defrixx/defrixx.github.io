@@ -50,7 +50,7 @@ IDs belong to the chosen model, not a corporate standard. Establish applicabilit
 | RAG-007 | Cache and history | Reauthorize cached/history content, isolate users and track policy revisions. | Repeat an allowed question: Cache preserves access scope | Another user or group revoked before reuse: Cache/history cannot bypass current rights |
 | RAG-008 | Revocation and deletion | Define revocation propagation, block stale context; separately track erasure of source and derived copies. | Delete document and complete agreed workflow: Index/cache/copies and deletion receipts accounted for | Revocation during request; provider deletion unconfirmed: New context blocked; incomplete erasure remains visible |
 | RAG-009 | Secrets and observability | Keep keys outside context; minimize logs and protect trace access/retention. | Diagnose a synthetic request: IDs/versions/metrics without secrets or raw text by default | Provider error or verbose tracing: No keys or restricted excerpts disclosed |
-| RAG-010 | Evaluation and shutdown | Version model/settings/policy; test benign/adversarial cases, budgets and external-transfer shutdown. | Baseline suite after a model update: Version-bound outcomes include benign usefulness | New model, budget exhaustion or emergency stop: No policy bypass/new disclosure; unexecuted cases not-run |
+| RAG-010 | Evaluation and shutdown | Version model/settings/policy; test benign/adversarial cases, budgets and external-transfer shutdown. | Baseline suite after a model update: Version-bound outcomes include benign usefulness | Unapproved model switch, budget exhaustion or emergency stop: No policy bypass/new disclosure; unexecuted cases not-run |
 
 ## Example, templates and evidence
 

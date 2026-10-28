@@ -43,27 +43,27 @@ A hosted platform may use shared or dedicated infrastructure; SLSA does not requ
 - stronger resistance to provenance forgery by tenant process
 - build isolation, ephemeral environment, and protected signing secrets
 - `externalParameters` must be complete (no hidden channel for external influence on the build)
-- target level for internet-facing, high-value, partner-facing, and package/image-distribution release paths
+- a higher assurance level selected separately by risk and established only by meeting all Build L3 requirements
 
 ---
 
 ### 2.4 Risk-tier target matrix
 
-SLSA Build level selection is a risk decision, not a universal one-size-fits-all rule. Build provenance also does not replace Source-track governance; source review, branch protection, release authorization, and build-definition change control remain separate requirements.
+This project sets SLSA Build L2 as the minimum for live supply chains. The stronger controls below are additional project requirements and do not by themselves establish Build L3; a higher level requires separate assessment of all SLSA requirements. Build provenance also does not replace Source-track governance; source review, branch protection, release authorization, and build-definition change control remain separate requirements.
 
 | Release class | Minimum acceptable target | Additional requirement |
 |---|---|---|
-| Internal low-risk service with bounded blast radius | Build L2 may be acceptable with documented exception and deploy-time verification | Keep Source-track/SDLC controls explicit; do not claim L2/L3 proves source safety |
-| Internet-facing, high-value, partner-facing, or live platform component | Build L3 target | Require protected source refs, reviewed build definitions, trusted builder identity, and pre-deploy policy enforcement |
-| Widely consumed package/image, shared base image, signing tooling, deploy tooling, or regulated critical artifact | Build L3 plus stronger Source-track controls | Add stricter source governance, release authorization, key custody, reproducible or independent rebuild where practical, and faster incident revocation |
+| Internal low-risk service with bounded blast radius | Build L2 and deploy-time verification | Keep Source-track/SDLC controls explicit; do not claim L2/L3 proves source safety |
+| Internet-facing, high-value, partner-facing, or live platform component | Build L2 plus project controls | Require protected source refs, reviewed build definitions, trusted builder identity, and pre-deploy policy enforcement |
+| Widely consumed package/image, shared base image, signing tooling, deploy tooling, or regulated critical artifact | Build L2 plus stronger project and Source-track controls | Add stricter source governance, release authorization, key custody, reproducible or independent rebuild where practical, and faster incident revocation |
 
-Use the lower tier only when the service owner records blast-radius assumptions, exception expiry, and compensating controls. If weak source governance is the real risk, record it as a Source-track or SDLC finding even when Build provenance passes.
+An exception to an applicable minimum or additional project requirement needs the service owner's recorded blast-radius assumptions, expiry and compensating controls. If weak source governance is the real risk, record it as a Source-track or SDLC finding even when Build provenance passes.
 
 ## 3. Pipeline requirements (producer + build platform)
 
 ### 3.1 Source and invocation controls
 
-These controls are Build-track expectations about what the builder is allowed to consume. They do not replace Source-track governance.
+These project controls constrain source and invocation inputs beyond Build L2 guarantees. Verify them separately from SLSA level conformance; they do not replace Source-track governance.
 
 - canonical repo/revision only for release branches
 - explicit policy for allowed trigger types (tag, protected branch)
@@ -71,6 +71,8 @@ These controls are Build-track expectations about what the builder is allowed to
 - verify that provenance source fields match the expected repository, immutable revision, branch/tag policy, and build trigger
 
 ### 3.2 Build environment controls
+
+Hosted builds and platform-controlled generation of signed provenance belong to the Build L2 minimum. The isolation, ephemeral-environment and cache controls below remain mandatory under project policy beyond that minimum; their presence alone does not establish Build L3.
 
 - release builds on a hosted build platform with a documented trust boundary; internally operated infrastructure is acceptable when the platform meets the target level, while an individual's workstation does not meet the hosted requirement
 - one-build-one-ephemeral-environment
@@ -276,8 +278,10 @@ SLSA-required and expectation checks:
 Organization deployment policy checks:
 
 1. If `predicate.runDetails.metadata.startedOn` and `finishedOn` are present, verify `startedOn <= finishedOn`; if they are absent, require builder-specific evidence or a documented policy exception instead of treating absence as SLSA failure
-2. Enforce provenance freshness through local `max_provenance_age` per environment (for example, prod `24h`, staging `7d`), except for approved delayed deploy/promote cases
-3. For delayed deploy/promote, an unchanged artifact and provenance/attestation digest plus a prior gate-pass can support reuse of historical build evidence, but do not authorize deployment by themselves. Re-evaluate current trust policy, builder/key compromise notices, vulnerability and secret findings, exception expiry, target environment, and deployment configuration. Preserve the original provenance; do not re-sign it merely to reset its age. A rollback needs the same current authorization or an explicit emergency exception.
+2. Define separate vulnerability and current-policy reassessment schedules per environment: owner, assessment time, policy and data-source versions, result validity interval, and triggers for early rechecks. These intervals govern assessment results, not the age of provenance for an unchanged artifact. New compromise or trust-revocation information requires reassessment regardless of the scheduled interval.
+3. Provenance age alone does not invalidate it. For delayed deploy/promote, an unchanged artifact and provenance/attestation digest plus a prior gate-pass can support reuse of historical build evidence, but do not authorize deployment by themselves. Re-evaluate current trust policy, builder/key compromise notices, vulnerability and secret findings, exception expiry, target environment, and deployment configuration. Preserve the original provenance; do not re-sign it merely to reset its age. A rollback needs the same current authorization or an explicit emergency exception.
+
+Verification: for an unchanged digest with historical provenance, verify its signature, artifact binding and trusted builder; separately check the currency of vulnerability and policy assessments. An outdated assessment requires reassessment, not a new signature on old provenance. A substituted digest, invalid signature or revoked builder trust must block admission regardless of artifact age.
 
 ### 8.2 Decision policy
 
@@ -304,7 +308,7 @@ If the reference model cannot be reached in one step, adopt in phases:
 - enforce provenance signature + `builder.id` + issuer/identity allowlist checks
 - block deployment unless mandatory gate fully passes
 
-3. Phase C (L3):
+3. Phase C (additional project controls before live use):
 - enforce one-build-one-ephemeral-environment
 - remove tenant-step direct access to signer/secrets
 - enforce schema-versioned `externalParameters` policy and anti-replay rules per environment

@@ -8,7 +8,7 @@ description: "Выберите направление и задачу: пров�
 sidebar:
   order: 100
 ---
-Выберите направление и задачу: проверить архитектуру, разобрать доступ к API, подготовить платформу или оценить цепочку поставки. В каждом разделе собраны существующие плейбуки, чеклисты и практические справочники.
+Выберите направление и задачу: проверить архитектуру, разобрать доступ к API, подготовить платформу или оценить цепочку поставки. В каждом разделе собраны существующие плейбуки, чек-листы и практические справочники.
 
 <div class="library-toolbar"><span class="library-stats">43 материала · 7 направлений · RU / EN</span>
 <button type="button" class="library-search" data-open-library-search>Найти по слову или технологии<span aria-hidden="true">⌕</span></button></div>
@@ -31,7 +31,7 @@ sidebar:
 <div class="library-links">
 <div class="library-group">
 <h3>Материалы</h3><ul>
-<li><a class="library-resource" href="/ru/review/architecture/checklist/"><span class="library-resource-title">Архитектурное ревью</span><span class="library-resource-kind">Чеклист</span></a></li>
+<li><a class="library-resource" href="/ru/review/architecture/checklist/"><span class="library-resource-title">Архитектурное ревью</span><span class="library-resource-kind">Чек-лист</span></a></li>
 <li><a class="library-resource" href="/ru/review/threat-modeling/playbook/"><span class="library-resource-title">Моделирование угроз</span><span class="library-resource-kind">Плейбук</span></a></li>
 <li><a class="library-resource" href="/ru/review/release-governance/playbook/"><span class="library-resource-title">Управление выпуском</span><span class="library-resource-kind">Плейбук</span></a></li>
 <li><a class="library-resource" href="/ru/review/vulnerability-management/playbook/"><span class="library-resource-title">Управление уязвимостями</span><span class="library-resource-kind">Плейбук</span></a></li>
@@ -66,7 +66,7 @@ sidebar:
 <div class="library-links">
 <div class="library-group">
 <h3>Доступ к облаку</h3><ul>
-<li><a class="library-resource" href="/ru/platform-security/cloud-iam-workload-identity/playbook/"><span class="library-resource-title">Cloud IAM и доступ рабочих нагрузок</span><span class="library-resource-kind">Плейбук</span></a></li>
+<li><a class="library-resource" href="/ru/platform-security/cloud-iam-workload-identity/playbook/"><span class="library-resource-title">Cloud IAM и доступ Workload</span><span class="library-resource-kind">Плейбук</span></a></li>
 </ul></div>
 <div class="library-group">
 <h3>Kubernetes</h3><ul>
@@ -74,7 +74,7 @@ sidebar:
 <li><a class="library-resource" href="/ru/platform-security/kubernetes/adversarial-validation/playbook/"><span class="library-resource-title">Проверка защиты от атак</span><span class="library-resource-kind">Плейбук</span></a></li>
 <li><a class="library-resource" href="/ru/platform-security/kubernetes/pod-security/playbook/"><span class="library-resource-title">Безопасность Pod</span><span class="library-resource-kind">Плейбук</span></a></li>
 <li><a class="library-resource" href="/ru/platform-security/kubernetes/secrets/playbook/"><span class="library-resource-title">Секреты Kubernetes</span><span class="library-resource-kind">Плейбук</span></a></li>
-<li><a class="library-resource" href="/ru/platform-security/kubernetes/seccomp/checklist/"><span class="library-resource-title">Проверка seccomp</span><span class="library-resource-kind">Чеклист</span></a></li>
+<li><a class="library-resource" href="/ru/platform-security/kubernetes/seccomp/checklist/"><span class="library-resource-title">Проверка seccomp</span><span class="library-resource-kind">Чек-лист</span></a></li>
 <li><a class="library-resource" href="/ru/platform-security/kubernetes/container-escape-capability-abuse/overview/"><span class="library-resource-title">Выход из контейнера и capabilities</span><span class="library-resource-kind">Руководство</span></a></li>
 </ul></div>
 <div class="library-group">

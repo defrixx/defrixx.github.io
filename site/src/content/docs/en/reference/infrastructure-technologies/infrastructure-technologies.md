@@ -239,7 +239,7 @@ The artifact registry should not be the only control point. Even if the registry
 #### Common Live Patterns
 - Private registry with IAM/RBAC and separate repositories by environment or domain.
 - Deployment only by digest (`image@sha256:...`); tags are used for discovery, not as the trust anchor.
-- Tag immutability for release tags and no overwrites for live-environment tags.
+- Immutable version tags; channel aliases updated only through the authorized release process. Deployment remains bound to the digest.
 - Image signing and SBOM/provenance publication as OCI artifacts/referrers.
 - Admission/deploy gate that verifies signature, trusted builder identity, SLSA provenance, and vulnerability policy.
 - Retention policy for old images while keeping artifacts required for rollback, incident response, and audit.
@@ -597,7 +597,7 @@ Common live-environment implementations include NGINX Ingress Controller, cloud 
 #### Operating Model
 An Ingress resource describes host/path routing to a backend Service. By itself, Ingress does not work without an Ingress Controller. The controller watches the Kubernetes API, selects Ingress objects by `ingressClassName`, generates proxy/load balancer configuration, and exposes an external endpoint through a `LoadBalancer` Service, NodePort, cloud load balancer, or edge appliance.
 
-Gateway API separates roles more explicitly. `GatewayClass` describes the controller type. `Gateway` describes listeners, addresses, ports, TLS, and rules for which Routes may attach to it. `HTTPRoute`, `GRPCRoute`, `TCPRoute`, `TLSRoute`, and other route resources describe application-level routing. `allowedRoutes` and the cross-namespace attachment model form a trust boundary between the platform team that owns the Gateway and application teams that own Routes. Do not confuse Kubernetes Gateway API `Gateway` with Istio `networking.istio.io/Gateway`: the names are similar, but ownership, deployment model, and route resources differ.
+Gateway API separates roles more explicitly. `GatewayClass` describes the controller type. `Gateway` describes listeners, addresses, ports, TLS, and rules for which Routes may attach to it. `HTTPRoute`, `GRPCRoute`, `TCPRoute`, `TLSRoute`, and other route resources define routing for their respective protocols. `allowedRoutes` and the cross-namespace attachment model form a trust boundary between the platform team that owns the Gateway and application teams that own Routes. Do not confuse Kubernetes Gateway API `Gateway` with Istio `networking.istio.io/Gateway`: the names are similar, but ownership, deployment model, and route resources differ.
 
 An API Gateway adds API-management functions: plugins/policies for auth, JWT/OIDC validation, API keys, rate limiting, request/response transformation, WAF, bot protection, schema validation, developer portals, or analytics. In Kubernetes this can be the same controller that reads Ingress/Gateway API resources and generates gateway data plane configuration.
 
@@ -1418,7 +1418,7 @@ A broker accepts messages, stores queues, and delivers messages to consumers. A 
 
 Routing depends on the exchange type and bindings. A direct exchange matches routing keys exactly, a topic exchange matches key patterns, a fanout exchange routes to all bound queues regardless of the key, and a headers exchange uses message headers. With manual acknowledgements, the consumer acknowledges after the required processing outcome; outstanding deliveries remain unacknowledged until acknowledged, negatively acknowledged, or the channel closes. Automatic acknowledgement treats delivery as complete when sent and can lose work if the consumer fails.
 
-Account for the delivery acknowledgement timeout: when it expires, the broker closes the channel with `PRECONDITION_FAILED` and requeues outstanding deliveries on that channel. Starting with RabbitMQ `4.3`, this mechanism is supported only for quorum queues. Align the configured timeout with processing duration and test a stalled consumer; do not assume the time limit automatically sends a message to a DLQ.
+Delivery acknowledgement timeout behavior depends on the version, protocol, and client. For quorum queues in RabbitMQ `4.3`, timed-out deliveries are returned to the queue. With AMQP 0-9-1 and client support for `consumer_cancel_notify`, the broker cancels only the timed-out consumer through `basic.cancel`, leaving the channel open; without this capability, it closes the channel. With AMQP 1.0, timed-out deliveries are released through `DISPOSITION(state=released)`. Align the timeout with processing duration and test recovery with the deployed client; a timeout alone does not send a message to a DLQ.
 
 A policy defines queue and exchange behavior: TTL, max length, dead-letter exchange, quorum settings, and other parameters. Operator policy acts as a guardrail above client-provided arguments and ordinary policies, especially for resource limits. User/permission defines which operations are allowed inside a vhost: configure, write, and read.
 

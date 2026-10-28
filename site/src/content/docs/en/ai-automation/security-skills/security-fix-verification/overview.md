@@ -53,7 +53,7 @@ A necessary untested path leaves the bounded claim inconclusive; an observed byp
 
 The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. The report records verification results and application to the target separately. Finding history preserves the original assessment and subsequent remediation.
 
-The skill works independently from a defect description and available evidence. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Include code changes and production access explicitly in the task; label implementation and verification by the same assistant as self-verification.
+The skill works independently from a defect description and available evidence. In the [combined workflow](/en/ai-automation/security-skills/workflow/overview/), it accepts results from preceding stages. Include code changes and production access explicitly in the task.
 
 Before delivery, reconcile verdicts with recorded cases and counts at the checked revision. Keep `partially_fixed` when a relevant bypass remains alongside an established portion of the repair. Candidate state changes only after application to the named target is observed. Record who implemented and verified the change; label self-verification when the same assistant performed both.
 

@@ -160,7 +160,7 @@ def check_document_type(errors: list[str], path: Path, text: str) -> None:
     if path.name.endswith(".ru.md"):
         expected = {
             "playbook.ru.md": "# Плейбук",
-            "checklist.ru.md": "# Чеклист",
+            "checklist.ru.md": "# Чек-лист",
         }
     elif path.name.endswith(".en.md"):
         expected = {

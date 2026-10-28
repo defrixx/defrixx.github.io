@@ -16,7 +16,7 @@ Bind decision to digest, environment, policy revision and validity period; obtai
 
 ## Evidence chain
 
-| ID | Applicability | Object/digest | Check and reference | Status | Owner |
+| ID | Area | Object/digest | Check and reference | Status | Owner |
 | --- | --- | --- | --- | --- | --- |
 | REL-001 | Source and workflow | | | not-run | |
 | REL-002 | Isolation and caches | | | not-run | |

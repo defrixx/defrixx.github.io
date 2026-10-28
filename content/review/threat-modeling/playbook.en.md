@@ -32,9 +32,11 @@ Mandatory inputs:
 - entry points and privileged operations;
 - authentication/authorization/session model;
 - current security controls: WAF/API gateway, mTLS, OAuth/OIDC, rate limiting, secrets management, audit logging, detection, runtime policy;
-- SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and data from the [vulnerability management playbook](../vulnerability-management/playbook.en.md);
+- available SAST/DAST/SCA/IaC/container scan results, pentest results, incident history, and data from the [vulnerability management playbook](../vulnerability-management/playbook.en.md);
 - regulatory/compliance constraints where they affect requirements;
 - component owners and acceptable risk appetite.
+
+Record unavailable results and planned verification explicitly.
 
 Useful additional inputs:
 - sequence diagrams for critical operations;
@@ -137,7 +139,7 @@ Recommended path steps:
 - Example: signature verification prevents spoofing, idempotency/state machine reduces replay, duplicate-event alert detects abuse.
 
 6. Risk analysis.
-- Calculate inherent and residual risk. For CVEs, add CVSS v4.0, EPSS, KEV, and SSVC decision.
+- Assess inherent and residual risk. For applicable CVEs, use available CVSS, EPSS and KEV data, recording score versions and sources; record SSVC where it informs the action decision.
 - Artifact: risk register.
 - Example: inherent `High`; target residual `Medium` after provider-defined delivery freshness checks, idempotency, and state-transition controls. This illustrates a decision rather than an automatic severity reduction: confirm the residual rating through tests and analysis of remaining attack paths. Release requires residual-risk acceptance, working detection, and a tested rollback runbook.
 
@@ -146,7 +148,7 @@ Recommended path steps:
 - Artifact: test plan, findings, release verdict.
 - Example: automated tests reject expired signed delivery and invalid signatures, prevent duplicate business effects, and prohibit invalid transitions during out-of-order delivery; audit event is visible in SIEM.
 
-For agentic AI and MCP, the release gate must include negative tests for prompt injection into tool use, retrieval or memory poisoning, unauthorized tool invocation, capability drift, wrong-audience/wrong-scope tokens, sandbox egress, and kill-switch execution.
+For agentic AI and MCP, select release-gate negative tests for the components actually used: prompt injection into tool use, retrieval or memory poisoning, unauthorized tool invocation, capability drift, wrong-audience/wrong-scope tokens, sandbox egress, and kill-switch execution. These checks are mandatory for applicable components; record absent components and verification gaps explicitly.
 
 ### 3.3 Unified Example: PSP Webhook Attack Modeling
 
@@ -178,7 +180,7 @@ Recommended controls:
 - This example assumes a signed delivery timestamp, an acceptance window of `<=5m`, and future clock skew of `<=60s`. These are example operational assumptions, not universal PSP requirements; validate them against the provider's signing, retry, and clock behavior.
 - Atomically deduplicate the authenticated event identifier in the provider-defined account and environment scope. Retain the record across the supported retry and replay period; an accepted duplicate must not repeat the business operation.
 - State machine guard: `capture` only from `authorized`, never from terminal states.
-- Store raw event hash and normalized event id for replay detection.
+- Store the hash of the received event bytes and the authenticated event ID in the representation required by the provider contract.
 - Audit event for accepted/rejected webhook with reason code and correlation_id.
 - Alert on duplicate event id, invalid signature spikes, out-of-order transition attempts.
 - Negative tests for stale timestamp, duplicate event, modified amount, wrong merchant id, invalid signature, and out-of-order events.
