@@ -10,7 +10,7 @@ sidebar:
 ---
 Choose a domain and task: review an architecture, assess API access, prepare a platform or examine the supply chain. Each section brings together the existing playbooks, checklists and practical references.
 
-<div class="library-toolbar"><span class="library-stats">43 resources · 7 domains · RU / EN</span>
+<div class="library-toolbar"><span class="library-stats">44 resources · 7 domains · RU / EN</span>
 <button type="button" class="library-search" data-open-library-search>Search a topic or technology<span aria-hidden="true">⌕</span></button></div>
 <nav class="library-index" aria-label="Library domains">
 <a href="#library-review">Review and Governance</a>
@@ -121,7 +121,7 @@ Choose a domain and task: review an architecture, assess API access, prepare a p
 <section class="library-section" id="library-ai-automation"><header>
 <p class="eyebrow">06</p><h2>Skills and Tools</h2>
 <p class="library-description">Practical guides to our five skills and three local tools: inputs, setup, outputs and combined workflows.</p>
-<p class="library-count">Resources: 10</p>
+<p class="library-count">Resources: 11</p>
 <a class="library-overview" href="/en/ai-automation/security-skills/overview/">Domain overview</a>
 </header>
 <div class="library-links">
@@ -142,6 +142,10 @@ Choose a domain and task: review an architecture, assess API access, prepare a p
 <li><a class="library-resource" href="/en/ai-automation/prompt-integrity/overview/"><span class="library-resource-title">prompt-integrity</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/model-security-eval/overview/"><span class="library-resource-title">model-security-eval</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/prompt-guard/overview/"><span class="library-resource-title">prompt-guard</span><span class="library-resource-kind">Guide</span></a></li>
+</ul></div>
+<div class="library-group">
+<h3>Integrations</h3><ul>
+<li><a class="library-resource" href="/en/ai-automation/bifrost/overview/"><span class="library-resource-title">Bifrost integration</span><span class="library-resource-kind">Guide</span></a></li>
 </ul></div>
 </div></section>
 <section class="library-section" id="library-reference"><header>

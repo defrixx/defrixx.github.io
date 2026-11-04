@@ -4,6 +4,8 @@ We develop Product Security Skills alongside the playbooks to help apply securit
 
 Five standalone skills can be used individually or combined in a [shared workflow](workflow/overview.en.md). The separate [prompt-integrity tool](../prompt-integrity/overview.en.md) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](../model-security-eval/overview.en.md) checks local model behavior after updates and provides a blocking CI verdict. [prompt-guard](../prompt-guard/overview.en.md) checks untrusted input context and model outputs with separate policies, applies authorized replacements and validates structured responses and tool arguments before release or execution.
 
+[Bifrost integration](../bifrost/overview.en.md) connects these tools at application ingress and final provider dispatch, with buffered streaming, authorized tool execution and skill staging.
+
 | Task | Skill | Result |
 | --- | --- | --- |
 | Write or change code | [Secure development](secure-development/overview.en.md) | Changed code or an explicitly labeled candidate implementation, applied requirement IDs, and verification evidence. The report separately records exceptions, assumptions, and conditions that could not be verified. |

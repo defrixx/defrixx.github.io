@@ -76,6 +76,7 @@ PAGE_ORDER = {
     "ai-automation/prompt-integrity/overview": 80,
     "ai-automation/model-security-eval/overview": 90,
     "ai-automation/prompt-guard/overview": 100,
+    "ai-automation/bifrost/overview": 110,
     "ai-security/overview": 5,
     "ai-security/securing-ai/overview": 10,
     "ai-security/owasp-llm-top-10/overview": 20,
@@ -269,7 +270,8 @@ SITE_MAP_LABELS = {
  'ai-automation/security-skills/workflow/overview': ('Совместная работа скиллов', 'Combined skill workflow'),
  'ai-automation/prompt-integrity/overview': ('prompt-integrity', 'prompt-integrity'),
  'ai-automation/model-security-eval/overview': ('model-security-eval', 'model-security-eval'),
- 'ai-automation/prompt-guard/overview': ('prompt-guard', 'prompt-guard')}
+ 'ai-automation/prompt-guard/overview': ('prompt-guard', 'prompt-guard'),
+ 'ai-automation/bifrost/overview': ('Интеграция с Bifrost', 'Bifrost integration')}
 
 SITE_MAP_SECTIONS = (
     ("review", "Ревью и управление", "Review and Governance", "review/overview"),
@@ -309,6 +311,7 @@ SITE_MAP_GROUPS = {
              "security-fix-verification", "sensitive-data-cleanup"))),
         ("Совместная работа скиллов", "Combined workflow", ("ai-automation/security-skills/workflow/",)),
         ("Инструменты", "Tools", ("ai-automation/prompt-integrity/", "ai-automation/model-security-eval/", "ai-automation/prompt-guard/")),
+        ("Интеграции", "Integrations", ("ai-automation/bifrost/",)),
     ),
 }
 

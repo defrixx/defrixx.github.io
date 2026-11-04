@@ -10,7 +10,7 @@ sidebar:
 ---
 Выберите направление и задачу: проверить архитектуру, разобрать доступ к API, подготовить платформу или оценить цепочку поставки. В каждом разделе собраны существующие плейбуки, чек-листы и практические справочники.
 
-<div class="library-toolbar"><span class="library-stats">43 материала · 7 направлений · RU / EN</span>
+<div class="library-toolbar"><span class="library-stats">44 материала · 7 направлений · RU / EN</span>
 <button type="button" class="library-search" data-open-library-search>Найти по слову или технологии<span aria-hidden="true">⌕</span></button></div>
 <nav class="library-index" aria-label="Направления библиотеки">
 <a href="#library-review">Ревью и управление</a>
@@ -121,7 +121,7 @@ sidebar:
 <section class="library-section" id="library-ai-automation"><header>
 <p class="eyebrow">06</p><h2>Скиллы и инструменты</h2>
 <p class="library-description">Практическое применение наших пяти скиллов и трех локальных инструментов: входные данные, установка, результаты и совместная работа.</p>
-<p class="library-count">Материалов: 10</p>
+<p class="library-count">Материалов: 11</p>
 <a class="library-overview" href="/ru/ai-automation/security-skills/overview/">Обзор направления</a>
 </header>
 <div class="library-links">
@@ -142,6 +142,10 @@ sidebar:
 <li><a class="library-resource" href="/ru/ai-automation/prompt-integrity/overview/"><span class="library-resource-title">prompt-integrity</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/model-security-eval/overview/"><span class="library-resource-title">model-security-eval</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/prompt-guard/overview/"><span class="library-resource-title">prompt-guard</span><span class="library-resource-kind">Руководство</span></a></li>
+</ul></div>
+<div class="library-group">
+<h3>Интеграции</h3><ul>
+<li><a class="library-resource" href="/ru/ai-automation/bifrost/overview/"><span class="library-resource-title">Интеграция с Bifrost</span><span class="library-resource-kind">Руководство</span></a></li>
 </ul></div>
 </div></section>
 <section class="library-section" id="library-reference"><header>

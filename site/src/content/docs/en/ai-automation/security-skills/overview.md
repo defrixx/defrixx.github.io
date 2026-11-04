@@ -8,6 +8,8 @@ We develop Product Security Skills alongside the playbooks to help apply securit
 
 Five standalone skills can be used individually or combined in a [shared workflow](/en/ai-automation/security-skills/workflow/overview/). The separate [prompt-integrity tool](/en/ai-automation/prompt-integrity/overview/) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](/en/ai-automation/model-security-eval/overview/) checks local model behavior after updates and provides a blocking CI verdict. [prompt-guard](/en/ai-automation/prompt-guard/overview/) checks untrusted input context and model outputs with separate policies, applies authorized replacements and validates structured responses and tool arguments before release or execution.
 
+[Bifrost integration](/en/ai-automation/bifrost/overview/) connects these tools at application ingress and final provider dispatch, with buffered streaming, authorized tool execution and skill staging.
+
 | Task | Skill | Result |
 | --- | --- | --- |
 | Write or change code | [Secure development](/en/ai-automation/security-skills/secure-development/overview/) | Changed code or an explicitly labeled candidate implementation, applied requirement IDs, and verification evidence. The report separately records exceptions, assumptions, and conditions that could not be verified. |

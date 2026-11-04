@@ -4,6 +4,10 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 
 <!-- hub:catalogue -->
 
+## Bifrost integration
+
+[Connect the skills and tools through Bifrost](../../ai-automation/bifrost/overview.en.md): application ingress, final provider integrity, buffered SSE, authorized tools and skill staging.
+
 ## Versions and execution
 
 This catalogue pins public Product-security-skills paths to one revision. It is a link registry with no automatic downloading or execution. Each entry links to that revision's guide and a related playbook. Installation and data processing happen in the local environment chosen by the user.

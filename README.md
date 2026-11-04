@@ -67,6 +67,7 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 - [`content/ai-automation/model-security-eval/`](content/ai-automation/model-security-eval/) - local model security scenarios and blocking CI verdicts
 - [`content/ai-automation/prompt-guard/`](content/ai-automation/prompt-guard/) - source-aware input/output validation, policy-authorized sanitization and tool contracts
 
+- [`content/ai-automation/bifrost/`](content/ai-automation/bifrost/) - Bifrost application ingress, final provider integrity, buffered streaming, authorized tools and skill staging
 
 ## Product Security Hub
 
