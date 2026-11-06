@@ -230,7 +230,7 @@ Maximum profile hardening:
 - Rotate session ID after login callback and after privilege elevation
 - Cookie `HttpOnly`: blocks JS access and reduces XSS-driven cookie theft
 - Cookie `Secure`: sends cookie over HTTPS only, reducing in-transit interception risk
-- Use `SameSite=Lax` as the common cookie default. Use `SameSite=None; Secure` only when the actual cross-site flow requires it, such as an applicable cross-site POST or embedded flow. Ordinary redirect-based SSO does not inherently require `None`; test the response mode and keep CSRF controls.
+- For general cookie flows, `SameSite=Lax` remains a common default; for the established BFF session cookie, use the separate profile in section 6.3.1. Use `SameSite=None; Secure` only when the actual cross-site flow requires it, such as an applicable cross-site POST or embedded flow. Ordinary redirect-based SSO does not inherently require `None`; test the response mode and keep CSRF controls.
 - Narrow `Domain`/`Path`: reduces cross-app leakage and cookie tossing/subdomain takeover impact
 - CSRF protection is mandatory for state-changing BFF endpoints (`POST/PUT/PATCH/DELETE`): use a synchronizer token or a signed double-submit cookie bound to the authenticated session with HMAC and a server-side secret; naive double-submit cookies are not acceptable
 - Validate `Origin` (primary) and `Referer` (fallback) for browser state-changing requests
@@ -239,6 +239,12 @@ Maximum profile hardening:
 
 Maximum profile hardening:
 - For session-bound endpoints, do not allow cross-origin CORS without explicitly approved exception
+
+### 6.3.1 Recommended BFF session-cookie profile
+
+[RFC 10017 §6.1.3.2](https://www.rfc-editor.org/rfc/rfc10017.html#section-6.1.3.2) requires `Secure` and `HttpOnly`; it recommends `SameSite=Strict`, `Path=/`, no `Domain`, and an HTTP-set cookie-name prefix such as `__Host-Http-`. These recommendations are SHOULD, not MUST. Existing `Lax` is assessed against its actual flow and CSRF defenses.
+
+Keep temporary OAuth callback correlation cookies separate. Test redirects, POST response modes, external-entry navigation, logout and browser prefix support before adoption. Choose callback attributes for the response mode and validate state/nonce; session settings do not replace CSRF protection.
 
 ### 6.4 Logout and Revocation
 

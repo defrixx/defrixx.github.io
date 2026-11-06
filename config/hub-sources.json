@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "repository": "https://github.com/defrixx/Product-security-skills",
-  "revision": "55010b3f94844e310bc3ac85fae2a0256b689595",
+  "revision": "10fc3ef2322356466f963a8f6b8b021532549057",
   "imports": false,
   "entries": [
     {
@@ -9,7 +9,7 @@
       "kind": "skill",
       "path": "skills/secure-development",
       "guide": "ai-automation/security-skills/secure-development/overview",
-      "version": "commit:55010b3f9484",
+      "version": "commit:10fc3ef23223",
       "license": "MIT",
       "applies": {
         "ru": "Писать или менять код",
@@ -37,7 +37,7 @@
       "kind": "skill",
       "path": "skills/security-review",
       "guide": "ai-automation/security-skills/security-review/overview",
-      "version": "commit:55010b3f9484",
+      "version": "commit:10fc3ef23223",
       "license": "MIT",
       "applies": {
         "ru": "Оценить PR или репозиторий",
@@ -65,7 +65,7 @@
       "kind": "skill",
       "path": "skills/sensitive-data-cleanup",
       "guide": "ai-automation/security-skills/sensitive-data-cleanup/overview",
-      "version": "commit:55010b3f9484",
+      "version": "commit:10fc3ef23223",
       "license": "MIT",
       "applies": {
         "ru": "Подготовить материалы к передаче",
@@ -93,7 +93,7 @@
       "kind": "skill",
       "path": "skills/security-report-triage",
       "guide": "ai-automation/security-skills/security-report-triage/overview",
-      "version": "commit:55010b3f9484",
+      "version": "commit:10fc3ef23223",
       "license": "MIT",
       "applies": {
         "ru": "Разобрать сигналы сканера",
@@ -121,7 +121,7 @@
       "kind": "skill",
       "path": "skills/security-fix-verification",
       "guide": "ai-automation/security-skills/security-fix-verification/overview",
-      "version": "commit:55010b3f9484",
+      "version": "commit:10fc3ef23223",
       "license": "MIT",
       "applies": {
         "ru": "Перепроверить выбранное исправление",

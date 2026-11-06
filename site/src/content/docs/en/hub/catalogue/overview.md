@@ -21,8 +21,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Change, architecture, trust boundaries</dd>
 <dt>Local execution</dt><dd>Assistant in an authorized local project</dd>
 <dt>Limits</dt><dd>Select controls for the actual architecture; modifications need a task</dd>
-<dt>Version / source</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/secure-development">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>commit:10fc3ef23223 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/skills/secure-development">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/security-skills/security-review/overview/">security-review</a></h3>
@@ -32,8 +32,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Scope and exact base/head or project revision</dd>
 <dt>Local execution</dt><dd>Assistant; optional Python 3.9+ and Git helper</dd>
 <dt>Limits</dt><dd>Assessment itself does not modify code</dd>
-<dt>Version / source</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/security-review">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>commit:10fc3ef23223 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/skills/security-review">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/security-skills/sensitive-data-cleanup/overview/">sensitive-data-cleanup</a></h3>
@@ -43,8 +43,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Agreed directory, mode and policy</dd>
 <dt>Local execution</dt><dd>Assistant; Python 3.9+, POSIX helper</dd>
 <dt>Limits</dt><dd>UTF-8 text/JSON/JSONL/CSV; JPEG/PNG metadata only; preserve originals</dd>
-<dt>Version / source</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/sensitive-data-cleanup">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>commit:10fc3ef23223 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/skills/sensitive-data-cleanup">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/security-skills/security-report-triage/overview/">security-report-triage</a></h3>
@@ -54,8 +54,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Report provenance, target revision and scope</dd>
 <dt>Local execution</dt><dd>Assistant; bounded SARIF helper Python 3.9+, POSIX</dd>
 <dt>Limits</dt><dd>Normalization inventories signals; findings need context</dd>
-<dt>Version / source</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/security-report-triage">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>commit:10fc3ef23223 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/skills/security-report-triage">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/security-skills/security-fix-verification/overview/">security-fix-verification</a></h3>
@@ -65,8 +65,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Finding ID, original evidence and patched revision</dd>
 <dt>Local execution</dt><dd>Assistant in the selected local scope</dd>
 <dt>Limits</dt><dd>Keep historical assessment separate from current repair verdict</dd>
-<dt>Version / source</dt><dd>commit:55010b3f9484 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/skills/security-fix-verification">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>commit:10fc3ef23223 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/skills/security-fix-verification">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 </section>
 <section class="catalogue-group"><h2>Local tools</h2>
 <article class="catalogue-item">
@@ -78,8 +78,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Protected baseline and application request</dd>
 <dt>Local execution</dt><dd>Python 3.11+, POSIX; CLI/library</dd>
 <dt>Limits</dt><dd>Strict Ollama/LM Studio adapter subsets; cover every dispatch route</dd>
-<dt>Version / source</dt><dd>0.1.0 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/tools/prompt-integrity">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>0.1.0 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/tools/prompt-integrity">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/prompt-guard/overview/">prompt-guard</a></h3>
@@ -89,8 +89,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>UTF-8 text/JSON, trusted source and policy</dd>
 <dt>Local execution</dt><dd>Python 3.11+, POSIX; CLI/library</dd>
 <dt>Limits</dt><dd>Literal/regex policies have false positives; action authorization is separate</dd>
-<dt>Version / source</dt><dd>0.3.0 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/tools/prompt-guard">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>0.3.0 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/tools/prompt-guard">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 <article class="catalogue-item">
 <div class="catalogue-summary">
 <h3><a href="/en/ai-automation/model-security-eval/overview/">model-security-eval</a></h3>
@@ -100,8 +100,8 @@ Our five independent skills guide an assistant through security tasks; three Pyt
 <dt>Inputs</dt><dd>Local model, synthetic profile and budgets</dd>
 <dt>Local execution</dt><dd>Python 3.11+ and a local LM Studio/Ollama endpoint</dd>
 <dt>Limits</dt><dd>Fixed scenarios and virtual effects; budgets may yield inconclusive</dd>
-<dt>Version / source</dt><dd>0.4.0 · <code>55010b3f9484</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/55010b3f94844e310bc3ac85fae2a0256b689595/tools/model-security-eval">Guide at this revision</a></dd>
-<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/55010b3f94844e310bc3ac85fae2a0256b689595/LICENSE">MIT</a></dd></dl></details></article>
+<dt>Version / source</dt><dd>0.4.0 · <code>10fc3ef23223</code><br /><a href="https://github.com/defrixx/Product-security-skills/tree/10fc3ef2322356466f963a8f6b8b021532549057/tools/model-security-eval">Guide at this revision</a></dd>
+<dt>License</dt><dd><a href="https://github.com/defrixx/Product-security-skills/blob/10fc3ef2322356466f963a8f6b8b021532549057/LICENSE">MIT</a></dd></dl></details></article>
 </section>
 </div>
 
