@@ -1,0 +1,29 @@
+<script>
+  import { loadLatestRelease } from '../scripts/analyzer-release.mjs';
+  function initialize() {
+    document.querySelectorAll<HTMLElement>('[data-analyzer-release]').forEach(async root => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+      const ru = root.dataset.lang === 'ru';
+      const status = root.querySelector<HTMLElement>('[data-release-status]')!;
+      status.textContent = ru ? 'Загружаем последний релиз…' : 'Loading the latest release…';
+      try {
+        const release = await loadLatestRelease();
+        const show = (selector: string, value: string) => {
+          const element = root.querySelector<HTMLElement>(selector)!;
+          element.textContent = value;
+          element.hidden = !value;
+        };
+        show('[data-release-name]', release.name.startsWith(release.tag) ? release.name : `${release.tag}: ${release.name}`);
+        show('[data-release-date]', (ru ? 'Опубликован: ' : 'Published: ') + new Intl.DateTimeFormat(ru ? 'ru' : 'en', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(release.date)));
+        show('[data-release-notes]', release.notes);
+        root.querySelector<HTMLAnchorElement>('[data-release-link]')!.href = release.url;
+        status.textContent = ru ? 'Последний релиз на GitHub' : 'Latest release on GitHub';
+      } catch {
+        status.textContent = ru ? 'Не удалось загрузить сведения о релизе. Откройте последний релиз на GitHub.' : 'Release details could not be loaded. Open the latest release on GitHub.';
+      }
+    });
+  }
+  initialize();
+  document.addEventListener('astro:page-load', initialize);
+</script>

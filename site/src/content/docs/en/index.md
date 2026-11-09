@@ -62,4 +62,14 @@ sidebar:
 </div></div>
 
 </section>
+<section class="analyzer-release" data-analyzer-release data-lang="en" aria-labelledby="analyzer-title">
+<p class="eyebrow">Specification review tool</p>
+<h2 id="analyzer-title">SDD Security Analyzer</h2>
+<p>Review specifications against security requirements and explore the analysis results.</p>
+<p data-release-status role="status">The current version and release notes are available on GitHub.</p>
+<p data-release-name hidden></p>
+<p data-release-date hidden></p>
+<pre data-release-notes hidden></pre>
+<p class="analyzer-release-links"><a data-release-link href="https://github.com/defrixx/SDD-security-analyzer/releases/latest">Open latest release</a> · <a href="https://github.com/defrixx/SDD-security-analyzer">Repository and setup</a></p>
+</section>
 </div>

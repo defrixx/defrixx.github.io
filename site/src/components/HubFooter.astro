@@ -2,6 +2,7 @@
 import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
 import BackToTop from './BackToTop.astro';
 import RouteExplorer from './RouteExplorer.astro';
+import AnalyzerRelease from './AnalyzerRelease.astro';
 import TableScrollHints from './TableScrollHints.astro';
 const route = Astro.locals.starlightRoute;
 const ru = route.lang === 'ru';
@@ -20,3 +21,5 @@ const lang = ru ? 'ru' : 'en';
 <TableScrollHints />
 
 <RouteExplorer />
+
+<AnalyzerRelease />

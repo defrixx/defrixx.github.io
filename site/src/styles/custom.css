@@ -393,3 +393,11 @@ body:has(#starlight__mobile-toc[open]) .back-to-top { visibility: hidden; }
 .hub-header-links a[aria-current='page'], .hub-mobile-menu a[aria-current='page'] { color: var(--hub-accent); text-decoration: underline; text-underline-offset: .3em; }
 
 .hub-notices-link { margin-top: 1.5rem; font-size: var(--type-small); }
+
+/* The release card remains usable when GitHub or JavaScript is unavailable. */
+.analyzer-release { margin-block: 2rem; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--hub-line); border-radius: .75rem; }
+.analyzer-release h2 { margin-top: .5rem; }
+.analyzer-release [data-release-name] { font-weight: 600; overflow-wrap: anywhere; }
+.analyzer-release [data-release-notes] { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; max-height: 18rem; overflow-y: auto; }
+.analyzer-release-links { overflow-wrap: anywhere; }
+.analyzer-release [hidden] { display: none; }
