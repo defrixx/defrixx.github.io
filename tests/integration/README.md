@@ -32,7 +32,7 @@ The framework runner records image ID, fixture hashes, status, and tool output. 
 
 ## Next.js / React / Chromium
 
-The fixture builds Next.js 16.3.6 and React 19.2.0 using the committed npm lockfile and runs Chromium from Playwright 1.55.1. Installation scripts are disabled. Dependencies install inside a disposable container; the fixture is mounted read-only and copied to its temporary filesystem. The server binds to container loopback without a host-published port. The test browser runs with its sandbox disabled inside this synthetic container; this is a test-environment limitation, not application hardening guidance.
+The fixture builds Next.js 16.4.1 and React 19.2.0 using the committed npm lockfile and runs Chromium from Playwright 1.55.1. Installation scripts are disabled. Dependencies install inside a disposable container; the fixture is mounted read-only and copied to its temporary filesystem. The server binds to container loopback without a host-published port. The test browser runs with its sandbox disabled inside this synthetic container; this is a test-environment limitation, not application hardening guidance.
 
 - SD-TS-001: direct HTTP Route Handler calls reject missing identity, the wrong owner, a different object, and extra mutation fields before state changes; the authorized mutation succeeds. Fixed bearer tokens are synthetic identity fixtures, not a production authentication implementation.
 - SD-TS-002: an actual hydrated browser DOM contains the attack string as text, creates no injected script/image nodes, and records no payload execution. This does not test third-party HTML sanitizers or every rendering sink.
@@ -60,7 +60,7 @@ docker pull mongo:8.0.15
 python3 tests/integration/run_framework.py protocols --output artifacts/protocols-new-run
 ```
 
-Seven cases run Authlib 1.6.5, PyJWT 2.10.1, Jinja 3.1.6 and PyMongo 4.15.1 against MongoDB 8.0.15. All Python dependencies are pinned in [requirements.txt](protocols/requirements.txt); the log records installed versions. MongoDB has a unique run network, an anonymous data volume removed with its container, and no published host port. Image tags remain mutable; the report records actual image IDs. The Python and Playwright images used by the runner must already be available locally; pull them explicitly if needed.
+Seven cases run Authlib 1.9.1, PyJWT 2.14.0, Jinja 3.1.6 and PyMongo 4.18.3 against MongoDB 8.0.15. All Python dependencies are pinned in [requirements.txt](protocols/requirements.txt); the log records installed versions. MongoDB has a unique run network, an anonymous data volume removed with its container, and no published host port. Image tags remain mutable; the report records actual image IDs. The Python and Playwright images used by the runner must already be available locally; pull them explicitly if needed.
 
 - SD-PROTOCOL-001.C01: Authlib performs actual HTTP authorization-code and token requests to a minimal local synthetic issuer. The callback client restores saved state; state mismatch is rejected before exchange. Wrong PKCE verifier/redirect, code replay, issuer and nonce are rejected; valid login increments the synthetic session counter. A deliberately unbound-state client reproduces the failure. This was a demonstrated fixture integration defect during development, not a reported Authlib vulnerability.
 - SD-PROTOCOL-001.C02: actual RSA signatures are verified by PyJWT. Wrong key/algorithm, issuer/audience, expiry/not-before, missing required expiry and wrong purpose are rejected. Fixture key-selection guards reject unknown key IDs and header-supplied URLs without requests to the sentinel. Nonce/purpose guards are application fixture code. No discovery/JWKS rollover or complete OIDC middleware is exercised.
@@ -70,7 +70,7 @@ Seven cases run Authlib 1.6.5, PyJWT 2.10.1, Jinja 3.1.6 and PyMongo 4.15.1 agai
 
 The issuer, accounts and session counter are synthetic substitutes; callback URLs are parsed directly rather than handled by a browser login/session stack. HTTP is permitted only for the isolated loopback issuer.
 
-Primary references checked 2026-09-29: [Authlib 1.6.5 authorization code/state/PKCE](https://docs.authlib.org/en/v1.6.5/client/oauth2.html), [PyJWT 2.10.1 validation](https://pyjwt.readthedocs.io/en/2.10.1/usage.html), [MongoDB equality predicates](https://www.mongodb.com/docs/manual/reference/operator/query/eq/), and [Jinja 3.1 API](https://jinja.palletsprojects.com/en/stable/api/). These support fixture API choices, not blanket target compatibility.
+The fixture uses [Authlib authorization code/state/PKCE](https://docs.authlib.org/en/latest/client/oauth2.html), [PyJWT validation](https://pyjwt.readthedocs.io/en/stable/usage.html), [MongoDB equality predicates](https://www.mongodb.com/docs/manual/reference/operator/query/eq/), and the [Jinja 3.1 API](https://jinja.palletsprojects.com/en/stable/api/). These describe fixture API choices, not blanket target compatibility.
 
 ## Cache and browser policy extensions
 
