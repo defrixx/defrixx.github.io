@@ -678,7 +678,7 @@ Impact:
 - Standardize log schema and correlation IDs
 - Use tamper-evident/append-only audit trails
 - Centralize ingestion and define alert runbooks for high severity cases
-- Keep secrets and sensitive personal data out of logs
+- Keep secrets and sensitive data out of logs
 - Verification:
   - DAST/pentest must trigger alerts
   - recurring MTTD/MTTR review

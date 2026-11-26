@@ -22,6 +22,8 @@ Site code, scripts, example code, tools and complete skill packages, including t
 
 Third-party dependencies, quotations, standards, images and borrowed materials retain their own licenses and notices. Attribution does not relicense a source. Materials with unknown ownership are excluded from these grants; verify rights separately before redistribution. Licensing original materials does not imply the author's endorsement of your adaptation.
 
+The LLM risk overview uses categories from the [OWASP Top 10 for LLM Applications 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/) by the OWASP GenAI Security Project. The original OWASP material is available under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); when reproducing or adapting OWASP material, follow its terms and preserve attribution.
+
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and [legal code](https://creativecommons.org/licenses/by/4.0/legalcode.en). File boundaries are described in the root LICENSE; code includes LICENSE-MIT.
 
 ## Safety and decisions

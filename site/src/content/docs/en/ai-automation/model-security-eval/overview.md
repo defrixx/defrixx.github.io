@@ -68,7 +68,7 @@ With `--compare-guard`, compare unguarded and guarded application behavior using
 
 Place the [CI script](https://github.com/defrixx/defrixx.github.io/blob/main/tools/model-security-eval/examples/ci-gate.sh) before promotion on a runner with the local server. Run it from the skills repository root with `MODEL_ID` and `EVAL_OUTPUT`; LM Studio also needs `MODEL_REVISION` and `SERVER_VERSION`. The script preserves the CLI exit status. Preserve reports through the pipeline's artifact-retention step.
 
-Each run creates `report.md`, structured `report.json`, and an atomically updated `checkpoint.json`. Output directories use permissions `0700`, evidence files `0600`. Private-token forms are redacted; observations are scored in full and stored as bounded previews with hashes. Checkpoints record completed, active, and pending trials. Interruption blocks promotion and records interrupted progress; checkpoints do not imply automatic resume. Stdout carries JSON events with identifiers, diagnostics, counts, and criteria fingerprints rather than provider response text.
+Each run creates `report.md`, structured `report.json`, and an atomically updated `checkpoint.json`. Output directories use permissions `0700`, evidence files `0600`. Private-token forms are redacted; observations are scored in full and stored as bounded previews with hashes. Checkpoints record completed, active, and pending trials. Interruption blocks promotion and records interrupted progress; checkpoints do not imply automatic resume. Stdout carries JSON events with identifiers, diagnostics, counts, and the criteria fingerprint (`criteria_sha256`) rather than provider response text.
 
 ## Connection to application controls
 
