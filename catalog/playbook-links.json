@@ -30,8 +30,8 @@
       "pinned_path": "analyzer/sources/content/ai-security/owasp-llm-top-10/overview.ru.md",
       "playbook_path": "content/ai-security/owasp-llm-top-10/overview.ru.md",
       "pinned_sha256": "6487e5caaa1cf703908d2d2195b5859c4141e9fa8872d0e5cfbff4a4ce7d0828",
-      "current_sha256": "6487e5caaa1cf703908d2d2195b5859c4141e9fa8872d0e5cfbff4a4ce7d0828",
-      "status": "same"
+      "current_sha256": "e90de2a680cd3e400406339be5bc0dd7cb0553a6b9ec72c9eab66318a719bc0a",
+      "status": "changed"
     },
     {
       "source_id": "05-securing-ai",
