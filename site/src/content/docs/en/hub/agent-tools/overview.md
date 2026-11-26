@@ -33,7 +33,7 @@ Read/action boundaries, per-call authorization, exact-parameter approvals, repla
 | Read or action | tickets.read does not grant tickets.comment; patches.prepare proposes a change without executing code or automatically saving it. |
 | Who authorizes | The tool server checks current user/object rights. MCP tokens limit transport access rather than replacing business authorization. |
 | What is approved | The user sees tool, project, object, action and exact contents. Material argument/version changes require new approval. |
-| What has executed | A timeout does not establish absence of effects. Reconcile by persistent operation ID before retrying. |
+| What has executed | A timeout does not establish absence of effects. Reconcile by persistent operation ID before retrying; a retry must not create another action. |
 
 ## Workflow
 

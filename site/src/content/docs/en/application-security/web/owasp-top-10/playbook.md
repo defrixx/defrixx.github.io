@@ -59,8 +59,8 @@ Typical flow:
 
 What gets impacted:
 - Tenant/user data isolation
-- Administrative functions
-- Internal APIs and management services
+- Administrative functions and service consoles
+- Internal services and management APIs
 
 Impact:
 - Data exposure, unauthorized changes, and takeover of critical business operations
@@ -70,8 +70,8 @@ Impact:
 - `deny-by-default` and per-request/per-object authorization
 - Centralized policy-engine (`RBAC`/`ABAC`/`ReBAC`)
 - Enforce object authorization from the approved policy: ownership, tenant membership, delegated grants, and support/admin scope as applicable; a simple `resource.owner_id == caller.subject_id` check covers only owner-exclusive resources
-- Strict internal/external API segmentation and mTLS
-- Strict `CORS` allowlists
+- Strict internal/external API segmentation and mTLS between services
+- Strict `CORS` allowlists for approved origins, methods, and headers
 - Step-up authentication for high-risk actions
 - Verification:
   - negative integration tests for horizontal/vertical privilege abuse
@@ -122,13 +122,13 @@ Types:
 - Excessive HTTP methods and exposed admin routes: attack surface grows unnecessarily. Example: endpoint allows `PUT`/`DELETE` though it should be read-only.
 - Unsafe XML parser settings -> `XXE` (XML External Entity): parser resolves external entities. Example: payload with `<!ENTITY xxe SYSTEM "file:///etc/passwd">` returns file content.
 - Missing security headers (`CSP`, `HSTS`): browser has fewer safeguards for script and transport security. Example: without CSP, injected inline script executes successfully.
-- Over-permissive service/storage permissions: minor bug becomes major compromise. Example: web service with `s3:*` reads all buckets after single SSRF primitive.
+- Over-permissive service account, bucket, PVC, and secrets-store permissions: a local flaw can quickly expand the impact. Example: web service with `s3:*` reads all buckets after a single SSRF request.
 
 Typical flow:
 - Scanning for exposed debug/admin/version endpoints
 - Attempting default credential login
 - XXE parser probing
-- Policy/header/proxy misconfiguration abuse
+- Searching for proxy, CORS, and header-policy misconfigurations
 - Moving to file access, lateral movement, and persistence
 
 What gets impacted:
@@ -137,18 +137,18 @@ What gets impacted:
 - Service trust boundaries
 
 Impact:
-- Fast initial compromise and accelerated privilege expansion
+- Fast initial compromise, accelerated privilege expansion, and persistent presence
 
 ### 3.3 Practical defense
 
 - Hardened baseline profiles for each environment + drift detection
 - Policy-as-code and mandatory config review
-- Safe XML parser profile with DTD/External Entity restrictions
+- Safe XML parser profile with DTD and external entities disabled where possible
 - Mandatory security response headers
 - Regular configuration audits and external attack-surface review
 - Verification:
   - IaC/runtime compliance checks
-  - safe degradation tests
+  - tests for safe behavior under configuration failures
   - golden-config deviation tracking
 
 ### 3.4 Release review baseline
@@ -199,7 +199,7 @@ Types:
 
 Typical flow:
 - Finding exposed components with known vulnerabilities or unsupported versions
-- Finding dependencies without strict source pinning
+- Finding dependencies without pinned versions and source verification
 - Injecting malicious package or plugin update
 - Compromising CI token/secret
 - Publishing substituted artifact to trusted registry
@@ -215,12 +215,12 @@ Impact:
 
 ### 4.3 Practical defense
 
-- Maintain `SBOM` (Software Bill of Materials)
+- Maintain an `SBOM` (Software Bill of Materials) and inventory transitive dependencies
 - Sign artifacts and verify signatures at deploy time
 - Use internal trusted mirrors and block unapproved sources
 - Use `SCA` (Software Composition Analysis) as a mandatory gate for known vulnerable, end-of-life, and policy-banned components
 - Track component ownership, upgrade path, and exception expiry for dependencies, base images, and plugins
-- Use short-lived CI credentials and runner isolation
+- Use short-lived CI credentials, isolate runners, and prohibit shared secrets
 - Verification:
   - provenance/attestation gates in CD
   - anomalous publish/install monitoring
@@ -285,14 +285,14 @@ What gets impacted:
 - Service trust relationships
 
 Impact:
-- Large-scale data breaches and long-lived key compromise
+- Large-scale data breaches, session hijacking, and long-lived key compromise
 
 ### 5.3 Practical defense
 
 - Enforce TLS 1.2+ (preferably 1.3) and HSTS
 - Store keys in `HSM`/`KMS`
 - Use Argon2id for new password storage, scrypt when unavailable, and PBKDF2 with a validated implementation when FIPS requirements apply; retain bcrypt only for legacy compatibility with a migration plan
-- Use scheduled + emergency key rotation
+- Use scheduled and emergency rotation for keys and secrets
 - Encrypt sensitive data at rest by classification
 - Verification:
   - crypto inventory and key lifetime controls
@@ -430,7 +430,7 @@ Types:
 Typical flow:
 - Analyze business process/state transitions
 - Find uncontrolled state transition
-- Trigger edge states (retry/race/partial failure)
+- Trigger edge states (retry, race, cancellation, or partial failure)
 - Force exception paths such as timeouts, malformed optional parameters, dependency errors, and interrupted transactions
 - Bypass expected control flow
 - Execute forbidden operation without exploiting low-level code bugs
@@ -441,14 +441,14 @@ What gets impacted:
 - Cross-tenant boundaries
 
 Impact:
-- Fraud/abuse and irreversible business errors
+- Fraud and abuse, irreversible business errors, and systemic incidents
 
 ### 7.3 Practical defense
 
 - Perform threat modeling before implementation
 - Define abuse/misuse cases for critical workflows
 - Encode security requirements directly into user stories
-- Add anti-automation controls and out-of-band confirmation
+- Add limits, anti-automation controls, and out-of-band confirmation
 - Require independent security design review
 - Verification:
   - state-machine tests
@@ -489,9 +489,9 @@ False positives / false negatives:
 
 ### 7.5 A10:2025 Exceptional Conditions
 
-For each critical operation, specify which failures deny the action and which permit a documented degraded mode. Preserve authorization and business invariants during timeout, cancellation, queue saturation, and dependency failure. Bound retries with backoff and a shared time budget; apply backpressure and per-tenant quotas before resource exhaustion propagates. Circuit breakers must not bypass mandatory security checks.
+For each critical operation, specify which failures deny the action and which permit a documented bounded degraded mode. Preserve authorization and business invariants during timeout, cancellation, queue saturation, and dependency failure. Bound retries with backoff and a shared time budget; apply backpressure and per-tenant quotas before resource exhaustion propagates. Circuit breakers must not bypass mandatory security checks.
 
-Record commit/rollback boundaries and compensation for partially completed operations. Recovery must determine whether a side effect already occurred before retrying; idempotency records must survive the relevant interruption window. Return safe errors and retain enough internal correlation to investigate.
+Record commit/rollback boundaries and compensation for partially completed operations. Recovery must determine whether a side effect already occurred before retrying; idempotency records must survive the relevant interruption and recovery period. Return safe errors and retain enough internal correlation to investigate.
 
 Negative tests: interrupt the operation before and after commit, exhaust the queue, time out a dependency, open the circuit breaker, and send concurrent retries. Verify no duplicate payment or privilege grant, correct rollback or reconciliation, preserved tenant quotas, safe error messages, and successful recovery without unauthorized state transitions.
 
@@ -506,7 +506,7 @@ Authentication and session failures let attackers act as legitimate users. The a
 ### 8.2 Types and typical exploitation flow
 
 Types:
-- Credential stuffing and password spraying: automated login attempts with leaked credentials. Example: bot checks large `email:password` list against `/login`.
+- Credential stuffing uses leaked credentials; password spraying tries common passwords across many accounts. Example: a bot checks a large `email:password` list against `/login`.
 - Brute force: repeated guessing for a specific account. Example: 10,000 attempts against `admin@company.com` without strict lockout.
 - Session fixation/hijacking: attacker forces or steals session identifier. Example: victim logs in using attacker-provided session ID.
 - Weak password reset flow: recovery token process is predictable or reusable. Example: reset token does not expire and can be replayed.
@@ -526,12 +526,12 @@ What gets impacted:
 - Account recovery channels
 
 Impact:
-- Large-scale account takeover and fraudulent actions
+- Large-scale account takeover, fraudulent actions, and loss of trust in the identity system
 
 ### 8.3 Practical defense
 
 - Mandatory MFA for high-risk roles/operations
-- Breached-password checks and weak-password blocking
+- Breached-password checks
 - Rotate session IDs after login/privilege changes
 - Enforce idle and absolute session timeout
 - Ensure reliable logout/token revocation
@@ -591,7 +591,7 @@ Typical flow:
 - Craft tampered payload
 - Bypass source/signature validation
 - Execute altered logic or deserialization gadget chain
-- Persist by repeatedly injecting modified trusted artifacts
+- Persist through enduring data tampering
 
 What gets impacted:
 - Update and configuration channels
@@ -606,7 +606,7 @@ Impact:
 - Sign and verify updates/artifacts/configurations
 - Block unsafe deserialization of untrusted input
 - Separate trusted control plane from user-controlled data plane
-- Enforce integrity checks on critical objects
+- Enforce integrity checks on all critical objects
 - Verification:
   - tampering tests
   - startup trust-chain checks
@@ -631,7 +631,7 @@ Required evidence:
 
 Negative tests:
 - Modified artifact, wrong digest, wrong signer, or unsigned config fails before deploy/startup.
-- Crafted serialized payload cannot instantiate unsafe types or trigger code paths.
+- Crafted serialized payload cannot instantiate unsafe types or trigger dangerous code paths.
 - Modified cookie/client object cannot change role, tenant, balance, entitlement, or workflow state.
 - Policy/rules update from unapproved source is rejected.
 
@@ -677,12 +677,12 @@ Impact:
 - Define mandatory security event catalog (auth/access/config/privilege/data changes)
 - Standardize log schema and correlation IDs
 - Use tamper-evident/append-only audit trails
-- Centralize ingestion and define alert runbooks for high severity cases
+- Centralize collection and alerts, and define a response runbook for each high-severity scenario
 - Keep secrets and sensitive data out of logs
 - Verification:
   - DAST/pentest must trigger alerts
   - recurring MTTD/MTTR review
-  - periodic detection-quality testing
+  - detection and escalation quality tests
 
 ### 10.4 Release review baseline
 
@@ -719,7 +719,7 @@ False positives / false negatives:
 
 ### 11.1 Threat, description, and attacker objective
 
-Server-Side Request Forgery appears when an application fetches attacker-controlled URLs or resolves attacker-controlled destinations from server-side infrastructure. The attacker objective is to make a trusted server reach cloud metadata, internal services, management planes, or sensitive network locations that the attacker cannot access directly.
+Server-Side Request Forgery appears when an application fetches attacker-controlled URLs or resolves attacker-controlled destinations from privileged infrastructure. The attacker objective is to make a trusted server reach cloud metadata, internal services, management planes, or sensitive network locations that the attacker cannot access directly.
 
 ### 11.2 Types and typical exploitation flow
 

@@ -4,7 +4,7 @@
 
 This document is for platform engineers, security engineers, and service owners who run Vault in Kubernetes-based environments.
 
-The TTLs, rotation intervals, and response targets below are local operational defaults for production services with automated renewal or re-authentication and dedicated secret owners. They are not HashiCorp defaults or universal security limits. Confirm each value against backend lease limits, job duration, rollout and outage behavior, and the ability to revoke or rotate credentials within the stated target. Record approved deviations and test renewal failure and recovery before adoption.
+The TTLs, rotation intervals, and response targets below are local operational defaults for production services with automated renewal or re-authentication and dedicated secret owners. They are not HashiCorp defaults or universal security limits. Confirm each value against the corresponding secrets engine TTL limits and lease management rules where it issues leases, job duration, rollout and outage behavior, and the ability to revoke or rotate credentials within the stated target. Record approved deviations and test renewal failure and recovery before adoption.
 
 ## 2. Security of Vault Itself
 
@@ -93,7 +93,7 @@ vault write auth/kubernetes/role/payments-api-prod \
 
 ### 2.5 Audit and detection
 
-- Enable Vault audit devices before onboarding live workloads.
+- Enable Vault audit devices before onboarding workloads.
 - Write audit logs to durable and access-controlled sinks.
 - Enable at least two audit devices where operationally feasible. If only one audit sink is used, record the availability risk explicitly: Vault can refuse requests when all enabled audit devices are unable to write.
 - Monitor audit device health, write failures, disk/backpressure signals, and sink reachability.
@@ -260,7 +260,7 @@ Pattern C: External Secrets Operator
 - Treat this as higher exposure than file-only delivery.
 - Require etcd encryption at rest and strict RBAC.
 
-For all three patterns, distinguish storage location from the application interface. Vault Agent Injector and file-only CSI keep the value out of Kubernetes Secret and expose it as a file. External Secrets Operator first copies the value from Vault into a Kubernetes Secret; the application should then normally consume it as a file through a Secret volume, while environment-variable delivery is permitted only as an exception under the Kubernetes Secrets playbook.
+For all three patterns, distinguish storage location from the application interface. Vault Agent Injector and file-only CSI keep the value out of Kubernetes Secret and expose it as a file. External Secrets Operator first copies the value from Vault into a Kubernetes Secret; the application normally then receives it as a file through a Secret volume, while environment-variable delivery is permitted only as an exception under the Kubernetes Secrets playbook.
 
 ### 4.2 Minimal Injector example
 
@@ -268,7 +268,7 @@ The Vault Agent Injector mutates the Pod and mounts its own shared memory volume
 
 This example disables the default Kubernetes API-audience ServiceAccount token mount and uses a dedicated projected ServiceAccount token with `audience: vault`. Vault Agent Injector mounts that volume only into the agent/init containers and reads the login JWT from its service-account token path. Keep the token short-lived and aligned with the Vault Kubernetes auth role `audience`.
 
-The application container must not mount the projected Vault login token. It should read only rendered secret files from `/vault/secrets`; otherwise a compromised application process can use the projected JWT to authenticate to Vault directly under the workload role.
+The application container must not mount the projected Vault login token. It must read only rendered secret files from `/vault/secrets`; otherwise a compromised application process can use the projected JWT to authenticate to Vault directly under the workload role.
 
 The template serializes each value as JSON so that quotes, backslashes, and line breaks in credentials cannot change the file structure. The Injector does not export the fields into the process environment. The application must parse `/vault/secrets/app-config.json` as JSON, require string values for `DB_USER` and `DB_PASS`, and reject missing or invalid fields. Do not execute the file through a shell or copy its values into command-line arguments, logs, or durable writable storage.
 

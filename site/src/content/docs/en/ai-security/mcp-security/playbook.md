@@ -67,7 +67,7 @@ High-impact scenarios:
 
 `High-impact/regulated`:
 - Require signed artifacts or pinned digests for MCP servers and tool wrappers.
-- Mirror approved third-party MCP artifacts into an internal registry or package mirror; production hosts should not install directly from community registries.
+- Mirror approved third-party MCP artifacts into an internal registry or package mirror; production hosts must not install directly from community registries.
 - Set review expiry no longer than `90 days` for servers that can modify data, execute code, access sensitive resources, or use third-party infrastructure.
 
 The `90 days` ceiling is a local assumption for an inventory reconciled continuously and after capability changes, with a named owner able to suspend access. It bounds the age of a manual access/provider review; it does not authorize unchecked drift until the next review. Use a shorter interval for unstable providers or greater potential impact. Expired approval blocks high-impact use until renewed.
@@ -236,10 +236,10 @@ The matrix below defines domain severity and the release decision. The [Vulnerab
 |---|---|---|
 | Critical | Unapproved MCP server can execute code, modify production data, access secrets, or reach sensitive internal systems | Block release or disable access immediately |
 | Critical | Remote MCP token validation accepts wrong issuer/audience/expiry or permits token passthrough to downstream APIs | Block release until fixed and retested |
-| High | Capability drift is not detected or new tools/resources become usable without approval | Block high-impact workflows; approve only read-only low-risk use with compensating monitoring |
+| High | Capability drift is not detected or new tools/resources become usable without approval | Block risky workflows; approve only read-only low-risk use with compensating monitoring |
 | High | Tool handler relies on model/client-side validation for privileged parameters | Fix before production for state-changing or sensitive-data tools |
 | Medium | Registry exists but lacks owner, review expiry, or downstream destination metadata | Track remediation with owner and due date |
-| Medium | Logs support operations but cannot reconstruct identity-to-tool-to-downstream action chains | Improve before broad rollout |
+| Medium | Logs cannot reconstruct identity-to-tool-to-downstream action chains | Improve before broad rollout |
 | Low | Naming, descriptions, or prompt metadata are inconsistent but do not expand access | Fix opportunistically |
 
 Release is approved only when every production MCP capability is registered, scoped, authorized, logged, and independently revocable.

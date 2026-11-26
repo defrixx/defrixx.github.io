@@ -200,7 +200,7 @@ Where personalized-data caching is necessary, explicitly partition keys by tenan
 ### 6.1 REST
 
 Mandatory measures:
-- OpenAPI 3.1 contract as the minimum for all live endpoints; OpenAPI 3.2 is acceptable where gateway validation, code generation, linting, scanners, and contract-test tooling support it;
+- OpenAPI 3.1 contract as the minimum for all endpoints in the release; OpenAPI 3.2 is acceptable where gateway validation, code generation, linting, scanners, and contract-test tooling support it;
 - authentication at the gateway or service edge, with authorization inside domain logic;
 - object-level authorization for every endpoint with an object ID;
 - separate DTO/schema for create/update/read to prevent mass assignment;
@@ -296,7 +296,7 @@ Verification:
 ### 6.5 gRPC
 
 Mandatory measures:
-- TLS for all release channels; mTLS for service-to-service;
+- TLS for all production channels; mTLS for service-to-service;
 - workload identity or OAuth token in metadata, not credentials inside message body;
 - method-level authorization through interceptor/policy layer;
 - max receive/send message size;
@@ -402,7 +402,7 @@ Minimum events:
 - API key/client credential usage;
 - rate-limit/quota decisions;
 - webhook signature/replay failures;
-- schema validation failures at public boundary;
+- schema validation failures on external requests;
 - sensitive data access and bulk export.
 
 Minimum fields:

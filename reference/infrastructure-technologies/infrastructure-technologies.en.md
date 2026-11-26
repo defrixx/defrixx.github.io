@@ -51,7 +51,7 @@ Artifacts are used to pass build outputs between jobs and later stages. Cache sp
 
 A modern live pattern is to use OIDC federation instead of long-lived static secrets. The CI/CD platform issues a short-lived OIDC token for a specific job/workflow with claims about the repository, branch/tag, pipeline, environment, and actor. A cloud provider or Vault verifies the issuer, audience, subject, and additional claims, then issues temporary credentials with a limited policy.
 
-The deploy pipeline should not be the only trust point. The pipeline builds and publishes an artifact, while a deploy/admission gate separately verifies the digest, signature, provenance, policy result, environment approval, and release eligibility. The boundary usually sits where the pipeline hands an immutable artifact and deployment intent to Kubernetes, a GitOps controller, a release orchestrator, or a cloud deploy service.
+The deploy pipeline must not be the only trust point. The pipeline builds and publishes an artifact, while a deploy/admission gate separately verifies the digest, signature, provenance, policy result, environment approval, and release eligibility. The boundary usually sits where the pipeline hands an immutable artifact and deployment intent to Kubernetes, a GitOps controller, a release orchestrator, or a cloud deploy service.
 
 Untrusted workflow input is a separate boundary. Pull request titles and bodies, issue comments, branch names, tag names, release notes, commit messages, and forked code must be treated as attacker-controlled when they reach shell scripts, deployment commands, release notes, AI-assisted workflow steps, or policy inputs.
 
@@ -186,7 +186,7 @@ An OCI registry stores and serves container images and related supply-chain arti
 #### Operating Model
 The OCI Distribution Specification defines the API for pushing and pulling content through a registry. The core objects are blobs, manifests, image indexes, digests, and tags. A blob stores an image layer or config. A manifest describes one image or artifact and references blobs by digest. An image index connects several platform-specific manifests, such as `linux/amd64` and `linux/arm64`. A digest is a content-addressed identifier for specific registry content; a tag is a human-readable reference to a manifest or index and may be mutable unless registry policy prevents it.
 
-A repository inside a registry groups related artifacts, for example `prod/payments/api`. A client pushes blobs and a manifest, then may assign a tag. During pull, the client asks for a manifest or index by tag or digest, receives descriptors for the selected content, and downloads the referenced blobs. For a multi-platform image, the client may first receive an index and then select the platform-specific manifest for its OS and architecture. Kubernetes deployments to live environments should reference images by digest because a tag is not a reliable immutable reference without a separate tag immutability policy.
+A repository inside a registry groups related artifacts, for example `prod/payments/api`. A client pushes blobs and a manifest, then may assign a tag. During pull, the client asks for a manifest or index by tag or digest, receives descriptors for the selected content, and downloads the referenced blobs. For a multi-platform image, the client may first receive an index and then select the platform-specific manifest for its OS and architecture. Kubernetes deployments to live environments must reference images by digest because a tag is not a reliable immutable reference without a separate tag immutability policy.
 
 Registry promotion must preserve what was reviewed. Copying an image from one registry to another can change the repository reference and may produce a different top-level digest when the copied object, media type, or index shape changes. Review evidence therefore needs the source and destination references, the exact digest deployed, the platform manifest set, and the signature/provenance subject that was accepted by policy.
 
@@ -228,9 +228,9 @@ flowchart LR
 ```
 
 #### Responsibility Boundaries
-A registry stores and serves artifacts through an API, but it does not automatically prove that an image is safe, signed by the right subject, or built from an approved source. The team owns authentication and authorization, immutable digest-based deployment, tag immutability for release tags, signatures, provenance, retention, vulnerability management, and audit trail.
+A registry stores and serves artifacts through an API, but it does not automatically prove that an image is safe, signed by the right subject, or built from an approved source. The team owns authentication and authorization, immutable digest-based deployment, tag immutability for release tags, controlled channel-alias updates, signatures, provenance, retention, vulnerability management, and audit trail.
 
-The artifact registry should not be the only control point. Even if the registry blocks some unsafe images, the deploy gate should independently verify digest, signature, builder identity, provenance, and policy decision before a workload reaches a live environment.
+The artifact registry must not be the only control point. Even if the registry blocks some unsafe images, the deploy gate must independently verify digest, signature, builder identity, provenance, and policy decision before a workload reaches a live environment.
 
 #### Common Live Patterns
 - Private registry with IAM/RBAC and separate repositories by environment or domain.
@@ -776,7 +776,7 @@ A policy engine makes decisions according to configured rules, but it does not d
 - Policy unit tests and fixtures for known-good/known-bad manifests.
 - Separate policy bundles by environment or risk tier.
 - Monitoring webhook latency, denial rates, audit violations, and policy engine availability.
-- Image verification policies for digest, signature, and attestations on live workloads.
+- Image verification policies for digest, signature, and attestations on workloads.
 
 #### Security and Operational Verification
 
@@ -1059,9 +1059,9 @@ Configuration describes desired state through resources, data sources, variables
 
 State maps configuration to real remote objects and contains attributes of created resources. It is a critical artifact: state often includes internal identifiers, connection strings, generated passwords, private endpoints, IAM bindings, and other sensitive values even when variables are marked sensitive. Select a remote backend with the required access control, audit, encryption, recovery, and locking support; a remote location alone does not provide all these controls. Locking protects against concurrent apply operations that can corrupt state or create conflicting changes.
 
-Modules provide reuse, but create a supply-chain boundary. Public modules, provider versions, and transitive module sources should be pinned and reviewed like application dependencies. A plan is an important review artifact, but not an absolute guarantee: drift, out-of-band changes, provider behavior, and data sources can change the final apply.
+Modules provide reuse, but create a supply-chain boundary. Public modules, provider versions, and transitive module sources are pinned and reviewed like application dependencies. A plan is an important review artifact, but not an absolute guarantee: drift, out-of-band changes, provider behavior, and data sources can change the final apply.
 
-In live environments Terraform/OpenTofu usually runs from CI/CD or a dedicated IaC platform, not from an operator laptop. The pipeline obtains short-lived credentials through OIDC/workload identity, builds a plan, stores it as evidence, passes approval, and applies changes with a limited role. Manual apply should be a break-glass process with an audit trail and later state reconciliation.
+In live environments Terraform/OpenTofu usually runs from CI/CD or a dedicated IaC platform, not from an operator laptop. The pipeline obtains short-lived credentials through OIDC/workload identity, builds a plan, stores it as evidence, passes approval, and applies changes with a limited role. Manual apply is permitted only as a break-glass process with an audit trail and later state reconciliation.
 
 #### Interaction Diagram
 ```mermaid
@@ -1181,11 +1181,11 @@ PostgreSQL and other relational databases are used for transactional state, acco
 #### Operating Model
 A database contains schemas, tables, indexes, views, functions, and roles. A schema groups database objects and is often used to separate domains or tenants, although it does not replace access control by itself. A role can be a login role for connections or a group role for granting privileges. Privileges define who can connect, read, write, change schema, execute functions, or manage objects.
 
-Connection pooling reduces database load and controls the number of active connections. Live deployments often use PgBouncer or managed poolers; the pooling mode matters because transaction/session pooling affects prepared statements, temp tables, session variables, and role switching. Migrations change schema and should be versioned, reviewed, reversible where practical, and compatible with rolling deployment.
+Connection pooling reduces database load and controls the number of active connections. Live deployments often use PgBouncer or managed poolers; the pooling mode matters because transaction/session pooling affects prepared statements, temp tables, session variables, and role switching. Migrations change schema and must be versioned, reviewed, reversible where practical, and compatible with rolling deployment.
 
 Row-level security can restrict rows at the database policy layer and is useful for tenant isolation, but it requires a strict ownership model, bypass scenario tests, and control over privileged roles. Backups and point-in-time recovery rely on base backups and WAL/archive logs. Read replicas offload reads and help recovery, but create separate access risks to the same data and lag-sensitive logic.
 
-Extensions, superuser-like privileges, and procedural languages expand database capability, but increase blast radius. Audit should cover privileged actions, DDL, authentication failures, and access to sensitive tables where required.
+Extensions, superuser-like privileges, and procedural languages expand database capability, but increase blast radius. Audit must cover privileged actions, DDL, authentication failures, and access to sensitive tables where required.
 
 #### Responsibility Boundaries
 The database engine provides storage, transactions, privileges, and replication primitives. The team owns schema ownership, least-privilege roles, secret rotation, migration safety, backup restore tests, encryption, network exposure, audit, tenant isolation, and protection of sensitive data in queries, dumps, and replicas.
@@ -1202,7 +1202,7 @@ The database engine provides storage, transactions, privileges, and replication 
 
 #### Security and Operational Verification
 
-In PostgreSQL, superusers and roles with `BYPASSRLS` always bypass RLS. Table owners normally bypass it too; `FORCE ROW LEVEL SECURITY` subjects the owner to policies but does not constrain superusers or `BYPASSRLS`. Application roles should neither own tenant tables nor be able to assume bypass roles. Review `SECURITY DEFINER` functions and the combination of permissive and restrictive policies.
+In PostgreSQL, superusers and roles with `BYPASSRLS` always bypass RLS. Table owners normally bypass it too; `FORCE ROW LEVEL SECURITY` subjects the owner to policies but does not constrain superusers or `BYPASSRLS`. Application roles must neither own tenant tables nor be able to assume bypass roles. Review `SECURITY DEFINER` functions and the combination of permissive and restrictive policies.
 
 RLS does not restrict table-level operations, including `TRUNCATE` and `REFERENCES`: review those privileges separately. Unique, primary-key, and foreign-key checks bypass RLS to preserve integrity and can reveal a hidden record through the operation outcome. For shared tables, test uniqueness conflicts and references to another tenant's object; include tenant context in constraints where it matches the business invariant, and do not expose internal error details to clients. Denial of `SELECT` alone does not prove these disclosure channels are absent.
 
@@ -1304,7 +1304,7 @@ A cluster consists of nodes and stores indexes. An index contains documents and 
 
 Access can be defined at the cluster, index, document, and field level depending on distribution, edition, and configuration. Dashboards/OpenSearch Dashboards/Kibana provide UI for search and visualization, but when exposed incorrectly they become a direct window into logs, PII, tokens, and internal infrastructure data.
 
-Snapshot repositories are used for backup/restore and migration. They often live in object storage, so their IAM and retention are as important as permissions on the cluster itself. Logs and traces should be treated as sensitive data: they can contain authorization headers, session IDs, emails, payload fragments, stack traces, and internal hostnames.
+Snapshot repositories are used for backup/restore and migration. They often live in object storage, so their IAM and retention are as important as permissions on the cluster itself. Logs and traces are treated as sensitive data: they can contain authorization headers, session IDs, emails, payload fragments, stack traces, and internal hostnames.
 
 #### Responsibility Boundaries
 A search cluster indexes and searches documents, but it does not decide which data is safe to log or who should see it. The team owns network exposure, authentication, authorization, tenant/index isolation, field masking, ingest redaction, dashboard access, snapshot security, retention, and cost/cardinality controls.
@@ -1453,7 +1453,7 @@ RabbitMQ owns broker delivery and routing, but not message content security or b
 
 #### Common Live Patterns
 - Clustered RabbitMQ with quorum queues for critical queues; do not design new HA paths around classic mirrored queues, which are removed in RabbitMQ `4.x`.
-- Durable queues for live messages; transient non-exclusive classic queues are deprecated in RabbitMQ `4.3+` and should not be a new production model. For temporary state, use exclusive/server-named queues or durable queues with TTL.
+- Durable queues for live messages; transient non-exclusive classic queues are deprecated in RabbitMQ `4.3+` and must not be used as a new production model. For temporary state, use exclusive/server-named queues or durable queues with TTL.
 - Separate vhosts for domains, environments, or teams.
 - TLS for client connections.
 - Least-privilege permissions on exchanges and queues.

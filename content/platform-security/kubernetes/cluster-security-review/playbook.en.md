@@ -141,8 +141,8 @@ Use `--subresource=<name>` for `kubectl auth can-i` subresource checks, and incl
 
 **Gateway API security baseline:**
 - `GatewayClass` is a platform-owned object. Permission to create or change `GatewayClass` and controller parameters must be limited to platform/security owners because it selects the controller implementation and trust boundary.
-- A `Gateway` for shared/public edge should live in a platform-owned namespace. Application namespaces may attach `HTTPRoute`/`GRPCRoute`/`TCPRoute` only through explicitly configured `allowedRoutes` on the intended listener.
-- `allowedRoutes` should be as narrow as possible: `Same` for a single-tenant Gateway, `Selector` only with managed labels and admission protection against unauthorized label changes, and `All` is not acceptable for shared/public Gateways without separate risk acceptance.
+- A `Gateway` for shared/public edge must live in a platform-owned namespace. Application namespaces may attach `HTTPRoute`/`GRPCRoute`/`TCPRoute` only through explicitly configured `allowedRoutes` on the intended listener.
+- `allowedRoutes` must be as narrow as possible: `Same` for a single-tenant Gateway, `Selector` only with managed labels and admission protection against unauthorized label changes, and `All` is not acceptable for shared/public Gateways without separate risk acceptance.
 - Cross-namespace backend and certificate references require a `ReferenceGrant` in the target namespace. Route attachment to a cross-namespace Gateway is the exception: it is authorized through the Gateway listener's `allowedRoutes`, not a ReferenceGrant. This applies to backend Services, TLS Secrets, and other referents; missing `ReferenceGrant` must produce an invalid route/reference, not silent fallback.
 - TLS termination policy records where TLS terminates, which certificate sources are allowed, who may reference TLS Secrets, which protocols/ciphers/min TLS version the controller implementation enforces, and how rotation is performed.
 - Hostname and listener scope must be constrained: a route from an application namespace must not capture a wildcard hostname, another domain, privileged path prefix, or another tenant's listener without Gateway owner approval.
@@ -215,7 +215,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 - treat `EventRateLimit` as version- and deployment-dependent: it is an alpha admission controller and is disabled by default in upstream Kubernetes; prefer provider-supported API/event throttling or a tested custom policy where alpha admission plugins are not acceptable;
 - enforce one ServiceAccount per workload and quarterly permission recertification.
 - for a TokenReview-only consumer, create a custom ClusterRole with only `create` on `tokenreviews.authentication.k8s.io`; the built-in `system:auth-delegator` also permits `subjectaccessreviews` and is not the minimum profile for this use case;
-- admission policy for an approved service-to-service pattern should require an explicit `audience`, bounded `expirationSeconds`, a read-only mount, and no namespace `default` ServiceAccount; `expirationSeconds` must not be below the Kubernetes minimum of `600` seconds;
+- admission policy for an approved service-to-service pattern must require an explicit `audience`, bounded `expirationSeconds`, a read-only mount, and no namespace `default` ServiceAccount; `expirationSeconds` must not be below the Kubernetes minimum of `600` seconds;
 - verify fail-closed destination behavior during TokenReview timeout, throttling, and unavailability, and assess the pattern's control-plane load;
 - when offline OIDC/JWKS validation replaces TokenReview, document acceptance of delayed revocation: deleting the bound Pod or ServiceAccount does not invalidate the token before `exp`.
 

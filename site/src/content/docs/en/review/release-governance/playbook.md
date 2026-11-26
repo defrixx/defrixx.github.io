@@ -56,19 +56,19 @@ High-impact scenarios:
 |---|---|---|
 | Low-risk internal | Internal tool, no sensitive data, bounded blast radius | CI checks pass, owner approval, evidence retained |
 | Standard live release | Customer-facing service, normal API or UI release | Security gates, protected environment, deployment approval, artifact immutability |
-| High-risk live release | Auth, payment, tenant isolation, admin, secrets, platform, CI/CD, Kubernetes control plane | Independent security approval, stricter gates, rollback plan, release evidence pack |
+| High-risk live release | Authentication, authorization, payment, tenant isolation, admin, secrets, platform, CI/CD, Kubernetes control plane | Independent security approval, stricter gates, rollback plan, release evidence pack |
 | Emergency | Incident fix, urgent live-environment restoration, KEV/public-exploit patch, broken embargo response | Expedited approval, narrow scope, evidence retained, mandatory post-release review within `2 business days` |
 
 Recommended control:
 - Every repository or deployable service declares its default release class.
-- A change can raise the release class for a single release when it touches auth, tenant isolation, payment, secrets, CI/CD, IaC, Kubernetes policy, or privileged admin paths.
+- A change can raise the release class for a single release when it touches authentication, authorization, tenant isolation, payment, secrets, CI/CD, IaC, Kubernetes policy, or privileged admin paths.
 
 ### 3.2 Separation of Duties
 
 Release-ready defaults:
 - Protected live environments are deployable only by dedicated CD identities or explicitly authorized release roles.
 - Human direct live deployment is break-glass only.
-- The same person should not be the sole author, sole approver, and sole deploy approver for a high-risk release to a live environment.
+- The same person must not be the sole author, sole approver, and sole deploy approver for a high-risk release to a live environment.
 - Changes to pipeline definitions, reusable workflows, deployment manifests, IaC modules, signing configuration, and environment protection rules require review by owners listed in CODEOWNERS or equivalent policy.
 - Build, sign, publish, and deploy jobs use separate identities and permissions. A build job may publish an unsigned candidate artifact, but it must not also hold unrestricted production deploy or signing authority unless the workflow is explicitly reviewed as a trusted release builder.
 
@@ -105,7 +105,7 @@ Verification:
 | SCA/SBOM | Detect vulnerable dependencies and maintain release inventory | Block exploitable Critical/High without exception |
 | IaC/container scan | Catch unsafe infrastructure, image, and runtime settings | Block Critical/High in live deployment path |
 | Artifact signing/provenance | Prove artifact came from expected builder/source/workflow | Block unsigned/unverified artifacts where required |
-| DAST/API tests | Validate deployed test/staging surface and auth/session behavior | Block confirmed Critical/High reachable issues |
+| DAST/API tests | Validate deployed test/staging surface and auth/session behavior | Block confirmed Critical/High issues reachable in the target environment |
 | Manual approval | Record release readiness and risk acceptance | Required for standard and high-risk live releases |
 
 Release-ready defaults:
@@ -176,7 +176,7 @@ Minimum evidence pack for standard live release:
 
 Additional evidence for high-risk live release:
 - threat model or abuse-case update;
-- negative tests for auth, tenant isolation, payment/ledger, admin, or secrets path touched by the change;
+- negative tests for authentication, authorization, tenant isolation, payment/ledger, admin, or secrets paths touched by the change;
 - for AI/agentic workflows: AI asset inventory entry, policy matrix, action-trace evidence, tool/MCP registry evidence, and kill-switch/rollback drill where applicable;
 - rollback/kill-switch plan;
 - monitoring and alert confirmation for the changed sensitive flow;

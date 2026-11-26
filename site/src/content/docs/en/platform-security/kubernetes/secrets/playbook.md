@@ -143,7 +143,7 @@ Registry pull credentials are Secrets with direct supply-chain impact. A subject
 - scope `kubernetes.io/dockerconfigjson` credentials to the minimum registry, repository, and pull-only permission set; do not reuse organization-wide or push-capable tokens as `imagePullSecrets`;
 - attach `imagePullSecrets` only to the ServiceAccounts and Pods that need them; do not put high-value registry credentials on the namespace `default` ServiceAccount;
 - treat any broad `imagePullSecret` as high-value: owner, expiry or review date, rotation path, and evidence that it is not readable by human/CI identities outside the release path;
-- admission policy should reject workloads that reference unapproved `imagePullSecrets`, use default ServiceAccount registry credentials in protected namespaces, or pull from registries outside the approved source list.
+- admission policy must reject workloads that reference unapproved `imagePullSecrets`, use default ServiceAccount registry credentials in protected namespaces, or pull from registries outside the approved source list.
 
 ---
 

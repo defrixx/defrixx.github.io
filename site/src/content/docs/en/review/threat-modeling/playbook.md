@@ -20,7 +20,7 @@ Minimum output of a threat modeling exercise:
 - risk assessment with explicit impact/likelihood and residual risk;
 - action plan: mitigation, validation, owner, due date, and release decision.
 
-Threat modeling should be iterative: early sketch during design, refinement before implementation, validation before release, and updates after significant changes, incidents, or new threat intelligence.
+Keep the threat model current as the system evolves: prepare an initial model during design, refine it before implementation, validate it before release, and review it after significant changes, incidents, or new threat intelligence.
 
 ---
 

@@ -12,7 +12,7 @@ The repository contains three narrowly scoped OPA policies, JSON configuration e
 | --- | --- | --- |
 | `pod` | One stateless Linux `v1/Pod` in `payments`, using `payments-app`, with no automatic API token, no volumes or host access, digest-pinned images, non-root execution, `RuntimeDefault` seccomp, no privilege escalation, read-only root filesystems, and all capabilities dropped | A strict field allowlist covers ordinary and init containers. Unknown fields fail. This is a local profile, not a complete Kubernetes schema or an implementation of every Pod Security Standard |
 | `aws_trust` | One AWS role trust statement for the configured GitHub OIDC provider, `sts:AssumeRoleWithWebIdentity`, exact audience `sts.amazonaws.com`, and exact subject `repo:example@123456/payments@456789:ref:refs/heads/main` | Only this branch-based trust shape is accepted. Environment subjects, wildcard subjects, additional statements, alternative operators, and extra actions fail. Role permissions and live token exchanges are outside the check |
-| `slsa_build` | Authenticated synthetic SLSA v1 statement and trusted verifier output for one configured artifact, signer, builder and source revision | Checks only the local decision contract; does not verify cryptography, the complete schema or SLSA Build level |
+| `slsa_build` | Synthetic in-toto Statement with SLSA v1 provenance and a simulated trusted verifier result for one configured artifact, signer, builder and source revision | Checks only the local decision contract; does not verify cryptography, the complete schema or SLSA Build level |
 
 The names, AWS account `123456789012`, registry `registry.example.com`, and repeated-character image digest are illustrative placeholders. The image reference is syntactically pinned but is not a verified or pullable release artifact. Replace the placeholders with reviewed values before adapting the examples. Namespace and ServiceAccount creation, IAM role permissions, resource policies, and protection of the release branch are separate prerequisites.
 
@@ -29,7 +29,7 @@ The layout is intentionally small:
 - `configuration.json` defines the expected namespace, ServiceAccount, OIDC provider, GitHub subject and synthetic SLSA expectations.
 - `manifests/pod.json` is a Kubernetes Pod manifest in JSON, which the Kubernetes API accepts as a manifest representation.
 - `manifests/aws-trust.json` is an AWS role trust policy document, not the role's resource permissions policy.
-- `manifests/slsa-build.json` contains a synthetic authenticated statement and verifier result for the policy contract.
+- `manifests/slsa-build.json` contains a synthetic statement and simulated authentication result for the policy contract.
 - `policies/pod.rego`, `policies/aws_trust.rego` and `policies/slsa_build.rego` default to denial and implement the three profiles.
 - `fixtures.json` contains the complete scenario set; `policies/fixtures_test.rego` runs each scenario through the real policy.
 

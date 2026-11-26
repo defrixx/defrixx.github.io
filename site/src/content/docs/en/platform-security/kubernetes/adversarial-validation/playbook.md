@@ -38,7 +38,7 @@ A successful validation outcome is not "something looks suspicious", but a concr
 For live environments and shared staging:
 - run destructive, DoS, and runtime escape checks in a disposable isolated environment with dedicated nodes, control plane, and test credentials. A namespace in a shared cluster does not contain host escape or node-level resource exhaustion;
 - define scope in advance: namespaces, workloads, identities, IP ranges, time window;
-- do not read real secret values without separate approval; proving `get/list/watch` or token exposure is usually enough;
+- do not read real secret values without separate approval; proving `get/list/watch` permission or token issuance is enough;
 - do not run mass scanning across pod CIDRs without rate/concurrency limits;
 - prove remediation with the same minimal test case, not a stronger technique.
 
@@ -46,7 +46,7 @@ A failed connection, missing tool, unsupported field, or failed scan is inconclu
 
 Evidence commands are classified as:
 - `safe in live`: read-only metadata or policy checks that do not reveal secret values;
-- `staging only`: commands that inspect artifacts or run active probes and should use a clone, canary, or isolated namespace;
+- `staging only`: commands that inspect artifacts or run active probes and must use a clone, canary, or isolated namespace;
 - `requires approval`: commands that may expose sensitive data, scan infrastructure, or touch real workloads.
 
 ---

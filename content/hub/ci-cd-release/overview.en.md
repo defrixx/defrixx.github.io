@@ -47,7 +47,7 @@ If registry promotion changes manifest bytes/format, the new digest is a new obj
 | REL-003 | Grant minimal job/environment permissions; constrain federation by issuer, audience, subject and workflow context | Untrusted PR gets no secrets/deployment credential; foreign claims are rejected |
 | REL-004 | Identify artifacts by digest and promote the same bytes without rebuilding | Byte or tag substitution after approval does not change the selected object |
 | REL-005 | Verify provenance: subject digest, trusted builder, source revision and selected provenance policy | A validly signed statement from another builder or for another digest is rejected |
-| REL-006 | Verify signatures and trust evidence with an explicit identity/issuer, root and applicable time/log policy | Foreign signer, missing proof or verifier error never becomes admission |
+| REL-006 | Verify signatures and trust evidence with a trusted verifier and explicit identity/issuer, root and applicable time/log policy | Foreign signer, missing proof or verifier error never becomes admission |
 | REL-007 | Bind SBOM and scan outputs to the delivered digest; record generator, format, coverage and vulnerability database revision | A source-tree or other-image SBOM is not presented as delivered composition |
 | REL-008 | Separate mandatory integrity checks and risk gates; scope exceptions by requirement, digest/revision, owner and expiry | A vulnerability exception cannot bypass forged provenance; an expired exception is invalid |
 | REL-009 | Constrain deployment to environment and verified digest; protect decision handoff against substitution and races | Tag replacement, concurrent requests and rollback do not admit an unchecked object |

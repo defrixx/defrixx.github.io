@@ -200,7 +200,7 @@ File capabilities are stored on executable files, usually in the `security.capab
 
 Practical Kubernetes implications:
 - `securityContext.capabilities.drop/add` is a CRI/runtime abstraction over several Linux capability sets; verify the effective runtime state, not only YAML.
-- `drop: ["ALL"]` should remove a capability from Effective/Permitted/Bounding; if it remains in Bounding or can return through a file capability, least privilege has not been reached.
+- `drop: ["ALL"]` must remove a capability from Effective/Permitted/Bounding; if it remains in Bounding or can return through a file capability, least privilege has not been reached.
 - `allowPrivilegeEscalation: false` sets `no_new_privs` and blocks new privileges through `execve`, including setuid and file-capability paths. It does not replace `drop: ["ALL"]`, but it closes an important capability reacquisition path.
 - Kubernetes generally does not set Ambient capabilities. If an application starts with a capability, then performs `setuid`/drops privileges and expects to keep that capability after `execve`, it may break. That is not a reason to grant broad capabilities; it is a reason to change the startup model or document an explicit exception.
 
@@ -227,7 +227,7 @@ Depending on context, it may allow:
 - mounting filesystems
 - manipulating namespaces
 - interacting with sensitive kernel interfaces
-- broad administrative actions that should never be normal for most workloads
+- broad administrative actions that must never be normal for most workloads
 
 ### Abuse examples
 - mounting host-related filesystems

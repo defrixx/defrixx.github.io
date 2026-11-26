@@ -59,7 +59,7 @@ Supported sources are `user`, `retrieval`, `file`, `tool` and `assistant`. The a
 | Packaged profile | Coverage |
 | --- | --- |
 | `user-input` | User input; selected imperative attack patterns are anchored. |
-| `retrieval`, `tool-results` | Retrieved documents or tool text, with broad instruction markers. |
+| `retrieval`, `tool-results` | Retrieved documents or tool text, with instruction markers that are not anchored to the beginning of the text. |
 | `security` | Attack markers across data sources and assembled context. |
 | `restricted-topics` | Strict lexical topic restrictions. |
 | `security-and-topics` | Combined attack and topic rules. |

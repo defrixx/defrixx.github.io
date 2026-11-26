@@ -120,7 +120,7 @@ Verification:
 Release-ready defaults:
 - Critical workflows use explicit state machines with allowed transitions.
 - Calculate prices, discounts, totals, and available balances server-side from trusted data and current product rules. Clients submit a selected product, quantity, or promotion code, but do not determine the final price, discount eligibility, or payment state. Before charging, validate allowed ranges, currency, rounding rules, and promotion compatibility with the order; a stored quote must have an approved validity period and be bound to the order.
-- State-changing requests use idempotency keys where retries or duplicate events are expected.
+- State-changing requests use idempotency keys where retries or duplicate events are possible.
 - Scope each idempotency key to the tenant, actor, and operation, and bind it to validated request parameters. Reusing the key with a different amount, currency, recipient, or object must cause a conflict rather than a new action. The key does not replace authorization: check the current actor's entitlement before returning a stored result. Record retention must cover the approved retry period; after record deletion, enforce the business invariant wherever repeating the action remains prohibited.
 - In webhook, payment, refund, booking, and fulfillment flows, duplicate and already-consumed events do not repeat business effects. Reject events with invalid signatures or violations of delivery freshness rules. Delayed and out-of-order delivery can be normal provider behavior: reconcile current state through a trusted API or use an object version defined by the contract, defer processing when prerequisites are missing, and prevent forbidden state transitions. An event timestamp alone does not prove ordering or uniqueness.
 - Business state changes and external side effects are transactionally coupled or compensated through a tested recovery process.
@@ -164,7 +164,7 @@ Release-ready defaults:
 - Every sensitive flow has a versioned abuse budget: actor keys, counters, time windows, thresholds, friction path, owner, and expiry/review cadence.
 - Starting budgets are explicit even when the final values are product-specific: signup/trial by account, tenant, payment instrument, device/browser signal, source network, and time window; reset and OTP by account plus delivery destination; booking/inventory by actor plus scarce resource; export by actor, tenant, object count, byte volume, and time window. Daily and weekly windows may suit trial-quota accumulation, but are not universal values. Justify windows using the business operation duration and acceptable loss; separately test short bursts and sustained accumulation of abuse.
 - Limit configuration changes are treated as production policy changes. High-risk limit increases require owner approval, reason, rollout time, rollback path, and monitoring confirmation.
-- Fail-open behavior is documented. If the limiter, risk engine, queue, or ledger is degraded, critical flows either fail closed or fall back to a bounded safe mode with an explicit maximum window.
+- Control failure behavior is documented. If the limiter, risk engine, queue, or ledger is unavailable, critical flows either fail closed or fall back to a bounded safe mode with an explicit maximum window.
 
 Verification:
 - Compare configured limits against the flow inventory and confirm each sensitive flow has owner-approved thresholds.

@@ -86,7 +86,7 @@ Where relevant, distinguish between:
 - Minimum runtime evidence: Linux `6.3+` or a vendor-supported kernel with ID-mapped mount support for all filesystems used by the workload, containerd `2.0+` or CRI-O `1.25+`, an OCI runtime with user namespace support such as `runc` `1.2+` or `crun` `1.9+`, and evidence that the user-namespace Pod starts successfully. These are compatibility minimums, not recommended secure versions: use supported releases with current security patches. `started_user_namespaced_pods_total` counts creation attempts rather than successful starts; correlate it with errors, kubelet events, and actual Pod state.
 - Roll out in stages: first stateless workloads without `hostNetwork`, `hostPID`, `hostIPC`, raw block `volumeDevices`, or special storage assumptions; then stateful/storage-heavy workloads only after CSI/storage compatibility testing; then platform workloads through separate design review.
 - For images that genuinely need root-like behavior inside the container, use a dedicated exception path: owner, expiry, incompatibility reason for `runAsNonRoot`, evidence that host UID/GID remain unprivileged, and compensating controls (`seccomp`, dropped capabilities, read-only root filesystem, restricted volumes).
-- Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and should fail admission or deployment validation.
+- Pods with user namespaces cannot use host namespaces: `hostNetwork: true`, `hostPID: true`, and `hostIPC: true` are incompatible and must fail admission or deployment validation.
 - Raw block `volumeDevices` are not compatible with Pods using user namespaces. Stateful or storage-heavy workloads need an explicit storage compatibility test before adopting this control.
 - NFS volumes are not compatible with user-namespace Pods until the Linux NFS client supports idmapped mounts; treat NFS-backed workloads as incompatible unless the platform team has verified support on the exact kernel and storage path.
 - Pod Security Standards relax `runAsNonRoot` and `runAsUser` checks for Pods with user namespaces because container UID `0` is mapped to an unprivileged host UID. This does not mean "root is safe by default"; keep `runAsNonRoot: true` for normal app workloads unless the workload has a documented reason to run as root inside the user namespace.
@@ -229,7 +229,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 - If `shareProcessNamespace: true`, processes become visible across containers in the Pod, including data exposed via `/proc`.
 - Processes in sibling containers become addressable for signaling, subject to normal UID and capability checks; sharing the process namespace does not itself remove those checks.
 - `/proc/<pid>/root` can expose another container's filesystem.
-- For live workloads, deny `shareProcessNamespace: true` by default; allow only explicit break-glass exceptions with owner and expiry.
+- For workloads, deny `shareProcessNamespace: true` by default; allow only explicit break-glass exceptions with owner and expiry.
 
 **Mandatory admission/policy gate:**
 - Reject Pods with `shareProcessNamespace: true` via admission policy (Kyverno/Gatekeeper/ValidatingAdmissionPolicy), except explicitly registered exceptions.
@@ -245,7 +245,7 @@ Detailed seccomp review (dangerous syscalls, `io_uring`/`bpf`, combo checks, CI 
 
 **Pod / container runtime controls:**
 - Define `resources.requests` for CPU and memory so scheduling decisions reflect real workload needs.
-- Define memory limits for live workloads to bound node-level DoS and noisy-neighbor impact.
+- Define memory limits for workloads to bound node-level DoS and noisy-neighbor impact.
 - Define `ephemeral-storage` requests and limits for workloads that write temporary files, caches, logs, uploads, or generated artifacts.
 - Treat CPU limits as workload-specific, not a blanket security default. CPU limits can introduce throttling and latency regressions for services with bursty or latency-sensitive behavior; use them when the DoS/noisy-neighbor risk is higher than the throttling risk, or when required by platform policy.
 - For internet-facing, multi-tenant, batch, build, AI/inference, and untrusted-code workloads, document the resource abuse model and choose CPU, memory, and ephemeral-storage guardrails explicitly.
@@ -329,7 +329,7 @@ Pod Security Standards help enforce secure Pod specification defaults, but they 
   - `pod-security.kubernetes.io/warn-version: v1.<minor>`
 - Use `latest` only in explicitly owned canary or non-protected namespaces where policy drift is intentionally tested before cluster-wide adoption.
 - Separate `warn`/`audit` from `enforce`; live environments must not rely on warn-only mode.
-- Treat seccomp as a separate runtime evidence requirement: `restricted` admission must reject workloads without explicit `RuntimeDefault` or approved `Localhost`, equivalent custom policies must do the same, or node configuration must prove kubelet `--seccomp-default` / `seccompDefault` is enabled for namespaces where unspecified profiles are temporarily tolerated.
+- Verify effective seccomp separately. Enforced `restricted` admission or an equivalent custom policy must reject workloads without explicit `RuntimeDefault` or approved `Localhost`. If a namespace temporarily permits workloads without an explicit profile, confirm kubelet `--seccomp-default` / `seccompDefault` is enabled on eligible nodes.
 - Use `24h` as an initial local namespace-policy drift-check interval; also detect label and admission-exemption changes as they occur. Restrict who can change those settings.
 - Block deployment if namespace labels regress or are removed.
 - During Kubernetes upgrades, run a dry-run evaluation of the next PSS version before changing namespace labels, record violations by workload owner, remediate or approve time-boxed exceptions, then update `enforce-version`, `audit-version`, and `warn-version` together.

@@ -43,7 +43,7 @@ Attackers and entry points:
 High-impact scenarios:
 - user-controlled input reaches an interpreter: SQL, NoSQL, LDAP, XML, template engine, OS shell, browser, deserializer, or expression evaluator;
 - missing object authorization exposes another tenant's data;
-- weak session or token handling allows replay, fixation, privilege escalation, or post-logout use;
+- weak session or token handling allows replay, fixation, privilege escalation, or use after logout or revocation;
 - uploaded files become executable content, malware transport, SSRF helpers, or stored XSS payloads;
 - logs, errors, traces, or analytics leak secrets and regulated data.
 
@@ -56,8 +56,8 @@ High-impact scenarios:
 Release-ready defaults:
 - Validate all untrusted input on the server side before business logic, persistence, query construction, or calls to downstream systems.
 - Define expected type, length, format, charset, range, enum, and object ownership for each externally controlled field.
-- Canonicalize encoded input before validation where multiple encodings or path formats are accepted.
-- Prefer allowlists for identifiers, enum values, sort keys, fields, redirect targets, callback URLs, MIME types, and file extensions.
+- Canonicalize input before validation where multiple encodings, path formats, or equivalent representations are accepted.
+- Define allowlists for identifiers, enum values, sort keys, fields, redirect targets, callback URLs, MIME types, and file extensions.
 - Reject validation failures by default. Silent normalization is acceptable only when the product owner and security reviewer agree that ambiguity cannot change authorization, price, state, or data selection.
 
 Verification:
@@ -73,7 +73,7 @@ Choose a defense for the interpreter that consumes the value:
 - OS commands: avoid the shell. Execute a fixed binary with an argument array, constrain supported options and values, and use least privilege. Argument arrays alone do not prevent option injection.
 - LDAP: prefer structured query APIs; distinguish filter escaping from distinguished-name escaping.
 - XML: use safe serialization and hardened parsers; disable external entities and external resolution unless a reviewed use case requires them.
-- Logs: use structured events, prevent newline/delimiter injection, and exclude secrets instead of concatenating sensitive strings.
+- Logs: use structured events, prevent newline/delimiter injection, and exclude secrets and sensitive strings from events.
 
 Verification:
 - Trace untrusted values to each interpreter and identify its specific safe API or encoding boundary.
@@ -128,7 +128,7 @@ Release-ready defaults:
 - Do not let fetched content drive a second-stage request, parser, archive extraction, or template rendering without repeating validation for that new sink. Webhook and import handlers preserve the exact signed representation under the provider contract. Before signature verification, permit only the bounded parsing required by the signature scheme; business processing starts after successful verification.
 
 Verification:
-- Tests cover polyglot files, malware-test fixtures, path traversal, absolute paths, symlink archive entries, archive traversal, decompression bombs, excessive file count, oversized payloads, content-type confusion, scan timeout behavior, and unsafe inline rendering.
+- Tests cover polyglot files, malware-test fixtures, path traversal, absolute paths, symlink and hardlink archive entries, archive traversal, decompression bombs, excessive file count, oversized payloads, content-type confusion, scan timeout behavior, and unsafe inline rendering.
 - Image tests cover huge dimensions in a small compressed file, aggregate animation pixels and frames, malformed data, CPU/RAM/time exhaustion, blocked decoder network access, GPS removal from outputs and derivatives, and SVG scripts and external references. Valid images retain correct orientation and complete the processing pipeline.
 - SSRF tests cover link-local and cloud metadata ranges, localhost, private IPv4 and IPv6 ranges, IPv4-mapped IPv6, decimal/hex/octal IP encodings where parsers support them, redirects to blocked ranges, DNS rebinding, slow responses, oversized responses, and blocked egress logs.
 - For deeper API-specific webhook, GraphQL, SOAP/XML, and gRPC controls, cross-check the [API security playbook](/en/application-security/api/api-security-patterns/playbook/). For browser rendering of uploaded or generated content, cross-check the [browser and frontend security playbook](/en/application-security/web/browser-security/playbook/).
@@ -217,7 +217,7 @@ The matrix below defines domain severity and the release decision. The [Vulnerab
 | Severity | Use when | Required action |
 |---|---|---|
 | Critical | Direct exploitable path to credential/session compromise, cross-tenant data access, remote code execution, secret exposure, payment manipulation, or unsafe release to a live environment | Block release until fixed; exception requires explicit authorized risk acceptance if policy allows it |
-| High | Plausible live-environment exploitation of injection, authorization bypass, sensitive data leakage, unsafe file handling, SSRF, crypto misuse, or missing security evidence for a high-risk change | Owner, due date, fix or accepted risk, and verification evidence |
+| High | Plausible exploitation of injection, authorization bypass, sensitive data leakage, unsafe file handling, SSRF, crypto misuse, or missing security evidence for a high-risk change | Owner, due date, fix or accepted risk, and verification evidence |
 | Medium | Meaningful gap with bounded impact, lower likelihood, or strong compensating controls | Track remediation and verify closure |
 | Low | Hardening, clarity, test coverage, or logging improvement with limited direct impact | Fix opportunistically |
 

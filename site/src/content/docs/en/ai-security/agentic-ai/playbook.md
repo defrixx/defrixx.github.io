@@ -119,7 +119,7 @@ Verification: attempt tenant substitution, child privilege expansion, replayed/e
 
 The OWASP Agent Control Standard (ACS), introduced in September 2026, provides an evolving model for middleware hooks and portable declarative policy. Record the adopted ACS revision and tested adapter capabilities; this playbook does not claim ACS conformance.
 
-As a playbook baseline, intercept tool invocation before effects occur, resolve agent and original-user identity, evaluate policy, enforce the decision, and trace the action with policy version and reason. A policy engine outage must block high-impact actions. Provide an emergency disable path outside the model and test it against queued work and delegated agents. Test equivalent policies across adapters before claiming portability; a hook that only observes completed effects is not preventive enforcement.
+As a playbook baseline, intercept tool invocation before effects occur, resolve agent and original-user identity, evaluate policy, enforce the decision, and trace the action with policy version and reason. A policy engine outage must block risky operations. Provide an emergency disable path outside the model and test it against queued work and delegated agents. Test equivalent policies across adapters before claiming portability; a hook that only observes completed effects is not preventive enforcement.
 
 ### 3.3 Memory, Retrieval, and State
 

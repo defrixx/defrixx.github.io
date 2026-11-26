@@ -21,7 +21,7 @@ Out of scope:
 - SLSA Build provenance policy details: use the [SLSA provenance overview](/en/supply-chain/slsa-provenance/overview/).
 
 Objective:
-- ensure live deployments reference the exact image that was reviewed and approved;
+- ensure deployments reference the exact image that was reviewed and approved;
 - reduce image-level attack surface and secrets exposure;
 - make registry promotion, signature, SBOM, provenance, and vulnerability decisions auditable.
 
@@ -46,7 +46,7 @@ Rule for live environments:
 - Treat tags as discovery labels or release channels, not as approval evidence.
 - Treat digests as the deployable artifact identity.
 - Obtain the expected digest from a protected approval process and verify downloaded content against it. The hash alone does not establish publisher trust or image safety; verify those through signatures, provenance, vulnerability assessment, and release policy.
-- For multi-arch images, decide whether policy verifies the index digest, each platform-specific manifest digest, or both. Critical images should verify both.
+- For multi-arch images, decide whether policy verifies the index digest, each platform-specific manifest digest, or both. For critical images, verify both.
 
 ---
 
@@ -54,7 +54,7 @@ Rule for live environments:
 
 Mandatory controls:
 - Use a minimal, supported base image. Prefer distroless, slim, or purpose-built runtime images when operationally practical.
-- Pin the base image by digest for live-environment builds or record the exact base digest in provenance/SBOM evidence.
+- Pin the base image by digest for release builds or record the exact base digest in provenance/SBOM evidence.
 - Use multi-stage builds when needed to separate build tools and caches from the runtime image. Otherwise, a minimal runtime image without unnecessary compilers, package managers, or test tools is sufficient.
 - Run as a non-root user by default. The image user must be compatible with the Kubernetes `securityContext`.
 - Do not require privileged mode, host namespaces, broad Linux capabilities, writable host paths, or Docker socket access.
@@ -65,7 +65,7 @@ Mandatory controls:
 Recommended controls:
 - Use reproducible build inputs where practical: pinned dependencies, locked package indexes, deterministic build steps, and stable timestamps where tooling supports them.
 - Label images with source repository, revision, build time, license, and maintainer metadata, but do not put sensitive internal URLs or secrets in labels.
-- Keep debug tooling in a separate debug image or controlled ephemeral debug workflow, not in the live runtime image.
+- Keep debug tooling in a separate debug image or controlled ephemeral debug workflow, not in the release image.
 
 Verification:
 - Inspect Dockerfile, image config, user, entrypoint, environment, exposed ports, labels, and history.
@@ -79,9 +79,9 @@ Verification:
 Image hardening does not replace Kubernetes hardening.
 
 Release-ready defaults:
-- The image should not need root. If root is required, document the system call, filesystem, port, or ownership reason and prefer a narrower fix.
+- The image must not require root. If root is required, document the system call, filesystem, port, or ownership reason and prefer a narrower fix.
 - The Kubernetes `securityContext` must enforce the intended image assumptions: `runAsNonRoot`, `allowPrivilegeEscalation: false`, dropped capabilities, seccomp profile, and read-only root filesystem where practical.
-- Runtime-writable paths should be explicit: mounted volume, `emptyDir`, or application data directory. Do not depend on writing across the whole image filesystem.
+- Make runtime-writable paths explicit: mounted volume, `emptyDir`, or application data directory. Do not depend on writing across the whole image filesystem.
 - Use HTTP/TCP/gRPC health and startup probes where suitable. An `exec` probe may directly invoke a reviewed binary with fixed arguments, without `sh`/`bash -c`; assess the binary's behavior itself. Keep the check lightweight and time-bounded, without data mutation, additional privileges, or secret output. Do not add a shell to the image solely for a probe.
 
 Verification:
@@ -118,7 +118,7 @@ Verification:
 ## 6. Tags, Digests, and Multi-Arch Images
 
 Release-ready defaults:
-- Deploy to live environments by digest: `registry.example.com/team/app@sha256:...`.
+- Release the image by digest: `registry.example.com/team/app@sha256:...`.
 - Use immutable version tags only as convenience references and block their overwrite. If movable channel aliases are used, update them only through the authorized release process; approval and deployment remain bound to the digest.
 - Preserve the approved digest in manifests, Helm values, Kustomize overlays, GitOps state, and deployment evidence.
 - Resolve tag-to-digest before approval, not during live deployment.
@@ -127,7 +127,7 @@ Release-ready defaults:
 Review guidance:
 - A logical image reference such as `app:1.2.3` can resolve to different platform manifests on different nodes.
 - If the cluster includes mixed architectures, admission policy must account for every allowed platform.
-- If only a platform manifest is approved, deployment should not use an unapproved index that could select a different platform object.
+- If only a platform manifest is approved, deployment must not use an unapproved index that could select a different platform object.
 
 Verification:
 - Evidence includes image reference, index digest if present, platform manifest digest, OS/architecture, signature status, SBOM/provenance subject, and deploy gate result.
@@ -139,7 +139,7 @@ Verification:
 Release-ready defaults:
 - Promote the same artifact from development to staging to live environments by digest. Do not rebuild between approval and live deployment.
 - If copying between registries is required, record source digest, destination digest, media type, platform set, copy tool, actor, and timestamp.
-- Separate write permissions from read/deploy permissions. CI that builds images should not automatically have broad delete or tag-mutation rights in release repositories.
+- Separate write permissions from read/deploy permissions. CI that builds images must not automatically have broad delete or tag-mutation rights in release repositories.
 - Use repository-level or environment-level boundaries for high-value images, base images, and signing/provenance artifacts.
 - Retention and garbage collection must preserve images and linked artifacts required for rollback, incident response, vulnerability investigation, customer evidence, and audit.
 
@@ -199,7 +199,7 @@ admission_failure_mode: fail-closed
 The example describes a local policy model rather than a specific tool configuration. Verify image-signing and provenance-signing identities separately: the generator reusable workflow may sign the attestation under its own identity. Replace `<approved-generator-version>` with the exact approved version from a real sample. If the generator emits v0.2, select its corresponding `predicate_type` and separate structural checks; the example v1 value cannot be applied to v0.2 without a compatibility policy.
 
 Vulnerability policy:
-- Critical/high vulnerabilities with plausible reachability or exposed attack surface should block deployment to live environments unless an exception has owner, justification, expiry, compensating controls, and verification evidence.
+- Critical/high vulnerabilities with plausible reachability or exposed attack surface must block deployment to live environments unless an exception has owner, justification, expiry, compensating controls, and verification evidence.
 - Unfixed vulnerabilities are not automatically acceptable. Review exploitability, package reachability, runtime exposure, mitigations, and vendor status.
 - Base image vulnerabilities need an owner. Shared base images require a faster rebuild path because many services inherit their risk.
 

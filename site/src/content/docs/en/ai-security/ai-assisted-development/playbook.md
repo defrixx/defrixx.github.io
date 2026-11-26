@@ -88,7 +88,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 `Baseline`:
 - Before generation, define functional requirements, trust boundaries, data classifications, authorization expectations, prohibited operations, and failure behavior.
 - For security-relevant changes, explicitly enumerate negative scenarios: cross-tenant access, privilege escalation, injection, replay, race conditions, unsafe retries, partial failure, and sensitive-data disclosure.
-- Require a minimal scoped diff. Approve changes to public interfaces, schemas, authentication flows, dependencies, CI/CD, and infrastructure separately.
+- Require a minimal scoped diff. Approve changes to public interfaces, schemas, authentication and authorization flows, dependencies, CI/CD, and infrastructure separately.
 - Instruction files and prompt templates may encode workflow and secure defaults, but they are not authorization, sandbox, or release controls.
 - Do not rely on a universal secure prompt, persona, threats to the model, or repeated generation as security evidence.
 
@@ -107,7 +107,7 @@ Code origin does not change vulnerability severity. AI-generated and human-writt
 
 `High-impact/regulated`:
 - Require a reviewer who was not the sole author of the prompt and does not rely only on the same model/session for verification.
-- Changes to authentication, cryptography, tenant isolation, CI/CD security controls, and signing paths require domain-owner review.
+- Changes to authentication, authorization, cryptography, tenant isolation, CI/CD security controls, and signing paths require domain-owner review.
 
 ### 3.5 Dependencies and Generated Supply-Chain Changes
 
