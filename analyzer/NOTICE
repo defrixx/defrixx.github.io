@@ -29,4 +29,6 @@ corresponding license and source availability information with the distribution.
 
 Keep dependency license files, copyright notices, and any required NOTICE/source-availability information when redistributing wheels, binaries, offline bundles, or container images. Base-image and operating-system packages have their own terms. This document identifies boundaries; it is not a complete license audit or a replacement for the actual dependency licenses.
 
-Official terms: [MIT](https://opensource.org/license/mit), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), and [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
+The Alpine runtime image also contains operating-system packages under GNU licenses, including BusyBox (GPL-2.0-only), GDBM and Readline (GPL-3.0-or-later). The image does not itself include their complete corresponding source or a complete set of operating-system license texts. Before distributing an image, inventory the exact packages in that build and provide the applicable notices, license texts and corresponding source, including distribution patches and build scripts, or satisfy another applicable distribution option. A source link for a different package version is not a substitute for the source corresponding to the distributed binary.
+
+Official terms: [MIT](https://opensource.org/license/mit), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/), [GPL 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html), and [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html).

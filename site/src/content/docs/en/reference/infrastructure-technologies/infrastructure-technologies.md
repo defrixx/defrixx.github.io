@@ -127,7 +127,7 @@ A container is a running process with an isolated view of the filesystem, proces
 
 A typical flow looks like this: a developer or CI job builds an image from a `Dockerfile`, publishes it to a registry, then a runtime pulls the image and starts a container from an immutable set of layers with configured namespaces, cgroups, capabilities, mounts, and networking. When used with Kubernetes, Docker usually remains in the build/package stage, while node-level execution is handled by a container runtime.
 
-The terms `tag`, `digest`, and image ID are easy to mix up in reviews. A tag is a mutable registry reference unless registry policy prevents mutation. A digest identifies registry content such as an index, manifest, config, or layer. The image ID is derived from the image config and is useful locally, but live deployment policy should bind to the registry digest that Kubernetes and the container runtime pull.
+The terms `tag`, `digest`, and image ID are easy to mix up in reviews. A tag is a mutable registry reference unless registry policy prevents mutation. A digest identifies registry content such as an index, manifest, config, or layer. The image ID is derived from the image config and is useful locally, but live deployment policy must bind to the registry digest that Kubernetes and the container runtime pull.
 
 #### Interaction Diagram
 ```mermaid

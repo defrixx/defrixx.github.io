@@ -214,7 +214,7 @@ Runtime check inside a Pod:
 kubectl exec -n <ns> <pod> -- sh -c "grep -E 'Cap(Inh|Prm|Eff|Bnd|Amb)|NoNewPrivs' /proc/1/status"
 ```
 
-Evidence should include:
+Evidence must include:
 - `CapInh`, `CapEff`, `CapPrm`, `CapBnd`, and `CapAmb` for the main process;
 - `NoNewPrivs: 1` when policy requires `allowPrivilegeEscalation: false`;
 - file capabilities inside the image for executables that actually need them;

@@ -5,6 +5,9 @@ Copyright (c) 2026 Defrixx, for original work owned by Defrixx.
 Original playbooks, articles, diagrams and prose templates in content/, reference/
 and downloads/ are licensed under Creative Commons Attribution 4.0 International
 (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode.en
+The same license applies to original repository documentation outside independently
+licensed components, including the root README.md and DOCUMENTATION.md and the
+documentation in evals/ and tests/.
 Generated copies of those materials retain the same license.
 Credit Defrixx, link to the source and license, and indicate modifications.
 

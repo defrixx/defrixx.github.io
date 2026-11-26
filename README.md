@@ -30,4 +30,4 @@ The [dependency security workflow](.github/workflows/dependency-security.yml) sc
 
 ## Licensing
 
-Original playbooks, articles, diagrams, and prose templates in `content/`, `reference/`, and `downloads/` use CC BY 4.0. Original site code, scripts, configuration, and example code use MIT. Skills, tools, the Analyzer, and third-party materials retain their own notices. See [license boundaries](LICENSE), [MIT terms](LICENSE-MIT), and [Analyzer notices](analyzer/NOTICE).
+Original playbooks, articles, diagrams, and prose templates in `content/`, `reference/`, and `downloads/`, as well as repository documentation outside independently licensed components, use CC BY 4.0. Original site code, scripts, configuration, and example code use MIT. Skills, tools, the Analyzer, and third-party materials retain their own notices. See [license boundaries](LICENSE), [MIT terms](LICENSE-MIT), and [Analyzer notices](analyzer/NOTICE).

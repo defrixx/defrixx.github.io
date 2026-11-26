@@ -286,7 +286,7 @@ kubectl auth can-i create referencegrant --as=<subject> -n <target-ns>
 
 ## 4. Minimum Policy Gates for Live Environments
 
-The minimum gatekeeping baseline should include:
+The minimum gatekeeping baseline must include:
 - deny direct human deploy into protected namespaces;
 - deny tag-only images in live environments and require an immutable digest reference (`@sha256:...`); `tag@sha256` may be allowed for readability, but the digest must be the value used for deployment;
 - block high-risk RBAC permissions outside explicit allowlist;

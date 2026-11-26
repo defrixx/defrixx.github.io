@@ -201,7 +201,7 @@ The example describes a local policy model rather than a specific tool configura
 Vulnerability policy:
 - Critical/high vulnerabilities with plausible reachability or exposed attack surface should block deployment to live environments unless an exception has owner, justification, expiry, compensating controls, and verification evidence.
 - Unfixed vulnerabilities are not automatically acceptable. Review exploitability, package reachability, runtime exposure, mitigations, and vendor status.
-- Base image vulnerabilities need an owner. Shared base images should have a faster rebuild path because many services inherit their risk.
+- Base image vulnerabilities need an owner. Shared base images require a faster rebuild path because many services inherit their risk.
 
 Verification:
 - Evidence includes scanner version/config, vulnerability result, ignored findings with justification, signature identity, provenance predicate, builder identity, SBOM location, and deploy gate decision.

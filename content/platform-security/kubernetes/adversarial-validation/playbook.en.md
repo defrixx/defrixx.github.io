@@ -20,7 +20,7 @@ This playbook describes how to translate Kubernetes attack paths into safe live-
 
 ### 2.1 Minimum validation loop
 
-Each scenario should follow the same cycle:
+Each scenario must follow the same cycle:
 - **Verify:** confirm the target workload, service, identity, or policy exists.
 - **Enumerate:** collect low-noise context: pods, services, routes, mounts, env, ServiceAccount, RBAC, image metadata.
 - **Prove:** perform the smallest action that proves the risk without expanding impact.
@@ -242,7 +242,7 @@ kubectl get jobs -A -o wide
 - node-level `kubectl debug node/...` is allowed only for break-glass roles.
 
 **Recommended control:**
-- `exec` in sensitive namespaces should be restricted and auditable;
+- `exec` in sensitive namespaces must be restricted and auditable;
 - allow ephemeral containers only to support/SRE roles with short duration and separate logging;
 - use admission policy to deny debug surfaces in high-value namespaces where operationally acceptable.
 
@@ -265,8 +265,8 @@ kubectl get events -A --field-selector involvedObject.kind=Pod | grep -Ei 'ephem
 
 **Recommended control:**
 - use offensive lab behaviors as detection test cases, but adapt them to a safe staging environment;
-- Falco/Tetragon or equivalent runtime sensors should have a tuned signal-to-noise baseline;
-- Kyverno/Gatekeeper/ValidatingAdmissionPolicy policies should have owners, test cases, and exception lifecycle.
+- Falco/Tetragon or equivalent runtime sensors must have a tuned signal-to-noise baseline;
+- Kyverno/Gatekeeper/ValidatingAdmissionPolicy policies must have owners, test cases, and exception lifecycle.
 
 **Evidence:**
 ```bash
@@ -332,7 +332,7 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metada
 - service accounts for deployment tooling do not have cluster-admin by default and cannot read Secrets without need.
 
 **Recommended control:**
-- Helm v2/Tiller should be retired; for Helm v3, store release state and deploy credentials with least privilege;
+- Helm v2/Tiller must be retired; for Helm v3, store release state and deploy credentials with least privilege;
 - any in-cluster admin service requires an explicit owner, network isolation, authentication, audit logging, and expiry for the exception;
 - check for legacy components after migrations, incident cleanup, and cluster upgrades.
 

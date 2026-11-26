@@ -57,7 +57,7 @@ Review priority should be:
 
 ### 3.2 Design per workload
 
-The team should explicitly define:
+The team must explicitly define:
 - why this workload needs seccomp;
 - which attack classes are reduced;
 - which operational tradeoffs are accepted.
@@ -110,7 +110,7 @@ Review allowed syscalls and combinations as one risk surface, not line by line.
 
 ### 6.1 Tier 1 (default fail without exceptional justification)
 
-These should be disallowed by default:
+These must be disallowed by default:
 - `bpf`
 - `ptrace`
 - `kexec_load`
@@ -238,7 +238,7 @@ A profile must not break live workloads, but adding high-risk syscalls just to m
 
 ### 8.2 Realistic validation
 
-Profiling/validation should include:
+Profiling/validation must include:
 - real startup path;
 - real dependency initialization;
 - sidecar/init behavior when present;

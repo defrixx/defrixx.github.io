@@ -76,7 +76,7 @@ Verification:
 ### 3.2 Deployment Patterns
 
 Preferred production pattern:
-- Use a gateway-mediated deployment for remote MCP wherever possible. The gateway should enforce server allowlists, user/workload authorization, capability filtering, redaction, audit logging, egress policy, rate limits, and emergency disablement.
+- Use a gateway-mediated deployment for remote MCP wherever possible. The gateway must enforce server allowlists, user/workload authorization, capability filtering, redaction, audit logging, egress policy, rate limits, and emergency disablement.
 
 Local `stdio` servers:
 - Allow only approved server binaries/scripts through endpoint management or application allowlisting.

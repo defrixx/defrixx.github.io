@@ -130,7 +130,7 @@ For review, do not stop at YAML. `capabilities.drop/add` controls several Linux 
 
 **Why this matters:**
 - `readOnlyRootFilesystem: false` leaves the container root filesystem writable. After process compromise, an attacker can write runtime payloads, modify application files or configuration, place droppers and web shells, and complicate investigation through local changes inside the container.
-- Writable paths should be explicit and constrained: move `/tmp`, cache, or log directories to dedicated mounts with a clear purpose, lifecycle, and limits instead of leaving the entire root filesystem writable.
+- Writable paths must be explicit and constrained: move `/tmp`, cache, or log directories to dedicated mounts with a clear purpose, lifecycle, and limits instead of leaving the entire root filesystem writable.
 
 **Additional guidance:**
 - Provide explicit writable mounts only where required by the application
@@ -375,7 +375,7 @@ Each anti-pattern directly increases risk from the threat model:
   -> Removes the expected LSM protection layer and makes PSS/audit output incomplete
 
 - Unsafe sysctls in normal application namespaces
-  -> Can affect the node or neighboring workloads and should remain an exception for isolated node pools
+  -> Can affect the node or neighboring workloads and must remain an exception for isolated node pools
 
 - Writable root filesystem (`readOnlyRootFilesystem: false`)
   -> Enables persistence, runtime payload storage, and modification of application files or configuration inside the container

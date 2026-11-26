@@ -51,7 +51,7 @@ Release-ready defaults:
 - Start new applications with `default-src 'none'` and explicitly allow required classes: `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`, `base-uri`, `form-action`, and `object-src`.
 - Use `frame-ancestors 'none'` by default for admin, account, checkout, and internal tools. Use explicit origins only when embedding is a product requirement.
 - Set `base-uri 'none'` unless the application intentionally uses `<base>`.
-- Set `object-src 'none'` unless a reviewed legacy plugin requirement exists; such exceptions should be release-blocking for new applications.
+- Set `object-src 'none'` unless a reviewed legacy plugin requirement exists; such exceptions must be release-blocking for new applications.
 - Set `form-action 'self'` plus explicit payment/IdP endpoints where required.
 - Avoid `unsafe-inline` and `unsafe-eval` for new code. If legacy code needs them, document owner, affected routes, expiry, and compensating controls.
 - Use nonce- or hash-based script execution for applications that still require inline bootstrap scripts.
