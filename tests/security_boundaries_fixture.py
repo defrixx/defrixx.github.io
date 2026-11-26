@@ -10,6 +10,7 @@ import http.client
 import ipaddress
 import json
 import sqlite3
+from contextlib import closing
 from urllib.parse import urljoin, urlsplit
 
 
@@ -59,7 +60,7 @@ def fetch(url, destinations, resolve, credential_origin=None, unsafe=False):
 
 
 def initialize(db_path):
-    with sqlite3.connect(db_path) as db:
+    with closing(sqlite3.connect(db_path)) as db, db:
         db.executescript('''
             CREATE TABLE quota (id INTEGER PRIMARY KEY, remaining INTEGER);
             INSERT INTO quota VALUES (1, 1);
@@ -74,7 +75,7 @@ def initialize(db_path):
 
 
 def consume(db_path, barrier, unsafe=False):
-    with sqlite3.connect(db_path, timeout=3) as db:
+    with closing(sqlite3.connect(db_path, timeout=3)) as db, db:
         if unsafe:
             available = db.execute('SELECT remaining FROM quota').fetchone()[0]
             barrier.wait(timeout=3)
@@ -94,7 +95,7 @@ def transition(current, target, approved, unsafe=False):
 
 def issue(db_path, actor, key, payload, fail_after_commit=False):
     """A local durable outbox model; external service semantics are not tested."""
-    with sqlite3.connect(db_path, timeout=3) as db:
+    with closing(sqlite3.connect(db_path, timeout=3)) as db, db:
         db.execute('BEGIN IMMEDIATE')
         row = db.execute('SELECT payload,state FROM operations WHERE actor=? AND key=?', (actor, key)).fetchone()
         if row and row[0] != payload:
@@ -109,7 +110,7 @@ def issue(db_path, actor, key, payload, fail_after_commit=False):
 def recover(db_path):
     # This fixture's effect is in the same SQLite database. It does NOT prove
     # atomicity with a real remote API or exactly-once message delivery.
-    with sqlite3.connect(db_path, timeout=3) as db:
+    with closing(sqlite3.connect(db_path, timeout=3)) as db, db:
         db.execute('BEGIN IMMEDIATE')
         pending = db.execute("SELECT actor,key FROM operations WHERE state='pending'").fetchall()
         for actor, key in pending:
@@ -134,7 +135,7 @@ def event(db_path, body, timestamp, signature, now, account='account-a', unsafe=
     value = json.loads(body)
     if value['type'] != 'approved' or not isinstance(value['version'], int):
         raise ValueError('schema')
-    with sqlite3.connect(db_path, timeout=3) as db:
+    with closing(sqlite3.connect(db_path, timeout=3)) as db, db:
         db.execute('BEGIN IMMEDIATE')
         row = db.execute('SELECT account,version FROM objects WHERE id=?', (value['object'],)).fetchone()
         if not row or row[0] != account or value['account'] != account:

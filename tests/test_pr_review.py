@@ -67,7 +67,7 @@ class PRReviewTests(unittest.TestCase):
         self.assertEqual(code,1);self.assertFalse(out.exists());self.assertNotIn('SYNTHETIC_PRIVATE_REF',err.getvalue())
     def test_valid_query_remains_functional(self):
         scope={};exec(git(self.repo,'show',self.ids['head']+':app.py'),scope)
-        with sqlite3.connect(':memory:') as db:
+        with contextlib.closing(sqlite3.connect(':memory:')) as db, db:
             db.execute('CREATE TABLE records(name TEXT)');db.execute('INSERT INTO records VALUES (?)',('alpha',))
             self.assertEqual(scope['guarded'](db,'alpha'),[('alpha',)])
 

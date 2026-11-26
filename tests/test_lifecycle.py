@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import sqlite3
+from contextlib import closing
 import subprocess
 import sys
 import tempfile
@@ -79,7 +80,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(c.read('search', 'alice', 'A', 'one'), 'SYNTHETIC_A')
 
     def effect_count(self, provider):
-        with sqlite3.connect(provider) as db:
+        with closing(sqlite3.connect(provider)) as db, db:
             return db.execute('SELECT COUNT(*) FROM effects').fetchone()[0]
 
     def crash_worker(self, caller, provider, stage, unsafe):
@@ -100,12 +101,12 @@ issue(sys.argv[1],sys.argv[2],'alice','issue','key','payload',unsafe=sys.argv[4]
                 initialize_effects(caller, provider)
                 self.crash_worker(caller, provider, stage, False)
                 self.assertEqual(self.effect_count(provider), 0 if stage == 'intent_committed' else 1)
-                with sqlite3.connect(caller) as db:
+                with closing(sqlite3.connect(caller)) as db, db:
                     self.assertEqual(db.execute('SELECT state FROM operations').fetchone()[0],
                                      'completed' if stage == 'completion_committed' else 'pending')
                 issue(caller, provider, 'alice', 'issue', 'key', 'payload')
                 self.assertEqual(self.effect_count(provider), 1)
-                with sqlite3.connect(caller) as db:
+                with closing(sqlite3.connect(caller)) as db, db:
                     self.assertEqual(db.execute('SELECT state FROM operations').fetchone()[0], 'completed')
 
     def test_lost_reply_unsafe_control_duplicates_committed_effect(self):

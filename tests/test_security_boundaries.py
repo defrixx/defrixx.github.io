@@ -11,6 +11,7 @@ import http.client
 import json
 from pathlib import Path
 import sqlite3
+from contextlib import closing
 import tempfile
 import threading
 import unittest
@@ -114,12 +115,12 @@ class SecurityBoundaryTests(unittest.TestCase):
             barrier = threading.Barrier(2)
             with ThreadPoolExecutor(max_workers=2) as pool:
                 results = list(pool.map(lambda _: fixture.consume(self.db, barrier, unsafe), range(2)))
-            with sqlite3.connect(self.db) as db:
+            with closing(sqlite3.connect(self.db)) as db, db:
                 remaining = db.execute('SELECT remaining FROM quota').fetchone()[0]
             return sum(results), remaining
 
         self.assertEqual(run(True), (2, -1))  # Deliberately vulnerable control.
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('UPDATE quota SET remaining=1')
         self.assertEqual(run(False), (1, 0))
 
@@ -133,7 +134,7 @@ class SecurityBoundaryTests(unittest.TestCase):
     def test_retry_identity_and_durable_recovery(self):
         with self.assertRaises(RuntimeError):
             fixture.issue(self.db, 'alice', 'operation-1', 'payload-a', fail_after_commit=True)
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM effects').fetchone()[0], 0)
         # Reopen the database in recovery, as a fresh worker would; no live object state.
         fixture.recover(self.db)
@@ -142,7 +143,7 @@ class SecurityBoundaryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             fixture.issue(self.db, 'alice', 'operation-1', 'different-payload')
         fixture.issue(self.db, 'bob', 'operation-1', 'payload-b')
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT actor,key FROM effects ORDER BY actor').fetchall(), [('alice', 'operation-1'), ('bob', 'operation-1')])
             self.assertEqual(db.execute("SELECT COUNT(*) FROM operations WHERE state='completed'").fetchone()[0], 2)
 
@@ -165,7 +166,7 @@ class SecurityBoundaryTests(unittest.TestCase):
         ]:
             with self.subTest(timestamp=timestamp), self.assertRaises(ValueError):
                 fixture.event(self.db, payload, timestamp, signature, 100)
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT version FROM objects').fetchone()[0], 0)
             self.assertEqual(db.execute('SELECT COUNT(*) FROM events').fetchone()[0], 0)
         self.assertEqual(fixture.event(self.db, body, 100, fixture.sign_event(body, 100), 100), 'applied')
@@ -179,11 +180,11 @@ class SecurityBoundaryTests(unittest.TestCase):
         self.assertEqual(fixture.event(self.db, body, 110, fixture.sign_event(body, 110), 110), 'ignored')
         older = self.body(id='older', version=1)
         self.assertEqual(fixture.event(self.db, older, 110, fixture.sign_event(older, 110), 110), 'ignored')
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT version FROM objects').fetchone()[0], 2)
         # Deliberately unsafe control accepts unverified and regressive delivery.
         self.assertEqual(fixture.event(self.db, older, 0, 'invalid', 110, unsafe=True), 'applied')
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT version FROM objects').fetchone()[0], 1)
 
     def test_key_purpose_rotation_revocation_and_recovery(self):

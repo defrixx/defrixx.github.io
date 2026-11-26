@@ -4,6 +4,7 @@ Only writes a new output directory and disposable synthetic temporary repos.
 """
 from __future__ import annotations
 import argparse
+import contextlib
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -40,7 +41,7 @@ def pr_exercise(output):
         for label,revision in [('base',ids['base']),('head',ids['head']),('merge_base',ids['merge_base'])]:
             namespace={};source=git(repo,'show',revision+':app.py')
             exec(compile(source,'synthetic_app.py','exec'),namespace)
-            with sqlite3.connect(':memory:') as db:
+            with contextlib.closing(sqlite3.connect(':memory:')) as db, db:
                 db.execute('CREATE TABLE records(name TEXT)');db.executemany('INSERT INTO records VALUES (?)',[('alpha',),('beta',)])
                 evidence[label]={name:len(namespace[name](db,"' OR 1=1 --")) for name in ('legacy','recent','guarded')}
         report={'task':'Review the synthetic feature PR; distinguish new and existing injection issues and counterevidence.',
