@@ -6,7 +6,7 @@ sidebar:
 ---
 Используйте для проверки папки или подготовки отдельной копии к передаче. Ассистент классифицирует потенциально чувствительные значения и при необходимости применяет локальный скрипт с ограниченной областью обработки.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/sensitive-data-cleanup) | [Как установить](/ru/ai-automation/security-skills/overview/)
+[Исходники инструмента](https://github.com/defrixx/defrixx.github.io/tree/main/tools/sensitive-data-cleanup)
 
 ## Входные данные
 
@@ -46,7 +46,7 @@ sidebar:
 
 ## Файлы и проверки
 
-Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/Product-security-skills/blob/main/skills/sensitive-data-cleanup/assets/cleanup-report.md). [Тесты](https://github.com/defrixx/Product-security-skills/tree/main/tests) находятся в Product-security-skills.
+Инструкции и справочные материалы входят в комплект инструмента. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/defrixx.github.io/blob/main/tools/sensitive-data-cleanup/assets/cleanup-report.md). [Тесты](https://github.com/defrixx/defrixx.github.io/tree/main/tests) находятся в defrixx.github.io.
 
 ## Связанные плейбуки
 
@@ -55,11 +55,11 @@ sidebar:
 
 ## Самостоятельно и в общем процессе
 
-Скилл содержит все необходимое для самостоятельной работы. Для задачи с несколькими этапами используйте [общий рабочий процесс](/ru/ai-automation/security-skills/workflow/overview/): выберите нужные действия и сохраняйте идентификаторы замечаний, ревизии и доказательства при передаче результатов.
+Инструмент содержит скрипт и справочные материалы для самостоятельной работы. Для задачи с несколькими этапами используйте [общий рабочий процесс](/ru/ai-automation/security-skills/workflow/overview/): выберите нужные действия и сохраняйте идентификаторы замечаний, ревизии и доказательства при передаче результатов.
 
 ## Выбрать другую задачу
 
-Каждый скилл решает самостоятельную задачу. Выберите подходящий:
+Для других задач безопасности выберите подходящий скилл:
 
 - [Безопасная разработка](/ru/ai-automation/security-skills/secure-development/overview/)
 - [Ревью безопасности](/ru/ai-automation/security-skills/security-review/overview/)

@@ -6,7 +6,7 @@ sidebar:
 ---
 `model-security-eval` runs synthetic security scenarios against local LM Studio and Ollama models after updates and provides a blocking CI verdict. Version 0.4.0 requires Python 3.11+ and uses only the standard library for its core runtime. It works independently of the skills; guarded comparisons additionally require `prompt-guard` 0.3.x.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval) | [Skills and tools](/en/ai-automation/security-skills/overview/)
+[Source and guide](https://github.com/defrixx/defrixx.github.io/tree/main/tools/model-security-eval) | [Skills and tools](/en/ai-automation/security-skills/overview/)
 
 ## Capabilities and scenarios
 
@@ -27,7 +27,7 @@ The runner uses synthetic content, in-memory files, virtual command results, and
 Install into a dedicated environment:
 
 ```sh
-python -m pip install /path/to/Product-security-skills/tools/model-security-eval
+python -m pip install /path/to/defrixx.github.io/tools/model-security-eval
 ```
 
 Start the local inference server and load the selected model beforehand. Run from a directory whose existing `artifacts/` parent is writable; choose a fresh output path without symlink components:
@@ -66,12 +66,12 @@ With `--compare-guard`, compare unguarded and guarded application behavior using
 | `1` | `fail`: observed violation or failed allowed task | Block promotion. |
 | `2` | `inconclusive` or execution/configuration error | Block promotion. |
 
-Place the [CI script](https://github.com/defrixx/Product-security-skills/blob/main/tools/model-security-eval/examples/ci-gate.sh) before promotion on a runner with the local server. Run it from the skills repository root with `MODEL_ID` and `EVAL_OUTPUT`; LM Studio also needs `MODEL_REVISION` and `SERVER_VERSION`. The script preserves the CLI exit status. Preserve reports through the pipeline's artifact-retention step.
+Place the [CI script](https://github.com/defrixx/defrixx.github.io/blob/main/tools/model-security-eval/examples/ci-gate.sh) before promotion on a runner with the local server. Run it from the skills repository root with `MODEL_ID` and `EVAL_OUTPUT`; LM Studio also needs `MODEL_REVISION` and `SERVER_VERSION`. The script preserves the CLI exit status. Preserve reports through the pipeline's artifact-retention step.
 
 Each run creates `report.md`, structured `report.json`, and an atomically updated `checkpoint.json`. Output directories use permissions `0700`, evidence files `0600`. Private-token forms are redacted; observations are scored in full and stored as bounded previews with hashes. Checkpoints record completed, active, and pending trials. Interruption blocks promotion and records interrupted progress; checkpoints do not imply automatic resume. Stdout carries JSON events with identifiers, diagnostics, counts, and criteria fingerprints rather than provider response text.
 
 ## Connection to application controls
 
-[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/model-security-eval/tests) cover fixture actions, normalization, identity, comparison, redaction, checkpoints, CI statuses, and loopback HTTP. They do not require a real model. Verify application dispatch and action authorization separately.
+[Package tests](https://github.com/defrixx/defrixx.github.io/tree/main/tools/model-security-eval/tests) cover fixture actions, normalization, identity, comparison, redaction, checkpoints, CI statuses, and loopback HTTP. They do not require a real model. Verify application dispatch and action authorization separately.
 
 [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) checks approved static instructions at dispatch. `model-security-eval` assesses model behavior and fixture action boundaries. In the production application, integrate the wrapper and configure tool permissions for the assessed profile. Keep independent argument validation, resource and recipient scope checks, and authorization before actual application effects.

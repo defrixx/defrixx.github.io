@@ -6,7 +6,7 @@ sidebar:
 ---
 `prompt-guard` is an independent Python library and CLI for checking untrusted input context and model outputs against independent policies. It inspects UTF-8 text and JSON messages with source-scoped literal and regex rules. Version 0.3.0 requires Python 3.11+ on Linux or macOS and uses only the standard library at runtime. CLI inspection runs offline.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard) | [Skills and tools](/en/ai-automation/security-skills/overview/)
+[Source and guide](https://github.com/defrixx/defrixx.github.io/tree/main/tools/prompt-guard) | [Skills and tools](/en/ai-automation/security-skills/overview/)
 
 ## Modes and admission decisions
 
@@ -26,7 +26,7 @@ sidebar:
 Install into the application's environment:
 
 ```sh
-python -m pip install /path/to/Product-security-skills/tools/prompt-guard
+python -m pip install /path/to/defrixx.github.io/tools/prompt-guard
 ```
 
 Use existing directories and absolute paths without symbolic links. The CLI checks one file, not a directory. For a first offline check with a packaged profile:
@@ -146,7 +146,7 @@ Package hard maxima are 1 MiB for input and transformed payload, 128 JSON messag
 
 Diagnostics include decisions, codes, policy/rule IDs and counts, excluding input text, matched fragments, paths and prompt hashes. Keep identifiers nonsensitive. An allowed payload may still contain sensitive data outside the selected rules.
 
-[Package tests and synthetic corpus](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-guard/tests) cover attacks, benign controls and intentional topic blocks. Before deployment, verify final-payload dispatch, all model-call routes, false blocks, withheld rejected outputs, contract revalidation after sanitization, truncated streams, resource exhaustion and policy mismatch handling in your integration.
+[Package tests and synthetic corpus](https://github.com/defrixx/defrixx.github.io/tree/main/tools/prompt-guard/tests) cover attacks, benign controls and intentional topic blocks. Before deployment, verify final-payload dispatch, all model-call routes, false blocks, withheld rejected outputs, contract revalidation after sanitization, truncated streams, resource exhaustion and policy mismatch handling in your integration.
 
 [model-security-eval](/en/ai-automation/model-security-eval/overview/) supports `--guard-profile`, `--guard-mode` and `--compare-guard` when the package is installed. Paired trials retain guard decisions, model violations and fixture actions separately, including blocked benign controls. A blocked input is `not_assessed_for_blocked_input`, not evidence that the model resisted the attack.
 

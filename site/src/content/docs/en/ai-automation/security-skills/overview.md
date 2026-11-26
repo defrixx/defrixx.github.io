@@ -6,11 +6,11 @@ sidebar:
 ---
 We develop Product Security Skills alongside the playbooks to help apply security requirements during development, review, report triage, fix verification, and preparation of material for sharing. The packages include assistant instructions, reference material, report templates, and local helpers for selected operations.
 
-Five standalone skills can be used individually or combined in a [shared workflow](/en/ai-automation/security-skills/workflow/overview/). The separate [prompt-integrity tool](/en/ai-automation/prompt-integrity/overview/) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](/en/ai-automation/model-security-eval/overview/) checks local model behavior after updates and provides a blocking CI verdict. [prompt-guard](/en/ai-automation/prompt-guard/overview/) checks untrusted input context and model outputs with separate policies, applies authorized replacements and validates structured responses and tool arguments before release or execution.
+Four standalone skills can be used individually or combined in a [shared workflow](/en/ai-automation/security-skills/workflow/overview/). The separate [prompt-integrity tool](/en/ai-automation/prompt-integrity/overview/) integrates with an application to check static instruction integrity before model dispatch. The separate [model-security-eval tool](/en/ai-automation/model-security-eval/overview/) checks local model behavior after updates and provides a blocking CI verdict. [prompt-guard](/en/ai-automation/prompt-guard/overview/) checks untrusted input context and model outputs with separate policies, applies authorized replacements and validates structured responses and tool arguments before release or execution.
 
 [Bifrost integration](/en/ai-automation/bifrost/overview/) connects these tools at application ingress and final provider dispatch, with buffered streaming, authorized tool execution and skill staging.
 
-| Task | Skill | Result |
+| Task | Skill or tool | Result |
 | --- | --- | --- |
 | Write or change code | [Secure development](/en/ai-automation/security-skills/secure-development/overview/) | Changed code or an explicitly labeled candidate implementation, applied requirement IDs, and verification evidence. The report separately records exceptions, assumptions, and conditions that could not be verified. |
 | Assess a PR or repository | [Security review](/en/ai-automation/security-skills/security-review/overview/) | Findings with exploitation prerequisites, impact, confidence, and fix-verification criteria. A coverage table separates confirmed results from hypotheses and untested areas, even when no vulnerabilities are found. |
@@ -20,7 +20,7 @@ Five standalone skills can be used individually or combined in a [shared workflo
 
 ## How to use
 
-1. Open the [skills repository](https://github.com/defrixx/Product-security-skills) and choose a directory under `skills/`.
+1. Open the [skills repository](https://github.com/defrixx/defrixx.github.io) and choose a directory under `skills/`.
 2. Copy the entire directory into your assistant's skills location, preserving its internal layout.
 3. Specify the skill name, task, and scope in your request. If automatic discovery is unavailable, point the assistant to `SKILL.md`.
 
@@ -32,13 +32,13 @@ Each skill directory contains its required instructions, references, and templat
 
 ## Connection to the playbooks
 
-Playbooks define review criteria; skills turn them into a sequence of actions for a specific project. Results connect requirements, findings, changes, and checks so developers and reviewers can continue the work. Source and [tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) live in Product-security-skills.
+Playbooks define review criteria; skills turn them into a sequence of actions for a specific project. Results connect requirements, findings, changes, and checks so developers and reviewers can continue the work. Source and [tests](https://github.com/defrixx/defrixx.github.io/tree/main/tests) live in defrixx.github.io.
 
 ## Evidence and evaluations
 
 Each skill includes a final evidence check that connects the assessed property, project revision, and observed result. The report templates include a common action ledger that preserves finding IDs, historical assessments, separate implementation and verification states, and unresolved work. See the [shared workflow](/en/ai-automation/security-skills/workflow/overview/) for handoff rules.
 
-Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare synthetic tasks with and without skill instructions. Their runner and tests live in `evals/`, outside the copied skill packages. Evaluation artifacts remain local and are not included in a fresh clone.
+Optional [behavioral evaluations](https://github.com/defrixx/defrixx.github.io/blob/main/evals/README.md) compare synthetic tasks with and without skill instructions. Their runner and tests live in `evals/`, outside the copied skill packages. Evaluation artifacts remain local and are not included in a fresh clone.
 
 ## Current workflow coverage
 

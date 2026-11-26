@@ -6,7 +6,7 @@ sidebar:
 ---
 The `security-report-triage` skill interprets an existing scanner report: account for signals, check applicability, and prepare an action queue. It works independently, including without source code; unsupported assumptions then remain hypotheses.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-report-triage) | [Installation instructions](/en/ai-automation/security-skills/overview/)
+[View skill source](https://github.com/defrixx/defrixx.github.io/tree/main/skills/security-report-triage) | [Installation instructions](/en/ai-automation/security-skills/overview/)
 
 ## Inputs
 
@@ -32,7 +32,7 @@ Choose a fresh output directory with an existing trusted parent. Supply `--targe
 
 Exit code `0` means extraction completed within the supported subset, `2` means partial output, unknown scanner invocation completeness, or unsupported fields, and `1` means a fatal error. These codes describe SARIF processing; the assistant records vulnerability and repair assessments in its findings.
 
-The normalizer never opens report-supplied paths or links. Arbitrary strings, messages, and snippets are omitted; identifiers become opaque labels. Source and the original report require separate inspection within the agreed scope. Size and format limits are documented in the [SARIF intake contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/sarif-subset.md).
+The normalizer never opens report-supplied paths or links. Arbitrary strings, messages, and snippets are omitted; identifiers become opaque labels. Source and the original report require separate inspection within the agreed scope. Size and format limits are documented in the [SARIF intake contract](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-report-triage/references/sarif-subset.md).
 
 Opaque labels are per-input identifiers, not stable cross-run identities or content hashes. Preserve run/result ordinals for comparison with the original report; do not group findings across reports by these labels alone. Missing result arrays and unknown invocation completion do not establish a successful scan with zero findings.
 
@@ -50,7 +50,7 @@ Mark each link observed, contradicted, or unknown, with evidence and a next deci
 
 ## Expected result
 
-The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/assets/triage-report.md) includes an action queue, raw-signal and unique-finding counts, evidence, errors, and coverage gaps. The normalizer prepares a signal inventory for the assistant's vulnerability validation. Ordinary prose reports can use manual signal mapping with an explicit coverage statement.
+The [report](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-report-triage/assets/triage-report.md) includes an action queue, raw-signal and unique-finding counts, evidence, errors, and coverage gaps. The normalizer prepares a signal inventory for the assistant's vulnerability validation. Ordinary prose reports can use manual signal mapping with an explicit coverage statement.
 
 Triage alone does not include scanner execution, running report-suggested commands, changing code, or creating external tickets. Continue through implementation and verification using the [combined workflow](/en/ai-automation/security-skills/workflow/overview/).
 

@@ -308,9 +308,9 @@ SITE_MAP_GROUPS = {
         ("Скиллы", "Skills",
          tuple("ai-automation/security-skills/" + name + "/" for name in (
              "secure-development", "security-review", "security-report-triage",
-             "security-fix-verification", "sensitive-data-cleanup"))),
+             "security-fix-verification"))),
         ("Совместная работа скиллов", "Combined workflow", ("ai-automation/security-skills/workflow/",)),
-        ("Инструменты", "Tools", ("ai-automation/prompt-integrity/", "ai-automation/model-security-eval/", "ai-automation/prompt-guard/")),
+        ("Инструменты", "Tools", ("ai-automation/security-skills/sensitive-data-cleanup/", "ai-automation/prompt-integrity/", "ai-automation/model-security-eval/", "ai-automation/prompt-guard/")),
         ("Интеграции", "Integrations", ("ai-automation/bifrost/",)),
     ),
 }
@@ -327,8 +327,8 @@ LIBRARY_DESCRIPTIONS = {
                "Trust from commit to deployment: CI/CD executors, build provenance, container images and artifact verification."),
     "ai-security": ("Модели, агенты, MCP и разработка с ИИ. Выбор границ автономности, доступа к инструментам и проверок недоверенного контекста.",
                "Models, agents, MCP and AI-assisted development. Assess autonomy boundaries, tool access and untrusted context."),
-    "ai-automation": ("Практическое применение наших пяти скиллов и трех локальных инструментов: входные данные, установка, результаты и совместная работа.",
-               "Practical guides to our five skills and three local tools: inputs, setup, outputs and combined workflows."),
+    "ai-automation": ("Практическое применение наших четырех скиллов и четырех локальных инструментов: входные данные, установка, результаты и совместная работа.",
+               "Practical guides to our four skills and four local tools: inputs, setup, outputs and combined workflows."),
     "reference": ("Контекст инфраструктурных технологий и исполняемые примеры политик: сопоставьте инженерное решение с проверяемой конфигурацией.",
                "Infrastructure operating context and executable policy examples: connect engineering decisions to verifiable configuration."),
 }
@@ -401,7 +401,7 @@ def getting_started_content(lang: str) -> str:
 REGISTRY_PATHS = {
     "secure-development": "skills/secure-development",
     "security-review": "skills/security-review",
-    "sensitive-data-cleanup": "skills/sensitive-data-cleanup",
+    "sensitive-data-cleanup": "tools/sensitive-data-cleanup",
     "security-report-triage": "skills/security-report-triage",
     "security-fix-verification": "skills/security-fix-verification",
     "prompt-integrity": "tools/prompt-integrity",
@@ -413,14 +413,14 @@ PUBLIC_DOWNLOADS = tuple(f"{name}.{lang}.{extension}" for lang in ("ru", "en")
 
 
 def load_hub_registry(path: Path | None = None) -> dict:
-    """Validate a link-only allowlist; never fetch or copy the sibling repository."""
+    """Validate the public monorepository link registry."""
     value = json.loads((path or ROOT / "config/hub-sources.json").read_text(encoding="utf-8"))
     if (set(value) != {"schema_version", "repository", "revision", "imports", "entries"}
             or value["schema_version"] != 1 or value["imports"] is not False
-            or value["repository"] != "https://github.com/defrixx/Product-security-skills"
+            or value["repository"] != "https://github.com/defrixx/defrixx.github.io"
             or not isinstance(value["revision"], str)
-            or not re.fullmatch(r"[0-9a-f]{40}", value["revision"])):
-        raise ValueError("Invalid pinned hub source registry")
+            or value["revision"] != "main"):
+        raise ValueError("Invalid hub source registry")
     seen = set()
     for entry in value["entries"]:
         required = {"id", "kind", "path", "guide", "version", "license", "applies", "inputs", "result", "local", "limits"}
@@ -431,14 +431,14 @@ def load_hub_registry(path: Path | None = None) -> dict:
             raise ValueError("Unapproved or duplicate hub source path")
         seen.add(identifier)
         skill = entry["path"].startswith("skills/")
-        guide = (f"ai-automation/security-skills/{identifier}/overview" if skill
+        guide = (f"ai-automation/security-skills/{identifier}/overview" if skill or identifier == "sensitive-data-cleanup"
                  else f"ai-automation/{identifier}/overview")
         if (entry["kind"] != ("skill" if skill else "tool") or entry["license"] != "MIT"
                 or entry["guide"] != guide or not isinstance(entry["version"], str)
                 or not entry["version"]):
             raise ValueError("Invalid hub source metadata")
-        if skill and entry["version"] != "commit:" + value["revision"][:12]:
-            raise ValueError("Skill version must match the pinned revision")
+        if skill and entry["version"] != "main":
+            raise ValueError("Skill version must identify the repository branch")
         for field in ("applies", "inputs", "result", "local", "limits"):
             localized = entry[field]
             if (not isinstance(localized, dict) or set(localized) != {"ru", "en"}
@@ -465,7 +465,7 @@ def hub_catalogue_content(lang: str) -> str:
             if entry["kind"] != kind:
                 continue
             source = f'{repo}/tree/{sha}/{entry["path"]}'
-            license_url = f'{repo}/blob/{sha}/LICENSE'
+            license_url = f'{repo}/blob/{sha}/{("skills/LICENSE" if entry["kind"] == "skill" else entry["path"] + "/LICENSE")}'
             lines += ['<article class="catalogue-item">', '<div class="catalogue-summary">',
                       f'<h3><a href="{SITE_BASE}/{lang}/{entry["guide"]}/">{escape(entry["id"])}</a></h3>',
                       f'<p>{escape(entry["applies"][lang])}</p></div>',
@@ -474,9 +474,9 @@ def hub_catalogue_content(lang: str) -> str:
             for field, rt, et in labels:
                 lines += [f'<dt>{rt if ru else et}</dt><dd>{escape(entry[field][lang])}</dd>']
             version_label = "Версия / источник" if ru else "Version / source"
-            source_label = "Руководство этой ревизии" if ru else "Guide at this revision"
+            source_label = "Исходный пакет" if ru else "Source package"
             license_label = "Лицензия" if ru else "License"
-            lines += [f'<dt>{version_label}</dt><dd>{escape(entry["version"])} · <code>{sha[:12]}</code><br /><a href="{source}">{source_label}</a></dd>',
+            lines += [f'<dt>{version_label}</dt><dd>{escape(entry["version"])}<br /><a href="{source}">{source_label}</a></dd>',
                       f'<dt>{license_label}</dt><dd><a href="{license_url}">MIT</a></dd></dl></details></article>']
         lines.append('</section>')
     return "\n".join(lines + ['</div>'])

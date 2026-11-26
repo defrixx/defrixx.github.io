@@ -6,7 +6,7 @@ sidebar:
 ---
 Используйте при изменении кода, конфигурации или инфраструктуры. Ассистент выбирает требования с учетом стека и модели доверия, выполняет согласованные изменения и проверяет результат.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/secure-development) | [Как установить](/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/defrixx.github.io/tree/main/skills/secure-development) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -16,7 +16,7 @@ sidebar:
 
 Аутентификация и авторизация, обработка входных данных и файлов, секреты, криптография, API, зависимости, развертывание, CI/CD и Kubernetes. Каталог также охватывает исходящие запросы и SSRF, бизнес-логику, вебхуки и события, жизненный цикл ключей и OAuth/OIDC/JWT. Есть отдельные профили для Python/FastAPI, TypeScript/Next.js и Docker Compose/BuildKit.
 
-Начните с [выбора требований по типу изменения](https://github.com/defrixx/Product-security-skills/blob/main/skills/secure-development/references/requirements-index.md#select-by-change): загрузка файлов, новый API, изменение авторизации, обработка внешнего URL или кеширование защищенного ответа. Выбирайте требования с учетом фактических потоков данных и границ доверия; одна задача может затрагивать несколько тем. Фиксируйте результаты по каждому выбранному условию, отдельно отмечая выполненные и оставшиеся проверки.
+Начните с [выбора требований по типу изменения](https://github.com/defrixx/defrixx.github.io/blob/main/skills/secure-development/references/requirements-index.md#select-by-change): загрузка файлов, новый API, изменение авторизации, обработка внешнего URL или кеширование защищенного ответа. Выбирайте требования с учетом фактических потоков данных и границ доверия; одна задача может затрагивать несколько тем. Фиксируйте результаты по каждому выбранному условию, отдельно отмечая выполненные и оставшиеся проверки.
 
 ## Выбор по архитектуре и жизненному циклу
 
@@ -42,9 +42,9 @@ sidebar:
 
 ## Файлы и проверки
 
-Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/Product-security-skills/blob/main/skills/secure-development/assets/development-report.md). [Тесты](https://github.com/defrixx/Product-security-skills/tree/main/tests) находятся в Product-security-skills.
+Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/defrixx.github.io/blob/main/skills/secure-development/assets/development-report.md). [Тесты](https://github.com/defrixx/defrixx.github.io/tree/main/tests) находятся в defrixx.github.io.
 
-[Матрица покрытия требований](https://github.com/defrixx/Product-security-skills/blob/main/tests/requirement_coverage.json) и [описание интеграционных проверок](https://github.com/defrixx/Product-security-skills/blob/main/tests/integration/README.md) показывают, какие условия проверяются и что остается вне охвата. Интеграционные проверки запускаются отдельно; для них нужны Docker и зависимости тестовых приложений.
+[Матрица покрытия требований](https://github.com/defrixx/defrixx.github.io/blob/main/tests/requirement_coverage.json) и [описание интеграционных проверок](https://github.com/defrixx/defrixx.github.io/blob/main/tests/integration/README.md) показывают, какие условия проверяются и что остается вне охвата. Интеграционные проверки запускаются отдельно; для них нужны Docker и зависимости тестовых приложений.
 
 ## Связанные плейбуки
 

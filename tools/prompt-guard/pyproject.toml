@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompt-guard"
+version = "0.3.0"
+description = "Policy inspection and explicit sanitization at model input and output boundaries"
+requires-python = ">=3.11"
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.scripts]
+prompt-guard = "prompt_guard.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+prompt_guard = ["policies/*.json"]

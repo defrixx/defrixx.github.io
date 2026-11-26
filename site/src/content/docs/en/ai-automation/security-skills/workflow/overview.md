@@ -1,16 +1,16 @@
 ---
 title: "Combined skill workflow"
-description: "Each of the five skills works independently. For an end-to-end task, combine report triage or code review, implementation, fix verification, and optional cleanup of selected del..."
+description: "Each of the four skills works independently; the cleanup tool can be used separately. For an end-to-end task, combine report triage or code review, implementation, fix verificat..."
 sidebar:
   order: 70
 ---
-Each of the five skills works independently. For an end-to-end task, combine report triage or code review, implementation, fix verification, and optional cleanup of selected delivery material.
+Each of the four skills works independently; the cleanup tool can be used separately. For an end-to-end task, combine report triage or code review, implementation, fix verification, and optional cleanup of selected delivery material.
 
 The skills share compatible stage outputs. Choose the stages needed and assign them to the assistant within one task; each skill also works independently. [prompt-integrity](/en/ai-automation/prompt-integrity/overview/) complements the application by checking instruction integrity before model dispatch.
 
 ## Choose the stages
 
-| Stage task | Skill | Output passed forward |
+| Stage task | Skill or tool | Output passed forward |
 | --- | --- | --- |
 | Interpret an existing scanner report | [security-report-triage](/en/ai-automation/security-skills/security-report-triage/overview/) | Accounted raw signals, findings, evidence, and an action queue. |
 | Assess a PR or repository | [security-review](/en/ai-automation/security-skills/security-review/overview/) | Confirmed findings, hypotheses, and repair criteria. |
@@ -22,7 +22,7 @@ Report triage and code review are alternative entry points. You can start direct
 
 ## Passing results between stages
 
-The [finding handoff contract](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-report-triage/references/handoff-contract.md) is bundled as a local copy in `security-report-triage` and `security-fix-verification`. Equivalent fields in an ordinary report are sufficient for manual work; JSON is optional.
+The [finding handoff contract](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-report-triage/references/handoff-contract.md) is bundled as a local copy in `security-report-triage` and `security-fix-verification`. Equivalent fields in an ordinary report are sufficient for manual work; JSON is optional.
 
 Stages preserve the origin assessment ID together with the finding ID, evidence references, revision and local changes, task scope, assumptions, and limits. Merged findings retain old IDs as aliases; split findings link their new IDs to the original.
 
@@ -55,4 +55,4 @@ On resumption, compare input fingerprints, revisions, working snapshot, scope, a
 
 ## Checks and evaluations
 
-The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. The regression runner also discovers the separate `evals/tests/` suite without a model server. Optional [behavioral evaluations](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) compare selected synthetic scenarios with and without skill instructions. Coverage and limits are described in the [test guide](https://github.com/defrixx/Product-security-skills/blob/main/tests/README.md); application integration checks run separately. Evaluation tools and local artifacts are not part of copied skills.
+The repository includes structural checks for standalone packages, helper and handoff-contract tests, and synthetic combined-workflow examples. The regression runner also discovers the separate `evals/tests/` suite without a model server. Optional [behavioral evaluations](https://github.com/defrixx/defrixx.github.io/blob/main/evals/README.md) compare selected synthetic scenarios with and without skill instructions. Coverage and limits are described in the [test guide](https://github.com/defrixx/defrixx.github.io/blob/main/tests/README.md); application integration checks run separately. Evaluation tools and local artifacts are not part of copied skills.

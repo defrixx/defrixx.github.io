@@ -2,7 +2,7 @@
 
 Используйте для проверки безопасности PR или репозитория. Ассистент прослеживает движение данных через границы доверия, проверяет гипотезы, оценивает последствия и готовит рекомендации по исправлению.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Как установить](../overview.ru.md)
+[Исходники скилла](https://github.com/defrixx/defrixx.github.io/tree/main/skills/security-review) | [Как установить](../overview.ru.md)
 
 ## Входные данные
 
@@ -46,7 +46,7 @@
 
 ## Файлы и проверки
 
-Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-review/assets/review-report.md). [Тесты](https://github.com/defrixx/Product-security-skills/tree/main/tests) находятся в Product-security-skills.
+Инструкции и справочные материалы входят в комплект скилла. Для оформления результата используйте [шаблон отчета](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-review/assets/review-report.md). [Тесты](https://github.com/defrixx/defrixx.github.io/tree/main/tests) находятся в defrixx.github.io.
 
 ## Связанные плейбуки
 

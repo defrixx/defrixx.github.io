@@ -2,7 +2,7 @@
 
 The `security-fix-verification` skill checks a specified repair in a selected revision or candidate patch. It works independently: a defect description and available evidence are sufficient inputs; a report from another skill is not required.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Installation instructions](../overview.en.md)
+[View skill source](https://github.com/defrixx/defrixx.github.io/tree/main/skills/security-fix-verification) | [Installation instructions](../overview.en.md)
 
 ## Inputs
 
@@ -47,7 +47,7 @@ A necessary untested path leaves the bounded claim inconclusive; an observed byp
 
 ## Expected result
 
-The [report](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. The report records verification results and application to the target separately. Finding history preserves the original assessment and subsequent remediation.
+The [report](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-fix-verification/assets/verification-report.md) includes per-finding verdicts, revisions, a case matrix, observations, and remaining checks. The report records verification results and application to the target separately. Finding history preserves the original assessment and subsequent remediation.
 
 The skill works independently from a defect description and available evidence. In the [combined workflow](../workflow/overview.en.md), it accepts results from preceding stages. Include code changes and production access explicitly in the task.
 

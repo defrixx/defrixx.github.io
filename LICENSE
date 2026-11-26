@@ -12,10 +12,11 @@ Original site code, scripts, configuration and example code (including code bloc
 intended for execution) are licensed under MIT; see LICENSE-MIT.
 This grant applies to copyright held by Defrixx only.
 
-Product-security-skills is a separate repository. Its complete skill packages,
-including internal instructions and templates, and its tools use that repository's
-MIT license. Retain its license notice when redistributing a package. Linking from
-this site does not change a package's license.
+Imported skill packages under skills/ and tools under tools/ retain their original
+MIT notices. The Analyzer under analyzer/ retains its own LICENSE and NOTICE; its
+upstream catalogue and source snapshots remain subject to their stated licences.
+The catalogue inventory is original metadata. Catalogue releases preserve source material and its existing licenses; they do not relicense those sources.
+Retain applicable notices when redistributing individual components.
 
 Third-party dependencies, standards, quotations and borrowed assets retain their
 own licenses and notices. Nothing here relicenses third-party or unknown-owner

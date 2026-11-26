@@ -1,6 +1,6 @@
-# Product Security Playbook
+# Product Security Hub
 
-A practical knowledge base for reviewing architecture, code, platforms, and engineering workflows.
+A practical knowledge base and local toolset for defensive product security engineering. The existing Playbook is the methodological foundation, and SDD Security Analyzer is the primary application.
 
 The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
 
@@ -9,6 +9,25 @@ Materials evolve with technologies and attack techniques. Apply them in the cont
 ---
 
 ## Contents
+
+The site is published at https://defrixx.github.io. This repository contains the playbooks, the Analyzer, reusable skills, tools, and Bifrost integration.
+
+### Components
+
+- [SDD Security Analyzer](analyzer/README.md) — local specification review.
+- [Security Review](skills/security-review/SKILL.md), [Secure Development](skills/secure-development/SKILL.md), [Report Triage](skills/security-report-triage/SKILL.md), [Fix Verification](skills/security-fix-verification/SKILL.md) — independently usable skills.
+- [Shared requirements catalogue](catalog/README.md) — versioned release, source-preserving index and lookup across Analyzer and Secure Development requirements. The sources remain usable independently; semantic reconciliation is ongoing.
+
+### Integration
+
+- [Bifrost defensive gateway components](integrations/bifrost/README.md).
+
+### Standalone utilities
+
+- [Prompt Integrity](tools/prompt-integrity/README.md) — trusted instruction integrity checks.
+- [Prompt Guard](tools/prompt-guard/README.md) — input and output policy validation.
+- [Model Security Eval](tools/model-security-eval/README.md) — standalone synthetic model-policy evaluation.
+- [Sensitive Data Cleanup](tools/sensitive-data-cleanup/README.md) — local inventory and redaction of supported files into a separate copy.
 
 ### Review and Governance
 - [`content/review/`](content/review/) - [choose a document by task](content/review/overview.en.md)
@@ -98,8 +117,8 @@ The home scenario list is generated from `config/hub-scenarios.json`. Add a read
 route only after its RU and EN source pages exist. Each entry uses the same title,
 applicability and result layout; candidates and unfilled routes are not published.
 
-`config/hub-sources.json` is an allowlisted, revision-pinned link registry. The build
-does not fetch remote content or copy the sibling repository. `downloads/` contains
+`config/hub-sources.json` is an allowlisted link registry for the monorepository. The build
+does not fetch remote content. `downloads/` contains
 public, authored templates; synchronization copies only the explicit authored template
 files to `site/public/downloads/`. Private artifacts, reports and evaluation evidence
 are outside the import contract.

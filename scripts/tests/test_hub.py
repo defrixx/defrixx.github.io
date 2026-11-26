@@ -16,11 +16,11 @@ spec.loader.exec_module(sync)
 
 
 class HubTests(unittest.TestCase):
-    def test_registry_rejects_remote_fetches_floating_revisions_and_unapproved_paths(self):
+    def test_registry_rejects_remote_fetches_and_unapproved_paths(self):
         original = sync.load_hub_registry()
         mutations = [
             lambda v: v.update(imports=True),
-            lambda v: v.update(revision='main'),
+            lambda v: v.update(revision='untrusted'),
             lambda v: v.update(repository='https://example.invalid/untrusted'),
             lambda v: v['entries'][0].update(path='artifacts/private'),
             lambda v: v['entries'][0].update(path='../../reports/private'),
@@ -38,14 +38,14 @@ class HubTests(unittest.TestCase):
                 with self.subTest(value=value), self.assertRaises(ValueError):
                     sync.load_hub_registry(path)
 
-    def test_cards_link_to_pinned_sources_and_license_at_same_revision(self):
+    def test_cards_link_to_monorepository_sources_and_component_licenses(self):
         registry = sync.load_hub_registry()
         for lang in ('ru', 'en'):
             html = sync.hub_catalogue_content(lang)
-            self.assertNotIn('/main/', html)
+            self.assertIn('/main/', html)
             for entry in registry['entries']:
                 self.assertIn(f'/tree/{registry["revision"]}/{entry["path"]}', html)
-                self.assertIn(f'/blob/{registry["revision"]}/LICENSE', html)
+                self.assertIn(f'/blob/{registry["revision"]}/' + ('skills/LICENSE' if entry['kind'] == 'skill' else entry['path'] + '/LICENSE'), html)
                 guide = sync.ROOT / 'site/src/content/docs' / lang / (entry['guide'] + '.md')
                 self.assertTrue(guide.is_file(), guide)
 

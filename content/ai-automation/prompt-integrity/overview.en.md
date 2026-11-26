@@ -2,7 +2,7 @@
 
 `prompt-integrity` is a standalone Python library and CLI that checks application-controlled static instructions immediately before model dispatch. Version 0.1.0 supports bounded subsets of Ollama `/api/chat` and LM Studio `/v1/chat/completions`, including pinned tool definitions in the LM Studio adapter.
 
-[Source and guide](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity) | [Skills and combined workflow](../security-skills/overview.en.md)
+[Source and guide](https://github.com/defrixx/defrixx.github.io/tree/main/tools/prompt-integrity) | [Skills and combined workflow](../security-skills/overview.en.md)
 
 ## What the tool checks
 
@@ -27,7 +27,7 @@ Pinned parameter schemas do not validate call arguments or authorize execution: 
 Python 3.11+ and POSIX filesystem operations are required. Runtime uses only the standard library. Install the package from a local repository copy into the application's environment:
 
 ```sh
-python -m pip install /path/to/Product-security-skills/tools/prompt-integrity
+python -m pip install /path/to/defrixx.github.io/tools/prompt-integrity
 ```
 
 Use the synthetic files in `examples/` for an initial trial. Replace paths with absolute paths without symlink components:
@@ -73,6 +73,6 @@ An exact model string binds request selection, not the model weights served behi
 
 Filesystem operations require an explicit root and refuse symlink path components, nonregular input files, and input hardlinks. Hostile concurrent directory replacement is outside the guarantee. An interrupted candidate write can leave a partial file: validate before approval and use a fresh path for a retry.
 
-[Package tests](https://github.com/defrixx/Product-security-skills/tree/main/tools/prompt-integrity/tests) exercise instruction changes, request shape, snapshots, retries, CLI behavior, filesystem restrictions, and local HTTP. They use synthetic data and need no model. Before use in your application, inspect every dispatch call site and transport interceptor.
+[Package tests](https://github.com/defrixx/defrixx.github.io/tree/main/tools/prompt-integrity/tests) exercise instruction changes, request shape, snapshots, retries, CLI behavior, filesystem restrictions, and local HTTP. They use synthetic data and need no model. Before use in your application, inspect every dispatch call site and transport interceptor.
 
-Record primary calls, background jobs, tool rounds, retries, and fallbacks in the [integration report](https://github.com/defrixx/Product-security-skills/blob/main/tools/prompt-integrity/examples/integration-report.md), with request-to-wire evidence and untested routes. The [model pilot](https://github.com/defrixx/Product-security-skills/blob/main/evals/README.md) checks each outbound Chat Completions request only when `--integrity` is selected; its experiment baseline is not an approved deployment release. Unguarded Chat and Responses runs remain separate evaluation modes.
+Record primary calls, background jobs, tool rounds, retries, and fallbacks in the [integration report](https://github.com/defrixx/defrixx.github.io/blob/main/tools/prompt-integrity/examples/integration-report.md), with request-to-wire evidence and untested routes. The [model pilot](https://github.com/defrixx/defrixx.github.io/blob/main/evals/README.md) checks each outbound Chat Completions request only when `--integrity` is selected; its experiment baseline is not an approved deployment release. Unguarded Chat and Responses runs remain separate evaluation modes.

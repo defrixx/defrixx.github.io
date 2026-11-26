@@ -44,9 +44,43 @@ jobs:
       - name: Validate generated links and anchors
         run: python3 scripts/validate_site.py
 
+  components:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Validate catalogue and skill structure
+        run: |
+          python3 scripts/validate_catalog_inventory.py
+          python3 scripts/shared_catalog.py --check
+          python3 scripts/validate_structure.py
+      - name: Test skills, tools, and Bifrost
+        run: python3 -m unittest discover -s tests -v
+      - name: Test evaluation harness
+        run: python3 -m unittest discover -s evals/tests -v
+
+  analyzer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Test analyzer in isolated container
+        working-directory: analyzer
+        run: docker compose -f compose.test.yaml run --rm --build tests
+      - name: Test analyzer UI
+        working-directory: analyzer
+        run: |
+          node tests/ui-files.test.mjs
+          node tests/ui-review-mode.test.mjs
+          node tests/ui-skill-import.test.mjs
+
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build
+    needs: [build, components, analyzer]
     runs-on: ubuntu-latest
     permissions:
       pages: write

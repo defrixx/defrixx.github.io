@@ -1,12 +1,12 @@
 ---
 title: "Bifrost integration"
-description: "The Bifrost integration connects Prompt Guard and Prompt Integrity at application ingress and final provider dispatch. It also stages the five independent skills for Bifrost's S..."
+description: "The Bifrost integration connects Prompt Guard and Prompt Integrity at application ingress and final provider dispatch. It also stages the four independent skills for Bifrost's S..."
 sidebar:
   order: 110
 ---
-The Bifrost integration connects Prompt Guard and Prompt Integrity at application ingress and final provider dispatch. It also stages the five independent skills for Bifrost's Skills Repository and runs bounded model-behavior evaluations through a configured gateway route. It uses Bifrost OSS's Chat Completions HTTP interface without a gateway fork or an Enterprise Guardrails subscription.
+The Bifrost integration connects Prompt Guard and Prompt Integrity at application ingress and final provider dispatch. It also stages the four independent skills for Bifrost's Skills Repository and runs bounded model-behavior evaluations through a configured gateway route. It uses Bifrost OSS's Chat Completions HTTP interface without a gateway fork or an Enterprise Guardrails subscription.
 
-[Source and setup](https://github.com/defrixx/Product-security-skills/tree/main/integrations/bifrost) | [Skills and tools](/en/ai-automation/security-skills/overview/)
+[Source and setup](https://github.com/defrixx/defrixx.github.io/tree/main/integrations/bifrost) | [Skills and tools](/en/ai-automation/security-skills/overview/)
 
 ## Capabilities and results
 
@@ -16,7 +16,7 @@ The Bifrost integration connects Prompt Guard and Prompt Integrity at applicatio
 | Protect request integrity | Approved baselines for model, system instruction, options and tool definitions | Verification and dispatch of the same serialized request snapshot at the selected boundary |
 | Connect agent clients | Approved agent contracts, fixed tool schemas and bounded JSON or SSE responses | Checked content and tool proposals after the complete response passes validation |
 | Execute approved tools | Checked proposals, authenticated workflow context, application authorizer and executors | One-shot batch execution and checked tool-result messages for an explicit next model round |
-| Import skills | Trusted local checkout and a new staging directory | Five independent skill folders and a SHA-256 manifest |
+| Import skills | Trusted local checkout and a new staging directory | Four independent skill folders and a SHA-256 manifest |
 | Investigate route behavior | Configured gateway endpoint, requested route and expected response model | Per-case Model Security Eval results bound to that route |
 
 Supported structured reasoning text is inspected together with visible content in the explicit `inspect-and-drop` mode, then removed before release. Buffered SSE is fully received and checked before any downstream response is emitted; clients receive a fresh SSE envelope after validation, with full-response latency. Tool execution requires the application's explicit authorization for every call and application-owned executors. The application owns authenticated history, effect-side authorization, I/O bounds and durable idempotency.
@@ -29,7 +29,7 @@ For a mandatory deployment path, expose the facade to clients, keep Bifrost on a
 
 ## Run and integrate
 
-Use Python 3.11+ from the Product-security-skills repository root. The examples use synthetic policies; approve application policies, independent digest pins, endpoints and credentials before adapting them.
+Use Python 3.11+ from the defrixx.github.io repository root. The examples use synthetic policies; approve application policies, independent digest pins, endpoints and credentials before adapting them.
 
 ```sh
 export PYTHONPATH="$PWD/tools/prompt-guard/src:$PWD/tools/prompt-integrity/src:$PWD/integrations/bifrost"

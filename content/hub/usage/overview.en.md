@@ -10,7 +10,7 @@ Record scope and revision, select applicable requirements, run authorized checks
 
 Defrixx's original playbooks, articles, diagrams and prose templates outside complete MIT skill packages use CC BY 4.0. When sharing or adapting them, credit Defrixx, link to the source and license, and indicate changes. Commercial reuse is allowed under the license. Example: “Based on Defrixx, Product Security Hub, CC BY 4.0; adapted for our project”, with the specific source URL.
 
-Site code, scripts, example code, tools and complete skill packages, including their internal instructions and templates, use MIT. When copying a skill retain its complete contents and the Product-security-skills repository's MIT notice. Package licensing takes precedence over the general site-prose rule.
+Site code, scripts, example code, tools and complete skill packages, including their internal instructions and templates, use MIT. When copying a skill retain its complete contents and the defrixx.github.io repository's MIT notice. Package licensing takes precedence over the general site-prose rule.
 
 Third-party dependencies, quotations, standards, images and borrowed materials retain their own licenses and notices. Attribution does not relicense a source. Materials with unknown ownership are excluded from these grants; verify rights separately before redistribution. Licensing original materials does not imply the author's endorsement of your adaptation.
 

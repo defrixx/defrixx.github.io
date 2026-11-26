@@ -6,7 +6,7 @@ sidebar:
 ---
 Use to inspect a folder or prepare a separate copy for sharing. The assistant classifies candidate sensitive values and uses a bounded local helper where applicable.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/sensitive-data-cleanup) | [Installation instructions](/en/ai-automation/security-skills/overview/)
+[View tool source](https://github.com/defrixx/defrixx.github.io/tree/main/tools/sensitive-data-cleanup)
 
 ## Inputs
 
@@ -46,7 +46,7 @@ Reconcile replacement and rescan claims with actual tool results and the exact d
 
 ## Files and verification
 
-Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/sensitive-data-cleanup/assets/cleanup-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in Product-security-skills.
+Instructions and references are bundled with the tool. Use the [report template](https://github.com/defrixx/defrixx.github.io/blob/main/tools/sensitive-data-cleanup/assets/cleanup-report.md) to record results. [Tests](https://github.com/defrixx/defrixx.github.io/tree/main/tests) are maintained in defrixx.github.io.
 
 ## Related playbooks
 
@@ -55,11 +55,11 @@ Instructions and references are bundled with the skill. Use the [report template
 
 ## Standalone and combined use
 
-The skill includes everything needed for standalone use. For a multi-stage task, use the [combined workflow](/en/ai-automation/security-skills/workflow/overview/): select the authorized actions and preserve finding IDs, revisions, and evidence when passing results forward.
+The tool includes its helper and reference materials. For a multi-stage task, use the [combined workflow](/en/ai-automation/security-skills/workflow/overview/): select the authorized actions and preserve finding IDs, revisions, and evidence when passing results forward.
 
 ## Choose another task
 
-Each skill handles an independent task. Choose the one you need:
+For other security tasks, choose a skill:
 
 - [Secure development](/en/ai-automation/security-skills/secure-development/overview/)
 - [Security review](/en/ai-automation/security-skills/security-review/overview/)

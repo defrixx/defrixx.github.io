@@ -120,7 +120,7 @@ sidebar:
 </div></section>
 <section class="library-section" id="library-ai-automation"><header>
 <p class="eyebrow">06</p><h2>Скиллы и инструменты</h2>
-<p class="library-description">Практическое применение наших пяти скиллов и трех локальных инструментов: входные данные, установка, результаты и совместная работа.</p>
+<p class="library-description">Практическое применение наших четырех скиллов и четырех локальных инструментов: входные данные, установка, результаты и совместная работа.</p>
 <p class="library-count">Материалов: 11</p>
 <a class="library-overview" href="/ru/ai-automation/security-skills/overview/">Обзор направления</a>
 </header>
@@ -129,7 +129,6 @@ sidebar:
 <h3>Скиллы</h3><ul>
 <li><a class="library-resource" href="/ru/ai-automation/security-skills/secure-development/overview/"><span class="library-resource-title">Безопасная разработка</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/security-skills/security-review/overview/"><span class="library-resource-title">Ревью безопасности</span><span class="library-resource-kind">Руководство</span></a></li>
-<li><a class="library-resource" href="/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/"><span class="library-resource-title">Очистка чувствительных данных</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/security-skills/security-report-triage/overview/"><span class="library-resource-title">Разбор отчетов безопасности</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/security-skills/security-fix-verification/overview/"><span class="library-resource-title">Проверка исправлений</span><span class="library-resource-kind">Руководство</span></a></li>
 </ul></div>
@@ -139,6 +138,7 @@ sidebar:
 </ul></div>
 <div class="library-group">
 <h3>Инструменты</h3><ul>
+<li><a class="library-resource" href="/ru/ai-automation/security-skills/sensitive-data-cleanup/overview/"><span class="library-resource-title">Очистка чувствительных данных</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/prompt-integrity/overview/"><span class="library-resource-title">prompt-integrity</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/model-security-eval/overview/"><span class="library-resource-title">model-security-eval</span><span class="library-resource-kind">Руководство</span></a></li>
 <li><a class="library-resource" href="/ru/ai-automation/prompt-guard/overview/"><span class="library-resource-title">prompt-guard</span><span class="library-resource-kind">Руководство</span></a></li>

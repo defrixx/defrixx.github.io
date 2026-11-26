@@ -120,7 +120,7 @@ Choose a domain and task: review an architecture, assess API access, prepare a p
 </div></section>
 <section class="library-section" id="library-ai-automation"><header>
 <p class="eyebrow">06</p><h2>Skills and Tools</h2>
-<p class="library-description">Practical guides to our five skills and three local tools: inputs, setup, outputs and combined workflows.</p>
+<p class="library-description">Practical guides to our four skills and four local tools: inputs, setup, outputs and combined workflows.</p>
 <p class="library-count">Resources: 11</p>
 <a class="library-overview" href="/en/ai-automation/security-skills/overview/">Domain overview</a>
 </header>
@@ -129,7 +129,6 @@ Choose a domain and task: review an architecture, assess API access, prepare a p
 <h3>Skills</h3><ul>
 <li><a class="library-resource" href="/en/ai-automation/security-skills/secure-development/overview/"><span class="library-resource-title">Secure development</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/security-skills/security-review/overview/"><span class="library-resource-title">Security review</span><span class="library-resource-kind">Guide</span></a></li>
-<li><a class="library-resource" href="/en/ai-automation/security-skills/sensitive-data-cleanup/overview/"><span class="library-resource-title">Sensitive data cleanup</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/security-skills/security-report-triage/overview/"><span class="library-resource-title">Security report triage</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/security-skills/security-fix-verification/overview/"><span class="library-resource-title">Fix verification</span><span class="library-resource-kind">Guide</span></a></li>
 </ul></div>
@@ -139,6 +138,7 @@ Choose a domain and task: review an architecture, assess API access, prepare a p
 </ul></div>
 <div class="library-group">
 <h3>Tools</h3><ul>
+<li><a class="library-resource" href="/en/ai-automation/security-skills/sensitive-data-cleanup/overview/"><span class="library-resource-title">Sensitive data cleanup</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/prompt-integrity/overview/"><span class="library-resource-title">prompt-integrity</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/model-security-eval/overview/"><span class="library-resource-title">model-security-eval</span><span class="library-resource-kind">Guide</span></a></li>
 <li><a class="library-resource" href="/en/ai-automation/prompt-guard/overview/"><span class="library-resource-title">prompt-guard</span><span class="library-resource-kind">Guide</span></a></li>

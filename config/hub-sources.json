@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "repository": "https://github.com/defrixx/Product-security-skills",
-  "revision": "0ae0a136586510aa7d766d387a6e422e1a7aa05c",
+  "repository": "https://github.com/defrixx/defrixx.github.io",
+  "revision": "main",
   "imports": false,
   "entries": [
     {
@@ -9,7 +9,7 @@
       "kind": "skill",
       "path": "skills/secure-development",
       "guide": "ai-automation/security-skills/secure-development/overview",
-      "version": "commit:0ae0a1365865",
+      "version": "main",
       "license": "MIT",
       "applies": {
         "ru": "Писать или менять код",
@@ -37,7 +37,7 @@
       "kind": "skill",
       "path": "skills/security-review",
       "guide": "ai-automation/security-skills/security-review/overview",
-      "version": "commit:0ae0a1365865",
+      "version": "main",
       "license": "MIT",
       "applies": {
         "ru": "Оценить PR или репозиторий",
@@ -62,10 +62,10 @@
     },
     {
       "id": "sensitive-data-cleanup",
-      "kind": "skill",
-      "path": "skills/sensitive-data-cleanup",
+      "kind": "tool",
+      "path": "tools/sensitive-data-cleanup",
       "guide": "ai-automation/security-skills/sensitive-data-cleanup/overview",
-      "version": "commit:0ae0a1365865",
+      "version": "main",
       "license": "MIT",
       "applies": {
         "ru": "Подготовить материалы к передаче",
@@ -93,7 +93,7 @@
       "kind": "skill",
       "path": "skills/security-report-triage",
       "guide": "ai-automation/security-skills/security-report-triage/overview",
-      "version": "commit:0ae0a1365865",
+      "version": "main",
       "license": "MIT",
       "applies": {
         "ru": "Разобрать сигналы сканера",
@@ -121,7 +121,7 @@
       "kind": "skill",
       "path": "skills/security-fix-verification",
       "guide": "ai-automation/security-skills/security-fix-verification/overview",
-      "version": "commit:0ae0a1365865",
+      "version": "main",
       "license": "MIT",
       "applies": {
         "ru": "Перепроверить выбранное исправление",

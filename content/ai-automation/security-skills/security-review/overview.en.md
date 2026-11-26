@@ -2,7 +2,7 @@
 
 Use for a security assessment of a pull request or repository. The workflow traces data across trust boundaries, validates hypotheses, assesses impact, and prepares a remediation report.
 
-[View skill source](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-review) | [Installation instructions](../overview.en.md)
+[View skill source](https://github.com/defrixx/defrixx.github.io/tree/main/skills/security-review) | [Installation instructions](../overview.en.md)
 
 ## Inputs
 
@@ -44,7 +44,7 @@ Classify a finding as introduced or pre-existing only after comparing the same i
 
 ## Files and verification
 
-Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-review/assets/review-report.md) to record results. [Tests](https://github.com/defrixx/Product-security-skills/tree/main/tests) are maintained in Product-security-skills.
+Instructions and references are bundled with the skill. Use the [report template](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-review/assets/review-report.md) to record results. [Tests](https://github.com/defrixx/defrixx.github.io/tree/main/tests) are maintained in defrixx.github.io.
 
 ## Related playbooks
 

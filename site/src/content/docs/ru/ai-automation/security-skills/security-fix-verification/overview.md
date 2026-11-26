@@ -6,7 +6,7 @@ sidebar:
 ---
 Скилл `security-fix-verification` проверяет исправление конкретного замечания в заданной ревизии или предложенном варианте изменений. Его можно использовать самостоятельно: достаточно описания дефекта и доступных доказательств, отчет другого скилла не обязателен.
 
-[Исходники скилла](https://github.com/defrixx/Product-security-skills/tree/main/skills/security-fix-verification) | [Как установить](/ru/ai-automation/security-skills/overview/)
+[Исходники скилла](https://github.com/defrixx/defrixx.github.io/tree/main/skills/security-fix-verification) | [Как установить](/ru/ai-automation/security-skills/overview/)
 
 ## Входные данные
 
@@ -51,7 +51,7 @@ sidebar:
 
 ## Результат работы
 
-[Отчет](https://github.com/defrixx/Product-security-skills/blob/main/skills/security-fix-verification/assets/verification-report.md) содержит заключение по каждому замечанию, ревизии, матрицу сценариев, наблюдения и оставшиеся проверки. В отчете отдельно фиксируются результат проверки и применение изменения в проекте. История замечания сохраняет исходную оценку и последующее исправление.
+[Отчет](https://github.com/defrixx/defrixx.github.io/blob/main/skills/security-fix-verification/assets/verification-report.md) содержит заключение по каждому замечанию, ревизии, матрицу сценариев, наблюдения и оставшиеся проверки. В отчете отдельно фиксируются результат проверки и применение изменения в проекте. История замечания сохраняет исходную оценку и последующее исправление.
 
 Скилл работает самостоятельно по описанию дефекта и доступным материалам. В [общем рабочем процессе](/ru/ai-automation/security-skills/workflow/overview/) он принимает результаты предыдущих этапов. Изменения кода и доступ к рабочей среде указываются в задаче явно.
 
