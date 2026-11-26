@@ -41,11 +41,15 @@ def main():
         require(sha(ROOT / 'analyzer/sources' / source['path']) == source['sha256'], 'Pinned source digest mismatch: ' + source['id'])
     for item in skills['records']:
         require(sha(ROOT / item['path']) == item['sha256'], 'Skill reference digest mismatch: ' + item['id'])
+    seen_relations = set()
     for relation in data['crosswalk']['relations']:
         require(relation['skills_id'] in skill_ids and relation['analyzer_id'] in indexed_ids, 'Unresolved crosswalk ID')
         require(relation['relation'] in {'related','equivalent','narrower','broader','no equivalent'}, 'Invalid relation')
         require(bool(relation.get('rationale')), 'Crosswalk rationale missing')
-    print(f'Inventory verified: {len(indexed_ids)} Analyzer IDs, {len(skill_ids)} Skill IDs, {len(analyzer["sources"])} source snapshots, {len(data["crosswalk"]["relations"])} provisional relations.')
+        pair = (relation['skills_id'], relation['analyzer_id'])
+        require(pair not in seen_relations, 'Duplicate crosswalk pair')
+        seen_relations.add(pair)
+    print(f'Inventory verified: {len(indexed_ids)} Analyzer IDs, {len(skill_ids)} Skill IDs, {len(analyzer["sources"])} source snapshots, {len(seen_relations)} relations.')
 
 
 if __name__ == '__main__':

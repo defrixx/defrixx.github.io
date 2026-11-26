@@ -22,6 +22,11 @@ Dependencies retain their own licenses. Runtime Python dependencies include MIT,
 
 MPL-licensed components, including certifi, retain their file-level licensing and any applicable source-availability requirements when distributed. Their presence does not replace the license of separate original application files.
 
+The source distribution for the pinned `certifi` 2026.10.23 is available at
+https://pypi.org/project/certifi/2026.10.23/#files under MPL-2.0. If the pinned
+version or the distributed files change, update this reference and retain the
+corresponding license and source availability information with the distribution.
+
 Keep dependency license files, copyright notices, and any required NOTICE/source-availability information when redistributing wheels, binaries, offline bundles, or container images. Base-image and operating-system packages have their own terms. This document identifies boundaries; it is not a complete license audit or a replacement for the actual dependency licenses.
 
 Official terms: [MIT](https://opensource.org/license/mit), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), and [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/).

@@ -2,6 +2,8 @@
 
 A local app for reviewing software design documents against a pinned security catalog. Upload multiple specification files, select requirements, check them together, and download a separate report. No existing baseline or change document is required. Originals are not overwritten.
 
+The built-in catalog is an offline snapshot. Four updated OIDC and GitHub Actions requirements use newer pinned source revisions; their independent peer review is pending. Existing project catalogs and past runs retain their original versions. The monorepository's `catalog/playbook-links.json` tracks the historical source baseline and subsequent differences.
+
 **This reviews documentation, not the security of a running system. Model output needs human review.**
 
 ## Start

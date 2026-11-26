@@ -3,8 +3,8 @@
   "status": "inventory_only_not_unified_catalog",
   "analyzer": {
     "revision": "b7a1e28e003af2947a329ff8afd18e9ea2798125",
-    "catalog_version": "2026.11.04.contextual.2",
-    "catalog_sha256": "855da895d4fc517d1a37c43f9808b8747fddf7e77098410d89ea00f5d811b059",
+    "catalog_version": "2026.11.26.contextual.1",
+    "catalog_sha256": "a0c6579b70d9a1ac76b35943326d55c9bd6858a5cecc6ecc7b7df750197c9284",
     "sources": [
       {
         "id": "01-agentic-ai",
@@ -3423,7 +3423,7 @@
       },
       {
         "id": "PSH3-APP-246D17863611",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "domain": "application-security",
         "status": "active",
         "legacy_ids": [
@@ -3666,7 +3666,7 @@
       },
       {
         "id": "PSH3-APP-FA0237D64335",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "domain": "application-security",
         "status": "active",
         "legacy_ids": [
@@ -7566,7 +7566,7 @@
       },
       {
         "id": "PSH3-REV-0E5666E75DFD",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "domain": "security-review",
         "status": "active",
         "legacy_ids": [
@@ -8156,7 +8156,7 @@
       },
       {
         "id": "PSH3-SUP-C2BD680FF294",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "domain": "software-supply-chain",
         "status": "active",
         "legacy_ids": [
@@ -9545,6 +9545,66 @@
         "analyzer_id": "PSH3-PLAT-E3C2A597A5A5",
         "relation": "related",
         "rationale": "Specific audit redaction obligation overlaps with broader diagnostic disclosure control."
+      },
+      {
+        "skills_id": "SD-SESSION-001.C02",
+        "analyzer_id": "PSH3-APP-EB1E45F4B55A",
+        "relation": "related",
+        "rationale": "Both address session cookie transport, scope and SameSite; the Analyzer adds browser-specific profiles and the condition also covers non-cookie transports."
+      },
+      {
+        "skills_id": "SD-SESSION-001.C02",
+        "analyzer_id": "PSH3-APP-DC79925F5CC0",
+        "relation": "related",
+        "rationale": "Both limit session cookie scope; the condition also covers secure transport and script exposure."
+      },
+      {
+        "skills_id": "SD-SESSION-001.C03",
+        "analyzer_id": "PSH3-APP-DB94C6FF89AB",
+        "relation": "related",
+        "rationale": "Both address session identifier rotation at login and privilege changes; the Analyzer record contains additional authentication controls."
+      },
+      {
+        "skills_id": "SD-SESSION-001.C04",
+        "analyzer_id": "PSH3-APP-F5719B19BF0E",
+        "relation": "related",
+        "rationale": "Both address session lifetime; the Analyzer record also covers other session controls, while the condition includes verifier-side termination and replay checks."
+      },
+      {
+        "skills_id": "SD-CICD-001.C01",
+        "analyzer_id": "PSH3-SUP-787F29D429C4",
+        "relation": "related",
+        "rationale": "Both separate untrusted PR execution from release credentials and deployment authority; scope and examples differ."
+      },
+      {
+        "skills_id": "SD-CICD-001.C01",
+        "analyzer_id": "PSH3-SUP-FDAAB77CC068",
+        "relation": "related",
+        "rationale": "Both isolate contributor-controlled code from privileged execution; the Analyzer addresses specific GitHub triggers."
+      },
+      {
+        "skills_id": "SD-CICD-001.C02",
+        "analyzer_id": "PSH3-SUP-32E336451CEE",
+        "relation": "related",
+        "rationale": "Both constrain job permissions and identity issuance; the Analyzer addresses specific CI job and OIDC permissions."
+      },
+      {
+        "skills_id": "SD-CICD-001.C03",
+        "analyzer_id": "PSH3-SUP-E14750F8E740",
+        "relation": "related",
+        "rationale": "Both prevent build credentials from persisting in image artifacts and cover temporary build secrets; checks and scope differ."
+      },
+      {
+        "skills_id": "SD-CICD-001.C03",
+        "analyzer_id": "PSH3-SUP-613EFA21BA76",
+        "relation": "related",
+        "rationale": "Both address build credentials and secret delivery; the Analyzer also specifies registry and service operation scope."
+      },
+      {
+        "skills_id": "SD-CICD-001.C04",
+        "analyzer_id": "PSH3-SUP-B77F90F5AC76",
+        "relation": "related",
+        "rationale": "Both restrict host control sockets, privileged containers and mounts; the Analyzer additionally addresses executor and network isolation."
       }
     ]
   }

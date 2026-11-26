@@ -23,6 +23,7 @@
 !sources/
 !sources/**/
 !sources/LICENSE.upstream
+!sources/updates/**
 !sources/inventory.json
 !sources/content/ai-security/agentic-ai/playbook.ru.md
 !sources/content/ai-security/ai-assisted-development/playbook.ru.md

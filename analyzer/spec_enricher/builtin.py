@@ -8,7 +8,7 @@ from pathlib import Path
 from .catalog import ROOT
 from .snapshots import sha256
 
-ACCEPTED_CATALOG_SHA256 = "855da895d4fc517d1a37c43f9808b8747fddf7e77098410d89ea00f5d811b059"
+ACCEPTED_CATALOG_SHA256 = "a0c6579b70d9a1ac76b35943326d55c9bd6858a5cecc6ecc7b7df750197c9284"
 
 
 def load_verified(root: Path = ROOT) -> tuple[bytes, dict]:

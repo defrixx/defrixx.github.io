@@ -125,7 +125,8 @@ are outside the import contract.
 
 ## Licensing
 
-Original prose, diagrams and prose templates outside complete MIT skill packages
-use CC BY 4.0. Original code uses MIT. See [license boundaries](LICENSE) and
-[MIT terms](LICENSE-MIT). Third-party and unknown-owner materials are excluded
-from these grants and retain their applicable rights and notices.
+Original playbooks, articles, diagrams and prose templates in `content/`,
+`reference/` and `downloads/` use CC BY 4.0. Original site code, scripts,
+configuration and example code use MIT. Imported components and the Analyzer
+have their own notices. See [license boundaries](LICENSE) and [MIT terms](LICENSE-MIT).
+Third-party and unknown-owner materials retain their applicable rights and notices.

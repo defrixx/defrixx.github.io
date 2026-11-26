@@ -12,6 +12,18 @@ spec.loader.exec_module(catalog)
 
 
 class SharedCatalogueTests(unittest.TestCase):
+    def test_related_records_resolve_from_both_namespaces(self):
+        index = catalog.build()
+        release = catalog.verify_release(index)
+        left = catalog.resolve(index, release, 'SD-SESSION-001.C02')
+        right = catalog.resolve(index, release, 'PSH3-APP-EB1E45F4B55A')
+        shared = [r for r in left['relations'] if r['analyzer_id'] == right['id']]
+        self.assertEqual(len(shared), 1)
+        self.assertEqual(shared[0]['relation'], 'related')
+        self.assertIn(shared[0], right['relations'])
+        self.assertIn('SameSite', left['content'])
+        self.assertIn('SameSite', right['content']['statement'])
+
     def test_lookup_uses_release_content(self):
         index = {'catalog_version': '1', 'relations_status': 'partial', 'relations': [], 'records': [{'id': 'SD-X-001.C01', 'namespace': 'secure-development', 'source': 'topic.md'}]}
         release = {'inventory': {'skills': {'revision': 'abc'}}, 'sources': {'topic.md': {'sha256': 'example', 'text': '### SD-X-001.C01 — title\n\nOriginal condition.\n\n### SD-X-001.C02 — other\nOther.'}}}
@@ -39,9 +51,10 @@ class SharedCatalogueTests(unittest.TestCase):
             (root / 'catalog/playbook-links.json').write_text(json.dumps(links))
             with patch.object(catalog, 'ROOT', root):
                 catalog.check_links()
+                self.assertEqual(catalog.changed_playbooks(), ['content/a.md'])
                 (root / 'content/a.md').write_text('changed again')
                 with self.assertRaisesRegex(ValueError, 'stale'):
-                    catalog.check_links()
+                    catalog.changed_playbooks()
 
 
 if __name__ == '__main__':

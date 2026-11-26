@@ -1,7 +1,7 @@
 {
   "schema_version": "4.0",
   "catalog_id": "psh-contextual-security-requirements",
-  "catalog_version": "2026.11.04.contextual.2",
+  "catalog_version": "2026.11.26.contextual.1",
   "title": "Product Security Hub — контекстные требования кибербезопасности",
   "ready_for_use": true,
   "release_status": "accepted_preparation",
@@ -98629,7 +98629,7 @@
       "legacy_ids": [
         "PSH-APP-8358096FD1AD"
       ],
-      "statement": "Не считать отзыв исходного токена или logout немедленным отзывом уже выданного производного access token. Задать допустимое остаточное окно с учётом TTL, механизма целевого API и кеша; применять §6.4. До выпуска измерить доступ тем же производным токеном до и после отзыва исходного; проверить запрет новых обменов, неправильную аудиторию/scopes и разрешённые refresh-цепочки, сохранив версию, конфигурацию и времена без токенов.",
+      "statement": "Не считать отзыв исходного токена или logout немедленным отзывом уже выданного производного access token. Задать допустимое остаточное окно с учётом TTL, механизма целевого API и кеша; применять §6.4. До выпуска измерить доступ тем же производным токеном до и после отзыва исходного; проверить запрет новых обменов, неправильную аудиторию/scopes и разрешённые refresh-цепочки, сохранив версию, конфигурацию и времена без токенов. Проверять конечный фактический срок выданного токена и применимость исправления Keycloak.",
       "source_kind": "mandatory",
       "level": "implementation",
       "source_refs": [
@@ -98647,9 +98647,15 @@
         },
         {
           "id": "s3",
-          "line_start": 69,
-          "line_end": 69,
+          "line_start": 70,
+          "line_end": 70,
           "quote": "До выпуска получите производный токен и подтвердите, что целевой API его принимает; отзовите исходный токен и повторите запрос с тем же производным токеном. Зафиксируйте результат и момент прекращения доступа, сопоставьте их с допустимым периодом остаточного доступа. Отдельно проверьте запрет новых обменов, неверную аудиторию, запрещенные области доступа и каждую разрешенную цепочку токенов обновления, включая истекший исходный токен. Сохраняйте версию, конфигурацию и временные отметки, но не значения токенов."
+        },
+        {
+          "id": "s-exp",
+          "line_start": 67,
+          "line_end": 67,
+          "quote": "- Проверяйте фактический срок жизни производного токена, а не только настройки realm: `exp` в проверенном JWT и `expires_in` в ответе обмена должны задавать конечный срок в пределах принятого профиля и быть согласованы с учетом времени выдачи и допустимого рассогласования часов. Отсутствующий срок, неограниченное действие или превышение установленного предела не должны проходить приемочную проверку. Для Keycloak проверьте применимость CVE-2026-96460 к развернутой версии и наличие исправления, указанного в выпуске 26.8.2; номер выпуска сам по себе не устанавливает затронутый диапазон версий."
         }
       ],
       "source_context": {
@@ -98714,6 +98720,13 @@
             "s2",
             "s3"
           ]
+        },
+        {
+          "id": "token-expiry",
+          "obligation": "Проверять конечный фактический срок производного токена: exp проверенного JWT и expires_in ответа согласованы с временем выдачи, допустимым рассогласованием часов и принятым пределом; проверить применимость CVE-2026-96460 к развёрнутому Keycloak и наличие исправления.",
+          "source_ref_ids": [
+            "s-exp"
+          ]
         }
       ],
       "clause_logic": {
@@ -98726,13 +98739,17 @@
           },
           {
             "clause": "c3"
+          },
+          {
+            "clause": "token-expiry"
           }
         ]
       },
       "verification": {
         "specification": {
           "inputs": [
-            "Последовательность выдачи/отзыва; TTL производного токена; release plan"
+            "Последовательность выдачи/отзыва; TTL производного токена; release plan",
+            "Профиль предельного срока, проверенные exp и expires_in, версия и исправления Keycloak"
           ],
           "steps": [
             {
@@ -98754,18 +98771,27 @@
                 "c3"
               ],
               "expected_evidence": "План фиксирует моменты отказа и сравнение с допустимым окном без записи токенов."
+            },
+            {
+              "id": "v-update",
+              "action": "Проверять конечный фактический срок производного токена: exp проверенного JWT и expires_in ответа согласованы с временем выдачи, допустимым рассогласованием часов и принятым пределом; проверить применимость CVE-2026-96460 к развёрнутому Keycloak и наличие исправления.",
+              "clause_ids": [
+                "token-expiry"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "outcome_conditions": {
             "satisfied_by_spec": "Остаточное окно ограничено и подтверждается до выпуска указанными exchange/revoke проверками.",
-            "contradicted_by_spec": "Logout/source revoke объявлен мгновенным derived revoke либо измеренное окно превышает допуск.",
+            "contradicted_by_spec": "Logout/source revoke объявлен мгновенным derived revoke либо измеренное окно превышает допуск. Неограниченный срок или превышение принятого предела недопустимы.",
             "not_addressed": "Exchange используется, но остаточное окно или предрелизная проверка не определены.",
             "unknown": "Не установлены факты scope «После обмена Keycloak V2 целевой API принимает производный access token.» либо противоречивые доступные источники не позволяют оценить активную обязательную ветвь. Отсутствующее решение в прочитанной спецификации при известной feature — not_addressed,а не unknown применимости."
           }
         },
         "source_level": {
           "inputs": [
-            "Обезличенный протокол revoke/exchange tests; конфигурация TTL/cache; release gate"
+            "Обезличенный протокол revoke/exchange tests; конфигурация TTL/cache; release gate",
+            "Профиль предельного срока, проверенные exp и expires_in, версия и исправления Keycloak"
           ],
           "steps": [
             {
@@ -98787,42 +98813,47 @@
                 "c3"
               ],
               "expected_evidence": "Отказы и цепочки соответствуют разрешённой модели; секреты отсутствуют в отчёте."
+            },
+            {
+              "id": "i-update",
+              "action": "Проверять конечный фактический срок производного токена: exp проверенного JWT и expires_in ответа согласованы с временем выдачи, допустимым рассогласованием часов и принятым пределом; проверить применимость CVE-2026-96460 к развёрнутому Keycloak и наличие исправления.",
+              "clause_ids": [
+                "token-expiry"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "pass_when": "Остаточное окно ограничено и подтверждается до выпуска указанными exchange/revoke проверками. Реализация подтверждена перечисленными артефактами и результатами проверок.",
-          "fail_when": "Logout/source revoke объявлен мгновенным derived revoke либо измеренное окно превышает допуск.",
+          "fail_when": "Logout/source revoke объявлен мгновенным derived revoke либо измеренное окно превышает допуск. Отсутствует конечный срок, exp/expires_in не согласованы или срок превышает принятый предел.",
           "unknown_when": "Неизвестны TTL, кеш или механизм отзыва целевого API. Без артефактов реализации состояние not_verified."
         },
         "execution_policy": "plan_only_no_automatic_execution",
         "spec_only_implementation_state": "not_verified"
       },
       "id": "PSH3-APP-246D17863611",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "title": "Не считать отзыв исходного токена или logout немедленным отзывом уже выданного производного access token. Задать допусти",
       "domain": "application-security",
       "subdomain": "oidc-oauth",
       "origin": {
         "kind": "upstream_source",
-        "repo": "https://github.com/defrixx/defrixx.github.io",
-        "revision": "da1369a3739f9361d99cbed00b752ea2a3044286",
+        "repo": "https://github.com/defrixx/Product-security-playbook",
+        "revision": "98811c4189560492c1d391dde3189bfc6eaee8f2",
         "path": "content/application-security/identity/oidc-oauth/playbook.ru.md",
-        "file_sha256": "668b667999b0b1cf22efec445360409b94dae3246641d0190cc587669d4e258f",
-        "source_snapshot": "sources/content/application-security/identity/oidc-oauth/playbook.ru.md",
-        "permalink": "https://github.com/defrixx/defrixx.github.io/blob/da1369a3739f9361d99cbed00b752ea2a3044286/content/application-security/identity/oidc-oauth/playbook.ru.md",
+        "file_sha256": "1dba1ef406ee95ad7a50e7e9933cfee98b052db25bc0b8dcbfe180a88c19c656",
+        "source_snapshot": "sources/updates/2026.11.26/content/application-security/identity/oidc-oauth/playbook.ru.md",
+        "permalink": "https://github.com/defrixx/Product-security-playbook/blob/98811c4189560492c1d391dde3189bfc6eaee8f2/content/application-security/identity/oidc-oauth/playbook.ru.md",
         "license": "CC-BY-4.0",
         "attribution": "Defrixx — Product Security Playbook (2026)",
-        "modifications": "Contextual selection/normalisation, domain grouping, clauses, applicability and evidence plans; exact original citations preserved separately."
+        "modifications": "Contextual requirement updated from current playbook; applicability, clauses and verification adapted while retaining historical ID."
       },
       "severity": "unrated",
       "status": "active",
       "review": {
-        "status": "accepted_contextual_review",
-        "candidate_sha256": "196af44d4535afa308ecf5f36b774ca6438a4787886fd8bbc057da00e0a07417",
-        "content_sha256": "0635515674613a98e3220102f87284bf8aefbc91d5f2119c9676139e9edafc42",
-        "ledger_refs": [
-          "qa/evidence/lineage.json"
-        ],
-        "scope": "Historical baseline contextual review only; new normativity/splits/patches have separate targeted-review evidence."
+        "status": "pending_independent_review",
+        "content_sha256": "4502343ea2572634e5524a6c31a25edf06be2967a105c89696c8ad169ca8f78a",
+        "ledger_refs": [],
+        "scope": "Targeted update against current playbook and primary sources; independent review pending."
       },
       "clause_normativity": {
         "c1": {
@@ -98870,16 +98901,25 @@
             "Сохраняется исходная ограниченная формулировка: До выпуска измерить доступ тем же производным токеном до и после отзыва исходного; проверить запрет новых обменов, неправильную аудиторию/scopes и разрешённые refresh-цепочки, сохранив версию, конфигурацию и времена без токенов."
           ],
           "evidence_level": "process"
+        },
+        "token-expiry": {
+          "force": "required",
+          "nature": "review_obligation",
+          "source_ref_ids": [
+            "s-exp"
+          ],
+          "basis": "Целевое обновление по текущему плейбуку.",
+          "qualifiers": [
+            "Применяется только при установленной области и активной условной ветви."
+          ],
+          "evidence_level": "process"
         }
       },
       "classification_status": "normative",
       "normativity_review": {
-        "status": "reviewed_targeted_pass",
-        "annotation_sha256": "4d9ac872f76a2c1a625d09aa2a499ed6b13b13e56a20d7ca0a8c0e68532d5328",
-        "report_refs": [
-          "qa/evidence/current-review.json",
-          "qa/validation.json"
-        ]
+        "status": "pending_peer_review",
+        "annotation_sha256": "af5b7713dee1f766c8098a320dc8cbcd7174d6d898f8866fc81c98edb71ac8b7",
+        "report_refs": []
       }
     },
     {
@@ -103998,21 +104038,27 @@
         "PSH-APP-0A66E0F30BA7",
         "PSH-APP-4AA1278AD9B7"
       ],
-      "statement": "Session cookies иметь HttpOnly и Secure с узкими Domain/Path. SameSite по умолчанию Lax; None; Secure допустим только для реального cross-site сценария, с проверенным response mode и сохранением CSRF. SSO redirect сам по себе не обоснование None.",
+      "statement": "Сессионные cookie защищены Secure и HttpOnly; область и SameSite выбраны для сценария. Для BFF отдельно оценён профиль RFC 10017; временные cookie обратного вызова выбираются по режиму ответа.",
       "source_kind": "mandatory",
       "level": "implementation",
       "source_refs": [
         {
           "id": "s1",
-          "line_start": 151,
-          "line_end": 151,
+          "line_start": 152,
+          "line_end": 152,
           "quote": "| Сессии и cookie | HttpOnly/Secure/SameSite, узкие Domain/Path, смена ID сессии и защита от CSRF | Дополнительно к R: запрет доступа с другого источника для привязанных к сессии эндпоинтов без явно утвержденного исключения | Защита от кражи cookie через XSS, CSRF, фиксации сессии и злоупотребления областью cookie |"
         },
         {
           "id": "s2",
-          "line_start": 231,
-          "line_end": 234,
-          "quote": "- Cookie `HttpOnly`: запрещает JS-доступ и снижает риск кражи cookie при XSS\n- Cookie `Secure`: отправка только по HTTPS, снижает риск перехвата в канале\n- Значение атрибута cookie по умолчанию: `SameSite=Lax`. Применяйте `SameSite=None; Secure`, только если этого требует реальный межсайтовый сценарий, например межсайтовый POST-запрос или встроенный интерфейс. Обычный SSO через перенаправление сам по себе не требует `None`; проверьте режим ответа и сохраните защиту от CSRF.\n- Узкие `Domain` и `Path` снижают межприложенческие утечки и риск подбрасывания cookie или захвата поддомена"
+          "line_start": 232,
+          "line_end": 235,
+          "quote": "- Cookie `HttpOnly`: запрещает JS-доступ и снижает риск кражи cookie при XSS\n- Cookie `Secure`: отправка только по HTTPS, снижает риск перехвата в канале\n- Для общих сценариев с cookie распространенным исходным вариантом остается `SameSite=Lax`; для cookie установленной сессии BFF применяйте отдельный профиль из раздела 6.3.1. Применяйте `SameSite=None; Secure`, только если этого требует реальный межсайтовый сценарий, например межсайтовый POST-запрос или встроенный интерфейс. Обычный SSO через перенаправление сам по себе не требует `None`; проверьте режим ответа и сохраните защиту от CSRF.\n- Узкие `Domain` и `Path` снижают межприложенческие утечки и риск подбрасывания cookie или захвата поддомена"
+        },
+        {
+          "id": "s-bff",
+          "line_start": 246,
+          "line_end": 246,
+          "quote": "[RFC 10017 §6.1.3.2](https://www.rfc-editor.org/rfc/rfc10017.html#section-6.1.3.2) требует `Secure` и `HttpOnly`; рекомендует `SameSite=Strict`, `Path=/`, отсутствие `Domain` и префикс имени, обозначающий установку cookie через HTTP, например `__Host-Http-`. Эти рекомендации имеют уровень SHOULD, а не MUST. Существующий `Lax` оценивайте с учетом сценария и защиты от CSRF."
         }
       ],
       "source_context": {
@@ -104041,6 +104087,16 @@
               "s1",
               "s2"
             ]
+          },
+          {
+            "id": "p-bff",
+            "text": "Используется cookie установленной сессии OAuth BFF.",
+            "evidence": [
+              "Архитектура BFF и назначение cookie"
+            ],
+            "source_ref_ids": [
+              "s-bff"
+            ]
           }
         ],
         "expression": {
@@ -104059,10 +104115,17 @@
         },
         {
           "id": "c2",
-          "obligation": "SameSite по умолчанию Lax; None; Secure допустим только для реального cross-site сценария, с проверенным response mode и сохранением CSRF. SSO redirect сам по себе не обоснование None.",
+          "obligation": "Для общих сценариев Lax — распространённый исходный вариант; для сессионной cookie BFF учитывать отдельный профиль. None; Secure применять только для необходимого межсайтового сценария с защитой от CSRF.",
           "source_ref_ids": [
             "s1",
             "s2"
+          ]
+        },
+        {
+          "id": "bff-profile",
+          "obligation": "Для cookie установленной сессии BFF рекомендуются SameSite=Strict, Path=/, отсутствие Domain и префикс, обозначающий установку через HTTP, например __Host-Http-. Отклонения оценить по сценарию; временные cookie для OAuth callback рассматривать отдельно.",
+          "source_ref_ids": [
+            "s-bff"
           ]
         }
       ],
@@ -104073,6 +104136,15 @@
           },
           {
             "clause": "c2"
+          },
+          {
+            "when": {
+              "predicate": "p-bff"
+            },
+            "then": {
+              "clause": "bff-profile"
+            },
+            "else": "not_applicable_branch"
           }
         ]
       },
@@ -104098,7 +104170,15 @@
                 "c1",
                 "c2"
               ],
-              "expected_evidence": "Есть реальная необходимость None либо выбран Lax."
+              "expected_evidence": "Выбран подходящий SameSite, а None обоснован реальным межсайтовым сценарием."
+            },
+            {
+              "id": "v-update",
+              "action": "Для cookie установленной сессии BFF рекомендуются SameSite=Strict, Path=/, отсутствие Domain и префикс, обозначающий установку через HTTP, например __Host-Http-. Отклонения оценить по сценарию; временные cookie для OAuth callback рассматривать отдельно.",
+              "clause_ids": [
+                "bff-profile"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "outcome_conditions": {
@@ -104124,12 +104204,20 @@
             },
             {
               "id": "i2",
-              "action": "Изучить browser results Lax login и разрешённого None сценария, включая сохранённую CSRF защиту.",
+              "action": "Проверить выбранный SameSite для входа и разрешённых межсайтовых сценариев, включая CSRF.",
               "clause_ids": [
                 "c1",
                 "c2"
               ],
               "expected_evidence": "None не включён blanket ради SSO; cookies не уходят лишним приложениям."
+            },
+            {
+              "id": "i-update",
+              "action": "Для cookie установленной сессии BFF рекомендуются SameSite=Strict, Path=/, отсутствие Domain и префикс, обозначающий установку через HTTP, например __Host-Http-. Отклонения оценить по сценарию; временные cookie для OAuth callback рассматривать отдельно.",
+              "clause_ids": [
+                "bff-profile"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "pass_when": "Cookie attributes и обоснованный SameSite защищают заявленную session boundary. Реализация подтверждена перечисленными артефактами и результатами проверок.",
@@ -104140,32 +104228,29 @@
         "spec_only_implementation_state": "not_verified"
       },
       "id": "PSH3-APP-FA0237D64335",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "title": "Session cookies иметь HttpOnly и Secure с узкими Domain/Path. SameSite по умолчанию Lax",
       "domain": "application-security",
       "subdomain": "oidc-oauth",
       "origin": {
         "kind": "upstream_source",
-        "repo": "https://github.com/defrixx/defrixx.github.io",
-        "revision": "da1369a3739f9361d99cbed00b752ea2a3044286",
+        "repo": "https://github.com/defrixx/Product-security-playbook",
+        "revision": "98811c4189560492c1d391dde3189bfc6eaee8f2",
         "path": "content/application-security/identity/oidc-oauth/playbook.ru.md",
-        "file_sha256": "668b667999b0b1cf22efec445360409b94dae3246641d0190cc587669d4e258f",
-        "source_snapshot": "sources/content/application-security/identity/oidc-oauth/playbook.ru.md",
-        "permalink": "https://github.com/defrixx/defrixx.github.io/blob/da1369a3739f9361d99cbed00b752ea2a3044286/content/application-security/identity/oidc-oauth/playbook.ru.md",
+        "file_sha256": "1dba1ef406ee95ad7a50e7e9933cfee98b052db25bc0b8dcbfe180a88c19c656",
+        "source_snapshot": "sources/updates/2026.11.26/content/application-security/identity/oidc-oauth/playbook.ru.md",
+        "permalink": "https://github.com/defrixx/Product-security-playbook/blob/98811c4189560492c1d391dde3189bfc6eaee8f2/content/application-security/identity/oidc-oauth/playbook.ru.md",
         "license": "CC-BY-4.0",
         "attribution": "Defrixx — Product Security Playbook (2026)",
-        "modifications": "Contextual selection/normalisation, domain grouping, clauses, applicability and evidence plans; exact original citations preserved separately."
+        "modifications": "Contextual requirement updated from current playbook; applicability, clauses and verification adapted while retaining historical ID."
       },
       "severity": "unrated",
       "status": "active",
       "review": {
-        "status": "accepted_contextual_review",
-        "candidate_sha256": "196af44d4535afa308ecf5f36b774ca6438a4787886fd8bbc057da00e0a07417",
-        "content_sha256": "0038a54cc1abe54e70914f6d7f8ca6a1aab2f29bb1b29214c3e7a4bddcb1f329",
-        "ledger_refs": [
-          "qa/evidence/lineage.json"
-        ],
-        "scope": "Historical baseline contextual review only; new normativity/splits/patches have separate targeted-review evidence."
+        "status": "pending_independent_review",
+        "content_sha256": "8162ec933b69f20c555f2aa17d6eeeeb9518b3731e8d2bec5c877516cf35afa5",
+        "ledger_refs": [],
+        "scope": "Targeted update against current playbook and primary sources; independent review pending."
       },
       "clause_normativity": {
         "c1": {
@@ -104190,23 +104275,32 @@
             "s1",
             "s2"
           ],
-          "basis": "Предмет: SameSite по умолчанию Lax; None; Secure допустим только для реального cross-site сценария, с проверенным response mode и сохранением CSRF. SSO redirect сам по себе не обоснование None. Основание решения: CookieR/M requires HttpOnly/Secure/narrowScope и Laxdefault; NoneSecure только actualcrosssite с CSRF, SSOredirect недостаточен.",
+          "basis": "Общий профиль и необходимость межсайтового сценария; отдельная рекомендация BFF отражена в bff-profile.",
           "qualifiers": [
             "Source profile: R+M",
-            "Сохраняется исходная ограниченная формулировка: SameSite по умолчанию Lax; None; Secure допустим только для реального cross-site сценария, с проверенным response mode и сохранением CSRF. SSO redirect сам по себе не обоснование None.",
+            "Lax — распространённый исходный вариант для общего сценария; профиль BFF оценивается отдельно.",
             "Только соответствующий фактический consumer/production/client/profile; условные исключения и альтернативы исходного AST сохранены, implementation остаётся not_verified без фактических артефактов."
           ],
           "evidence_level": "implementation"
+        },
+        "bff-profile": {
+          "force": "recommended",
+          "nature": "review_obligation",
+          "source_ref_ids": [
+            "s-bff"
+          ],
+          "basis": "Целевое обновление по текущему плейбуку; рекомендация сохраняет исходную силу.",
+          "qualifiers": [
+            "Применяется только при установленной области и активной условной ветви."
+          ],
+          "evidence_level": "process"
         }
       },
       "classification_status": "normative",
       "normativity_review": {
-        "status": "reviewed_targeted_pass",
-        "annotation_sha256": "3d1843f3e0414075b9c13fd4feb930300236b55cb3efd42e9b62df4e92422266",
-        "report_refs": [
-          "qa/evidence/current-review.json",
-          "qa/validation.json"
-        ]
+        "status": "pending_peer_review",
+        "annotation_sha256": "bc53f12c80c7c907c2b3e3874c90576dacee739818a311a432bf9b6585c61044",
+        "report_refs": []
       }
     },
     {
@@ -212220,7 +212314,7 @@
       "legacy_ids": [
         "PSH-REV-F53252684A6B"
       ],
-      "statement": "Компоненты release automation закреплены неизменяемыми версиями/digests; GitHub использует подключённый поддерживаемый lockfile либо, где он неприменим, полные проверенные upstream commit SHA. Один version tag не достаточен; floating допустим вне выпуска.",
+      "statement": "Компоненты release automation закреплены неизменяемыми версиями/digests; GitHub использует подключённый поддерживаемый lockfile либо, где он неприменим, полные проверенные upstream commit SHA. Один version tag не достаточен; floating допустим вне выпуска. Вызовы reusable workflows закреплять полным проверенным SHA независимо от actions.lock.",
       "source_kind": "mandatory",
       "level": "implementation",
       "source_refs": [
@@ -212228,7 +212322,7 @@
           "id": "s1",
           "line_start": 82,
           "line_end": 82,
-          "quote": "- Сторонние компоненты автоматизации (в GitHub Actions: actions и reusable workflows), плагины и образы pipeline CI/CD закрепляются по неизменяемым версиям или дайджестам для процессов выпуска. В GitHub Actions используйте поддерживаемый и подключенный файл фиксации зависимостей workflow; там, где он неприменим, закрепляйте полные проверенные SHA коммитов исходных репозиториев actions и workflows. Один тег версии не обеспечивает неизменяемость. Плавающие теги допустимы только для экспериментов вне выпуска."
+          "quote": "- Сторонние компоненты автоматизации (в GitHub Actions: actions и reusable workflows), плагины и образы pipeline CI/CD закрепляются по неизменяемым версиям или дайджестам для процессов выпуска. В GitHub Actions используйте поддерживаемый и подключенный файл фиксации для охватываемых им actions; в остальных случаях закрепляйте эти actions полными проверенными SHA коммитов их исходных репозиториев. Вызовы reusable workflows через `jobs.<job_id>.uses` не охватываются `actions.lock`: всегда закрепляйте их полными проверенными SHA коммитов независимо от файла фиксации вызывающего репозитория. Зависимости actions самого вызываемого workflow проверяйте отдельно. Один тег версии не обеспечивает неизменяемость. Плавающие теги допустимы только для экспериментов вне выпуска."
         }
       ],
       "source_context": {
@@ -212270,9 +212364,29 @@
           },
           {
             "id": "p-lock-app",
-            "text": "Supported lockfile/resolver технически применим кэтомуworkflow/версии/ecosystem независимоотналичияужесозданногоlockfile.",
+            "text": "Для сторонних actions в этом GitHub workflow применим поддерживаемый lockfile/resolver независимо от наличия уже созданного файла.",
             "evidence": [
               "Actual toolcapability/workflowformat"
+            ],
+            "source_ref_ids": [
+              "s1"
+            ]
+          },
+          {
+            "id": "p-reusable",
+            "text": "GitHub workflow вызывает внешний reusable workflow через jobs.<job_id>.uses.",
+            "evidence": [
+              "Фактические вызовы reusable workflow и закреплённые коммиты"
+            ],
+            "source_ref_ids": [
+              "s1"
+            ]
+          },
+          {
+            "id": "p-actions",
+            "text": "GitHub workflow использует сторонние actions.",
+            "evidence": [
+              "Фактические ссылки на сторонние actions в workflow"
             ],
             "source_ref_ids": [
               "s1"
@@ -212301,7 +212415,14 @@
         },
         {
           "id": "sha",
-          "obligation": "Если lockfileнеприменим вGitHub,использоватьполныепроверенныеupstreamcommitSHA.",
+          "obligation": "Если lockfile неприменим к actions в GitHub, использовать полные проверенные SHA коммитов исходных репозиториев.",
+          "source_ref_ids": [
+            "s1"
+          ]
+        },
+        {
+          "id": "reusable-sha",
+          "obligation": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
           "source_ref_ids": [
             "s1"
           ]
@@ -212338,11 +212459,23 @@
                   "not": {
                     "predicate": "p-lock-app"
                   }
+                },
+                {
+                  "predicate": "p-actions"
                 }
               ]
             },
             "then": {
               "clause": "sha"
+            },
+            "else": "not_applicable_branch"
+          },
+          {
+            "when": {
+              "predicate": "p-reusable"
+            },
+            "then": {
+              "clause": "reusable-sha"
             },
             "else": "not_applicable_branch"
           }
@@ -212400,6 +212533,9 @@
                     "not": {
                       "predicate": "p-lock-app"
                     }
+                  },
+                  {
+                    "predicate": "p-actions"
                   }
                 ]
               },
@@ -212408,6 +212544,14 @@
                 "sha"
               ],
               "expected_evidence": "Validfallbackне требует lockfileartifact"
+            },
+            {
+              "id": "v-update",
+              "action": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
+              "clause_ids": [
+                "reusable-sha"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "outcome_conditions": {
@@ -212445,6 +212589,9 @@
                     "not": {
                       "predicate": "p-lock-app"
                     }
+                  },
+                  {
+                    "predicate": "p-actions"
                   }
                 ]
               },
@@ -212508,6 +212655,9 @@
                     "not": {
                       "predicate": "p-lock-app"
                     }
+                  },
+                  {
+                    "predicate": "p-actions"
                   }
                 ]
               },
@@ -212516,10 +212666,18 @@
                 "sha"
               ],
               "expected_evidence": "Validfallbackне требует lockfileartifact"
+            },
+            {
+              "id": "i-update",
+              "action": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
+              "clause_ids": [
+                "reusable-sha"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "pass_when": "Actualrelease dependencies immutablypinned выбраннымподдерживаемымметодом Подтверждено фактическими code/config/reports только активных ветвей, не одним обещанием.",
-          "fail_when": "Releaseconsumesfloatingref/unusedlockfile либо unverifiedSHA Подтверждено фактической реализацией/процессом активной ветви.",
+          "fail_when": "Releaseconsumesfloatingref/unusedlockfile либо unverifiedSHA Подтверждено фактической реализацией/процессом активной ветви. Внешний reusable workflow указан только по изменяемому ref, даже при наличии actions.lock.",
           "unknown_when": "Для активной ветви отсутствует доступное фактическое code/config/test/process evidence либо оно конфликтует; implementation_state=not_verified. Неактивные ветви и никогда не происходившие события не требуют фиктивных reports.",
           "conditional_inputs": [
             {
@@ -212550,6 +212708,9 @@
                     "not": {
                       "predicate": "p-lock-app"
                     }
+                  },
+                  {
+                    "predicate": "p-actions"
                   }
                 ]
               },
@@ -212566,32 +212727,29 @@
         "spec_only_implementation_state": "not_verified"
       },
       "id": "PSH3-REV-0E5666E75DFD",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "title": "Компоненты release automation закреплены неизменяемыми версиями/digests",
       "domain": "security-review",
       "subdomain": "release-governance",
       "origin": {
         "kind": "upstream_source",
-        "repo": "https://github.com/defrixx/defrixx.github.io",
-        "revision": "da1369a3739f9361d99cbed00b752ea2a3044286",
+        "repo": "https://github.com/defrixx/Product-security-playbook",
+        "revision": "98811c4189560492c1d391dde3189bfc6eaee8f2",
         "path": "content/review/release-governance/playbook.ru.md",
-        "file_sha256": "b722e9fd1e0f8d5e71e64fa2680c6fd47ac403147fdd4cfd567f103eae3968b4",
-        "source_snapshot": "sources/content/review/release-governance/playbook.ru.md",
-        "permalink": "https://github.com/defrixx/defrixx.github.io/blob/da1369a3739f9361d99cbed00b752ea2a3044286/content/review/release-governance/playbook.ru.md",
+        "file_sha256": "88343ad428692b66ac897216fccbc92e11c791bc8bcaa43a59b3ae013c12711a",
+        "source_snapshot": "sources/updates/2026.11.26/content/review/release-governance/playbook.ru.md",
+        "permalink": "https://github.com/defrixx/Product-security-playbook/blob/98811c4189560492c1d391dde3189bfc6eaee8f2/content/review/release-governance/playbook.ru.md",
         "license": "CC-BY-4.0",
         "attribution": "Defrixx — Product Security Playbook (2026)",
-        "modifications": "Contextual selection/normalisation, domain grouping, clauses, applicability and evidence plans; exact original citations preserved separately."
+        "modifications": "Contextual requirement updated from current playbook; applicability, clauses and verification adapted while retaining historical ID."
       },
       "severity": "unrated",
       "status": "active",
       "review": {
-        "status": "accepted_contextual_review",
-        "candidate_sha256": "8c4453c5bf803f3f1e6dd56e536a865f7c6ba872f61d937468f64e336d25bd14",
-        "content_sha256": "a2af9d71ba21b827b52fec891f143d6bf1819098cd798d75918f4c58fdde62c9",
-        "ledger_refs": [
-          "qa/evidence/lineage.json"
-        ],
-        "scope": "Historical baseline contextual review only; new normativity/splits/patches have separate targeted-review evidence."
+        "status": "pending_independent_review",
+        "content_sha256": "9ce31a857972692bc64baf9edb11bfd0d600fc3cc6d44a3d287c14e1deeb6838",
+        "ledger_refs": [],
+        "scope": "Targeted update against current playbook and primary sources; independent review pending."
       },
       "clause_normativity": {
         "immutable": {
@@ -212632,16 +212790,25 @@
             "Источник задаёт профиль проверки; это не универсальная юридическая норма."
           ],
           "evidence_level": "implementation"
+        },
+        "reusable-sha": {
+          "force": "required",
+          "nature": "review_obligation",
+          "source_ref_ids": [
+            "s1"
+          ],
+          "basis": "Целевое обновление по текущему плейбуку.",
+          "qualifiers": [
+            "Применяется только при установленной области и активной условной ветви."
+          ],
+          "evidence_level": "process"
         }
       },
       "classification_status": "normative",
       "normativity_review": {
-        "status": "reviewed_targeted_pass",
-        "annotation_sha256": "01dbba5c34e2384d64a9a37adac427375bdfe429e78826256144ef620d4554e7",
-        "report_refs": [
-          "qa/evidence/current-review.json",
-          "qa/validation.json"
-        ]
+        "status": "pending_peer_review",
+        "annotation_sha256": "784075bdf6f996ae68c637e40b0664daf75b0b692cfdcd3610e7f6bba01f3858",
+        "report_refs": []
       }
     },
     {
@@ -229764,7 +229931,7 @@
       "legacy_ids": [
         "PSH-SUP-EBF116AF9C76"
       ],
-      "statement": "Способ фиксации выбран по поддержке платформы и onboarding конкретного workflow При поддерживаемом/onboarded lock проверяются actions.lock commits и source repository identities Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA Зависимости внутри вызываемого reusable workflow управляются lockfile его собственного repository Actual scope/conditional branches определены applicability/clause_logic.",
+      "statement": "Способ фиксации выбран по поддержке платформы и onboarding конкретного workflow При поддерживаемом/onboarded lock проверяются actions.lock commits и source repository identities Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA Зависимости внутри вызываемого reusable workflow управляются lockfile его собственного repository Actual scope/conditional branches определены applicability/clause_logic. Вызовы reusable workflows закреплять полным проверенным SHA независимо от actions.lock.",
       "source_kind": "mandatory",
       "level": "implementation",
       "source_refs": [
@@ -229778,7 +229945,7 @@
           "id": "s1",
           "line_start": 21,
           "line_end": 21,
-          "quote": "Для GitHub Actions выбирайте фиксацию зависимостей с учетом используемой платформы. [Workflow dependency lockfiles](https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles) общедоступны (GA) с 28 октября 2026 года; [официальное объявление GA](https://github.blog/changelog/2026-10-28-github-actions-workflow-lockfiles-are-generally-available/) указывает GitHub Enterprise Cloud, вариант с резидентностью данных, Team и Free. Проверьте поддержку в используемой платформе и подключение конкретного workflow. Фиксация сохраняет выбранные идентичности и коммиты зависимостей; безопасность самих зависимостей оцените отдельно до фиксации. В поддерживаемых репозиториях для подключенных workflows проверяйте `.github/workflows/actions.lock`, зафиксированные коммиты и идентичности исходных репозиториев. Файл охватывает транзитивные зависимости actions; зависимости внутри вызываемого reusable workflow определяет файл фиксации его собственного репозитория. Для workflows без поддержки или подключения сохраняйте фиксацию сторонних actions и reusable workflows полными проверенными SHA из ожидаемого исходного репозитория."
+          "quote": "Для GitHub Actions выбирайте фиксацию зависимостей с учетом используемой платформы. [Workflow dependency lockfiles](https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles) общедоступны (GA) с 28 октября 2026 года; [официальное объявление GA](https://github.blog/changelog/2026-10-28-github-actions-workflow-lockfiles-are-generally-available/) указывает GitHub Enterprise Cloud, вариант с резидентностью данных, Team и Free. Проверьте поддержку в используемой платформе и подключение конкретного workflow. Фиксация сохраняет выбранные идентичности и коммиты зависимостей; безопасность самих зависимостей оцените отдельно до фиксации. В поддерживаемых репозиториях для подключенных workflows проверяйте `.github/workflows/actions.lock`, зафиксированные коммиты и идентичности исходных репозиториев. Файл охватывает транзитивные зависимости actions, но не вызовы reusable workflows через `jobs.<job_id>.uses`: каждый такой вызов закрепляйте полным проверенным SHA коммита, даже если в вызывающем репозитории есть `actions.lock`. Зависимости actions внутри вызываемого reusable workflow определяет файл фиксации его собственного репозитория. Для workflows без поддержки или подключения сохраняйте фиксацию сторонних actions и reusable workflows полными проверенными SHA из ожидаемого исходного репозитория."
         },
         {
           "id": "s2",
@@ -229826,7 +229993,7 @@
           },
           {
             "id": "p3",
-            "text": "Workflow lock не поддерживается либо workflow не onboarded",
+            "text": "Workflow использует сторонние actions, а workflow lock не поддерживается либо workflow не подключён.",
             "evidence": [
               "Версия/тип GitHub deployment и onboarding workflow lock",
               "Dependency graph и политика pinning для reusable workflow boundaries"
@@ -229840,6 +230007,16 @@
             "text": "Используется вызываемый reusable workflow с применимой lockfile поддержкой",
             "evidence": [
               "Reusable workflow boundary и lock onboarding"
+            ],
+            "source_ref_ids": [
+              "s1"
+            ]
+          },
+          {
+            "id": "p-reusable",
+            "text": "GitHub workflow вызывает внешний reusable workflow через jobs.<job_id>.uses.",
+            "evidence": [
+              "Фактические вызовы reusable workflow и закреплённые коммиты"
             ],
             "source_ref_ids": [
               "s1"
@@ -229872,7 +230049,7 @@
         },
         {
           "id": "c3",
-          "obligation": "Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA",
+          "obligation": "Без применимого lock сторонние actions закреплены проверенным полным SHA.",
           "source_ref_ids": [
             "s1"
           ]
@@ -229880,6 +230057,13 @@
         {
           "id": "c4",
           "obligation": "Зависимости внутри вызываемого reusable workflow управляются lockfile его собственного repository",
+          "source_ref_ids": [
+            "s1"
+          ]
+        },
+        {
+          "id": "reusable-sha",
+          "obligation": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
           "source_ref_ids": [
             "s1"
           ]
@@ -229916,6 +230100,15 @@
               "clause": "c4"
             },
             "else": "not_applicable_branch"
+          },
+          {
+            "when": {
+              "predicate": "p-reusable"
+            },
+            "then": {
+              "clause": "reusable-sha"
+            },
+            "else": "not_applicable_branch"
           }
         ]
       },
@@ -229947,10 +230140,18 @@
                 "c4"
               ],
               "expected_evidence": "Dependency graph и политика pinning для reusable workflow boundaries с адресуемой ссылкой на решение"
+            },
+            {
+              "id": "v-update",
+              "action": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
+              "clause_ids": [
+                "reusable-sha"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "outcome_conditions": {
-            "satisfied_by_spec": "Определены общие обязанности и все активные when ветви: c1: Способ фиксации выбран по поддержке платформы и onboarding конкретного workflow; c2: При поддерживаемом/onboarded lock проверяются actions.lock commits и source repository identities; c3: Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA; c4: Зависимости внутри вызываемого reusable workflow управляются lockfile его собственного repository. Inactive feature branches не требуют добавления отсутствующего механизма.",
+            "satisfied_by_spec": "Способ фиксации actions соответствует платформе; внешние вызовы reusable workflow закреплены полным проверенным SHA независимо от lock; активные условные ветви учтены.",
             "contradicted_by_spec": "Effective spec прямо допускает поведение, противоположное хотя бы одному применимому clause: Способ фиксации выбран по поддержке платформы и onboarding конкретного workflow; При поддерживаемом/onboarded lock проверяются actions.lock commits и source repository identities, reusable workflow отвечает за свой lockfile; Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA",
             "not_addressed": "При известном scope не определена общая обязанность либо required control активной feature branch clause_logic;невыбранная/inactive ветвь не является пропуском.",
             "unknown": "Неизвестны actual architecture/feature facts либо доступные источники противоречат друг другу и не позволяют оценить проектное решение. Отсутствующий required artifact при известном scope — not_addressed. Область: («GitHub workflow использует third-party actions либо reusable workflows независимо от наличия pinning решения.»)"
@@ -229959,7 +230160,7 @@
         "source_level": {
           "inputs": [
             "Actual platform support и workflow onboarding status,selected dependency refs",
-            "Actions.lock/source identities только p2;reviewed full SHA только p3;callee own lock только p4"
+            "Actions.lock и идентичности sources при p2; full SHA сторонних actions при p3; собственный lock вызываемого workflow при p4; SHA внешнего вызова при p-reusable."
           ],
           "steps": [
             {
@@ -229983,42 +230184,47 @@
                 "c4"
               ],
               "expected_evidence": "Resolved reusable workflow dependencies и allowed-actions policy той же проверяемой ревизии/среды"
+            },
+            {
+              "id": "i-update",
+              "action": "Каждый внешний вызов reusable workflow закреплять полным проверенным SHA коммита исходного репозитория независимо от actions.lock вызывающего workflow.",
+              "clause_ids": [
+                "reusable-sha"
+              ],
+              "expected_evidence": "Решение, условия применимости и результат соответствующей проверки."
             }
           ],
           "pass_when": "Фактические artifacts подтверждают общие и активные when clauses соответствующей revision;inactive mechanisms не требуют test/evidence.",
-          "fail_when": "Фактический configuration/test/incident record прямо противоречит применимому clause; указать конкретные job/role/artifact/environment.",
+          "fail_when": "Фактический configuration/test/incident record прямо противоречит применимому clause; указать конкретные job/role/artifact/environment. Внешний reusable workflow указан только по изменяемому ref, даже при наличии actions.lock.",
           "unknown_when": "Неизвестна actual platform/onboarding branch либо нет evidence её обязательной фиксации;missing pinning decision при known dependencies — project gap,не applicability unknown."
         },
         "execution_policy": "plan_only_no_automatic_execution",
         "spec_only_implementation_state": "not_verified"
       },
       "id": "PSH3-SUP-C2BD680FF294",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "title": "Способ фиксации выбран по поддержке платформы и onboarding конкретного workflow При поддерживаемом/onboarded lock провер",
       "domain": "software-supply-chain",
       "subdomain": "ci-cd-security",
       "origin": {
         "kind": "upstream_source",
-        "repo": "https://github.com/defrixx/defrixx.github.io",
-        "revision": "da1369a3739f9361d99cbed00b752ea2a3044286",
+        "repo": "https://github.com/defrixx/Product-security-playbook",
+        "revision": "98811c4189560492c1d391dde3189bfc6eaee8f2",
         "path": "content/supply-chain/ci-cd-security/playbook.ru.md",
-        "file_sha256": "ed62eda7ac660d1f8c00fbad193d71038707549cd4ebe5de77f5e99004085b3e",
-        "source_snapshot": "sources/content/supply-chain/ci-cd-security/playbook.ru.md",
-        "permalink": "https://github.com/defrixx/defrixx.github.io/blob/da1369a3739f9361d99cbed00b752ea2a3044286/content/supply-chain/ci-cd-security/playbook.ru.md",
+        "file_sha256": "e42443c318bf09dfcb2ec2e1c7426959cfec323ac0aa2f14fe198f6812459b86",
+        "source_snapshot": "sources/updates/2026.11.26/content/supply-chain/ci-cd-security/playbook.ru.md",
+        "permalink": "https://github.com/defrixx/Product-security-playbook/blob/98811c4189560492c1d391dde3189bfc6eaee8f2/content/supply-chain/ci-cd-security/playbook.ru.md",
         "license": "CC-BY-4.0",
         "attribution": "Defrixx — Product Security Playbook (2026)",
-        "modifications": "Contextual selection/normalisation, domain grouping, clauses, applicability and evidence plans; exact original citations preserved separately."
+        "modifications": "Contextual requirement updated from current playbook; applicability, clauses and verification adapted while retaining historical ID."
       },
       "severity": "unrated",
       "status": "active",
       "review": {
-        "status": "accepted_contextual_review",
-        "candidate_sha256": "7840dabf93f53b677869b31491389c2e0cde1481beadc29c48106c580e8aa38f",
-        "content_sha256": "a5d1ad43331f549a1297bf245afcad92cca97d82d8a953b79c51d989773c9980",
-        "ledger_refs": [
-          "qa/evidence/lineage.json"
-        ],
-        "scope": "Historical baseline contextual review only; new normativity/splits/patches have separate targeted-review evidence."
+        "status": "pending_independent_review",
+        "content_sha256": "8a0ed6c84ad10e8d23abca70ddafcc3c3ee9f96e018e89cc0514f4866fd42f31",
+        "ledger_refs": [],
+        "scope": "Targeted update against current playbook and primary sources; independent review pending."
       },
       "clause_normativity": {
         "c1": {
@@ -230053,7 +230259,7 @@
           "source_ref_ids": [
             "s1"
           ],
-          "basis": "Техническое предписание в s1 относится именно к: «Без применимого lock сторонние actions/reusable workflows закреплены проверенным полным SHA». Сила определена по цитате и framing данного пункта, не по record.source_kind.",
+          "basis": "Fallback относится к actions; вызовы reusable workflow проверяются отдельно независимо от lock.",
           "qualifiers": [
             "CI/CD delivery trust boundaries; source conditional branches preserved",
             "Действует только при истинной собственной applicability и активной ветви существующего clause_logic; ALL/ANY/WHEN/ELSE и одобренные исключения не изменяются."
@@ -230072,16 +230278,25 @@
             "Действует только при истинной собственной applicability и активной ветви существующего clause_logic; ALL/ANY/WHEN/ELSE и одобренные исключения не изменяются."
           ],
           "evidence_level": "implementation"
+        },
+        "reusable-sha": {
+          "force": "required",
+          "nature": "review_obligation",
+          "source_ref_ids": [
+            "s1"
+          ],
+          "basis": "Целевое обновление по текущему плейбуку.",
+          "qualifiers": [
+            "Применяется только при установленной области и активной условной ветви."
+          ],
+          "evidence_level": "process"
         }
       },
       "classification_status": "normative",
       "normativity_review": {
-        "status": "reviewed_targeted_pass",
-        "annotation_sha256": "ce3ac0e9cba859ccfc1ee7899ad7818fea65ce77965b30b86c9b1e6c82dec68c",
-        "report_refs": [
-          "qa/evidence/current-review.json",
-          "qa/validation.json"
-        ]
+        "status": "pending_peer_review",
+        "annotation_sha256": "15d13723195e126229d77fffda00279f2ba2c5f74db2c5ea6f6bf44d2e7e4b48",
+        "report_refs": []
       }
     },
     {
@@ -252827,6 +253042,7 @@
     "Source-specific controls can overlap; no security percentage or automatic normative universalisation.",
     "Evidence plans do not authorize code, network attacks or tools execution.",
     "Spec-only implementation_verification is always not_verified.",
-    "Local profiles/numeric assumptions require explicit project adoption; source conflicts require precedence/review."
+    "Local profiles/numeric assumptions require explicit project adoption; source conflicts require precedence/review.",
+    "Four updated records include targeted source corrections; independent peer review of these revisions remains pending."
   ]
 }

@@ -51,6 +51,9 @@ export default function thirdPartyNotices() {
           const original = await licenseTexts(entry.name);
           if (original) entry.text = original;
           if (entry.name === uiName && !entry.text) entry.text = pagefindLicense;
+          if (entry.name === 'elkjs' && entry.version === '0.9.3') {
+            entry.provenance = 'EPL-2.0 source: https://github.com/kieler/elkjs/tree/0.9.3 ; its build also uses Eclipse ELK sources: https://github.com/eclipse-elk/elk';
+          }
         }
         entries.push({ name: 'pagefind copied search runtime', version: pagefind.version, identifier: pagefind.license,
           provenance: 'pagefind npm distribution LICENSE directory', text: pagefindLicense });

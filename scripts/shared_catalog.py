@@ -110,6 +110,12 @@ def check_links():
             raise ValueError('Playbook comparison is stale: ' + item['source_id'])
 
 
+def changed_playbooks():
+    check_links()
+    return [item['playbook_path'] for item in read_json(ROOT / 'catalog/playbook-links.json')['links']
+            if item['status'] == 'changed']
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -118,6 +124,7 @@ def main():
     group.add_argument('--get', metavar='ID')
     group.add_argument('--new-release', metavar='VERSION', help='create a new immutable local release')
     group.add_argument('--refresh-playbook-links', action='store_true', help='record current playbook hashes for review')
+    group.add_argument('--check-aligned', action='store_true', help='fail if a pinned playbook source differs from the current file')
     args = parser.parse_args()
     if args.refresh_playbook_links:
         path = ROOT / 'catalog/playbook-links.json'
@@ -167,8 +174,12 @@ def main():
     if index != expected:
         raise ValueError('Shared catalogue index is out of date')
     release = verify_release(index)
-    if args.check:
-        check_links()
+    if args.check or args.check_aligned:
+        changed = changed_playbooks()
+        if changed and args.check_aligned:
+            raise ValueError('Pinned playbook sources differ from current files; semantic review required: ' + ', '.join(changed))
+        if changed:
+            print('Playbook sources requiring semantic review: ' + ', '.join(changed))
         ids = [r['id'] for r in index['records']]
         if len(ids) != len(set(ids)):
             raise ValueError('Duplicate shared catalogue identifier')
