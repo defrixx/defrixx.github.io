@@ -232,10 +232,10 @@ def check_russian_terminology(errors: list[str], path: Path, text: str) -> None:
             )
 
 
-def check_readme_coverage(errors: list[str]) -> None:
-    readme = ROOT / "README.md"
+def check_documentation_index(errors: list[str]) -> None:
+    readme = ROOT / "DOCUMENTATION.md"
     if not readme.exists():
-        fail(errors, readme, None, "README.md is missing")
+        fail(errors, readme, None, "documentation index is missing")
         return
 
     text = readme.read_text(encoding="utf-8")
@@ -252,10 +252,10 @@ def check_readme_coverage(errors: list[str]) -> None:
             actual_dirs.update(f"{rel(path.parent)}/" for path in root.rglob("*.md"))
 
     for directory in sorted(actual_dirs - linked_dirs):
-        fail(errors, readme, None, f"missing README entry for {directory}")
+        fail(errors, readme, None, f"missing documentation index entry for {directory}")
 
     for directory in sorted(linked_dirs - actual_dirs):
-        fail(errors, readme, None, f"README links to directory without markdown files: {directory}")
+        fail(errors, readme, None, f"documentation index links to directory without markdown files: {directory}")
 
 
 def main() -> int:
@@ -263,7 +263,7 @@ def main() -> int:
     files = markdown_files()
 
     check_language_pairs(errors)
-    check_readme_coverage(errors)
+    check_documentation_index(errors)
 
     for path in files:
         check_line_endings_and_spaces(errors, path)

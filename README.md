@@ -1,132 +1,33 @@
 # Product Security Hub
 
-A practical knowledge base and local toolset for defensive product security engineering. The existing Playbook is the methodological foundation, and SDD Security Analyzer is the primary application.
+A practical Product Security knowledge base and local toolset for reviewing designs, developing security controls, and verifying fixes. The playbooks connect security engineering guidance with reusable skills, tools, and the SDD Security Analyzer.
 
-The playbooks, checklists, and review methods help apply industry standards and engineering practices to specific product security tasks.
+## Start here
 
-Materials evolve with technologies and attack techniques. Apply them in the context of your project's architecture, component versions, and threat model.
+- [Explore the knowledge base](https://defrixx.github.io/) or browse the [English](content/hub/knowledge/overview.en.md) and [Russian](content/hub/knowledge/overview.ru.md) library.
+- [See a complete synthetic review](content/hub/reviews/delivery-api/overview.en.md) of a delivery integration, from architecture to proposed repairs and checks.
+- [Run SDD Security Analyzer](analyzer/README.md) locally to review Markdown specifications against selected requirements.
 
----
+## Example: reviewing an integration
 
-## Contents
+An order service connects several tenants to a delivery provider. The [case](content/hub/reviews/delivery-api/overview.en.md) maps the trust boundaries, OAuth lifecycle and webhook flows, then turns them into requirements and negative checks. One example finding describes a callback that accepts a tenant from the request; the proposed design binds the OAuth transaction to the session and tenant and checks current authority. The accompanying test plan covers tenant substitution, cross-session use and revoked permissions.
 
-The site is published at https://defrixx.github.io. This repository contains the playbooks, the Analyzer, reusable skills, tools, and Bifrost integration.
+The service and findings are fictional. Repairs are proposed and checks are planned, not executed. Use the [review template and test matrix](content/hub/api-integration/overview.en.md) to record actual revisions, observations and decisions for your own system.
 
-### Components
+## Components
 
-- [SDD Security Analyzer](analyzer/README.md) — local specification review.
-- [Security Review](skills/security-review/SKILL.md), [Secure Development](skills/secure-development/SKILL.md), [Report Triage](skills/security-report-triage/SKILL.md), [Fix Verification](skills/security-fix-verification/SKILL.md) — independently usable skills.
-- [Shared requirements catalogue](catalog/README.md) — versioned release, source-preserving index and lookup across Analyzer and Secure Development requirements. The sources remain usable independently; semantic reconciliation is ongoing.
+- [Playbooks and checklists](content/hub/knowledge/overview.en.md) cover security review, application and platform security, supply chain, and AI security. The [site](https://defrixx.github.io/) provides English and Russian navigation.
+- The [documentation index](DOCUMENTATION.md) lists topics and scenarios by directory.
+- [SDD Security Analyzer](analyzer/README.md) checks specification documents against a pinned requirements catalog and prepares an independent report for human review.
+- [Security Review](skills/security-review/SKILL.md), [Secure Development](skills/secure-development/SKILL.md), [Report Triage](skills/security-report-triage/SKILL.md), and [Fix Verification](skills/security-fix-verification/SKILL.md) are independently usable skills.
+- [Shared requirements catalogue](catalog/README.md) indexes Analyzer and Secure Development requirements with their provenance. Semantic reconciliation between the sources is ongoing.
+- [Prompt Integrity](tools/prompt-integrity/README.md), [Prompt Guard](tools/prompt-guard/README.md), [Model Security Eval](tools/model-security-eval/README.md), and [Sensitive Data Cleanup](tools/sensitive-data-cleanup/README.md) are standalone utilities. The [Bifrost integration](integrations/bifrost/README.md) provides application-owned gateway boundaries.
+- [Policy examples](reference/security-policy-examples/overview.en.md) and [downloads](downloads/) provide executable examples and review templates.
 
-### Integration
+The site is generated from source Markdown; see [site configuration](config/hub-scenarios.json) and [content synchronization](scripts/sync_starlight_content.py). Materials should be applied to the system's architecture, component versions, and threat model.
 
-- [Bifrost defensive gateway components](integrations/bifrost/README.md).
-
-### Standalone utilities
-
-- [Prompt Integrity](tools/prompt-integrity/README.md) — trusted instruction integrity checks.
-- [Prompt Guard](tools/prompt-guard/README.md) — input and output policy validation.
-- [Model Security Eval](tools/model-security-eval/README.md) — standalone synthetic model-policy evaluation.
-- [Sensitive Data Cleanup](tools/sensitive-data-cleanup/README.md) — local inventory and redaction of supported files into a separate copy.
-
-### Review and Governance
-- [`content/review/`](content/review/) - [choose a document by task](content/review/overview.en.md)
-- [`content/review/architecture/`](content/review/architecture/) - security architecture review checklist
-- [`content/review/threat-modeling/`](content/review/threat-modeling/) - threat modeling methodology review and practical playbook
-- [`content/review/release-governance/`](content/review/release-governance/) - release governance and security quality gates for protected environments, deployment approvals, release evidence, exceptions, and escalation
-- [`content/review/vulnerability-management/`](content/review/vulnerability-management/) - vulnerability triage, external reports and coordinated disclosure, exploitability, SLA, release blocking, exceptions, and closure evidence
-
-### Application Security
-- [`content/application-security/`](content/application-security/) - [choose a document by task](content/application-security/overview.en.md)
-- [`content/application-security/web/owasp-top-10/`](content/application-security/web/owasp-top-10/) - web control catalogue with OWASP Top 10:2021 and 2025 mappings
-- [`content/application-security/web/browser-security/`](content/application-security/web/browser-security/) - browser and frontend controls for CSP, CORS, cookies, third-party scripts, embedded content, and frontend supply chain
-- [`content/application-security/api/api-security-patterns/`](content/application-security/api/api-security-patterns/) - API security and integration patterns for REST, SOAP/XML, GraphQL, Webhooks, and gRPC
-- [`content/application-security/business-logic/business-logic-abuse/`](content/application-security/business-logic/business-logic-abuse/) - business logic abuse playbook for ATO, signup/trial/promo abuse, tenant isolation, workflow abuse, and sensitive business flows
-- [`content/application-security/secure-coding/code-review/`](content/application-security/secure-coding/code-review/) - secure coding and code review playbook for validation, encoding, auth/session, access control, injection, file handling, logging, crypto misuse, and review evidence
-- [`content/application-security/identity/oidc-oauth/`](content/application-security/identity/oidc-oauth/) - OIDC + OAuth 2.0 security playbook
-
-### Platform Security
-- [`content/platform-security/`](content/platform-security/) - [choose a document by task](content/platform-security/overview.en.md)
-- [`content/platform-security/kubernetes/cluster-security-review/`](content/platform-security/kubernetes/cluster-security-review/) - Kubernetes cluster security review playbook
-- [`content/platform-security/kubernetes/adversarial-validation/`](content/platform-security/kubernetes/adversarial-validation/) - Kubernetes adversarial validation and attack-path review playbook
-- [`content/platform-security/kubernetes/pod-security/`](content/platform-security/kubernetes/pod-security/) - Kubernetes pod security hardening playbook
-- [`content/platform-security/kubernetes/secrets/`](content/platform-security/kubernetes/secrets/) - Kubernetes Secrets security playbook
-- [`content/platform-security/kubernetes/seccomp/`](content/platform-security/kubernetes/seccomp/) - Kubernetes seccomp review checklist
-- [`content/platform-security/kubernetes/container-escape-capability-abuse/`](content/platform-security/kubernetes/container-escape-capability-abuse/) - container escape and Linux capability abuse overview
-- [`content/platform-security/secrets/vault/`](content/platform-security/secrets/vault/) - Vault security playbook
-- [`content/platform-security/cloud-iam-workload-identity/`](content/platform-security/cloud-iam-workload-identity/) - cloud federation, workload permissions, metadata isolation, and active-session containment
-
-### Supply Chain
-- [`content/supply-chain/`](content/supply-chain/) - [choose a document by task](content/supply-chain/overview.en.md)
-- [`content/supply-chain/slsa-provenance/`](content/supply-chain/slsa-provenance/) - SLSA v1.2 provenance overview for container image CI/CD pipelines
-- [`content/supply-chain/container-image-security/`](content/supply-chain/container-image-security/) - container image and OCI registry security playbook for Dockerfile baselines, digest pinning, multi-arch images, registry promotion, scanning, signing, and deploy-time verification
-- [`content/supply-chain/ci-cd-security/`](content/supply-chain/ci-cd-security/) - pipeline trust boundaries, executor isolation, artifact handoffs, federation, and deployment verification
-
-### AI Security
-- [`content/ai-security/`](content/ai-security/) - [choose an AI security document](content/ai-security/overview.en.md) by task and document scope
-- [`content/ai-security/securing-ai/`](content/ai-security/securing-ai/) - Securing AI overview
-- [`content/ai-security/owasp-llm-top-10/`](content/ai-security/owasp-llm-top-10/) - OWASP LLM Top 10 threat-focused overview (2026), with the 2025/2026 map and stable historical links
-- [`content/ai-security/agentic-ai/`](content/ai-security/agentic-ai/) - Agentic AI security playbook for autonomy, tools, memory, action traces, sandboxing, and kill-switch controls
-- [`content/ai-security/ai-assisted-development/`](content/ai-security/ai-assisted-development/) - secure AI-assisted development playbook for coding assistants, generated code review, dependency verification, SDLC gates, and coding-agent environments
-- [`content/ai-security/mcp-security/`](content/ai-security/mcp-security/) - MCP security playbook for server/tool registry, deployment patterns, OAuth, capability drift, and protocol-layer logging
-
-### Reference
-- [`reference/infrastructure-technologies/`](reference/infrastructure-technologies/) - overview of infrastructure technologies and their production operating models
-- [`reference/security-policy-examples/`](reference/security-policy-examples/) - executable OPA policies, configuration examples, and allowed/denied CI scenarios
-
-### Security Skills and Tools
-- [`content/ai-automation/security-skills/`](content/ai-automation/security-skills/) - Product Security Skills, developed alongside the playbooks for assistant-driven security tasks
-- [`content/ai-automation/security-skills/secure-development/`](content/ai-automation/security-skills/secure-development/) - architecture-aware control selection, implementation, and access/recovery checks
-- [`content/ai-automation/security-skills/security-review/`](content/ai-automation/security-skills/security-review/) - architecture-aware PR and repository assessment, security deltas, and decisive checks
-- [`content/ai-automation/security-skills/sensitive-data-cleanup/`](content/ai-automation/security-skills/sensitive-data-cleanup/) - separate cleaned copies, compound-content coverage, and linked-replacement checks
-- [`content/ai-automation/security-skills/security-report-triage/`](content/ai-automation/security-skills/security-report-triage/) - scanner report triage, delivered-artifact applicability, and bounded SARIF intake
-- [`content/ai-automation/security-skills/security-fix-verification/`](content/ai-automation/security-skills/security-fix-verification/) - verification of specified repairs across bypass, lifecycle, and recovery cases
-- [`content/ai-automation/security-skills/workflow/`](content/ai-automation/security-skills/workflow/) - independent use and combined assessment, implementation, verification, and optional cleanup
-- [`content/ai-automation/prompt-integrity/`](content/ai-automation/prompt-integrity/) - standalone static instruction integrity library and CLI
-- [`content/ai-automation/model-security-eval/`](content/ai-automation/model-security-eval/) - local model security scenarios and blocking CI verdicts
-- [`content/ai-automation/prompt-guard/`](content/ai-automation/prompt-guard/) - source-aware input/output validation, policy-authorized sanitization and tool contracts
-
-- [`content/ai-automation/bifrost/`](content/ai-automation/bifrost/) - Bifrost application ingress, final provider integrity, buffered streaming, authorized tools and skill staging
-
-## Product Security Hub
-
-The hub uses the existing Astro/Starlight site and library.
-Edit source Markdown and the generator; generated pages are not independent sources.
-
-- [`content/hub/`](content/hub/) - hub introduction
-- [`content/hub/tasks/`](content/hub/tasks/) - complete route and library topics
-- [`content/hub/knowledge/`](content/hub/knowledge/) - full knowledge base
-- [`content/hub/catalogue/`](content/hub/catalogue/) - skills and tools catalogue
-- [`content/hub/api-integration/`](content/hub/api-integration/) - external API route
-- [`content/hub/reviews/delivery-api/`](content/hub/reviews/delivery-api/) - synthetic review
-- [`content/hub/ci-cd-release/`](content/hub/ci-cd-release/) - local learning route for release security
-- [`content/hub/reviews/ci-cd-release/`](content/hub/reviews/ci-cd-release/) - synthetic release review
-- [`content/hub/llm-rag/`](content/hub/llm-rag/) - bilingual learning route
-- [`content/hub/reviews/llm-rag/`](content/hub/reviews/llm-rag/) - synthetic review with traceable checks
-- [`content/hub/agent-tools/`](content/hub/agent-tools/) - bilingual learning route
-- [`content/hub/reviews/agent-tools/`](content/hub/reviews/agent-tools/) - synthetic review with traceable checks
-- [`content/hub/kafka-integration/`](content/hub/kafka-integration/) - bilingual learning route
-- [`content/hub/reviews/kafka-integration/`](content/hub/reviews/kafka-integration/) - synthetic review with traceable checks
-- [`content/hub/vulnerability-response/`](content/hub/vulnerability-response/) - advisory-to-runtime remediation and closure evidence
-- [`content/hub/reviews/vulnerability-response/`](content/hub/reviews/vulnerability-response/) - synthetic vulnerability response review
-- [`content/hub/secret-exposure-response/`](content/hub/secret-exposure-response/) - credential exposure containment, replacement and recovery checks
-- [`content/hub/reviews/secret-exposure-response/`](content/hub/reviews/secret-exposure-response/) - synthetic secret exposure review
-- [`content/hub/usage/`](content/hub/usage/) - usage and attribution
-
-The home scenario list is generated from `config/hub-scenarios.json`. Add a ready
-route only after its RU and EN source pages exist. Each entry uses the same title,
-applicability and result layout; candidates and unfilled routes are not published.
-
-`config/hub-sources.json` is an allowlisted link registry for the monorepository. The build
-does not fetch remote content. `downloads/` contains
-public, authored templates; synchronization copies only the explicit authored template
-files to `site/public/downloads/`. Private artifacts, reports and evaluation evidence
-are outside the import contract.
+The [dependency security workflow](.github/workflows/dependency-security.yml) scans repository manifests and the built Analyzer runtime image on pull requests, pushes to `main`, and weekly. HIGH and CRITICAL findings fail the corresponding scan job; this separate workflow does not itself block site deployment. Review results for applicability and update affected dependencies or images.
 
 ## Licensing
 
-Original playbooks, articles, diagrams and prose templates in `content/`,
-`reference/` and `downloads/` use CC BY 4.0. Original site code, scripts,
-configuration and example code use MIT. Imported components and the Analyzer
-have their own notices. See [license boundaries](LICENSE) and [MIT terms](LICENSE-MIT).
-Third-party and unknown-owner materials retain their applicable rights and notices.
+Original playbooks, articles, diagrams, and prose templates in `content/`, `reference/`, and `downloads/` use CC BY 4.0. Original site code, scripts, configuration, and example code use MIT. Skills, tools, the Analyzer, and third-party materials retain their own notices. See [license boundaries](LICENSE), [MIT terms](LICENSE-MIT), and [Analyzer notices](analyzer/NOTICE).
