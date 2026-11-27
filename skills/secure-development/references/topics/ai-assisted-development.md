@@ -99,3 +99,10 @@ Historical references (verification date 2026-10-03):
 - **S4:** [LLM08:2025 Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/) — access controls and cross-context leakage.
 - **S5:** [LLM07:2025 System Prompt Leakage](https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/) — credentials and controls outside prompts.
 - **S6:** [LLM10:2025 Unbounded Consumption](https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/) — resource limits and timeouts.
+
+
+## Agentic application evidence handoff
+
+For applications with model-selected tools or persistent state, retain the existing six conditions and use the shared catalogue's corresponding agentic records as additional context. Record the applicable condition, the actual enforcing component, its configuration revision and the evidence available to the reviewer. Distinguish a design proposal from an implemented control and an independently observed result. If evidence is absent or obsolete, keep the conclusion unresolved. Review the affected conditions after material changes to the deployment or its authorization boundaries.
+
+See the shared catalogue's Agentic V2 crosswalk for related records; the two namespaces retain their own applicability and meaning.

@@ -6,8 +6,8 @@
       "pinned_path": "analyzer/sources/content/ai-security/agentic-ai/playbook.ru.md",
       "playbook_path": "content/ai-security/agentic-ai/playbook.ru.md",
       "pinned_sha256": "e936b979c950733dda4bc5ea7ee6325c910031b14fdaa0f64a7d1f24789990ca",
-      "current_sha256": "e936b979c950733dda4bc5ea7ee6325c910031b14fdaa0f64a7d1f24789990ca",
-      "status": "same"
+      "current_sha256": "94b0095e30a18380dd9d4ef01dc412160446884ad9adc415aafa55bddb380f42",
+      "status": "changed"
     },
     {
       "source_id": "02-ai-assisted-development",

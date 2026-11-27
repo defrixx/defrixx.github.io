@@ -527,3 +527,8 @@ Reviewed 2026-11-04 against upstream revision
 - [Skills Repository](https://github.com/maximhq/bifrost/blob/170e5086e0b6abdf4121653d10f40b52af7e36d7/docs/features/skills-repository.mdx): metadata/body separation and supporting-file imports.
 
 The HTTP adapter uses the documented wire contract rather than Go plugin ABI.
+
+
+## Agentic application assurance scope
+
+Treat the integration as an application boundary, not as evidence that downstream business authorization, memory governance or operational incident response is implemented. For deployments applying the Agentic AI playbook, record which component owns each applicable control, its configuration revision, and the evidence available to the reviewer. Keep the gateway's observations separate from claims about external systems. Review the affected controls after changes to the configuration, integration or downstream services. An unverified external control remains a deployment responsibility.

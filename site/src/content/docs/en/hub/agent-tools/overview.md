@@ -82,3 +82,8 @@ Exceptions record scope, objects/revision, expiry, compensating measures and app
 Use our independent skills to review tool authorization and verify selected repairs. Configure access to the target environment separately, following the catalogue.
 
 Author: Defrixx. Original prose, diagram and templates: CC BY 4.0. [Usage and licenses](/en/hub/usage/overview/).
+
+
+## From architecture to evidence
+
+For a synthetic internal assistant that reads support requests and prepares drafts, start with the agent security playbook and select only the requirements applicable to that workflow. Identify related Secure Development conditions and Analyzer records in the shared catalogue, retaining their separate applicability. Review the specification in Analyzer and separate documented decisions from evidence of an implemented control. Keep unresolved items in the review; approval of a draft or a successful local check does not establish the behavior of an external system.

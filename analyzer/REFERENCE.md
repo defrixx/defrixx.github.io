@@ -120,3 +120,8 @@ a guarantee of model intent, assessment quality or constrained generation.
 4. P5 assesses applicable obligations against checked-document evidence. Schema, pinned-ID, citation and coverage checks can reject or mark incomplete results.
 5. P6 consolidates assessments, findings and unresolved questions. The report endpoint and ZIP export expose the independent report, with no P7/P8 rewrite stages.
 6. Optional scope answers prepare a new review. The user reviews its inputs and starts it explicitly; earlier reports and original documents are preserved.
+
+
+## Reviewing agentic application specifications
+
+Select the applicable existing agentic catalogue records rather than treating every agent requirement as universal. A specification may describe ownership, authority boundaries, memory policy, resource limits or incident response without providing evidence of implementation. Report the documented intent and the available supporting evidence separately; leave implementation status unknown when the supplied materials cannot establish it. Do not infer an operational security result from a model's assessment of a document. The reviewer decides whether further implementation evidence is required.

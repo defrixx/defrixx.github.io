@@ -8885,37 +8885,37 @@
     ]
   },
   "skills": {
-    "revision": "dbc79806e706568af134d5f2fbde8a611c52cecc",
+    "revision": "monorepo-local-2026.11.27.1",
     "records": [
       {
         "id": "SD-AI-001.C01",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-AI-001.C02",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-AI-001.C03",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-AI-001.C04",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-AI-001.C05",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-AI-001.C06",
         "path": "skills/secure-development/references/topics/ai-assisted-development.md",
-        "sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda"
+        "sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb"
       },
       {
         "id": "SD-API-001.C01",
@@ -9605,6 +9605,48 @@
         "analyzer_id": "PSH3-SUP-B77F90F5AC76",
         "relation": "related",
         "rationale": "Both restrict host control sockets, privileged containers and mounts; the Analyzer additionally addresses executor and network isolation."
+      },
+      {
+        "skills_id": "SD-AI-001.C01",
+        "analyzer_id": "PSH3-AI-13D73A66B04A",
+        "relation": "related",
+        "rationale": "Both separate untrusted content from trusted processing; the Analyzer record additionally scopes isolated tool environments."
+      },
+      {
+        "skills_id": "SD-AI-001.C02",
+        "analyzer_id": "PSH3-AI-E48B0CC0A805",
+        "relation": "related",
+        "rationale": "Both require authorization at the action boundary; the Analyzer adds workload and operation-specific constraints."
+      },
+      {
+        "skills_id": "SD-AI-001.C02",
+        "analyzer_id": "PSH3-AI-EAA7A6FE8384",
+        "relation": "related",
+        "rationale": "Both bind approval to an operation; the Analyzer adds explicit expiry and consumption semantics."
+      },
+      {
+        "skills_id": "SD-AI-001.C02",
+        "analyzer_id": "PSH3-AI-D74BDE2ECD47",
+        "relation": "related",
+        "rationale": "Both constrain authority at action boundaries; the Analyzer additionally addresses delegated identity and scope."
+      },
+      {
+        "skills_id": "SD-AI-001.C04",
+        "analyzer_id": "PSH3-AI-C3E8A4E70E65",
+        "relation": "related",
+        "rationale": "Both constrain protected context and memory; the Analyzer adds retention, governance and versioning."
+      },
+      {
+        "skills_id": "SD-AI-001.C05",
+        "analyzer_id": "PSH3-AI-3F33CED84270",
+        "relation": "related",
+        "rationale": "Both bound work; the Analyzer extends accounting across delegated agents."
+      },
+      {
+        "skills_id": "SD-AI-001.C06",
+        "analyzer_id": "PSH3-AI-855A7944E441",
+        "relation": "related",
+        "rationale": "Both require observed evidence tied to the reviewed revision; the Analyzer adds agent-specific evidence scope."
       }
     ]
   }

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "catalog_version": "2026.11.26.3",
-  "release": "catalog/releases/2026.11.26.3.json",
-  "sha256": "2431d2b66e7b705fa8160e3f480ec742276df5547820ce984cf8174be07840f5"
+  "catalog_version": "2026.11.27.1",
+  "release": "catalog/releases/2026.11.27.1.json",
+  "sha256": "668c9d8e2bf00438c4b29a42b471c8b2581f588cb0d0feb064f06ab1b7f60b34"
 }

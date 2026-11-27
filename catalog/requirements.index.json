@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "catalog_version": "2026.11.26.3",
-  "release": "catalog/releases/2026.11.26.3.json",
-  "release_sha256": "2431d2b66e7b705fa8160e3f480ec742276df5547820ce984cf8174be07840f5",
+  "catalog_version": "2026.11.27.1",
+  "release": "catalog/releases/2026.11.27.1.json",
+  "release_sha256": "668c9d8e2bf00438c4b29a42b471c8b2581f588cb0d0feb064f06ab1b7f60b34",
   "relations_status": "partial_review_not_authoritative",
   "relations": [
     {
@@ -88,6 +88,48 @@
       "analyzer_id": "PSH3-SUP-B77F90F5AC76",
       "relation": "related",
       "rationale": "Both restrict host control sockets, privileged containers and mounts; the Analyzer additionally addresses executor and network isolation."
+    },
+    {
+      "skills_id": "SD-AI-001.C01",
+      "analyzer_id": "PSH3-AI-13D73A66B04A",
+      "relation": "related",
+      "rationale": "Both separate untrusted content from trusted processing; the Analyzer record additionally scopes isolated tool environments."
+    },
+    {
+      "skills_id": "SD-AI-001.C02",
+      "analyzer_id": "PSH3-AI-E48B0CC0A805",
+      "relation": "related",
+      "rationale": "Both require authorization at the action boundary; the Analyzer adds workload and operation-specific constraints."
+    },
+    {
+      "skills_id": "SD-AI-001.C02",
+      "analyzer_id": "PSH3-AI-EAA7A6FE8384",
+      "relation": "related",
+      "rationale": "Both bind approval to an operation; the Analyzer adds explicit expiry and consumption semantics."
+    },
+    {
+      "skills_id": "SD-AI-001.C02",
+      "analyzer_id": "PSH3-AI-D74BDE2ECD47",
+      "relation": "related",
+      "rationale": "Both constrain authority at action boundaries; the Analyzer additionally addresses delegated identity and scope."
+    },
+    {
+      "skills_id": "SD-AI-001.C04",
+      "analyzer_id": "PSH3-AI-C3E8A4E70E65",
+      "relation": "related",
+      "rationale": "Both constrain protected context and memory; the Analyzer adds retention, governance and versioning."
+    },
+    {
+      "skills_id": "SD-AI-001.C05",
+      "analyzer_id": "PSH3-AI-3F33CED84270",
+      "relation": "related",
+      "rationale": "Both bound work; the Analyzer extends accounting across delegated agents."
+    },
+    {
+      "skills_id": "SD-AI-001.C06",
+      "analyzer_id": "PSH3-AI-855A7944E441",
+      "relation": "related",
+      "rationale": "Both require observed evidence tied to the reviewed revision; the Analyzer adds agent-specific evidence scope."
     }
   ],
   "records": [
@@ -10455,883 +10497,883 @@
       "id": "SD-AI-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AI-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AI-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AI-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AI-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AI-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/ai-assisted-development.md",
-      "source_sha256": "bfbdb0a4e70434e89a7c28adf1b4df8e1af861c633cacd435684936458481bda",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_sha256": "3e83d0722f0fdbd3b25a45224e359732d169b359b911f751a792e780f7e06cdb",
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-API-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/api-web-services.md",
       "source_sha256": "f0c65831d96bea4b08b9dd9b961f5d9cefd891bcab44ce458007544365057a70",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHN-001.C07",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-mfa.md",
       "source_sha256": "062c32e06d3e10d846b6913d9d2c6b62f816d4dc6fe48b70490c3ad68d54d8d3",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PROTOCOL-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-protocols.md",
       "source_sha256": "5c7a792d844fe5380f3b52d1a8eed20281e920e0d1ad214c873adeb66397a8cf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PROTOCOL-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-protocols.md",
       "source_sha256": "5c7a792d844fe5380f3b52d1a8eed20281e920e0d1ad214c873adeb66397a8cf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PROTOCOL-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authentication-protocols.md",
       "source_sha256": "5c7a792d844fe5380f3b52d1a8eed20281e920e0d1ad214c873adeb66397a8cf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHZ-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authorization-access-control.md",
       "source_sha256": "7cdf241ba626f104acdacc227dfbe4485635863140645224cfcd805910cac8d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHZ-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authorization-access-control.md",
       "source_sha256": "7cdf241ba626f104acdacc227dfbe4485635863140645224cfcd805910cac8d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHZ-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authorization-access-control.md",
       "source_sha256": "7cdf241ba626f104acdacc227dfbe4485635863140645224cfcd805910cac8d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHZ-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authorization-access-control.md",
       "source_sha256": "7cdf241ba626f104acdacc227dfbe4485635863140645224cfcd805910cac8d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-AUTHZ-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/authorization-access-control.md",
       "source_sha256": "7cdf241ba626f104acdacc227dfbe4485635863140645224cfcd805910cac8d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-BUSINESS-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/business-logic.md",
       "source_sha256": "2b3f3ce3c51ade18f12af5db372057777cbceb2d7614ebddc8be4d566ec9bea6",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-BUSINESS-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/business-logic.md",
       "source_sha256": "2b3f3ce3c51ade18f12af5db372057777cbceb2d7614ebddc8be4d566ec9bea6",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-BUSINESS-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/business-logic.md",
       "source_sha256": "2b3f3ce3c51ade18f12af5db372057777cbceb2d7614ebddc8be4d566ec9bea6",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MEMORY-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/c-cpp-memory-string-safety.md",
       "source_sha256": "8de7e870bdba55f6584a62dbe56ba007a43f46cddae8acbd98669b8e79edb914",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MEMORY-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/c-cpp-memory-string-safety.md",
       "source_sha256": "8de7e870bdba55f6584a62dbe56ba007a43f46cddae8acbd98669b8e79edb914",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MEMORY-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/c-cpp-memory-string-safety.md",
       "source_sha256": "8de7e870bdba55f6584a62dbe56ba007a43f46cddae8acbd98669b8e79edb914",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MEMORY-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/c-cpp-memory-string-safety.md",
       "source_sha256": "8de7e870bdba55f6584a62dbe56ba007a43f46cddae8acbd98669b8e79edb914",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C07",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-WEB-001.C08",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/client-web-security.md",
       "source_sha256": "5dd878485185ab6710db5f90c225047935e081ae6b545ab3acb108651df32482",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIMITIVE-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptographic-primitives.md",
       "source_sha256": "9d7e2f7e3841da112abf3e1084954f2280114fb8ca2923f733a604df599578d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIMITIVE-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptographic-primitives.md",
       "source_sha256": "9d7e2f7e3841da112abf3e1084954f2280114fb8ca2923f733a604df599578d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIMITIVE-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptographic-primitives.md",
       "source_sha256": "9d7e2f7e3841da112abf3e1084954f2280114fb8ca2923f733a604df599578d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIMITIVE-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptographic-primitives.md",
       "source_sha256": "9d7e2f7e3841da112abf3e1084954f2280114fb8ca2923f733a604df599578d1",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CRYPTO-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptography-policy.md",
       "source_sha256": "ba2d81f4bbb7cbd1ac35bda97bc060258e6d026a65fd08ff10f8122fb267c27c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CRYPTO-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptography-policy.md",
       "source_sha256": "ba2d81f4bbb7cbd1ac35bda97bc060258e6d026a65fd08ff10f8122fb267c27c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CRYPTO-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/cryptography-policy.md",
       "source_sha256": "ba2d81f4bbb7cbd1ac35bda97bc060258e6d026a65fd08ff10f8122fb267c27c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-DATASTORE-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/databases-storage.md",
       "source_sha256": "c74564944a4f2d5299e54afd7aff73886e321269d6482aecdd6d38d72cdde9df",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-DATASTORE-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/databases-storage.md",
       "source_sha256": "c74564944a4f2d5299e54afd7aff73886e321269d6482aecdd6d38d72cdde9df",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-DATASTORE-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/databases-storage.md",
       "source_sha256": "c74564944a4f2d5299e54afd7aff73886e321269d6482aecdd6d38d72cdde9df",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-DATASTORE-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/databases-storage.md",
       "source_sha256": "c74564944a4f2d5299e54afd7aff73886e321269d6482aecdd6d38d72cdde9df",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SUPPLY-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/dependencies-supply-chain.md",
       "source_sha256": "e891e2080e9a515c60783b7d43be3a29481c606e79c14cb23346b7922074d5e2",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SUPPLY-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/dependencies-supply-chain.md",
       "source_sha256": "e891e2080e9a515c60783b7d43be3a29481c606e79c14cb23346b7922074d5e2",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SUPPLY-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/dependencies-supply-chain.md",
       "source_sha256": "e891e2080e9a515c60783b7d43be3a29481c606e79c14cb23346b7922074d5e2",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SUPPLY-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/dependencies-supply-chain.md",
       "source_sha256": "e891e2080e9a515c60783b7d43be3a29481c606e79c14cb23346b7922074d5e2",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CICD-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/devops-cicd-containers.md",
       "source_sha256": "456964db9c28c04a16415fcf3a377bfb1e2aeb81345c7e801de55efa510afc2c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CICD-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/devops-cicd-containers.md",
       "source_sha256": "456964db9c28c04a16415fcf3a377bfb1e2aeb81345c7e801de55efa510afc2c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CICD-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/devops-cicd-containers.md",
       "source_sha256": "456964db9c28c04a16415fcf3a377bfb1e2aeb81345c7e801de55efa510afc2c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-CICD-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/devops-cicd-containers.md",
       "source_sha256": "456964db9c28c04a16415fcf3a377bfb1e2aeb81345c7e801de55efa510afc2c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-FILES-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/files-uploads.md",
       "source_sha256": "5c71a8fbef50855d3811a9c7a4837e38046de1d4b652da33f38c85352f1144db",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-FILES-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/files-uploads.md",
       "source_sha256": "5c71a8fbef50855d3811a9c7a4837e38046de1d4b652da33f38c85352f1144db",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-FILES-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/files-uploads.md",
       "source_sha256": "5c71a8fbef50855d3811a9c7a4837e38046de1d4b652da33f38c85352f1144db",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-FILES-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/files-uploads.md",
       "source_sha256": "5c71a8fbef50855d3811a9c7a4837e38046de1d4b652da33f38c85352f1144db",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-FILES-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/files-uploads.md",
       "source_sha256": "5c71a8fbef50855d3811a9c7a4837e38046de1d4b652da33f38c85352f1144db",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-STACK-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/frameworks-languages.md",
       "source_sha256": "7ea67ed00677ec4395163f86c99a323fcebace0713216ba77345fdcb6d706963",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-STACK-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/frameworks-languages.md",
       "source_sha256": "7ea67ed00677ec4395163f86c99a323fcebace0713216ba77345fdcb6d706963",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-STACK-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/frameworks-languages.md",
       "source_sha256": "7ea67ed00677ec4395163f86c99a323fcebace0713216ba77345fdcb6d706963",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-IAC-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/infrastructure-as-code.md",
       "source_sha256": "fbbd69c92ed4ec6cb48f9c51a4803eccf9382461bff6ae1bc316f61dfb2ed77a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-IAC-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/infrastructure-as-code.md",
       "source_sha256": "fbbd69c92ed4ec6cb48f9c51a4803eccf9382461bff6ae1bc316f61dfb2ed77a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-IAC-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/infrastructure-as-code.md",
       "source_sha256": "fbbd69c92ed4ec6cb48f9c51a4803eccf9382461bff6ae1bc316f61dfb2ed77a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-INPUT-001.C07",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/input-validation-injection.md",
       "source_sha256": "51c0f92a2fed14a392a656de959215186898257ff64c24a83fdfb49045d7afef",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-KEY-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/key-lifecycle.md",
       "source_sha256": "0b3b361e269f28db53630bab0199ac3878b7c58583ccdd44d48560041a9b42a9",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-KEY-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/key-lifecycle.md",
       "source_sha256": "0b3b361e269f28db53630bab0199ac3878b7c58583ccdd44d48560041a9b42a9",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-KEY-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/key-lifecycle.md",
       "source_sha256": "0b3b361e269f28db53630bab0199ac3878b7c58583ccdd44d48560041a9b42a9",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-K8S-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/kubernetes-hardening.md",
       "source_sha256": "62aa5171e40ccd23dcbf93f6b5efc0ca8bbf5ff9d256b8b62ae8d40a3546eb89",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-K8S-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/kubernetes-hardening.md",
       "source_sha256": "62aa5171e40ccd23dcbf93f6b5efc0ca8bbf5ff9d256b8b62ae8d40a3546eb89",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-K8S-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/kubernetes-hardening.md",
       "source_sha256": "62aa5171e40ccd23dcbf93f6b5efc0ca8bbf5ff9d256b8b62ae8d40a3546eb89",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-K8S-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/kubernetes-hardening.md",
       "source_sha256": "62aa5171e40ccd23dcbf93f6b5efc0ca8bbf5ff9d256b8b62ae8d40a3546eb89",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-LOG-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/logging-monitoring.md",
       "source_sha256": "4bb9bdf66027adb520d70b1cd848ea40347b209be1f6c0cee6d20e6824d9c43f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-LOG-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/logging-monitoring.md",
       "source_sha256": "4bb9bdf66027adb520d70b1cd848ea40347b209be1f6c0cee6d20e6824d9c43f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-LOG-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/logging-monitoring.md",
       "source_sha256": "4bb9bdf66027adb520d70b1cd848ea40347b209be1f6c0cee6d20e6824d9c43f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-LOG-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/logging-monitoring.md",
       "source_sha256": "4bb9bdf66027adb520d70b1cd848ea40347b209be1f6c0cee6d20e6824d9c43f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MCP-001.C06",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mcp-security.md",
       "source_sha256": "fb7594bf1f047110a1e7845521aa79dee6ce9b1e1cee8207d6fb3fb907d33d1f",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MOBILE-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mobile-security.md",
       "source_sha256": "edc8db27b783ec5f333376f3c5ad8b7481e315706c43157134c69f147f4a4653",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MOBILE-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mobile-security.md",
       "source_sha256": "edc8db27b783ec5f333376f3c5ad8b7481e315706c43157134c69f147f4a4653",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MOBILE-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mobile-security.md",
       "source_sha256": "edc8db27b783ec5f333376f3c5ad8b7481e315706c43157134c69f147f4a4653",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-MOBILE-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/mobile-security.md",
       "source_sha256": "edc8db27b783ec5f333376f3c5ad8b7481e315706c43157134c69f147f4a4653",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-OUTBOUND-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/outbound-requests.md",
       "source_sha256": "0f337fc6f2b8f6af3b6f3c04adcfa3ee382cefb3cf291dc9a377f519ff126f3c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-OUTBOUND-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/outbound-requests.md",
       "source_sha256": "0f337fc6f2b8f6af3b6f3c04adcfa3ee382cefb3cf291dc9a377f519ff126f3c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-OUTBOUND-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/outbound-requests.md",
       "source_sha256": "0f337fc6f2b8f6af3b6f3c04adcfa3ee382cefb3cf291dc9a377f519ff126f3c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-OUTBOUND-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/outbound-requests.md",
       "source_sha256": "0f337fc6f2b8f6af3b6f3c04adcfa3ee382cefb3cf291dc9a377f519ff126f3c",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIVACY-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/privacy-data-protection.md",
       "source_sha256": "f2dc715f6b23ce7d65f229cecb2506ec3a103ed1c8b308b8ed111803fe582678",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIVACY-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/privacy-data-protection.md",
       "source_sha256": "f2dc715f6b23ce7d65f229cecb2506ec3a103ed1c8b308b8ed111803fe582678",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIVACY-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/privacy-data-protection.md",
       "source_sha256": "f2dc715f6b23ce7d65f229cecb2506ec3a103ed1c8b308b8ed111803fe582678",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-PRIVACY-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/privacy-data-protection.md",
       "source_sha256": "f2dc715f6b23ce7d65f229cecb2506ec3a103ed1c8b308b8ed111803fe582678",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SECRET-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/secrets.md",
       "source_sha256": "b1c714d55bbdcd6a1f808ffa81066eaaa088e4226af924ef10c715c2232f148d",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SECRET-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/secrets.md",
       "source_sha256": "b1c714d55bbdcd6a1f808ffa81066eaaa088e4226af924ef10c715c2232f148d",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SECRET-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/secrets.md",
       "source_sha256": "b1c714d55bbdcd6a1f808ffa81066eaaa088e4226af924ef10c715c2232f148d",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SECRET-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/secrets.md",
       "source_sha256": "b1c714d55bbdcd6a1f808ffa81066eaaa088e4226af924ef10c715c2232f148d",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SECRET-001.C05",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/secrets.md",
       "source_sha256": "b1c714d55bbdcd6a1f808ffa81066eaaa088e4226af924ef10c715c2232f148d",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SESSION-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/sessions-cookies.md",
       "source_sha256": "cc8d6e2469079cf3d52f09fceb8505517e5daa1b15b4a18a682ef6286dad806a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SESSION-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/sessions-cookies.md",
       "source_sha256": "cc8d6e2469079cf3d52f09fceb8505517e5daa1b15b4a18a682ef6286dad806a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SESSION-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/sessions-cookies.md",
       "source_sha256": "cc8d6e2469079cf3d52f09fceb8505517e5daa1b15b4a18a682ef6286dad806a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SESSION-001.C04",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/sessions-cookies.md",
       "source_sha256": "cc8d6e2469079cf3d52f09fceb8505517e5daa1b15b4a18a682ef6286dad806a",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-EVENT-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/webhooks-events.md",
       "source_sha256": "3a815e80919029a9a9dee5d1b4d06faa03e725a2a2d90984b7e6ba32552ed889",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-EVENT-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/webhooks-events.md",
       "source_sha256": "3a815e80919029a9a9dee5d1b4d06faa03e725a2a2d90984b7e6ba32552ed889",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-EVENT-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/webhooks-events.md",
       "source_sha256": "3a815e80919029a9a9dee5d1b4d06faa03e725a2a2d90984b7e6ba32552ed889",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-X509-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/x509-certificates.md",
       "source_sha256": "776113287f40ffe204b31ac5ddcd6b5c60c80d0215222188c24e7555ad907b35",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-X509-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/x509-certificates.md",
       "source_sha256": "776113287f40ffe204b31ac5ddcd6b5c60c80d0215222188c24e7555ad907b35",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-X509-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/x509-certificates.md",
       "source_sha256": "776113287f40ffe204b31ac5ddcd6b5c60c80d0215222188c24e7555ad907b35",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SERIAL-001.C01",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/xml-serialization.md",
       "source_sha256": "9b06f2c2dd12215c4197a3a8f1d995d878a604bb8cba0e4efd8df8edf97f6dbf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SERIAL-001.C02",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/xml-serialization.md",
       "source_sha256": "9b06f2c2dd12215c4197a3a8f1d995d878a604bb8cba0e4efd8df8edf97f6dbf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     },
     {
       "id": "SD-SERIAL-001.C03",
       "namespace": "secure-development",
       "source": "skills/secure-development/references/topics/xml-serialization.md",
       "source_sha256": "9b06f2c2dd12215c4197a3a8f1d995d878a604bb8cba0e4efd8df8edf97f6dbf",
-      "source_revision": "dbc79806e706568af134d5f2fbde8a611c52cecc"
+      "source_revision": "monorepo-local-2026.11.27.1"
     }
   ]
 }

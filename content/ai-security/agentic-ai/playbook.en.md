@@ -290,3 +290,12 @@ Release is approved only when the agent has bounded autonomy, explicit policy en
 - [Browser security playbook](../../application-security/web/browser-security/playbook.en.md)
 - [API security playbook](../../application-security/api/api-security-patterns/playbook.en.md)
 - [Agent instruction supply-chain controls](../ai-assisted-development/playbook.en.md#38-skills-and-agent-instructions)
+
+
+## 7. Evidence handoff across the lifecycle
+
+OWASP's [Securing Agentic Applications V2](https://genai.owasp.org/resource/securing-agentic-applications-v2/) (version 2.0, October 2026; published November 10) distinguishes architecture decisions, lifecycle assurance and controls in the deployed environment. For this playbook, document the assurance boundary separately from the application's intended behavior.
+
+For every applicable control, record the owner, the component responsible for enforcement, the approved configuration or revision, the expected observable outcome and the evidence that supports the decision. An architecture decision or a model-generated statement is evidence of intent, not evidence of enforcement. Reassess the affected controls when the model, orchestration, tool registry, permissions, memory policy or execution environment materially changes. Keep unknown results visible until a reviewer can resolve them.
+
+Use the [agent tools review route](../../hub/agent-tools/overview.en.md) to connect these decisions to requirements and supporting evidence. This is a local review profile, not a declaration of OWASP or ACS conformity.
